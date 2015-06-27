@@ -1,0 +1,20 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{54F91283-7BC4-4236-8FF9-10F437C3AD48}") = "brtos_demo", "brtos_demo\brtos_demo.cproj", "{448F3FDC-0F83-45B8-B587-301A0038794D}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|AVR = Debug|AVR
+		Release|AVR = Release|AVR
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{448F3FDC-0F83-45B8-B587-301A0038794D}.Debug|AVR.ActiveCfg = Debug|AVR
+		{448F3FDC-0F83-45B8-B587-301A0038794D}.Debug|AVR.Build.0 = Debug|AVR
+		{448F3FDC-0F83-45B8-B587-301A0038794D}.Release|AVR.ActiveCfg = Release|AVR
+		{448F3FDC-0F83-45B8-B587-301A0038794D}.Release|AVR.Build.0 = Release|AVR
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
