@@ -20,6 +20,6 @@ void Update_OSTrace (INT8U task, INT8U syscall);
 void Send_OSTrace(void);
 
 #define OS_TICK_SHOW 0
-#define OS_IDLE_SHOW 0
+#define OS_IDLE_SHOW 1
 
 #define OS_TRACE_BY_TASK 1  

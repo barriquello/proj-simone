@@ -300,6 +300,7 @@ void Send_OSTrace(void){
   INT8U i=0;
   INT8U j=0;
   const CHAR8 *TaskName;
+  INT8U car;
   
   OSEnterCritical();
   for(i=index, j=0;i<MAX_DEPTH_TRACE;i++,j++){
@@ -345,12 +346,12 @@ void Send_OSTrace(void){
                 #endif
                 break; 
               default:
-                Serial_Envia_Frase("---------");
+                Serial_Envia_Frase("-");
                 break;
             }
         }else
         {
-           #if(OS_IDLE_SHOW == 1)  
+           #if(OS_IDLE_SHOW == 1)  		    
             Serial_Envia_Frase("TASK ");
             car = OSTrace_snapshot[i]>>5;
             car = (car / 10) + 48;
@@ -396,6 +397,7 @@ void Send_OSTrace(void){
                 #endif
                 break; 
               default:
+				Serial_Envia_Frase(" ");
                 break;
             }
         }
