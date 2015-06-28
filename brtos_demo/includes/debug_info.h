@@ -2,7 +2,7 @@
 #include "BRTOS.h"
 
 #define MAX_DEPTH_TRACE 64
-#define MAX_TRACE_LINE  10
+#define MAX_TRACE_LINE  8
 
 #define DELAYTASK 0
 #define SEMPEND   1

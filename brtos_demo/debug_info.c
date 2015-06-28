@@ -345,7 +345,7 @@ void Send_OSTrace(void){
                 #endif
                 break; 
               default:
-                Serial_Envia_Frase("________");
+                Serial_Envia_Frase("---------");
                 break;
             }
         }else

@@ -31,6 +31,9 @@ void TickTimerSetup(void)
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+__attribute__ ((section (".lowtext")))
+#endif
 ISR(TIMER0_COMPA_vect, __attribute__ ( ( naked ) ))
 {
   // ************************
@@ -91,7 +94,6 @@ ISR(TIMER0_COMPA_vect, __attribute__ ( ( naked ) ))
 * \brief Software interrupt handler routine (Internal kernel function).
 *  Used to switch the tasks context.
 ****************************************************************/
-
 void SwitchContext(void)
 {
   // ************************
@@ -166,9 +168,17 @@ void CreateVirtualStack(void(*FctPtr)(void), INT16U NUMBER_OF_STACKED_BYTES)
    
    /* The compiler expects R1 to be 0. */
    STACK[iStackAddress + NUMBER_OF_STACKED_BYTES - 3] = 0x00;
-
+    
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)	
+   STACK[iStackAddress + NUMBER_OF_STACKED_BYTES - 0] = ((unsigned int) (FctPtr)) & 0x00FF;
+   STACK[iStackAddress + NUMBER_OF_STACKED_BYTES - 1] = ((unsigned int) (FctPtr)) >> 8;  
+   STACK[iStackAddress + NUMBER_OF_STACKED_BYTES - 2] = ((unsigned long int)(FctPtr)) >> 16;
+#else    
    STACK[iStackAddress + NUMBER_OF_STACKED_BYTES - 1] = ((unsigned int) (FctPtr)) & 0x00FF;
    STACK[iStackAddress + NUMBER_OF_STACKED_BYTES - 2] = ((unsigned int) (FctPtr)) >> 8;  
+#endif   
+   
+   
 }
 
 

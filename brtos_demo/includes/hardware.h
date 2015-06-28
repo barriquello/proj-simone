@@ -25,6 +25,5 @@
 #include <avr/interrupt.h>
 #include <avr/wdt.h>
 #include <avr/pgmspace.h>
-#include <asf.h>
 
 #endif

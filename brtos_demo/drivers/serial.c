@@ -12,7 +12,7 @@ void Serial_Init(unsigned int baudrate)
 	/*Enable receiver and transmitter. Enable RX interrupt */
 	UCSR0B = (1<<RXEN0) | (1<<TXEN0) | (1 << RXCIE0);
 	/* Set frame format: 8 bit data, 1 stop bit */
-	UCSR0C = (3<<UCSZ00); 
+	UCSR0C = (3<<UCSZ00); 								
 }
 
 
@@ -51,7 +51,12 @@ void Serial_Envia_Frase_P(char const *string)
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+__attribute__ ((section (".lowtext")))
+ISR(USART0_RX_vect, __attribute__ ( ( naked ) ))
+#else
 ISR(USART_RX_vect, __attribute__ ( ( naked ) ))
+#endif
 {
   // ************************
   // Entrada de interrupção

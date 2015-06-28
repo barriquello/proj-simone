@@ -5,7 +5,9 @@
 extern BRTOS_Sem    *SemTeste;
 extern BRTOS_Queue  *Serial;
 
-
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+__attribute__ ((section (".lowtext")))
+#endif
 void System_Time(void)
 {
    // task setup
@@ -30,8 +32,9 @@ void System_Time(void)
 
 
 
-
-
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+__attribute__ ((section (".lowtext")))
+#endif
 void Task_2(void)
 {
    /* task setup */
@@ -51,8 +54,9 @@ void Task_2(void)
 
 
 
-
-
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+__attribute__ ((section (".lowtext")))
+#endif
 void Task_3(void)
 {
    /* task setup */
@@ -71,11 +75,20 @@ void Task_3(void)
 
 char BufferTextDebug[128];
 
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+__attribute__ ((section (".lowtext")))
+#endif
 void Task_Serial(void)
 {
-   /* task setup */
-   INT8U pedido = 0;  
+    /* task setup */
+    INT8U pedido = 0;  
   
+	strcpy_P(BufferText, (PGM_P)pgm_read_word(&(BRTOSStringTable[0])));
+	Serial_Envia_Frase((CHAR8*)BufferText);
+			
+	Serial_Envia_Caracter(10);
+	Serial_Envia_Caracter(13);
+			
    // task main loop
    for (;;) 
    {
