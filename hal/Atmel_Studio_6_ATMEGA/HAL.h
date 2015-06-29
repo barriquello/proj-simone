@@ -60,11 +60,7 @@ extern INT16U SPvalue;
 //Stack Defines
 
 /* stacked by the RTI interrupt process */
-#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)	
-#define NUMBER_MIN_OF_STACKED_BYTES 37
-#else
 #define NUMBER_MIN_OF_STACKED_BYTES 36
-#endif
 
 void CreateVirtualStack(void(*FctPtr)(void), INT16U NUMBER_OF_STACKED_BYTES);
 void TickTimerSetup(void);                      
