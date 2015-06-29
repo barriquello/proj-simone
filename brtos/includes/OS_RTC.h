@@ -28,7 +28,7 @@
 #define OS_RTC_H
 
 #include "OS_types.h"
-
+#include "Timer_RTC_DS1307.h"
 
 
 
@@ -38,6 +38,10 @@
 /////    OS Time Structure                             /////
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
+
+/** \addtogroup timersGroup
+ *  @{
+ */
 
 /**
 * \struct OSTime
@@ -74,9 +78,9 @@ typedef struct {
 
 typedef struct {
 
-	INT8U       RTC_Day;          ///< Day of the date
-	INT8U       RTC_Month;        ///< Month of the date
-  INT16U RTC_Year;         ///< Year of the date
+	INT8U      RTC_Day;           ///< Day of the date
+	INT8U      RTC_Month;        ///< Month of the date
+	INT16U 	   RTC_Year;         ///< Year of the date
 } OSDate; 
 
 ////////////////////////////////////////////////////////////
@@ -100,12 +104,21 @@ typedef struct {
 */
 
 typedef struct {
+	OSTime  time;
+	OSDate  date;
+} OSTimeDate;
+
+/**
+* \struct OSDateTime
+* Operating System Date and time - Shows the current date and time 
+*/
+
+typedef struct {
+	OSDate  date;
+	OSTime  time;
+} OSDateTime;
 
 
-	OSTime  DC_Hora_Exata;
-	OSDate  DC_Dia_Exato;
-
-} OSTime_Date;
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -144,26 +157,29 @@ typedef struct _OSRTC OS_RTC;
 * \return None
 *****************************************************************************************/ 
   
+
+// Uptime Functions
 void OSUpdateTime(void);
-
 void OSUpdateDate(void);
-
-void OSResetTime(void);
- 
+void OSResetTime(void); 
 void OSResetDate(void);
-
 void OSUpdateUptime(void);
-
 OSTime OSUptime(void);
-
 OSDate OSUpDate(void);
 
 // Calendar Functions
+INT8U Init_Calendar(void);
+void Resync_calendar(void);
 void OSUpdateCalendar(void);
 void GetCalendar(OS_RTC *rtc);
 void SetCalendar(OS_RTC *rtc);
-void Init_Calendar(void);
- 
+void GetDateTime(OSDateTime *dt);
+void GetCalendarTime(OSTime *t);
+void GetCalendarDate(OSDate *d);
+
+// return 0 if equal, 1 if rtc1 > rtc2, -1 if rtc1 < rtc2 
+INT8S CompareDateTime(OS_RTC const *rtc1, OS_RTC const *rtc2);
+
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -182,3 +198,5 @@ void Init_Calendar(void);
 
 
 #endif
+
+/** @} */

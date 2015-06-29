@@ -12,6 +12,7 @@
 #include "drivers.h"
 #include "tasks.h"
 #include "AppConfig.h"
+#include "ff.h"
 
 #define MAX_FILE_SIZE 12
 

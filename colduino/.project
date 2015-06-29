@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>Colduino_je256_uFSM_OS</name>
+	<name>colduino</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -24,29 +24,39 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>CodeWarrior_CFV1</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/hal/CodeWarrior_CFV1</locationURI>
+		</link>
+		<link>
+			<name>FatFs</name>
+			<type>2</type>
+			<locationURI>PARENT-1-PROJECT_LOC/FatFs</locationURI>
+		</link>
+		<link>
 			<name>brtos</name>
 			<type>2</type>
-			<locationURI>$%7BPARENT-4-PROJECT_LOC%7D/brtos</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/brtos</locationURI>
 		</link>
 		<link>
-			<name>core</name>
+			<name>freemodbus</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/core</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/freemodbus</locationURI>
 		</link>
 		<link>
-			<name>hal</name>
+			<name>minINI</name>
 			<type>2</type>
-			<locationURI>$%7BPARENT-4-PROJECT_LOC%7D/hal</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/minINI</locationURI>
 		</link>
 		<link>
-			<name>lc</name>
+			<name>modbus_master_lib</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/lc</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/modbus_master_lib</locationURI>
 		</link>
 		<link>
-			<name>xmacro</name>
+			<name>modbus_slaves</name>
 			<type>2</type>
-			<locationURI>PARENT-2-PROJECT_LOC/xmacro</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/modbus_slaves</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -32,7 +32,7 @@ extern "C"
  * @param       None
  * @return      None
  *****************************************************************************/
-void main_old(void)
+void main(void)
 {
 	
 #if 1

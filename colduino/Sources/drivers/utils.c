@@ -134,6 +134,7 @@ INT32U LWordSwap(INT32U u32DataSwap)
 	return (u32Temp);
 }
 
+#if 0
 void PrintDecimal(INT16S val, CHAR8 *buff)
 {
 	INT16U backup;
@@ -170,6 +171,7 @@ void PrintDecimal(INT16S val, CHAR8 *buff)
 	// Completes the string for sign information
 	*(buff + i) = s;  // Sign character
 }
+#endif
 
 void Print4Digits(INT16U number, INT8U align, CHAR8 *buff)
 {

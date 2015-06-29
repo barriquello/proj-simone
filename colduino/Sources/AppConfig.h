@@ -23,5 +23,7 @@
 #define DATALOGGER_DELAY_TIME (3000)
 //#define DATALOGGER_DELAY_TIME (3000)
 
+#include "user_config.h"
+
 
 

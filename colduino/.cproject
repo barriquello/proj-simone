@@ -29,13 +29,29 @@
 							<option id="com.freescale.coldfire.toolchain.sharedoption.processor.179780819" name="Processor Family (-proc)" superClass="com.freescale.coldfire.toolchain.sharedoption.processor" value="com.freescale.coldfire.toolchain.sharedoption.processor.51JE" valueType="enumerated"/>
 							<option id="com.freescale.coldfire.toolchain.sharedoption.sym.915172174" name="Generate Symbolic Info" superClass="com.freescale.coldfire.toolchain.sharedoption.sym" value="com.freescale.coldfire.toolchain.sharedoption.sym.full" valueType="enumerated"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.freescale.coldfire.toolchain.platform.1999659639" name="ColdFire Target Platform" superClass="com.freescale.coldfire.toolchain.platform"/>
-							<builder buildPath="${ProjDirPath}/FLASH" errorParsers="org.eclipse.cdt.core.GmakeErrorParser;com.freescale.core.ide.cdt.errorParsers.MwErrorParser;com.freescale.core.ide.cdt.errorParsers.MPWErrorParser;com.freescale.core.ide.cdt.errorParsers.MwfeErrorParser" id="com.freescale.coldfire.toolchain.builder.1204206947" keepEnvironmentInBuildfile="false" name="GNU Make Builder" parallelBuildOn="true" parallelBuildWorkspaceOn="true" parallelizationNumber="-1" superClass="com.freescale.coldfire.toolchain.builder"/>
+							<builder buildPath="${ProjDirPath}/FLASH" errorParsers="org.eclipse.cdt.core.GmakeErrorParser;com.freescale.core.ide.cdt.errorParsers.MwErrorParser;com.freescale.core.ide.cdt.errorParsers.MPWErrorParser;com.freescale.core.ide.cdt.errorParsers.MwfeErrorParser" id="com.freescale.coldfire.toolchain.builder.1204206947" keepEnvironmentInBuildfile="false" name="GNU Make Builder" parallelBuildOn="true" parallelBuildWorkspaceOn="true" parallelizationNumber="-1" superClass="com.freescale.coldfire.toolchain.builder">
+								<outputEntries>
+									<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="outputPath" name="FLASH"/>
+								</outputEntries>
+							</builder>
 							<tool errorParsers="" id="coldfire.toolchain.burner.114684114" name="Burner" superClass="coldfire.toolchain.burner"/>
 							<tool errorParsers="" id="com.freescale.coldfire.toolchain.linker.debug.365072023" name="ColdFire Linker" superClass="com.freescale.coldfire.toolchain.linker.debug">
 								<option id="com.freescale.coldfire.toolchain.linker.base.generateLinkMap.1880777940" name="Generate Link Map" superClass="com.freescale.coldfire.toolchain.linker.base.generateLinkMap" value="true" valueType="boolean"/>
 								<option id="com.freescale.coldfire.toolchain.linker.base.input.lcf_file.2036669533" name="Link Command File (.lcf)" superClass="com.freescale.coldfire.toolchain.linker.base.input.lcf_file" value="${ProjDirPath}/Project_Settings/Linker_Files/Project.lcf" valueType="string"/>
 								<option id="com.freescale.coldfire.toolchain.linker.base.input.lpath.1259975909" name="Library Search Paths (-L+path)" superClass="com.freescale.coldfire.toolchain.linker.base.input.lpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/ewl/lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Project_Headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Project_Settings/Startup_Code&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Sources&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Sources/drivers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Sources/libs&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/hcs08_compatibility&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/ewl/EWL_C/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/ewl/EWL_C/include/sys&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/ewl/EWL_Runtime/Runtime_ColdFire/Source&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/derivatives/device/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/derivatives/device/asm_include&quot;"/>
 								</option>
 								<option id="com.freescale.coldfire.cdt.toolchain.option.linkorder.114547100" name="Link Order" superClass="com.freescale.coldfire.cdt.toolchain.option.linkorder" valueType="stringList">
 									<listOptionValue builtIn="false" value="Project_Settings/Startup_Code/startcf.c"/>
@@ -119,35 +135,40 @@
 							</tool>
 							<tool errorParsers="" id="com.freescale.coldfire.toolchain.compiler.debug.940251024" name="ColdFire Compiler" superClass="com.freescale.coldfire.toolchain.compiler.debug">
 								<option id="com.freescale.coldfire.toolchain.compiler.base.input.include.667542137" name="User Path (-i)" superClass="com.freescale.coldfire.toolchain.compiler.base.input.include" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Headers&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Settings/Startup_Code&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../core&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/drivers&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/libs&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../lc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../xmacro&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/uFSM&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../brtos/includes&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../hal&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../usb&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../usb/app/cdc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../modbus_master_lib&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../freemodbus/CFV1_port/port&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../freemodbus/modbus/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../freemodbus/modbus/rtu&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../FatFS&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/ewl/lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Project_Headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Project_Settings/Startup_Code&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Sources&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Sources/drivers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Sources/libs&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/hcs08_compatibility&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/ewl/EWL_C/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/ewl/EWL_C/include/sys&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/ewl/EWL_Runtime/Runtime_ColdFire/Source&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/derivatives/device/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/derivatives/device/asm_include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Sources/USB&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Sources/USB/app/cdc&quot;"/>
+									<listOptionValue builtIn="false" value="../../brtos/includes"/>
+									<listOptionValue builtIn="false" value="../../freemodbus/CFV1_port/port"/>
+									<listOptionValue builtIn="false" value="../../FatFS"/>
+									<listOptionValue builtIn="false" value="../../freemodbus/modbus/rtu"/>
+									<listOptionValue builtIn="false" value="../../modbus_master_lib"/>
+									<listOptionValue builtIn="false" value="../../freemodbus/modbus/include"/>
+									<listOptionValue builtIn="false" value="../../hal/CodeWarrior_CFV1"/>
+									<listOptionValue builtIn="false" value="../../minINI"/>
+									<listOptionValue builtIn="false" value="../../modbus_slaves"/>
+									<listOptionValue builtIn="false" value="../../freemodbus/modbus/tcp"/>
+									<listOptionValue builtIn="false" value="../../freemodbus/modbus/ascii"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Users\Universidade Federal\workspace\proj-simone\colduino\Sources\USB\driver&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Users\Universidade Federal\workspace\proj-simone\colduino\Sources\USB\driver\cfv1&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Users\Universidade Federal\workspace\proj-simone\colduino\Sources\USB\common&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:\Users\Universidade Federal\workspace\proj-simone\colduino\Sources\USB\class&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Sources/USB/app/msd&quot;"/>
 								</option>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sdata.456667483" name="Use .sdata/.sbiss for (byte in integer between -1..32K)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sdata" value="0" valueType="string"/>
-								<option id="com.freescale.coldfire.toolchain.compiler.base.input.include.system.1788546878" name="System Path (-I- -I)" superClass="com.freescale.coldfire.toolchain.compiler.base.input.include.system" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/hcs08_compatibility&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_C/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_C/include/sys&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_Runtime/Runtime_ColdFire/Source&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/derivatives/device/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/derivatives/device/asm_include&quot;"/>
-								</option>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.input.include.system.1788546878" name="System Path (-I- -I)" superClass="com.freescale.coldfire.toolchain.compiler.base.input.include.system"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.general.wchar.off.375554156" name="Enable wchar_t Support" superClass="com.freescale.coldfire.toolchain.compiler.base.general.wchar.off" value="true" valueType="boolean"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.code.120238436" name="Code Model" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.code" value="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.code.far" valueType="enumerated"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.peep.149651344" name="Peephole (-peephole)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.peep" value="true" valueType="boolean"/>
@@ -158,6 +179,21 @@
 								<inputType id="com.freescale.coldfire.toolchain.compiler.base.input.c++.2093161631" name="C++ Source File" superClass="com.freescale.coldfire.toolchain.compiler.base.input.c++"/>
 							</tool>
 							<tool errorParsers="" id="com.freescale.coldfire.toolchain.assembler.debug.571171737" name="ColdFire Assembler" superClass="com.freescale.coldfire.toolchain.assembler.debug">
+								<option id="com.freescale.coldfire.toolchain.assembler.base.input.include.2068607591" name="User Path (-i)" superClass="com.freescale.coldfire.toolchain.assembler.base.input.include" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/ewl/lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Project_Headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Project_Settings/Startup_Code&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Sources&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Sources/drivers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace/proj-simone/colduino/Sources/libs&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Users/Universidade Federal/workspace&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/hcs08_compatibility&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/ewl/EWL_C/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/ewl/EWL_C/include/sys&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/ewl/EWL_Runtime/Runtime_ColdFire/Source&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/derivatives/device/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.5/MCU/ColdFire_Support/derivatives/device/asm_include&quot;"/>
+								</option>
 								<inputType id="com.freescale.coldfire.toolchain.assembler.base.input.1576255774" name="ColdFire Assembler Input" superClass="com.freescale.coldfire.toolchain.assembler.base.input"/>
 							</tool>
 							<tool errorParsers="" id="com.freescale.coldfire.toolchain.preprocessor.debug.1230480844" name="ColdFire Preprocessor" superClass="com.freescale.coldfire.toolchain.preprocessor.debug"/>
@@ -167,12 +203,13 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="hal|brtos|Sources/tasks.c|Sources/freemodbus/modbus|Sources/datalogger.h|Sources/datalogger.c|Sources/FatFS/option/unicode.c|Sources/FatFS/option/ccsbcs.c|Sources/minINI/wxMinIni.h|Sources/minINI/test.c|Sources/minINI/minIni.h|Sources/minINI/minIni.c|Sources/minINI/minGlue-stdio.h|Sources/minINI/minGlue-mdd.h|Sources/minINI/minGlue-ffs.h|Sources/minINI/minGlue-FatFs.h|Sources/minINI/minGlue-efsl.h|Sources/minINI/minGlue-ccs.h|Sources/minINI/minGlue.h|xmacro|lc|core|Sources/colduino_gprs/FatFS/option/ccsbcs.c|Sources/colduino_gprs/FatFS/option/unicode.c|Sources/colduino_gprs/FatFS/bkp|Sources/colduino_gprs/libmodbus/modbus.c|Sources/colduino_gprs/libmodbus/tests/unit-test-slave.c|Sources/colduino_gprs/libmodbus/tests/unit-test-master.c|Sources/colduino_gprs/libmodbus/modbus-tcp-private.h|Sources/colduino_gprs/libmodbus/modbus-tcp.h|Sources/colduino_gprs/libmodbus/modbus-tcp.c|Sources/colduino_gprs/FatFS/option/syscall.c|Sources/colduino_gprs/FatFS/option/cc950.c|Sources/colduino_gprs/FatFS/option/cc949.c|Sources/colduino_gprs/FatFS/option/cc936.c|Sources/colduino_gprs/FatFS/option/cc932.c|Sources/FatFS/option/syscall.c|Sources/FatFS/option/cc950.c|Sources/FatFS/option/cc949.c|Sources/FatFS/option/cc936.c|Sources/FatFS/option/cc932.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="brtos"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="core"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hal"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="lc"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="xmacro"/>
+						<entry excluding="minINI|modbus_slaves|modbus_master_lib|FatFs|freemodbus|CodeWarrior_CFV1|Sources/colduino_gprs/FatFS/option/cc932.c|Sources/colduino_gprs/FatFS/bkp|Sources/colduino_gprs/FatFS/option/cc949.c|Sources/minINI/test.c|Sources/colduino_gprs/FatFS/option/cc950.c|Sources/colduino_gprs/libmodbus/modbus.c|Sources/minINI/minGlue-efsl.h|Sources/minINI/minIni.c|Sources/FatFS/option/cc936.c|Sources/colduino_gprs/libmodbus/tests/unit-test-master.c|Sources/minINI/minGlue-mdd.h|Sources/FatFS/option/cc932.c|hal|Sources/colduino_gprs/FatFS/option/ccsbcs.c|Sources/FatFS/option/cc949.c|Sources/colduino_gprs/FatFS/option/unicode.c|Sources/colduino_gprs/libmodbus/modbus-tcp-private.h|Sources/freemodbus/modbus|Sources/minINI/minGlue-stdio.h|core|Sources/minINI/minGlue.h|Sources/minINI/minGlue-ccs.h|xmacro|Sources/minINI/minIni.h|Sources/colduino_gprs/libmodbus/tests/unit-test-slave.c|Sources/FatFS/option/cc950.c|Sources/minINI/minGlue-ffs.h|Sources/minINI/minGlue-FatFs.h|Sources/FatFS/option/syscall.c|Sources/colduino_gprs/FatFS/option/syscall.c|lc|Sources/FatFS/option/unicode.c|Sources/FatFS/option/ccsbcs.c|Sources/colduino_gprs/FatFS/option/cc936.c|Sources/colduino_gprs/libmodbus/modbus-tcp.h|Sources/colduino_gprs/libmodbus/modbus-tcp.c|Sources/minINI/wxMinIni.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CodeWarrior_CFV1"/>
+						<entry excluding="option/unicode.c|option/syscall.c|option/ccsbcs.c|option/cc950.c|option/cc949.c|option/cc936.c|option/cc932.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="FatFs"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="freemodbus"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="minINI"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="modbus_master_lib"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="modbus_slaves"/>
 					</sourceEntries>
 				</configuration>
 			</storageModule>

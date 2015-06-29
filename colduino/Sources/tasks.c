@@ -90,6 +90,7 @@ void System_Time(void)
 
 }
 
+#include "user_config.h"
 #if (USB_CLASS_TYPE == BRTOS_USB_MSD)
 void Mass_Storage_Device_Task(void)
 {

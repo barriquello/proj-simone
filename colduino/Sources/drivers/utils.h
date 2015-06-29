@@ -1,3 +1,5 @@
+#include "BRTOS.h"
+
 #define NO_ALIGN    (INT8U)0
 #define SPACE_ALIGN (INT8U)1
 #define ZEROS_ALIGN (INT8U)2
@@ -11,7 +13,7 @@ void putcharSer(INT8U SerialPort, CHAR8 caracter);
 
 void reverse(char s[]);
 void IntToString(int n , char str[]);
-unsigned int StringToInteger(char p[]);
+INT32U StringToInteger(char p[]);
 
 #if 0
 // string.h
@@ -28,5 +30,5 @@ void PrintDecimal(signed short int val, char *buff);
 void PrintDateTime(OSDateTime *dt, CHAR8 *buff);
 
 #define ByteSwap(A)     (A=(A<<8)+(A>>8))
-unsigned int LWordSwap(unsigned int u32DataSwap);
+INT32U LWordSwap(INT32U u32DataSwap);
 
