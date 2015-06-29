@@ -1,0 +1,221 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?>
+
+<cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="com.freescale.coldfire.toolchain.configuration.116853397">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="com.freescale.coldfire.toolchain.configuration.116853397" moduleId="org.eclipse.cdt.core.settings" name="FLASH">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.managedbuilder.core.ManagedBuildManager" point="org.eclipse.cdt.core.ScannerInfoProvider"/>
+					<extension id="com.freescale.core.ide.cdt.errorParsers.LltErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.freescale.core.ide.cdt.errorParsers.AsmErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.freescale.core.ide.cdt.errorParsers.IcodeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.freescale.core.ide.cdt.errorParsers.CobjErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.freescale.core.ide.cdt.errorParsers.MwErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.freescale.core.ide.cdt.errorParsers.MPWErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.freescale.core.ide.cdt.errorParsers.MwfeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="com.freescale.core.ide.cdt.errorParsers.LnkErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactExtension="elf" artifactName="colduino_gprs" buildProperties="" buildReferences="true" buildReferencingConfigurations="false" cleanCommand="&quot;${system:ECLIPSE_HOME}/../gnu/bin/rm&quot; -f" description="" errorParsers="org.eclipse.cdt.core.GLDErrorParser;org.eclipse.cdt.core.GASErrorParser;com.freescale.core.ide.cdt.errorParsers.LnkErrorParser;com.freescale.core.ide.cdt.errorParsers.AsmErrorParser;com.freescale.core.ide.cdt.errorParsers.CobjErrorParser;com.freescale.core.ide.cdt.errorParsers.IcodeErrorParser;com.freescale.core.ide.cdt.errorParsers.LltErrorParser;com.freescale.core.ide.cdt.errorParsers.MwfeErrorParser;com.freescale.core.ide.cdt.errorParsers.MwErrorParser;com.freescale.core.ide.cdt.errorParsers.MPWErrorParser;org.eclipse.cdt.core.GmakeErrorParser;" id="com.freescale.coldfire.toolchain.configuration.116853397" isPrebuildInvalidatingBuild="false" isVersionInfoProjSpecific="false" name="FLASH" parent="com.freescale.coldfire.toolchain.configuration" produceBuildErrorsWithMissingReferences="true">
+					<folderInfo id="com.freescale.coldfire.toolchain.configuration.116853397." name="/" resourcePath="">
+						<toolChain errorParsers="" id="com.freescale.coldfire.toolchain.toolchain.project.939176054" name="ColdFire Toolchain" superClass="com.freescale.coldfire.toolchain.toolchain.project">
+							<option id="com.freescale.coldfire.toolchain.sharedoption.processor.179780819" name="Processor Family (-proc)" superClass="com.freescale.coldfire.toolchain.sharedoption.processor" value="com.freescale.coldfire.toolchain.sharedoption.processor.51JE" valueType="enumerated"/>
+							<option id="com.freescale.coldfire.toolchain.sharedoption.sym.915172174" name="Generate Symbolic Info" superClass="com.freescale.coldfire.toolchain.sharedoption.sym" value="com.freescale.coldfire.toolchain.sharedoption.sym.full" valueType="enumerated"/>
+							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.freescale.coldfire.toolchain.platform.1999659639" name="ColdFire Target Platform" superClass="com.freescale.coldfire.toolchain.platform"/>
+							<builder buildPath="${ProjDirPath}/FLASH" errorParsers="org.eclipse.cdt.core.GmakeErrorParser;com.freescale.core.ide.cdt.errorParsers.MwErrorParser;com.freescale.core.ide.cdt.errorParsers.MPWErrorParser;com.freescale.core.ide.cdt.errorParsers.MwfeErrorParser" id="com.freescale.coldfire.toolchain.builder.1204206947" keepEnvironmentInBuildfile="false" name="GNU Make Builder" parallelBuildOn="true" parallelBuildWorkspaceOn="true" parallelizationNumber="-1" superClass="com.freescale.coldfire.toolchain.builder"/>
+							<tool errorParsers="" id="coldfire.toolchain.burner.114684114" name="Burner" superClass="coldfire.toolchain.burner"/>
+							<tool errorParsers="" id="com.freescale.coldfire.toolchain.linker.debug.365072023" name="ColdFire Linker" superClass="com.freescale.coldfire.toolchain.linker.debug">
+								<option id="com.freescale.coldfire.toolchain.linker.base.generateLinkMap.1880777940" name="Generate Link Map" superClass="com.freescale.coldfire.toolchain.linker.base.generateLinkMap" value="true" valueType="boolean"/>
+								<option id="com.freescale.coldfire.toolchain.linker.base.input.lcf_file.2036669533" name="Link Command File (.lcf)" superClass="com.freescale.coldfire.toolchain.linker.base.input.lcf_file" value="${ProjDirPath}/Project_Settings/Linker_Files/Project.lcf" valueType="string"/>
+								<option id="com.freescale.coldfire.toolchain.linker.base.input.lpath.1259975909" name="Library Search Paths (-L+path)" superClass="com.freescale.coldfire.toolchain.linker.base.input.lpath" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/lib&quot;"/>
+								</option>
+								<option id="com.freescale.coldfire.cdt.toolchain.option.linkorder.114547100" name="Link Order" superClass="com.freescale.coldfire.cdt.toolchain.option.linkorder" valueType="stringList">
+									<listOptionValue builtIn="false" value="Project_Settings/Startup_Code/startcf.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/FatFS/SD.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/FatFS/SD_API.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/FatFS/ff.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/FatFS/option/ccsbcs.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/MBMaster.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/MBSlave.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/Sound/sound_driver.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/app/cdc/usb_terminal.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/app/cdc/usb_terminal_commands.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/app/cdc/virtual_com.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/app/msd/disk.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/class/usb_cdc.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/class/usb_cdc_pstn.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/class/usb_msc.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/class/usb_msc_scsi.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/common/usb_class.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/common/usb_descriptor.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/common/usb_framework.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/driver/cfv1/usb_dci.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/driver/usb_driver.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/driver/usbevent.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/BRTOS.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/OS_RTC.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/mbox.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/mutex.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/queue.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/semaphore.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/timers.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/datalogger.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/ACM_keyboard.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/AD.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/AD_keyboard.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/DA.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/PWM.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/SPI.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/Timer1Second.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/Timer_RTC_DS1307.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/UART.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/debug_stack.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/eeprom.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/iic.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/iic2.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/lcd.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/mcu_driver.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/rtc_ds1307.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/sw_i2c.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/timer2.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/utils.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/exceptions.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/CFV1_port/port/portevent.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/CFV1_port/port/portserial.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/CFV1_port/port/porttimer.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/ascii/mbascii.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbfunccoils.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbfuncdiag.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbfuncdisc.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbfuncholding.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbfuncinput.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbfuncother.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbutils.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/mb.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/rtu/mbcrc.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/rtu/mbrtu.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/tcp/mbtcp.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/hal/HAL.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/libs/printf-colduino.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/main.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/tasks.c"/>
+									<listOptionValue builtIn="false" value="Lib/mcf51je256.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/CFV1_port/modbus_pm210.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/modbus_master_lib/crc16.c"/>
+									<listOptionValue builtIn="false" value="Sources/colduino_gprs/modbus_master_lib/modbus.c"/>
+								</option>
+								<inputType id="com.freescale.coldfire.toolchain.linker.base.input.1991355322" name="Linker Input" superClass="com.freescale.coldfire.toolchain.linker.base.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool errorParsers="" id="com.freescale.coldfire.toolchain.compiler.debug.940251024" name="ColdFire Compiler" superClass="com.freescale.coldfire.toolchain.compiler.debug">
+								<option id="com.freescale.coldfire.toolchain.compiler.base.input.include.667542137" name="User Path (-i)" superClass="com.freescale.coldfire.toolchain.compiler.base.input.include" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Settings/Startup_Code&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../core&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/drivers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/libs&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../lc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../xmacro&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/uFSM&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../brtos/includes&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../hal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../usb&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../usb/app/cdc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../modbus_master_lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../freemodbus/CFV1_port/port&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../freemodbus/modbus/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../freemodbus/modbus/rtu&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../../../../FatFS&quot;"/>
+								</option>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sdata.456667483" name="Use .sdata/.sbiss for (byte in integer between -1..32K)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sdata" value="0" valueType="string"/>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.input.include.system.1788546878" name="System Path (-I- -I)" superClass="com.freescale.coldfire.toolchain.compiler.base.input.include.system" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/hcs08_compatibility&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_C/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_C/include/sys&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_Runtime/Runtime_ColdFire/Source&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/derivatives/device/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/derivatives/device/asm_include&quot;"/>
+								</option>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.general.wchar.off.375554156" name="Enable wchar_t Support" superClass="com.freescale.coldfire.toolchain.compiler.base.general.wchar.off" value="true" valueType="boolean"/>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.code.120238436" name="Code Model" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.code" value="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.code.far" valueType="enumerated"/>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.peep.149651344" name="Peephole (-peephole)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.peep" value="true" valueType="boolean"/>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.coloring.689682538" name="Register Coloring (-coloring)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.coloring" value="true" valueType="boolean"/>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.options.optLevel.1830335566" name="Optimization Level (-opt)" superClass="com.freescale.coldfire.toolchain.compiler.base.options.optLevel" value="com.freescale.coldfire.toolchain.compiler.base.optionCategory.optimization.optlevel.1" valueType="enumerated"/>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sche.2012111504" name="Instruction Scheduling (-scheduling)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sche" value="true" valueType="boolean"/>
+								<inputType id="com.freescale.coldfire.toolchain.compiler.base.input.1268974395" name="C Source File" superClass="com.freescale.coldfire.toolchain.compiler.base.input"/>
+								<inputType id="com.freescale.coldfire.toolchain.compiler.base.input.c++.2093161631" name="C++ Source File" superClass="com.freescale.coldfire.toolchain.compiler.base.input.c++"/>
+							</tool>
+							<tool errorParsers="" id="com.freescale.coldfire.toolchain.assembler.debug.571171737" name="ColdFire Assembler" superClass="com.freescale.coldfire.toolchain.assembler.debug">
+								<inputType id="com.freescale.coldfire.toolchain.assembler.base.input.1576255774" name="ColdFire Assembler Input" superClass="com.freescale.coldfire.toolchain.assembler.base.input"/>
+							</tool>
+							<tool errorParsers="" id="com.freescale.coldfire.toolchain.preprocessor.debug.1230480844" name="ColdFire Preprocessor" superClass="com.freescale.coldfire.toolchain.preprocessor.debug"/>
+							<tool errorParsers="" id="com.freescale.coldfire.toolchain.disassembler.debug.1253204738" name="ColdFire Disassembler" superClass="com.freescale.coldfire.toolchain.disassembler.debug">
+								<option id="com.freescale.coldfire.toolchain.disassembler.base.settings.dbg.1335309225" name="Show Debug Info" superClass="com.freescale.coldfire.toolchain.disassembler.base.settings.dbg" value="false" valueType="boolean"/>
+							</tool>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="hal|brtos|Sources/tasks.c|Sources/freemodbus/modbus|Sources/datalogger.h|Sources/datalogger.c|Sources/FatFS/option/unicode.c|Sources/FatFS/option/ccsbcs.c|Sources/minINI/wxMinIni.h|Sources/minINI/test.c|Sources/minINI/minIni.h|Sources/minINI/minIni.c|Sources/minINI/minGlue-stdio.h|Sources/minINI/minGlue-mdd.h|Sources/minINI/minGlue-ffs.h|Sources/minINI/minGlue-FatFs.h|Sources/minINI/minGlue-efsl.h|Sources/minINI/minGlue-ccs.h|Sources/minINI/minGlue.h|xmacro|lc|core|Sources/colduino_gprs/FatFS/option/ccsbcs.c|Sources/colduino_gprs/FatFS/option/unicode.c|Sources/colduino_gprs/FatFS/bkp|Sources/colduino_gprs/libmodbus/modbus.c|Sources/colduino_gprs/libmodbus/tests/unit-test-slave.c|Sources/colduino_gprs/libmodbus/tests/unit-test-master.c|Sources/colduino_gprs/libmodbus/modbus-tcp-private.h|Sources/colduino_gprs/libmodbus/modbus-tcp.h|Sources/colduino_gprs/libmodbus/modbus-tcp.c|Sources/colduino_gprs/FatFS/option/syscall.c|Sources/colduino_gprs/FatFS/option/cc950.c|Sources/colduino_gprs/FatFS/option/cc949.c|Sources/colduino_gprs/FatFS/option/cc936.c|Sources/colduino_gprs/FatFS/option/cc932.c|Sources/FatFS/option/syscall.c|Sources/FatFS/option/cc950.c|Sources/FatFS/option/cc949.c|Sources/FatFS/option/cc936.c|Sources/FatFS/option/cc932.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="brtos"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="core"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="hal"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="lc"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="xmacro"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="colduino_MCF51JE256.com.freescale.coldfire.toolchain.projecttype.220962472" name="Freescale Coldfire" projectType="com.freescale.coldfire.toolchain.projecttype"/>
+	</storageModule>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="FLASH">
+			<resource resourceType="PROJECT" workspacePath="/colduino_gprs_je256"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="com.freescale.coldfire.toolchain.configuration.116853397;com.freescale.coldfire.toolchain.configuration.116853397.;com.freescale.coldfire.toolchain.compiler.debug.940251024;com.freescale.coldfire.toolchain.compiler.base.input.c++.2093161631">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.freescale.coldfire.cdt.cpp.symbols.toolchain.discoveryProfile"/>
+			<profile id="com.freescale.coldfire.cdt.cpp.symbols.toolchain.discoveryProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="" command="" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+			<profile id="com.freescale.coldfire.cdt.c.symbols.toolchain.discoveryProfile">
+				<buildOutputProvider>
+					<openAction enabled="true" filePath=""/>
+					<parser enabled="false"/>
+				</buildOutputProvider>
+				<scannerInfoProvider id="specsFile">
+					<runAction arguments="" command="" useDefault="true"/>
+					<parser enabled="true"/>
+				</scannerInfoProvider>
+			</profile>
+		</scannerConfigBuildInfo>
+		<scannerConfigBuildInfo instanceId="com.freescale.coldfire.toolchain.configuration.116853397;com.freescale.coldfire.toolchain.configuration.116853397.;com.freescale.coldfire.toolchain.compiler.debug.940251024;com.freescale.coldfire.toolchain.compiler.base.input.1268974395">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.freescale.coldfire.cdt.c.symbols.toolchain.discoveryProfile"/>
+		</scannerConfigBuildInfo>
+	</storageModule>
+</cproject>

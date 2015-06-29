@@ -1,0 +1,12 @@
+Project_Settings/Startup_Code/startcf.c
+Project_Settings/Startup_Code/startcf.h
+Sources/main.c
+Project_Headers/derivative.h
+Project_Headers/mcf51je256.h
+Project_Settings/Linker_Files/Project.lcf
+Project_Settings/Debugger/MCF51JE256.mem
+Sources/exceptions.c
+Project_Headers/exceptions.h
+Lib/mcf51je256.c
+.settings/com.freescale.core.ide.newprojectwizard.prefs
+ReferencedRSESystems.xml

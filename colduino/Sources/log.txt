@@ -1,0 +1,96 @@
+
+
+===============================================================================
+19/11/2014
+
+- Verificação: pxMBFrameCBByteReceived (na tarefa datalogger) chama a função 
+	xMBPortSerialGetByte em portserial.c corretamente.
+
+- Verificação: RTC DS1307 funciona corretamente sem alimentaçãob(a bateria é ativada).
+
+- Alguns ajustes em manipulações de arquivos e timers na tarefa datalogger.
+===============================================================================
+17/11/2014
+
+- Documentação do código fonte usando DOXYGEN.
+===============================================================================
+12/11/2014
+
+OSRtc:
+	Data inicial é lida do ds1307.
+
+
+Modificações do modbus:
+	
+- Funções de portserial.c:
+	xMBPortSerialInit:    Inserida a chamada uart_init
+	xMBPortSerialPutByte: Inserida a chamada putchar_uart1
+	xMBPortSerialGetByte
+
+
+- Funções de UART.c:
+	uart1_tx e uart2_tx: Inserida a chamada pxMBFrameCBTransmitterEmpty
+	uart1_rx e uart2_rx: Inserida a chamada pxMBFrameCBByteReceived
+===============================================================================
+
+11/11/2014
+- Timer portado e testado para FreeModbus
+===============================================================================
+31/10/2014
+
+iic: leitura por hd ainda não funciona para endereços aleatórios, somete para 
+endereços correntes.
+Obs.: Foi feito um dummy write para ajustar o endereço a ser lido, depois 
+gera-se um repeated start e tenta-se ler o endereço apontado, mas não retorna
+o dado correto.
+===============================================================================
+28/10/2014
+i2c por HW testado e funcionando com EEPROM
+===============================================================================
+22/10/2014
+- Adicionados os arquivos Timer_RTC_DS1307.c e Timer_RTC_DS1307.h para interface
+	entre o ds1307 e o usuário.
+===============================================================================
+21/10/2014
+sw_i2c testado e funcionando com EEPROM e RTC
+===============================================================================
+18/10/2014
+- Ajuste das portas do arquivo sw_i2c.c (não está funcionando)
+===========================================================
+16/10/2014
+- adicionados os arquivos iic.c e iic.h para o microcontrolador atual
+===========================================================
+14/10/2014
+
+- adicionados arquivos .c e .h:
+eeprom, iic1, iic2, sw_i2c
+
+============================================================
+07/10/2014 a 13/10/2014 - Modificações:
+
+- portserial.c
+Editado: xMBPortSerialInit
+
+- timer2.c
+Editado: função isr
+
+- porttimer.c
+Editado: xMBPortTimersInit e vMBPortTimersEnable
+
+- UART.c
+Editado: uart1_rx
+
+Criada a tarefa  Tarefa_WaitForRequest
+Arquivo: MBSlave
+========================================================
+
+30/09/2014 a 07/10/2014 - Modificações:
+
+- utils.c 
+adicionado: strcmp, StringToInteger, strcpy, 
+strcat, strlen, reverse, IntToString
+
+- datalogger.c
+adicionado: CreateNewFile,  WriteData, SetLastCreatedFileName
+========================================================
+22/09/2014 - Código inicial enviado.
