@@ -52,7 +52,7 @@ void Serial_Envia_Frase_P(char const *string)
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 #if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
-__attribute__ ((section (".lowtext")))
+//__attribute__ ((section (".lowtext")))
 ISR(USART0_RX_vect, __attribute__ ( ( naked ) ))
 #else
 ISR(USART_RX_vect, __attribute__ ( ( naked ) ))

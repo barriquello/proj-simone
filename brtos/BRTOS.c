@@ -930,9 +930,6 @@ INT8U UnBlockMultipleTask(INT8U TaskStart, INT8U TaskNumber)
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
-#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
-__attribute__ ((section (".lowtext")))
-#endif
 #if (TASK_WITH_PARAMETERS == 1) 
   void Idle(void *parameters)
 #else

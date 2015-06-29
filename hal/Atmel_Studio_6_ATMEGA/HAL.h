@@ -60,22 +60,15 @@ extern INT16U SPvalue;
 //Stack Defines
 
 /* stacked by the RTI interrupt process */
-// Mínimo de 60 devido ao salvamento de 15 registradores de 32 bits da CPU
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)	
+#define NUMBER_MIN_OF_STACKED_BYTES 37
+#else
 #define NUMBER_MIN_OF_STACKED_BYTES 36
-
-/* User defined: stacked for user function calls + local variables */
-// Ainda, como podem ocorrer interrupções durante as tarefas, alocar 28 bytes a cada
-// interrupção ativa
-// 4 bytes to Local Variable Allocation
-// 4 bytes to Function Call
-
-
+#endif
 
 void CreateVirtualStack(void(*FctPtr)(void), INT16U NUMBER_OF_STACKED_BYTES);
 void TickTimerSetup(void);                      
 void SwitchContext(void);
-
-
 
 #define OS_SAVE_SP() SPvalue = SP
 
