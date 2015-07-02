@@ -13,4 +13,4 @@
  *****************************************************************************/
 void Mcu_Init(void);
 void MCG_Init(void);
-void Init_Sys(void);
+void System_Init(void);

@@ -46,7 +46,7 @@ void MCG_Init()
 
 /*****************************************************************************
  *
- *    @name     Init_Sys
+ *    @name     System_Init
  *
  *    @brief    This function Initializes the system
  *
@@ -57,7 +57,7 @@ void MCG_Init()
  ****************************************************************************
  * Intializes the MCU, MCG, KBI, RTC modules
  ***************************************************************************/
-void Init_Sys(void)
+void System_Init(void)
 {
     Mcu_Init(); /* initialize the MCU registers */
     MCG_Init(); /* initialize the MCG to generate 24MHz bus clock */
