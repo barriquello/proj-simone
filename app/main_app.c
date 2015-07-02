@@ -29,8 +29,8 @@ void main_app(void)
 	
 #if 1
 
-	/* init the system */
-	Init_Sys();
+	/* init the MCU system */
+	System_Init();
 
 	// Initialize BRTOS
 	BRTOS_Init();

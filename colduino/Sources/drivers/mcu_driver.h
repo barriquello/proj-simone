@@ -13,4 +13,4 @@
  *****************************************************************************/
 extern void Mcu_Init(void);
 extern void MCG_Init(void);
-extern void Init_Sys(void);
+extern void System_Init(void);
