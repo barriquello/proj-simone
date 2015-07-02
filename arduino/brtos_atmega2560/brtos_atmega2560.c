@@ -6,7 +6,9 @@
 
 int main_demo(void);
 
+void main_app(void);
+
 int main(void)
 {
-    main_demo();
+    main_app();
 }

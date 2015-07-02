@@ -34,6 +34,11 @@
 			<locationURI>PARENT-1-PROJECT_LOC/FatFs</locationURI>
 		</link>
 		<link>
+			<name>app</name>
+			<type>2</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/app</locationURI>
+		</link>
+		<link>
 			<name>brtos</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/brtos</locationURI>

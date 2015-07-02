@@ -41,7 +41,7 @@
  *********************************************************************************************************/
 
 #include "BRTOS.h"
-#include "Timer_RTC_DS1307.h"
+//#include "Timer_RTC_DS1307.h"
 
 // estrutura - Hora
 
@@ -53,6 +53,13 @@ static volatile OS_RTC OSRtc;
 static const INT8U MonthLength[13] =
 { 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31 };
 static INT8U LeapMonth;
+
+static void (*input_rtc) (OS_RTC *rtc);
+
+void CalendarInputSet(void (*input) (OS_RTC *))
+{
+	input_rtc = input;
+}
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -505,6 +512,8 @@ void GetDateTime(OSDateTime * dt)
 INT8U Init_Calendar(void)
 {
 	OS_RTC rtc;
+
+#if 0	
 	RTC_DS1307 rtc_ds1307;
 
 	RTC_DS1307_SetStatus(FALSE);
@@ -523,16 +532,17 @@ INT8U Init_Calendar(void)
 	rtc.Hour = rtc_ds1307.Hour;
 	rtc.Min = rtc_ds1307.Min;
 	rtc.Sec = rtc_ds1307.Sec;
-	SetCalendar(&rtc);
-	
 	RTC_DS1307_SetStatus(TRUE);
-	
+#endif
+
+	SetCalendar(&rtc);	
 	return 	TRUE;
 }
 
 void Resync_calendar(void)
 {
 	OS_RTC rtc;
+#if 0		
 	RTC_DS1307 rtc_ds1307;
 	
 	RTC_DS1307_Update(&rtc_ds1307);
@@ -543,6 +553,7 @@ void Resync_calendar(void)
 	rtc.Hour = rtc_ds1307.Hour;
 	rtc.Min = rtc_ds1307.Min;
 	rtc.Sec = rtc_ds1307.Sec;
+#endif	
 	
 	SetCalendar(&rtc);
 }

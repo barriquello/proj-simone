@@ -28,7 +28,7 @@
 #define OS_RTC_H
 
 #include "OS_types.h"
-#include "Timer_RTC_DS1307.h"
+//#include "Timer_RTC_DS1307.h"
 
 
 
@@ -168,6 +168,7 @@ OSTime OSUptime(void);
 OSDate OSUpDate(void);
 
 // Calendar Functions
+void CalendarInputSet(void (*input) (OS_RTC *));
 INT8U Init_Calendar(void);
 void Resync_calendar(void);
 void OSUpdateCalendar(void);
