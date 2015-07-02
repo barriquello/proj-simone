@@ -23,12 +23,11 @@
  *  Created on: 12/05/2011
  *      Author: gustavo
  */
-
+#include "AppConfig.h"
 #include "usb_terminal.h"
 #include "usb_terminal_commands.h"
 #include "virtual_com.h"
 #include "BRTOS.h"
-#include "SD_API.h"
 #include "debug_stack.h"
 #include "tasks.h"
 #include "utils.h"
@@ -139,7 +138,9 @@ void cmd_setget_time(char *param){
 									datetime.Year += (INT16U)((*param++) - '0'); // year
 									if(datetime.Year > 2100){goto time_format_error; }
 									
+#if RTC_PRESENTE
 									RTC_DS1307_Set_Date((INT8U)((datetime.Year%1000)%100),datetime.Month,datetime.Day);
+#endif									
 									
 									if(*(++param) != NULL) // set
 									{			
@@ -167,7 +168,9 @@ void cmd_setget_time(char *param){
 															datetime.Sec += (INT8U)((*param++) - '0'); // sec
 															if(datetime.Sec > 59){goto time_format_error; }
 															
-															RTC_DS1307_Set_Time(datetime.Hour,datetime.Min,datetime.Sec);							
+															#if RTC_PRESENTE															
+															RTC_DS1307_Set_Time(datetime.Hour,datetime.Min,datetime.Sec);
+															#endif
 															
 															SetCalendar(&datetime);
 														}							
@@ -197,6 +200,8 @@ time_format_error:
 	GetCalendar(&datetime);	
 	
 	OS_RTC rtc;
+	
+#if RTC_PRESENTE	
 	RTC_DS1307 rtc_ds1307;
 	
 	RTC_DS1307_Update(&rtc_ds1307);
@@ -206,6 +211,7 @@ time_format_error:
 	rtc.Hour = rtc_ds1307.Hour;
 	rtc.Min = rtc_ds1307.Min;
 	rtc.Sec = rtc_ds1307.Sec;
+#endif	
 		
 	INT8S cmp = CompareDateTime(&rtc,&datetime);
 	if( cmp == 0 || cmp == -1)

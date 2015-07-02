@@ -36,12 +36,17 @@
 		<link>
 			<name>app</name>
 			<type>2</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/app</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/app</locationURI>
 		</link>
 		<link>
 			<name>brtos</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/brtos</locationURI>
+		</link>
+		<link>
+			<name>devices</name>
+			<type>2</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/devices</locationURI>
 		</link>
 		<link>
 			<name>freemodbus</name>
