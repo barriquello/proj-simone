@@ -108,8 +108,7 @@ void SPI1_SendChar(INT8U data)
 
 INT8U SPI1_GetChar(void)
 {
-    SPI1_SendChar(0xFF);
-          
+    SPI1_SendChar(0xFF);          
     return SPI1Data;
 }
 

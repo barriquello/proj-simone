@@ -30,6 +30,7 @@
 /* Includes */
 #include "SD.h"
 #include "BRTOS.h"
+#include "drivers.h"
 
 static volatile DSTATUS   Stat             = STA_NOINIT;	/* Disk status */
 static volatile Timer                      = 0;           /* Read/Write timer */
@@ -40,7 +41,7 @@ static volatile Timer                      = 0;           /* Read/Write timer */
   static volatile INT8U     Timer1, Timer2;	              /* 100Hz decrement timer */
 #endif
 static          BYTE      CardType;			                  /* Card type flags */
-static volatile BYTE      SPIData          = 0;
+//static volatile BYTE      SPIData          = 0;
 
 
 DWORD get_fattime (void)
@@ -61,23 +62,9 @@ DWORD get_fattime (void)
 /* Transmit a byte to MMC via SPI  (Platform dependent)                  */
 /*-----------------------------------------------------------------------*/
 
-#if 0
-#define xmit_spi(dat) 	while (!SPI1S_SPTEF){}; /* wait until tranmit buffer is empty */  \
-                        (void)SPI1S;                                                      \
-                        SPI1D=dat;                                                        \
-                        while(!SPI1S_SPRF){};                                             \
-                        (void)SPI1S;            /* Acknowledge flag */                    \
-                        SPIData = SPI1D                       
-#endif                        
-                        
 void xmit_spi(INT8U dat)
 {
-  while (!SPI1S_SPTEF){}; // wait until tranmit buffer is empty 
-  (void)SPI1S;                              
-  SPI1D=dat;                                
-  while(!SPI1S_SPRF){};                     
-  (void)SPI1S;            // Acknowledge flag
-  SPIData = SPI1D;
+	SPI1_SendChar(dat);
 }
 
 
@@ -88,12 +75,13 @@ void xmit_spi(INT8U dat)
 
 static BYTE rcvr_spi (void)
 {
-	xmit_spi(0xFF);
+	BYTE SPIData = SPI1_GetChar();
 	return SPIData;
 }
 
 /* Alternative macro to receive data fast */
-#define rcvr_spi_m(dst)	xmit_spi(0xFF); *(dst)=SPIData
+//#define rcvr_spi_m(dst)	xmit_spi(0xFF); *(dst)=SPIData
+#define rcvr_spi_m(dst)		*(dst)=SPI1_GetChar();
 
 
 

@@ -1,5 +1,5 @@
 /*
- * FreeModbus Libary: CFV1 Port
+ * FreeModbus Library: CFV1 Port
  * Copyright (C) 2006 Christian Walter <wolti@sil.at>
  * Copyright (C) 2008 Trond Melen
  *
@@ -30,6 +30,12 @@
 #pragma warn_unusedarg off
 
 #define UART_RXBUFSIZE     (64)
+/* port to UART number and pins */
+#define UART_NUMBER		   		(1)
+#define UART_PINS		   		(UART1_PTA1_PTA2)
+#define UART_ISR_RX_ENABLE()	uart1_RxEnableISR()
+#define UART_ISR_RX_DISABLE()	uart1_RxDisableISR()
+
 
 // Declares a queue structure for the Modbus Slave Input
 OS_QUEUE ModbusSlave_InBuffer;
@@ -58,10 +64,10 @@ void vMBPortSerialEnable(BOOL xRxEnable, BOOL xTxEnable)
 #else	
 	if(xRxEnable == TRUE)
 	{
-		uart1_RxEnableISR();
+		UART_ISR_RX_ENABLE();
 	}else
 	{
-		uart1_RxDisableISR();
+		UART_ISR_RX_DISABLE();
 	}
 #endif
 }
@@ -90,12 +96,11 @@ BOOL xMBPortSerialInit(UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits,
 #if (defined TESTE_MODBUS && TESTE_MODBUS == 1)
 	return TRUE;
 #else	
-	if (ucPORT == 1 || ucPORT == 2)
+	if (ucPORT == UART_NUMBER)
 	{
 		
 		(void)ucDataBits;
-		uart_init(ucPORT, (INT16U)ulBaudRate, UART_RXBUFSIZE, UART1_PTA1_PTA2, FALSE, 0);		
-		
+		uart_init(UART_NUMBER, (INT16U)ulBaudRate, UART_RXBUFSIZE, UART_PINS, FALSE, 0);
 		return TRUE;
 	}
 	return FALSE;

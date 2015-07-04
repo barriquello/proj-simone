@@ -28,6 +28,11 @@
 #include "mbport.h"
 #include "timer2.h"
 
+/* port Modbus Timer */
+#define MB_TIMER_INIT	Timer2Setup
+#define MB_TIMER_START	Timer2Start
+#define MB_TIMER_STOP	Timer2Stop
+
 /* ----------------------- static functions ---------------------------------*/
 static void prvvTIMERExpiredISR(void);
 
@@ -36,7 +41,7 @@ BOOL xMBPortTimersInit(USHORT usTimeout50us)
 {
 	if (usTimeout50us > 50 ) return FALSE;	
 	
-	Timer2Setup(usTimeout50us*BM_BUS_CLOCK/20000, FALSE, (TimerOverflowCallback_fn) prvvTIMERExpiredISR );
+	MB_TIMER_INIT(usTimeout50us*BM_BUS_CLOCK/20000, FALSE, (TimerOverflowCallback_fn) prvvTIMERExpiredISR );
 	
 	return TRUE;
 	
@@ -45,13 +50,13 @@ BOOL xMBPortTimersInit(USHORT usTimeout50us)
 void vMBPortTimersEnable(void)
 {
 	/* Enable the timer with the timeout passed to xMBPortTimersInit( ) */
-	Timer2Start();
+	MB_TIMER_START();
 }
 
 void vMBPortTimersDisable(void)
 {
 	/* Disable any pending timers. */
-	Timer2Stop(TRUE);
+	MB_TIMER_STOP(TRUE);
 }
 
 /* This is called whenever the timer has expired. This function

@@ -7,7 +7,7 @@
 #include "BRTOS.h"
 #include "OSInfo.h"
 
-int mem_cpy(char *dst, char *src)
+static int mem_cpy(char *dst, char *src)
 {
 	int i = 0;
 	while(*src)
@@ -18,7 +18,7 @@ int mem_cpy(char *dst, char *src)
 	return i;
 }
 
-char *PrintDecimal(INT16S val, CHAR8 *buff)
+static char *PrintDecimal(INT16S val, CHAR8 *buff)
 {
    INT16U backup;
    INT32U i = 0;
@@ -42,9 +42,9 @@ char *PrintDecimal(INT16S val, CHAR8 *buff)
    // Convert binary value to decimal ASCII
    for (i = 5; i > 0;)
    {
-      backup = val;
+      backup = (INT16U)val;
       val /= 10;
-      *(buff + i) = (backup - (val*10)) + '0';
+      *(buff + i) = (INT8U) ((backup - (val*10)) + '0');
       i--;
 
       if (val == 0)  break;
@@ -86,7 +86,7 @@ void OSTaskList(char *string)
       *string++ = '[';
       if (j<10)
       {
-    	  *string++ = j+'0';
+    	  *string++ = (INT8U)(j+'0');
           string += mem_cpy(string, "]  ");
       }else
       {
@@ -144,10 +144,10 @@ void OSTaskList(char *string)
 
 
       UserEnterCritical();
-      VirtualStack = ContextTask[j].StackInit - ((INT32U)sp_address + (i*4));
+      VirtualStack = (INT16U)(ContextTask[j].StackInit - ((INT32U)sp_address + (i*4)));
       UserExitCritical();
 
-      (void)PrintDecimal(VirtualStack, str);
+      (void)PrintDecimal((INT16S)VirtualStack, str);
       string += mem_cpy(string, str);
 
       string += mem_cpy(string, "\n\r");
@@ -197,10 +197,10 @@ void OSTaskList(char *string)
 
 
     UserEnterCritical();
-    VirtualStack = ContextTask[NUMBER_OF_TASKS+1].StackInit - ((INT32U)sp_address + (INT32U)i*4);
+    VirtualStack = (INT16U) (ContextTask[NUMBER_OF_TASKS+1].StackInit - ((INT32U)sp_address + (INT32U)i*4));
     UserExitCritical();
 
-    (void)PrintDecimal(VirtualStack, str);
+    (void)PrintDecimal((INT16S)VirtualStack, str);
     string += mem_cpy(string, str);
 
     string += mem_cpy(string, "\n\r");
@@ -222,7 +222,7 @@ void OSAvailableMemory(char *string)
     address = iStackAddress * sizeof(OS_CPU_TYPE);
     UserExitCritical();
 
-    (void)PrintDecimal(address, str);
+    (void)PrintDecimal((INT16S)address, str);
     string += mem_cpy(string, &str[2]);
     string += mem_cpy(string, " of ");
 
@@ -234,7 +234,7 @@ void OSAvailableMemory(char *string)
     address = iQueueAddress * sizeof(OS_CPU_TYPE);
     UserExitCritical();
 
-    (void)PrintDecimal(address, str);
+    (void)PrintDecimal((INT16S)address, str);
     string += mem_cpy(string, &str[2]);
 
     string += mem_cpy(string, " of ");
@@ -300,15 +300,15 @@ void OSCPULoad(char *string)
     }
     else
     {
-        cent = (percent/100);
+        cent = (INT8U) (percent/100);
         caracter = cent + 48;
         if(caracter != 48)
           *string++ = caracter;
-        dez = ((percent - cent*100)/10);
+        dez = (INT8U) ((percent - cent*100)/10);
         caracter = dez + 48;
         *string++ = caracter;
         *string++ = '.';
-        caracter = (percent%10) + 48;
+        caracter = (INT8U)((percent%10) + 48);
         *string++ = caracter;
         *string++ = '%';
     }

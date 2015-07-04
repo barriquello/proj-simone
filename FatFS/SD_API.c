@@ -1,10 +1,8 @@
 #include "BRTOS.h"
 #include "debug_stack.h"
-#include "spi.h"
 #include "SD_API.h"
 #include "printf_colduino.h"
-//#include "sound_driver.h"
-#include "timer2.h"
+#include "drivers.h"
 #include "utils.h"
 #include "string.h"
 
