@@ -29,8 +29,7 @@ OS_QUEUE SerialPortBuffer2;
 BRTOS_Queue *Serial2;
 #endif
 
-void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U UartPins,
-		INT8U mutex, INT8U priority)
+void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8U priority)
 {
 	
 	/* check if UART 1 is already init */
@@ -52,29 +51,24 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U UartPins,
 	}
 	
 	if ((uart == 1) || (uart == 2))
-	{
-					
-		switch (UartPins)
-		{
-			case UART1_PTA1_PTA2:
-				SOPT3 = SOPT3 & 0xBF;
-				break;
-			case UART1_PTD6_PTD7:
-				SOPT3 = SOPT3 | 0x40;
-				break;
-			case UART2_PTE5_PTE6:
-				SOPT3 = SOPT3 & 0x7F;
-				break;
-			case UART2_PTF1_PTF2:
-				SOPT3 = SOPT3 | 0x80;
-				break;
-			default:
-				break;
-		}
+	{						
 		// Configure UART 1
 #if (ENABLE_UART1 == TRUE)
 		if (uart == 1)
 		{
+			
+			switch (CONF_UART1_PINS)
+			{
+				case UART1_PTA1_PTA2:
+					SOPT3 = SOPT3 & 0xBF;
+					break;
+				case UART1_PTD6_PTD7:
+					SOPT3 = SOPT3 | 0x40;
+					break;
+				default:
+					break;
+			}
+			
 			SCGC1 |= SCGC1_SCI1_MASK; /* Enables sci1 clock */
 			//SCI1C1 = 0x12; /* Configure the SCI */
 			SCI1C1 = 0x00; /* Configure the SCI */
@@ -151,6 +145,18 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U UartPins,
 #if (ENABLE_UART2 == TRUE)
 		if (uart == 2)
 		{
+			switch (CONF_UART2_PINS)
+			{			
+				case UART2_PTE5_PTE6:
+					SOPT3 = SOPT3 & 0x7F;
+					break;
+				case UART2_PTF1_PTF2:
+					SOPT3 = SOPT3 | 0x80;
+					break;
+				default:
+					break;
+			}
+			
 			SCGC1 |= SCGC1_SCI2_MASK; /* Enables sci2 clock */
 			SCI2C1 = 0x00; /* Configure the SCI */
 			/* SCI1C3: R8=0,T8=0,TXDIR=0,TXINV=0,ORIE=0,NEIE=0,FEIE=0,PEIE=0 */

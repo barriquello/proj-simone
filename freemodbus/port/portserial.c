@@ -32,7 +32,6 @@
 #define UART_RXBUFSIZE     (64)
 /* port to UART number and pins */
 #define UART_NUMBER		   		(1)
-#define UART_PINS		   		(UART1_PTA1_PTA2)
 #define UART_ISR_RX_ENABLE()	uart1_RxEnableISR()
 #define UART_ISR_RX_DISABLE()	uart1_RxDisableISR()
 
@@ -100,7 +99,7 @@ BOOL xMBPortSerialInit(UCHAR ucPORT, ULONG ulBaudRate, UCHAR ucDataBits,
 	{
 		
 		(void)ucDataBits;
-		uart_init(UART_NUMBER, (INT16U)ulBaudRate, UART_RXBUFSIZE, UART_PINS, FALSE, 0);
+		uart_init(UART_NUMBER, (INT16U)ulBaudRate, UART_RXBUFSIZE, FALSE, 0);
 		return TRUE;
 	}
 	return FALSE;

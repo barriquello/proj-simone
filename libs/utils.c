@@ -3,6 +3,9 @@
 #include "usb_terminal.h"
 #include "uart.h"
 
+#include <stdlib.h>
+#include <string.h>
+
 #pragma warn_implicitconv off
 
 
@@ -62,6 +65,7 @@ INT32U StringToInteger(char p[])
 	return k;
 }
 
+#if 0
 int strcmp(char s1[], char s2[])
 {
 	for (; *s1 == *s2; s1++, s2++)
@@ -97,6 +101,7 @@ int strlen(char *str)
 	for (s = str; *s; ++s);
 	return (s - str);
 }
+#endif
 
 /* reverse:  reverse string s in place */
 void reverse(char s[])
@@ -122,6 +127,43 @@ void IntToString(int n, char s[])
 	} while ((n /= 10) > 0);
 	s[i] = '\0';
 	reverse(s);
+}
+
+char *ltoa(long N, char *str, int base)
+{
+	  #define BUFSIZE (sizeof(long) * 8 + 1)
+ 	  register int i = 2;
+      long uarg;
+      char *tail, *head = str, buf[BUFSIZE];
+
+      if (36 < base || 2 > base)
+            base = 10;                    /* can only use 0-9, A-Z        */
+      tail = &buf[BUFSIZE - 1];           /* last character position      */
+      *tail-- = '\0';
+
+      if (10 == base && N < 0L)
+      {
+            *head++ = '-';
+            uarg    = -N;
+      }
+      else  uarg = N;
+
+      if (uarg)
+      {
+            for (i = 1; uarg; ++i)
+            {
+                  register ldiv_t r;
+
+                  r       = ldiv(uarg, base);
+                  *tail-- = (char)(r.rem + ((9L < r.rem) ?
+                                  ('A' - 10L) : '0'));
+                  uarg    = r.quot;
+            }
+      }
+      else  *tail-- = '0';
+
+      memcpy(head, ++tail, i);
+      return str;
 }
 
 INT32U LWordSwap(INT32U u32DataSwap)

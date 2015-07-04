@@ -41,7 +41,7 @@ esp_ret_t at_esp_init(void)
 	}
 	
 	/* init ESP_UART */
-	uart_init(ESP_UART,ESP_BAUD,ESP_UART_BUFSIZE,ESP_UART_PINS,ESP_MUTEX,ESP_MUTEX_PRIO);
+	uart_init(ESP_UART,ESP_BAUD,ESP_UART_BUFSIZE,ESP_MUTEX,ESP_MUTEX_PRIO);
 	
 	/* check init */
 	esp_acquire();	

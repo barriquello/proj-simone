@@ -39,6 +39,7 @@
 #include "mb.h"
 #include "mbproto.h"
 #include "mbfunc.h"
+#include "mbutils.h"
 
 /* ----------------------- Defines ------------------------------------------*/
 #define BITS_UCHAR      8U

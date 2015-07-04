@@ -28,7 +28,7 @@
 
 #include <stdarg.h>
 #include "usb_terminal.h"
-#include "printf_colduino.h"
+#include "printf_lib.h"
 
 
 #define putchar(x) putchar_usb(x)
@@ -192,7 +192,7 @@ static int print( char **out, const char *format, va_list args )
 }
 
 
-int printf_colduino(const char *format, ...)
+int printf_lib(const char *format, ...)
 {
         va_list args;
         
@@ -201,7 +201,7 @@ int printf_colduino(const char *format, ...)
 }
 
 
-int sprintf_colduino(char *out, const char *format, ...)
+int sprintf_lib(char *out, const char *format, ...)
 {
         va_list args;
         
@@ -210,7 +210,7 @@ int sprintf_colduino(char *out, const char *format, ...)
 }
 
 
-int snprintf_colduino( char *buf, unsigned int count, const char *format, ... )
+int snprintf_lib( char *buf, unsigned int count, const char *format, ... )
 {
         va_list args;
         
@@ -219,7 +219,3 @@ int snprintf_colduino( char *buf, unsigned int count, const char *format, ... )
         va_start( args, format );
         return print( &buf, format, args );
 }
-
-
-
-

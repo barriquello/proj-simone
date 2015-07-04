@@ -55,8 +55,7 @@
 #elif ESP_UART == 2
 	#if ENABLE_UART2 == FALSE
 		#error "UART 2 is disabled"
-	#endif
-	#define	ESP_UART_PINS 		UART2_PTF1_PTF2
+	#endif	
 	#define ESP_UART_MUTEX		UART2_MUTEX
 	#define esp_print(x)		printSer(USE_UART2,x)
 	#define esp_putchar(x)		putcharSer(USE_UART2,x)

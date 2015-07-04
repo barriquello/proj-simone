@@ -46,7 +46,7 @@
 		<link>
 			<name>devices</name>
 			<type>2</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/devices</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/devices</locationURI>
 		</link>
 		<link>
 			<name>freemodbus</name>
@@ -54,19 +54,29 @@
 			<locationURI>PARENT-1-PROJECT_LOC/freemodbus</locationURI>
 		</link>
 		<link>
+			<name>libs</name>
+			<type>2</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/libs</locationURI>
+		</link>
+		<link>
 			<name>minINI</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/minINI</locationURI>
 		</link>
 		<link>
-			<name>modbus_master_lib</name>
+			<name>modbus_master</name>
 			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/modbus_master_lib</locationURI>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/modbus_master</locationURI>
 		</link>
 		<link>
 			<name>modbus_slaves</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/modbus_slaves</locationURI>
+		</link>
+		<link>
+			<name>monitor</name>
+			<type>2</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/monitor</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

@@ -14,6 +14,7 @@ void putcharSer(INT8U SerialPort, CHAR8 caracter);
 void reverse(char s[]);
 void IntToString(int n , char str[]);
 INT32U StringToInteger(char p[]);
+char *ltoa(long N, char *str, int base);
 
 #if 0
 // string.h

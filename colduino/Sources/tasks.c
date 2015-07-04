@@ -124,18 +124,18 @@ void Terminal_Task(void)
 #if TERM_UART1
 	#define UART1_BUFSIZE	128
 	#if UART1_MUTEX	
-		uart_init(1,9600,UART1_BUFSIZE,TERM1_PINS,TRUE,UART1_MUTEX_PRIO);
+		uart_init(1,9600,UART1_BUFSIZE,TRUE,UART1_MUTEX_PRIO);
 	#else
-		uart_init(1,9600,UART1_BUFSIZE,TERM1_PINS,FALSE,0);
+		uart_init(1,9600,UART1_BUFSIZE,FALSE,0);
 	#endif
 #endif		
 	
 #if TERM_UART2
 	#define UART2_BUFSIZE	128
 	#if UART2_MUTEX		
-		uart_init(2,9600,UART2_BUFSIZE,TERM2_PINS,TRUE,UART2_MUTEX_PRIO);
+		uart_init(2,9600,UART2_BUFSIZE,TRUE,UART2_MUTEX_PRIO);
 	#else
-		uart_init(2,9600,UART2_BUFSIZE,TERM2_PINS,FALSE,0);
+		uart_init(2,9600,UART2_BUFSIZE,FALSE,0);
 	#endif	
 
 #endif	
@@ -233,7 +233,7 @@ void Tarefa_GPRS(void)
    INT16U tentativas = 0;	
 	
     /* init ESP_UART */
-   	uart_init(ESP_UART,ESP_BAUD,ESP_UART_BUFSIZE,ESP_UART_PINS,ESP_MUTEX,ESP_MUTEX_PRIO);
+   	uart_init(ESP_UART,ESP_BAUD,ESP_UART_BUFSIZE,ESP_MUTEX,ESP_MUTEX_PRIO);
    	
    	/* init modem */
 	modem_send("AT\r\n");
@@ -353,18 +353,16 @@ void Tarefa_GPRS(void)
 }
 
 #include "rs485.h"
-#include "uart.h"
-
 void Tarefa_RS485(void)
 {
 
 	CHAR8 c;
 	
-	rs485_init(9600,UART1_PTD6_PTD7,FALSE,0);
+	rs485_init(9600,FALSE,0);
 	for(;;)
 	{
-		rx_rs485(&c);
-		putchar_rs485(c);
+		rs485_rx(&c);
+		rs485_putchar(c);
 		DelayTask(10); /* 10 ms */
 	}
 }

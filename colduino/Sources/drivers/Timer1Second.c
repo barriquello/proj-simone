@@ -1,6 +1,7 @@
+
+#include "hardware.h"
 #include "Timer1Second.h"
-#include "printf_colduino.h"
-#include <mcf51je256.h>
+#include "printf_lib.h"
 
 void Timer1SecondSetup()
 {

@@ -38,16 +38,16 @@ extern BRTOS_Queue *Serial2;
 #define RS485_TXRX_PIN 		PTFD_PTFD2
 #define RS485_TXRX_PINDIR 	PTFDD_PTFDD2
 
-void rs485_init(INT16U baudrate, INT8U UartPins, INT8U mutex, INT8U priority)
+void rs485_init(INT16U baudrate, INT8U mutex, INT8U priority)
 {
 	
 	RS485_TXRX_PIN = RS485_RX;
 	RS485_TXRX_PINDIR = 1;
 	
 #if UART_RS485 == UART1
-	uart_init(1,baudrate,RS485_BUFSIZE,UartPins,mutex,priority);
+	uart_init(1,baudrate,RS485_BUFSIZE,mutex,priority);
 #elif UART_RS485 == UART2	
-	uart_init(2,baudrate,RS485_BUFSIZE,UartPins,mutex,priority);
+	uart_init(2,baudrate,RS485_BUFSIZE,mutex,priority);
 #endif	
 }
 

@@ -29,7 +29,7 @@
 #define TESTE_RS485			  0
 
 #define DATALOGGER_DELAY_TIME (3000)
-//#define DATALOGGER_DELAY_TIME (3000)
+
 
 
 

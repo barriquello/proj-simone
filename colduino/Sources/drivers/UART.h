@@ -36,6 +36,11 @@
 #define UART2_PTE5_PTE6 2
 #define UART2_PTF1_PTF2 3
 
+
+#define CONF_UART1_PINS		UART1_PTA1_PTA2
+//#define CONF_UART1_PINS     UART1_PTD6_PTD7
+#define CONF_UART2_PINS		UART2_PTF1_PTF2
+
 /*! \fn void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U UartPins,
  INT8U mutex, INT8U priority)
  
@@ -69,8 +74,7 @@
  \brief ISR para recepcao de dados 
  */
 
-void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U UartPins,
-		INT8U mutex, INT8U priority);
+void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8U priority);
 
 void SerialReset(INT8U Comm);
 

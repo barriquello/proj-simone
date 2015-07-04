@@ -40,6 +40,7 @@
 #include "mbframe.h"
 #include "mbproto.h"
 #include "mbconfig.h"
+#include "mbfunc.h"
 
 #if MB_FUNC_OTHER_REP_SLAVEID_ENABLED > 0
 
