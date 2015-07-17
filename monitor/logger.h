@@ -13,6 +13,11 @@
 #include "stdint.h"
 #include "time_lib.h"
 
+#ifndef _WIN32
+#include "printf_lib.h"
+#define puts(x)		printf_lib(x)
+#endif
+
 #ifndef NULL
 #define NULL  (void*)0
 #endif

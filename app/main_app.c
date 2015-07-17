@@ -23,6 +23,7 @@ extern "C"
  * @return      None
  *****************************************************************************/
 void main_app(void);
+void main_monitor(void);
 
 void main_app(void)
 {
@@ -36,6 +37,11 @@ void main_app(void)
 	BRTOS_Init();
 
 	if (InstallTask(&System_Time, "System Time", 256, 31, NULL) != OK)
+	{
+		while (1){};
+	};
+	
+	if (InstallTask(&main_monitor, "Monitor 1", 1024, 10, NULL) != OK)
 	{
 		while (1){};
 	};

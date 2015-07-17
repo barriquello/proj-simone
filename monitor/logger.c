@@ -448,10 +448,14 @@ uint8_t log_entry_send(log_entry_t* entry, uint8_t len)
 	uint16_t cnt = 0;
 	cnt = build_entry_to_send(data_vector,entry->values,len);
 
+
 	printf("\r\n");
 	puts(data_vector);
 	printf("\r\n");
+	
+#ifdef _WIN32	
 	fflush(stdout);
+#endif	
 
 	if(cnt > 0)
 	{

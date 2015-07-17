@@ -377,9 +377,15 @@ static int clock_time(void)
 
 #else /* _WIN32 */
 
+unsigned long static clock = 0;
 static int clock_time(void)
 {
-  
+  return clock;
+}
+
+void BRTOS_TimerHook(void)
+{
+	clock++;
 }
 
 #endif /* _WIN32 */
@@ -731,7 +737,7 @@ int Callback_inifile(const char *section, const char *key, const char *value, co
 
 		if(strcmp(key,"num_monitores") == 0)
 		{
-			num_monitores = strtod(value,NULL);
+			num_monitores = strtoul(value,NULL,0);
 			if(num_monitores > MAX_NUM_OF_LOGGERS)
 			{
 				printf("Erro: num_monitores superior ao suportado\n\r.");
@@ -758,7 +764,7 @@ int Callback_inifile(const char *section, const char *key, const char *value, co
 		/* configura monitores */
 		if(strcmp(key,"id") == 0)
 		{
-			logger_state[mon_cnt].config_h.mon_id = strtod(value,NULL);
+			logger_state[mon_cnt].config_h.mon_id = strtoul(value,NULL,0);
 			++field_cnt;
 		}
 
@@ -769,13 +775,13 @@ int Callback_inifile(const char *section, const char *key, const char *value, co
 		}
 		if(strcmp(key,"intervalo") == 0)
 		{
-			logger_state[mon_cnt].config_h.time_interv = strtod(value,NULL);
+			logger_state[mon_cnt].config_h.time_interv = strtoul(value,NULL,0);
 			++field_cnt;
 		}
 
 		if(strcmp(key,"tamanho") == 0)
 		{
-			logger_state[mon_cnt].config_h.entry_size = strtod(value,NULL);
+			logger_state[mon_cnt].config_h.entry_size = strtoul(value,NULL,0);
 			++field_cnt;
 		}
 		if(field_cnt == NUM_OF_FIELDS)
@@ -789,13 +795,13 @@ int Callback_inifile(const char *section, const char *key, const char *value, co
   	return 1;
 }
 
-int main_monitor(void)
+void main_monitor(void)
 {
 
 #ifdef _WIN32
 	struct timeb start, end;
-#endif	
 	uint16_t diff;
+#endif	
 
 	 /* Initialize the protothread state variables with PT_INIT(). */
 	  PT_INIT(&log_read_pt);
@@ -818,7 +824,10 @@ int main_monitor(void)
     // extern log_state_t logger_state[];
 	ini_browse(Callback_inifile, NULL, config_inifile);
 	log_init(0);
+	
+#ifdef _WIN32	
 	fflush(stdout);
+#endif	
 
 #if 1
 	while(1)
@@ -827,7 +836,6 @@ int main_monitor(void)
 
 		log_write_thread(&log_write_pt);
 		log_read_thread(&log_read_pt);
-
 
 		log_set_input(&log_input_pt);
 
@@ -852,6 +860,8 @@ int main_monitor(void)
 			case 'v': log_uploading = 0; // parar upload
 				break;
 		}
+		
+		DelayTask(1000); // executa a cada 1s
 	}
 
 	out:
@@ -867,7 +877,33 @@ int main_monitor(void)
 	getchar();
 #endif
 	
-	return EXIT_SUCCESS;
+	return;
 
 }
+
+
+#if 1
+
+void InitializeUART(void);
+void WriteUARTN(char c);
+char ReadUARTN(void);
+
+void InitializeUART(void)
+{
+		
+}
+
+
+void WriteUARTN(char c)
+{
+	(void)c;
+	
+}
+
+
+char ReadUARTN(void)
+{
+	
+}
+#endif
 

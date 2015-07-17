@@ -501,8 +501,10 @@ void Keyboard_Handler(void)
 }
 #endif
 
+#if 0
 void BRTOS_TimerHook(void)
 {
 
 }
+#endif
 
