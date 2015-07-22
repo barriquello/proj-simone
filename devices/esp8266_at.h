@@ -113,4 +113,8 @@ esp_ret_t at_esp_close(void);
 CHAR8 at_esp_getchar(void);
 
 
+INT8U esp_set_hostname(CHAR8 *host);
+INT8U esp_set_ip(void);
+
+
 #endif /* ESP8266_AT_H_ */

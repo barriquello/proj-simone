@@ -129,7 +129,7 @@ static void timer_set(struct timer *t, int usecs);
 
 uint8_t http_send_data(char *data, uint8_t len);
 uint8_t http_get_time(struct tm *t);
-uint8_t dns_get_ipaddress(char* ip, char *hostname);
+//uint8_t dns_get_ipaddress(char* ip, char *hostname);
 //uint8_t build_data_vector(char* ptr_data, uint8_t *data, uint8_t len);
 
 void test_openlog(void)
@@ -680,6 +680,7 @@ uint8_t http_get_time(struct tm *ts)
 	return 0;
 }
 
+#if 0
 /*
 	 Get IP address from domain name
 */
@@ -722,6 +723,7 @@ uint8_t dns_get_ipaddress(char* ip, char *hostname)
 	    printf("%s resolved to : %s\n" , hostname , ip);
 	    return 0;
 }
+#endif
 
 int Callback_inifile(const char *section, const char *key, const char *value, const void *userdata)
 {

@@ -12,6 +12,56 @@
 #include "usb_terminal_commands.h"
 
 static esp_state_t esp_state = INIT;
+static char ip[16];
+static char* hostname = NULL;
+
+static void at_esp_print_reply(void)
+{
+	INT8U c;
+	DelayTask(1000);
+	while((c=at_esp_getchar()) != (CHAR8)-1){
+		putchar_usb(c);
+	}
+}
+
+static INT8U at_esp_get_reply(INT8U *buf, INT8U max_len)
+{
+	INT8U c;
+	INT8U len = 0;
+	DelayTask(1000);
+	while((c=at_esp_getchar()) != (CHAR8)-1){
+		*buf = c;
+		buf++;
+		len++;
+		max_len--;
+		if(max_len == 0) return len;
+	}
+	return len;
+}
+
+INT8U esp_set_hostname(CHAR8 *host)
+{
+	hostname = host;
+	return OK;
+}
+
+INT8U esp_set_ip(void)
+{
+	if(hostname == NULL)
+	{
+		return !OK;
+	}
+	
+	esp_acquire();	
+	esp_print("AT+CIPRESOLVE=\"");
+	esp_print(hostname);
+	esp_print("\"\r\n");
+	at_esp_get_reply(ip,16);
+	//at_esp_print_reply();
+	esp_release();		
+	
+	
+}
 
 CHAR8 at_esp_getchar(void)
 {
@@ -21,15 +71,6 @@ CHAR8 at_esp_getchar(void)
 		return (CHAR8) (-1);
 	}	
 	return (CHAR8)caracter;
-}
-
-static void at_esp_print_reply(void)
-{
-	INT8U c;
-	DelayTask(1000);
-	while((c=at_esp_getchar()) != (CHAR8)-1){
-		putchar_usb(c);
-	}
 }
 
 esp_ret_t at_esp_init(void)
@@ -149,8 +190,7 @@ esp_ret_t at_esp_send(INT8U num, CHAR8* field, CHAR8* val)
 
 esp_ret_t at_esp_receive(CHAR8* buff, INT8U* len)
 {
-	//INT8U max_len = *len;
-	
+
 	if(esp_state != OPEN)
 	{
 		return ESP_STATE_ERR;
@@ -158,7 +198,8 @@ esp_ret_t at_esp_receive(CHAR8* buff, INT8U* len)
 	
 	esp_acquire();	
 	esp_print("AT+CIPRD=0\r\n");	
-	at_esp_print_reply();
+	*len = at_esp_get_reply(buff,*len);
+	//at_esp_print_reply();
 	esp_release();		
 	printSer(USE_USB,"\r\n");
 		
