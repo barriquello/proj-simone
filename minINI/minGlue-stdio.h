@@ -8,6 +8,8 @@
  *  warranties or conditions of any kind, either express or implied.
  */
 
+#if (defined MINGLUE && MINGLUE == MINGLUE_STDIO)
+
 /* map required file I/O types and functions to the standard C library */
 #include <stdio.h>
 
@@ -28,3 +30,4 @@
 #define INI_REAL                      float
 #define ini_ftoa(string,value)        sprintf((string),"%f",(value))
 #define ini_atof(string)              (INI_REAL)strtod((string),NULL)
+#endif

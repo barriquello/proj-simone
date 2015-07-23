@@ -9,6 +9,8 @@
  *  licensed at its own terms.)
  */
 
+#if (defined MINGLUE && MINGLUE == MINGLUE_CCS)
+
 #define INI_BUFFERSIZE  256       /* maximum line length, maximum path length */
 
 #ifndef FAT_PIC_C
@@ -61,4 +63,5 @@ static int ini_rename(char *source, char *dest)
   ini_tempname(source, dest, INI_BUFFERSIZE);
   return rm_file(source) == 0;
 }
+#endif
 #endif

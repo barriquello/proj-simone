@@ -89,8 +89,6 @@ T20150101073300S ->
 #include <stdio.h>
 #include <stdlib.h>
 #include <assert.h>
-#include "utils.h"
-//#include <sys\timeb.h>
 
 #include "minIni.h"
 #include "logger.h"
@@ -107,8 +105,10 @@ log_state_t logger_state[MAX_NUM_OF_LOGGERS];
 #ifdef _WIN32
 #include <windows.h>
 #include <time.h>
+#include <sys\timeb.h>
 #else
 #include "time_lib.h"
+#include "utils.h"
 #endif
 
 /*---------------------------------------------------------------------------*/
@@ -129,7 +129,9 @@ static void timer_set(struct timer *t, int usecs);
 
 uint8_t http_send_data(char *data, uint8_t len);
 uint8_t http_get_time(struct tm *t);
-//uint8_t dns_get_ipaddress(char* ip, char *hostname);
+#if _WIN32
+uint8_t dns_get_ipaddress(char* ip, char *hostname);
+#endif
 //uint8_t build_data_vector(char* ptr_data, uint8_t *data, uint8_t len);
 
 void test_openlog(void)
@@ -540,7 +542,10 @@ static const char *abmon[12] =
 	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
 };
 
+#ifndef _WIN32
 #include "time_lib.h"
+#endif
+
 void http_server_time(char* server_reply, struct tm *ts)
 {
 	
@@ -680,7 +685,7 @@ uint8_t http_get_time(struct tm *ts)
 	return 0;
 }
 
-#if 0
+#if _WIN32
 /*
 	 Get IP address from domain name
 */
@@ -815,7 +820,7 @@ void main_monitor(void)
 	ftime(&start);
 #endif	
 
-#if 0
+#if _WIN32
 	struct tm t;
 	http_get_time(&t);
 	printf ("Current local time and date: %s", asctime(&t));
@@ -862,8 +867,10 @@ void main_monitor(void)
 			case 'v': log_uploading = 0; // parar upload
 				break;
 		}
+		#ifndef _WIN32
+			DelayTask(1000); // executa a cada 1s
+		#endif
 		
-		DelayTask(1000); // executa a cada 1s
 	}
 
 	out:
@@ -905,7 +912,7 @@ void WriteUARTN(char c)
 
 char ReadUARTN(void)
 {
-	
+	return 0;
 }
 #endif
 

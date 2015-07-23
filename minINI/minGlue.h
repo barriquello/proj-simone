@@ -8,6 +8,7 @@
  *  warranties or conditions of any kind, either express or implied.
  */
 
+#if 0
 /* map required file I/O types and functions to the standard C library */
 #include <stdio.h>
 
@@ -28,3 +29,20 @@
 #define INI_REAL                      float
 #define ini_ftoa(string,value)        sprintf((string),"%f",(value))
 #define ini_atof(string)              (INI_REAL)strtod((string),NULL)
+#endif
+
+#define MINGLUE_STDIO 	0
+#define MINGLUE_FATFS   1
+#define MINGLUE_EFS   	2
+
+#define INI_BUFFERSIZE  256       /* maximum line length, maximum path length */
+
+#ifdef _WIN32
+#define	MINGLUE MINGLUE_STDIO
+#include "minGlue-stdio.h"
+#else
+#define	MINGLUE MINGLUE_FATFS
+#include "minGlue-FatFs.h"
+#endif
+
+

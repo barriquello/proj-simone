@@ -10,6 +10,12 @@
 uint8_t http_get_time(struct tm *ts);
 uint8_t http_send_data(char *data, uint8_t len);
 
+#if DEBUG_LOGGER
+#define PRINTF(...) printf(__VA_ARGS__);
+#else
+#define PRINTF(...)
+#endif
+
 extern log_state_t logger_state[MAX_NUM_OF_LOGGERS];
 
 static char tohex(uint8_t val)
@@ -281,7 +287,12 @@ void log_newheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16
 	log_setheader(filename, &h);
 }
 
+#ifndef _WIN32
 #include "time_lib.h"
+#else
+#include "time.h"
+#endif
+
 void log_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 {
 
@@ -332,7 +343,7 @@ void log_settimestamp(uint8_t logger_num, char* filename)
 			h.h2.hour = (uint8_t)18;
 			h.h2.min = (uint8_t)10;
 			h.h2.sec = (uint8_t)33;
-			printf("\r\n%d%d%d%d%d%d\r\n", h.h2.year,h.h2.mon,h.h2.mday,h.h2.hour,h.h2.min,h.h2.sec);
+			PRINTF("\r\n%d%d%d%d%d%d\r\n", h.h2.year,h.h2.mon,h.h2.mday,h.h2.hour,h.h2.min,h.h2.sec);
 		#endif
 
 			h.h2.synched = 1;
@@ -342,7 +353,7 @@ void log_settimestamp(uint8_t logger_num, char* filename)
 			{
 				char timestamp[20];
 				strftime(timestamp,20,"T%Y%m%d%H%M%SS\r\n",&ts);
-				puts(timestamp);
+				PRINTF(timestamp);
 			}while(0);
 #endif
 
@@ -350,21 +361,29 @@ void log_settimestamp(uint8_t logger_num, char* filename)
 
 			/* rename file */
 			strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
+
+			PRINTF("\r\n %s will be renamed to %s \r\n", filename,new_filename);
 			ret = log_rename(filename, new_filename);
 
 			/* if rename failed, try other name */
-			while(ret)
+			while(!ret)
 			{
+				PRINTF("\r\n rename failed \r\n");
 				time_t time_now = mktime(&ts);
 				time_now +=3600;
 				ts = *localtime(&(time_t){time_now});
 				strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
+
+				PRINTF("\r\n %s will be renamed to %s \r\n", filename,new_filename);
 				ret = log_rename(filename, new_filename);
+
 			}
 
 			/* log is reading the same file ? */
 			if(strcmp(logger_state[logger_num].log_name_reading, logger_state[logger_num].log_name_writing) == 0)
 			{
+				PRINTF("\r\n reading the same file that we renamed! \r\n");
+
 				strcpy(logger_state[logger_num].log_name_reading,new_filename);
 
 				/* update meta file */
@@ -449,9 +468,9 @@ uint8_t log_entry_send(log_entry_t* entry, uint8_t len)
 	cnt = build_entry_to_send(data_vector,entry->values,len);
 
 
-	printf("\r\n");
-	puts(data_vector);
-	printf("\r\n");
+	PRINTF("\r\n");
+	PRINTF(data_vector);
+	PRINTF("\r\n");
 	
 #ifdef _WIN32	
 	fflush(stdout);
@@ -569,9 +588,9 @@ void log_init(uint8_t logger_num)
 	    while (log_readdir(dir,d))
 	    {
 #if _WIN32
-	      printf("%s\n", dir->d_name);
+	    	PRINTF("%s\n", dir->d_name);
 #else
-	      printf("%s\n", (LOG_DIRINFO*)(&dir)->fname);
+	    	PRINTF("%s\n", (LOG_DIRINFO*)(&dir)->fname);
 #endif
 	    }
 	    log_closedir(d);

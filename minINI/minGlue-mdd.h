@@ -9,6 +9,7 @@
  *  Technology Incorporated, and licensed at its own terms.)
  */
 
+#if (defined MINGLUE && MINGLUE == MINGLUE_MDD)
 #define INI_BUFFERSIZE  256       /* maximum line length, maximum path length */
 
 #include "MDD File System\fsio.h"
@@ -54,4 +55,5 @@ static int ini_rename(const char *source, const char *dest)
   FSrename((dest), ftmp);
   return FSfclose(ftmp) == 0;
 }
+#endif
 #endif

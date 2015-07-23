@@ -11,11 +11,13 @@
 #include "stdio.h"
 #include "stdlib.h"
 #include "stdint.h"
-#include "time_lib.h"
 
 #ifndef _WIN32
+#include "time_lib.h"
 #include "printf_lib.h"
 #define puts(x)		printf_lib(x)
+#else
+#include "time.h"
 #endif
 
 #ifndef NULL
@@ -49,7 +51,12 @@
 #define log_mkdir(dirname)			  _mkdir(dirname)
 #endif
 
+#if _WIN32
+#define FATFS_ENABLE 0
+#else
 #define FATFS_ENABLE 1
+#endif
+
 #if FATFS_ENABLE
 #define LOG_BUFFERSIZE  256       /* maximum line length, maximum path length */
 

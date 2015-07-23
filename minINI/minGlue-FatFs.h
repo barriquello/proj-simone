@@ -9,11 +9,13 @@
  *  its own terms.)
  */
 
+#if (defined MINGLUE && MINGLUE == MINGLUE_FATFS)
 #define INI_BUFFERSIZE  256       /* maximum line length, maximum path length */
 
 /* You must set _USE_STRFUNC to 1 or 2 in the include file ff.h (or tff.h)
  * to enable the "string functions" fgets() and fputs().
  */
+
 #include "ff.h"                   /* include tff.h for Tiny-FatFs */
 
 #define INI_FILETYPE    FIL
@@ -41,3 +43,5 @@ static int ini_rename(TCHAR *source, const TCHAR *dest)
   drive = (drive == NULL) ? dest : drive + 1;
   return (f_rename(source, drive) == FR_OK);
 }
+#endif
+

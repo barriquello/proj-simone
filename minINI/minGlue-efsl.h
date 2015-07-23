@@ -9,6 +9,8 @@
  *  licensed under the GPL with an exception clause for static linking.)
  */
 
+#if (defined MINGLUE && MINGLUE == MINGLUE_EFS)
+
 #define INI_BUFFERSIZE  256       /* maximum line length, maximum path length */
 #define INI_LINETERM    "\r\n"    /* set line termination explicitly */
 
@@ -60,4 +62,5 @@ static int ini_rename(char *source, const char *dest)
   ini_tempname(source, dest, INI_BUFFERSIZE);
   return rmfile(&g_efs.myFs, source) == 0;
 }
+#endif
 #endif

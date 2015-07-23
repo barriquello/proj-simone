@@ -19,11 +19,7 @@
 #ifndef MININI_H
 #define MININI_H
 
-#if PROCESSOR == CFV1
-#include "minGlue-FatFs.h"
-#else
 #include "minGlue.h"
-#endif
 
 #if (defined _UNICODE || defined __UNICODE__ || defined UNICODE) && !defined MININI_ANSI
   #include <tchar.h>

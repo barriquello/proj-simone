@@ -9,6 +9,8 @@
  *  licensed at its own terms.)
  */
 
+#if (defined MINGLUE && MINGLUE == MINGLUE_FFS)
+
 #define INI_BUFFERSIZE  256       /* maximum line length, maximum path length */
 #include <mem-ffs.h>
 
@@ -24,3 +26,4 @@
 #define INI_FILEPOS                   long
 #define ini_tell(file,pos)            (ffs_fgetpos(*(file), (pos)) == 0)
 #define ini_seek(file,pos)            (ffs_fsetpos(*(file), (pos)) == 0)
+#endif
