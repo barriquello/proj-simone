@@ -105,6 +105,7 @@ static int log_rename(TCHAR *source, const TCHAR *dest)
 #define NULL  (void*)0
 #endif
 
+void	print_erro(char *format, ...);
 
 #define LOG_HEADER_LEN		 50
 #define LOG_MAX_ENTRY_SIZE   256
@@ -114,6 +115,8 @@ static int log_rename(TCHAR *source, const TCHAR *dest)
 #define MAX_NUM_OF_ENTRIES   ((uint32_t)(-1))
 #define MAX_NUM_OF_LOGGERS	 2
 #define NUM_OF_FIELDS        4
+#define MAX_HOSTNAME_LEN	 (32+1)
+#define MAX_APIKEY_LEN	 	 (32+1)
 
 //#define LOG_DIR_NAME 		 "./logs"
 //#define TIME_INTERVAL 		 5
@@ -189,11 +192,25 @@ typedef struct
 
 }log_state_t;
 
+typedef union
+{
+	uint8_t byte;
+	struct{
+		uint8_t num_mon_ok	:1;	/* num. de monitores ok */
+		uint8_t server_ok	:1;	/* server ok */
+		uint8_t	key_ok		:1;	/* Api Key ok */
+		uint8_t	gprs_server_ok:1;	/* GPRS server ok */
+		uint8_t	unused1:1 ;	/* Unused */
+		uint8_t	unused2:1 ;	/* Unused*/
+		uint8_t unused3:1 ; /* Unused */
+	}bit;
+}log_config_ok_t;
+
 void byte2hex(char *ret, uint8_t c);
 void int2hex(char *ret, uint16_t c);
 void test_logger(void);
 
-void log_init(uint8_t logger_num);
+uint8_t log_init(uint8_t logger_num);
 void log_sync(char*);
 
 void log_makeheader(char log_header[], log_header_t * h);
@@ -210,7 +227,5 @@ void log_settimestamp(uint8_t logger_num, char* filename);
 
 char* log_getfilename_to_write(uint8_t logger_num);
 char* log_getfilename_to_read(uint8_t logger_num);
-
-
 
 #endif /* LOGGER_H_ */

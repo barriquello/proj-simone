@@ -93,9 +93,24 @@ T20150101073300S ->
 #include "minIni.h"
 #include "logger.h"
 
-static uint8_t num_monitores = 0;
+static uint8_t num_monitores = MAX_NUM_OF_LOGGERS;
 static uint8_t logger = 0;
 log_state_t logger_state[MAX_NUM_OF_LOGGERS];
+
+char simon_hostname[MAX_HOSTNAME_LEN];
+char apikey[MAX_APIKEY_LEN];
+log_config_ok_t config_check;
+
+
+#ifdef _WIN32
+#define DEBUG_LOGGER 1
+#endif
+
+#if DEBUG_LOGGER
+#define PRINTF(...) printf(__VA_ARGS__);
+#else
+#define PRINTF(...)
+#endif
 
 /*---------------------------------------------------------------------------*/
 /*
@@ -133,6 +148,8 @@ uint8_t http_get_time(struct tm *t);
 uint8_t dns_get_ipaddress(char* ip, char *hostname);
 #endif
 //uint8_t build_data_vector(char* ptr_data, uint8_t *data, uint8_t len);
+
+void sleep_forever(void);
 
 void test_openlog(void)
 {
@@ -236,7 +253,7 @@ void test_writeentry(void)
 	/* change to parent dir */
 	log_chdir("..");
 
-	printf("Entry written %d\r\n", cnt);
+	PRINTF("Entry written %d\r\n", cnt);
 }
 
 void test_readentry(void)
@@ -256,12 +273,12 @@ void test_readentry(void)
 	{
 		if( nread < MAX_NUM_OF_ENTRIES)
 		{
-			puts((char*)entry.values);
-			puts(ltoa((long)entry.ts,buffer,10));
+			PRINTF((char*)entry.values);
+			PRINTF(ltoa((long)entry.ts,buffer,10));
 		}
 	}
 
-	/* change to paretnt dir */
+	/* change to parent dir */
 	log_chdir("..");
 
 }
@@ -406,8 +423,8 @@ static void timer_set(struct timer *t, int interval)
 //#include <ws2tcpip.h>
 #endif
 
-#define API_KEY  "90a004390f3530d0ba10199ac2b1ac3d"
-#define SERVER_NAME "emon-gpsnetcms.rhcloud.com"
+//#define API_KEY  "90a004390f3530d0ba10199ac2b1ac3d"
+//#define SERVER_NAME "emon-gpsnetcms.rhcloud.com"
 
 #if 0
 #define END_STRING "HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n"
@@ -452,7 +469,7 @@ uint8_t http_send_data(char *data, uint8_t len)
 	char message[1024], server_reply[1024];
 	int recv_size;
 	char ip[16];
-	char* hostname = SERVER_NAME;
+	char* hostname = simon_hostname;
 	//char* send_template = "GET /input/post.json?json={%s}&apikey=%s";
 	char* send_monitor = "GET /monitor/set.json?monitorid=%d&data=%s&apikey=%s";
 	char request[1024];
@@ -478,9 +495,7 @@ uint8_t http_send_data(char *data, uint8_t len)
 	}
 #endif
 	
-	//snprintf(request, 128, send_template, "p:3",API_KEY);
-
-	snprintf(request, 1024, send_monitor, monitor_id, data, API_KEY);
+	snprintf(request, 1024, send_monitor, monitor_id, data, apikey);
 
 	/// Form request
 	snprintf(message, 1024,
@@ -601,7 +616,7 @@ uint8_t http_get_time(struct tm *ts)
 	char message[1024], server_reply[1024];
 	int recv_size;
     char ip[16];
-    char* hostname = SERVER_NAME;
+    char* hostname = simon_hostname;
     //char* get_time_request = "GET /time/local&apikey=%s";
     char* get_time_request = "GET /";
     //char request[1024];
@@ -730,6 +745,7 @@ uint8_t dns_get_ipaddress(char* ip, char *hostname)
 }
 #endif
 
+
 int Callback_inifile(const char *section, const char *key, const char *value, const void *userdata)
 {
   
@@ -747,12 +763,22 @@ int Callback_inifile(const char *section, const char *key, const char *value, co
 			num_monitores = strtoul(value,NULL,0);
 			if(num_monitores > MAX_NUM_OF_LOGGERS)
 			{
-				printf("Erro: num_monitores superior ao suportado\n\r.");
+				PRINTF("Erro: num_monitores superior ao suportado\n\r.");
+			}else
+			{
+				config_check.bit.num_mon_ok=1;
 			}
-		}else
+		}
+
+		if(strcmp(key,"simon_server") == 0)
 		{
-			printf("Erro: num_monitores não configurado\n\r.");
-			return 0;
+			strncpy(simon_hostname, value, sizearray(simon_hostname));
+			config_check.bit.server_ok = 1;
+		}
+		if(strcmp(key,"api_key") == 0)
+		{
+			strncpy(apikey, value, sizearray(apikey));
+			config_check.bit.key_ok = 1;
 		}
     }
 
@@ -802,6 +828,34 @@ int Callback_inifile(const char *section, const char *key, const char *value, co
   	return 1;
 }
 
+void config_check_erro(void)
+{
+	int erro = 0;
+	if(config_check.bit.num_mon_ok == 0)
+	{
+		print_erro("Config Erro: faltando num_monitores ou maior que %d \n\r.", MAX_NUM_OF_LOGGERS);
+		erro++;
+	}
+	if(config_check.bit.server_ok == 0)
+	{
+		print_erro("Config Erro: faltando simon server \n\r.");
+		erro++;
+	}
+	if(config_check.bit.key_ok == 0)
+	{
+		print_erro("Config Erro: faltando apikey \n\r.");
+		erro++;
+	}
+	if(config_check.bit.gprs_server_ok == 0)
+	{
+		print_erro("Config Erro: faltando gprs server \n\r.");
+	}
+	if (erro)
+	{
+		sleep_forever();
+	}
+}
+
 void main_monitor(void)
 {
 
@@ -810,11 +864,13 @@ void main_monitor(void)
 	uint16_t diff;
 #endif	
 
+	uint8_t log_num = 0;
+
 	 /* Initialize the protothread state variables with PT_INIT(). */
 	  PT_INIT(&log_read_pt);
 	  PT_INIT(&log_write_pt);
 
-	puts("help:\r\nq-quit\r\np-stop logger\r\nc-continue logger\r\ns-synch\r\nu-start upload\r\nv-stop upload\r\n");
+	PRINTF("help:\r\nq-quit\r\np-stop logger\r\nc-continue logger\r\ns-synch\r\nu-start upload\r\nv-stop upload\r\n");
 
 #ifdef _WIN32
 	ftime(&start);
@@ -827,16 +883,23 @@ void main_monitor(void)
 	fflush(stdout);
 #endif
 
-	//test_logger(); // do tests
-    // extern log_state_t logger_state[];
+	config_check.byte = 0;
 	ini_browse(Callback_inifile, NULL, config_inifile);
-	log_init(0);
+	config_check_erro(); /* check configuration */
+
+	for (log_num = 0; log_num < num_monitores; log_num++)
+	{
+		if(log_init(log_num))
+		{
+			PRINTF("Log init erro: %d", log_num);
+			sleep_forever();
+		}
+	}
 	
 #ifdef _WIN32	
 	fflush(stdout);
 #endif	
 
-#if 1
 	while(1)
 	{
 		char c;
@@ -874,20 +937,38 @@ void main_monitor(void)
 	}
 
 	out:
-#endif
 
 #ifdef _WIN32
 	ftime(&end);
 	diff = (uint16_t) (1000.0 * (end.time - start.time)
 		+ (end.millitm - start.millitm));
 
-	printf("\nOperation took %u milliseconds\n", diff);	
-
+	printf("\nOperation took %u milliseconds\n", diff);
 	getchar();
+#else
+	sleep_forever:
+	while(1)
+	{
+		/* sleep forever */
+		__RESET_WATCHDOG();
+	}
 #endif
 	
+
 	return;
 
+}
+
+void sleep_forever(void)
+{
+
+	while(1)
+	{
+		#ifndef _WIN32
+		/* sleep forever */
+		__RESET_WATCHDOG();
+		#endif
+	}
 }
 
 

@@ -10,6 +10,10 @@
 uint8_t http_get_time(struct tm *ts);
 uint8_t http_send_data(char *data, uint8_t len);
 
+#ifdef _WIN32
+#define DEBUG_LOGGER 1
+#endif
+
 #if DEBUG_LOGGER
 #define PRINTF(...) printf(__VA_ARGS__);
 #else
@@ -75,6 +79,29 @@ static uint16_t byte2int(uint8_t c1, uint8_t c2)
 {
 	return (uint16_t)(c1*256 + c2);
 }
+
+LOG_FILETYPE stderr_f;
+char buffer_erro[256];
+#define error_file		"erro.txt"
+
+#include <stdarg.h>
+/*-----------------------------------------------------------------------------------*/
+void
+print_erro(char *format, ...)
+{
+
+  va_list argptr;
+  va_start(argptr, format);
+  vsprintf(buffer_erro, format, argptr);
+  va_end(argptr);
+
+  if(log_openwrite(error_file,&stderr_f))
+  {
+	  (void)log_write(buffer_erro,&stderr_f);
+	  (void)log_close(&stderr_f);
+  }
+}
+/*-----------------------------------------------------------------------------------*/
 
 #include <assert.h>
 void test_hextoint(void)
@@ -568,7 +595,7 @@ void log_sync(char*log_fn)
 #endif
 
 /* open dir and try to open/create a new file */
-void log_init(uint8_t logger_num)
+uint8_t log_init(uint8_t logger_num)
 {
 
 	  LOG_DIRTYPE  d;
@@ -596,7 +623,8 @@ void log_init(uint8_t logger_num)
 	    log_closedir(d);
 	  }else
 	  {
-		  while(1);
+		  print_erro("Log init erro: %d", logger_num);
+		  return 1;
 	  }
 
 	 /* change to log dir */
@@ -654,6 +682,7 @@ void log_init(uint8_t logger_num)
 
 	 /* change to parent dir */
 	 log_chdir("..");
+	 return 0;
 }
 
 char* log_getfilename_to_write(uint8_t logger_num)
