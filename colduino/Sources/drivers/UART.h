@@ -37,8 +37,8 @@
 #define UART2_PTF1_PTF2 3
 
 
-#define CONF_UART1_PINS		UART1_PTA1_PTA2
-//#define CONF_UART1_PINS     UART1_PTD6_PTD7
+//#define CONF_UART1_PINS		UART1_PTA1_PTA2
+#define CONF_UART1_PINS     UART1_PTD6_PTD7
 #define CONF_UART2_PINS		UART2_PTF1_PTF2
 
 /*! \fn void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U UartPins,
@@ -47,7 +47,7 @@
  \brief Inicializa UART
  
  \param uart UART1 ou UART2
- \param baudrate Taxa de transmicao
+ \param baudrate Taxa de transmissao
  \param buffersize Tamanho do buffer
  \param UartPins Pinos da UART
  \param mutex Mutex para UART

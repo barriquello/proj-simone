@@ -435,7 +435,7 @@ static void timer_set(struct timer *t, int interval)
 #endif
 
 //#define DEBUG
-#ifdef DEBUG
+#if DEBUG == 1 
 #define dprintf(...)	printf(__VA_ARGS__)
 #else
 #define dprintf(...)

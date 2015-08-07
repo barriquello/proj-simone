@@ -147,10 +147,7 @@ INT8U  iNesting = 0;                              ///< Used to inform if the cur
 ContextType *Tail;
 ContextType *Head;
 
-#if (DEBUG == 0)
 volatile INT8U flag_load = TRUE;
-#endif
-
 
 #if (NUMBER_OF_PRIORITIES > 16)
   const PriorityType PriorityMask[configMAX_TASK_PRIORITY+1]=

@@ -1,7 +1,7 @@
 #include "BRTOS.h"
 #include "drivers.h"
 #include "tasks.h"
-//#include "AppConfig.h"
+#include "AppConfig.h"
 
 #ifdef __cplusplus
 extern "C"
@@ -41,10 +41,12 @@ void main_app(void)
 		while (1){};
 	};
 	
+#if 0	
 	if (InstallTask(&main_monitor, "Monitor 1", 1024, 10, NULL) != OK)
 	{
 		while (1){};
 	};
+#endif	
 
 #if 0
 	if (InstallTask(&Tarefa_termometro, "Tarefa de Termometro", 256, 19, NULL) != OK)
@@ -99,7 +101,7 @@ void main_app(void)
 	
 #endif	
 	
-#if USB_DEVICE_ENABLED
+#if USB_DEVICE_ENABLED == 1
 #if (USB_CLASS_TYPE == BRTOS_USB_MSD)
 	if(InstallTask(&Mass_Storage_Device_Task,"Mass Storage Device Task",512,15,NULL) != OK)
 	{

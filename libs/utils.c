@@ -176,7 +176,7 @@ INT32U LWordSwap(INT32U u32DataSwap)
 	return (u32Temp);
 }
 
-#if 0
+#if 1
 void PrintDecimal(INT16S val, CHAR8 *buff)
 {
 	INT16U backup;

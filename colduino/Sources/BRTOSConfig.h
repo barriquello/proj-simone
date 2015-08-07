@@ -12,7 +12,7 @@
 #define PSP_ENDIAN			BRTOS_BIG_ENDIAN
 
 /// Define if simulation or DEBUG
-#define DEBUG 1
+//#define DEBUG 1
 
 /// Define if verbose info is available
 #define VERBOSE 0
@@ -95,9 +95,8 @@
 #define OSRTCEN                     0
 
 
-
 // Stack Size of the Idle Task
-#define IDLE_STACK_SIZE             (INT16U)128
+#define IDLE_STACK_SIZE             (INT16U)192
 
 
 /// Stack Defines

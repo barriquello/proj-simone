@@ -1225,6 +1225,32 @@ extern CHAR8 BufferText[32];
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
+  
+#if (defined ISR_DEDICATED_STACK && defined ISR_DEDICATED_STACK == 1)
+
+////////////////////////////////////////////////////////////
+#define OS_INT_ENTER() if (!iNesting){OS_SAVE_SP(); OS_RESTORE_ISR_SP(); }; iNesting++;
+
+#define OS_INT_EXIT()                                                   \
+  CriticalDecNesting();                                                 \
+  if (!iNesting)                                                        \
+  {                                                                     \
+	OS_RESTORE_SP();                                                    \
+    SelectedTask = OSSchedule();                                        \
+    if (currentTask != SelectedTask){                                   \
+        OS_SAVE_CONTEXT();                                              \
+        OS_SAVE_SP();                                                   \
+        ContextTask[currentTask].StackPoint = SPvalue;                  \
+	      currentTask = SelectedTask;                                   \
+        SPvalue = ContextTask[currentTask].StackPoint;                  \
+        OS_RESTORE_SP();                                                \
+        OS_RESTORE_CONTEXT();                                           \
+    }                                                                   \
+  }                                                                     \
+  
+
+#else
+
 #define OS_INT_ENTER()  iNesting++;
       
   
@@ -1243,6 +1269,8 @@ extern CHAR8 BufferText[32];
         OS_RESTORE_CONTEXT();                                           \
     }                                                                   \
   }                                                                     \
+
+#endif
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
