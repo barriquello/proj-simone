@@ -158,7 +158,8 @@ void Terminal_Task(void)
 	(void) usb_terminal_add_cmd((command_t*) &wt_cmd);
 	(void) usb_terminal_add_cmd((command_t*) &echo_cmd);
 	(void) usb_terminal_add_cmd((command_t*) &echo_stdout_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &esp_cmd);	
+	(void) usb_terminal_add_cmd((command_t*) &esp_cmd);
+	(void) usb_terminal_add_cmd((command_t*) &m590_cmd);	
 
 	while (1)
 	{

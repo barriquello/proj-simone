@@ -93,6 +93,10 @@ extern const command_t sin2da_cmd;
 void cmd_esp(char *param);
 extern const command_t esp_cmd;
 
+// Control m590
+void cmd_m590(char *param);
+extern const command_t m590_cmd;
+
 #if (SD_WAVE == 1)
 	extern CHAR8 SoundName[(CONSOLE_BUFFER_SIZE/2)];
 	

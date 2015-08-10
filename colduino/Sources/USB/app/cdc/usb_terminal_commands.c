@@ -846,7 +846,7 @@ void cmd_echo(char *param)
 {
 	INT8U caracter;
 	if(param == NULL) return;
-	printSer(USE_USB, "\r\n");
+	printSer(USE_USB, "\n\r");
 
 #if UART1_MUTEX
 	if(stdout == USE_UART1)
@@ -863,7 +863,7 @@ void cmd_echo(char *param)
 #endif
 	
 	printSer(stdout, (CHAR8*)param);
-	printSer(stdout, "\r\n");
+	printSer(stdout, "\r");
 		
 	if(stdin_q != NULL)
 	{
@@ -1024,6 +1024,51 @@ const command_t esp_cmd = {
   "esp", cmd_esp, "Control ESP8266"
 };
 
+
+#include "m590_at.h"
+
+//const INT8U esp_buffer_send[];
+//INT8U esp_buffer_rx[64];
+
+void cmd_m590(char *param)
+{	
+	printf_usb("\r\n");
+	switch (param[0])
+	{
+		case '1': at_m590_init();
+			break;
+		case '2': at_m590_open();
+			break;
+		case '3': at_m590_send(1,"power","150");
+					break;
+		case '4': at_m590_receive(NULL,NULL);
+					break;					
+		case '5': at_m590_close();
+			break;
+		case '6':
+			at_m590_init();
+			at_m590_open();
+			at_m590_send(1,"power","150");
+			break;	
+		case '7': at_m590_server();
+			break;			
+		default:
+			printf_usb(	"\r\n usage:\r\n"
+						"1 - init \r\n"
+						"2 - open \r\n"
+						"3 - send \r\n"
+						"4 - receive \r\n"
+						"5 - close \r\n"
+						"6 - init, open, send \r\n"
+						"7 - server \r\n"
+					  );
+	}
+	param[0] = 0;
+}
+
+const command_t m590_cmd = {
+  "m590", cmd_m590, "Control M590 modem"
+};
 
 // D/A converter sin wave Command
 INT16S wave[32]={2048,2447,2831,3185,3495,3750,3939,4056,4095,4056,3939,3750,3495,3185,2831,2447,
