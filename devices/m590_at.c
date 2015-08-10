@@ -14,12 +14,19 @@
 #include "string.h"
 #include "stdio.h"
 
+INT8U CreatePPP(void);
+INT8U CreateTCPLink(char *linkStr);
+INT8U CreateSingleTCPLink(unsigned char iLinkNum,char *strServerIP,char *strPort);
+INT8U TCPIP_SendData(INT8U * dados);
+
 static m590_state_t m590_state = M590_INIT;
 static char ip[16];
 static char* hostname = NULL;
 
-static INT8U gSendBuffer[256];
+static INT8U gSendBuffer[32];
 static INT8U gReceiveBuffer[256];
+
+#define UNUSED(x)   (void)x;
 
 static void at_m590_print_reply(void)
 {
@@ -30,7 +37,7 @@ static void at_m590_print_reply(void)
 	}
 }
 
-static INT8U at_m590_get_reply(INT8U *buf, INT8U max_len)
+static INT8U at_m590_get_reply(INT8U *buf, INT16U max_len)
 {
 	INT8U c;
 	INT8U len = 0;
@@ -65,8 +72,6 @@ INT8U m590_set_ip(void)
 	at_m590_get_reply(ip,16);
 	//at_m590_print_reply();
 	m590_release();		
-	
-	
 }
 
 CHAR8 at_m590_getchar(void)
@@ -81,12 +86,12 @@ CHAR8 at_m590_getchar(void)
 
 #define GET_REPLY_PRINT()			DelayTask(200);   \
 									memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer)); \
-									at_m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer)); \
+									at_m590_get_reply(gReceiveBuffer,(INT16U)sizeof(gReceiveBuffer)); \
 									printSer(USE_USB,gReceiveBuffer); \
 									
 
 /****************************************************************************************
-*CreatePPP
+* CreatePPP
 *****************************************************************************************/ 
 INT8U CreatePPP(void)
 {
@@ -147,8 +152,10 @@ INT8U TCPIP_SendData(INT8U * dados)
 {
 	int timeout=0;
 	INT8U  c;
-	INT8U  len = 0;
-	INT8U  s;
+	INT8U  length, len;	
+	INT8U *send;
+	
+	length = (INT8U) strlen(dados);
 	
     while(1)
 	{
@@ -159,62 +166,62 @@ INT8U TCPIP_SendData(INT8U * dados)
 		memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
 		at_m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer));
 		printSer(USE_USB,gReceiveBuffer);
-		
-#if 0
+				
+#if 0		
 		if( strstr((char *)gReceiveBuffer,"+IPSTATUS:0,DISCONNECT") )
 		{
 			return FALSE;
 		}
-#endif
+#endif		
 		
 		if( strstr((char *)gReceiveBuffer,"+IPSTATUS:0,CONNECT,TCP") )
 		{
-			
-			len = strlen(dados);
-			
-			m590_print("at+tcpsend=0,36\r");			
+			len = length;
+			send = dados;			
+			snprintf(gSendBuffer,sizeof(gSendBuffer)-1, "at+tcpsend=0,%d\r",len);
+			m590_print(gSendBuffer);			
 			DelayTask(10);
-						
+			
+			timeout = 0;
+			
 			retry:
 			while((c=at_m590_getchar()) != (CHAR8)-1)
 			{			
 				putcharSer(USE_USB,c);
 				if(c == '>')
 				{					
-					//strcpy((char *)gSendBuffer,dados);
-					//m590_print(dados);					
-					//printSer(USE_USB,"\r\n");
-					//printSer(USE_USB,dados);							
 					
-					// DelayTask(10);   // 100ms;
+					//putcharSer(USE_USB,c);
 					
-					m590_print(dados);
-					m590_print("\r");
-					
-#if 0
-					s = '0';					
+					len = length;
+					send = dados;					
 					while(len > 0)
 					{
-						m590_putchar(s);
+						c=*send;
+						m590_putchar(c);
+						putcharSer(USE_USB,c);
 						len--;
-						s++;
+						send++;
 					}	
-#endif
-					m590_print(dados);
-					m590_print("\r");
-					
+					m590_putchar('\r');
 					
 					memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
 					at_m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer));
-					
-					printSer(USE_USB,dados);	
-					printSer(USE_USB,"\r\n");				
-					
 					printSer(USE_USB,gReceiveBuffer);		
 					
-					if( strstr((char *)gReceiveBuffer,"+TCPSEND:0,36"))
+					if( strstr((char *)gReceiveBuffer,"+TCPSEND:0"))
 					{
 						printSer(USE_USB,"\r\nsend ok\r\n");
+						
+						m590_print("at+ipstatus=0\r");
+						DelayTask(10);
+						do
+						{
+							memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
+							len = at_m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer));
+							printSer(USE_USB,gReceiveBuffer);
+						}while(len);
+																		
 						return TRUE;
 					}
 					else if( strstr((char *)gReceiveBuffer,"+TCPSEND:Error"))
@@ -233,10 +240,10 @@ INT8U TCPIP_SendData(INT8U * dados)
 						printSer(USE_USB,gReceiveBuffer);
 					}
 				}
-			}	
+			}
 			
-			if(c==-1)
-			{				
+			if(++timeout > 50)
+			{
 				goto retry;
 			}
 		}
@@ -252,12 +259,12 @@ INT8U TCPIP_SendData(INT8U * dados)
 *****************************************************************************************/
 INT8U CreateSingleTCPLink(unsigned char iLinkNum,char *strServerIP,char *strPort)
 {
-	int length;
+	INT16U length;
 	char buffer[50];
 	
 	memset(buffer,0x00,sizeof(buffer));
 	sprintf(buffer,"AT+TCPSETUP=%d,%s,%s\r",iLinkNum,strServerIP,strPort);
-	length = strlen((char *)buffer);
+	length = (INT16U)strlen((char *)buffer);
 	if( !CreateTCPLink(buffer))  
 	{
 		return FALSE;
@@ -384,7 +391,7 @@ m590_ret_t at_m590_open(void)
 m590_ret_t at_m590_send(INT8U num, CHAR8* field, CHAR8* val)
 {
 	INT8U idx;
-	
+	UNUSED(num); UNUSED(field); UNUSED(val);
 	if(m590_state != M590_OPEN)
 	{
 		return M590_STATE_ERR;
@@ -397,8 +404,10 @@ m590_ret_t at_m590_send(INT8U num, CHAR8* field, CHAR8* val)
 	//CreateSingleTCPLink(0,"200.132.39.117","80");
 	if(CreateTCPLink("AT+TCPSETUP=0,200.132.39.117,80\r\n") == TRUE)
 	{
-		//TCPIP_SendData("GET / HTTP/1.1\\r\\nHost: www.ufsm.br\\r\\n\\r\\n\\r\\n\r");
-		TCPIP_SendData("0123456789abcdefghijklmnopqrstuvxyz\r");
+		//TCPIP_SendData("get / HTTP/1.1\\r\\nHost: www.ufsm.br\\r\\n\\r\\n\\r\\n\r");
+		TCPIP_SendData("GET / HTTP/1.1\r\nHost: www.ufsm.br\r\n\r\n\r\n");
+		//TCPIP_SendData("GET / HTTP/1.0   \\r\\n\\r\\n\\r\\n\r");
+		//TCPIP_SendData("0123456789abcdefghijklmnopqrstuvxyz\r");
 	}
 	else
 	{
@@ -481,8 +490,8 @@ m590_ret_t at_m590_server(void)
 	/* listening */	
 	m590_acquire();
 		
-		m590_print("AT+TCPLISTEN=6800\r\n");
-		DelayTask(1000);
+		m590_print("AT+TCPLISTEN=80\r");
+		//DelayTask(1000);
 		
 		while(1)
 		{
@@ -527,7 +536,7 @@ m590_ret_t at_m590_server(void)
 				}
 			}
 #endif
-			if(++timeout > 500)
+			if(++timeout > 10000)
 			{
 				timeout = 0;
 				break;

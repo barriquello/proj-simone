@@ -25,7 +25,7 @@
 #define M590_APN		 "tim.br"
 #define M590_PWD		 "tim"
 
-#define M590_UART_BUFSIZE	64
+#define M590_UART_BUFSIZE	256
 #define M590_UART_TIMEOUT	10
 
 /* define esp uart functions*/

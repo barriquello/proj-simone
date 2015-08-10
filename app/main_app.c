@@ -112,7 +112,7 @@ void main_app(void)
 
 
 #if (USB_CLASS_TYPE == BRTOS_USB_CDC)
-	if (InstallTask(&Terminal_Task, "USB Terminal Task", 672, 15, NULL) != OK)
+	if (InstallTask(&Terminal_Task, "USB Terminal Task", 1024, 15, NULL) != OK)
 	{
 		while (1){};
 	};

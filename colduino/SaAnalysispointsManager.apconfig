@@ -1,6 +1,6 @@
 <Analysispoints>
 	<Name>AnalysispointsManager</Name>
-	<ProjectPath>E:/carlos/workspace/proj-simone/colduino/SaAnalysispointsManager.apconfig</ProjectPath>
+	<ProjectPath>C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/SaAnalysispointsManager.apconfig</ProjectPath>
 	<MaxNumberOfCores>1</MaxNumberOfCores>
 	<Comments>Analysispoints Manager</Comments>
 	<IgnoreAll>false</IgnoreAll>

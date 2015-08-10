@@ -122,7 +122,7 @@ void Terminal_Task(void)
 	usb_terminal_init(cdc_putch);
 	
 #if TERM_UART1
-	#define UART1_BUFSIZE	128
+	#define UART1_BUFSIZE	256
 	#if UART1_MUTEX	
 		uart_init(1,9600,UART1_BUFSIZE,TRUE,UART1_MUTEX_PRIO);
 	#else
@@ -131,7 +131,7 @@ void Terminal_Task(void)
 #endif		
 	
 #if TERM_UART2
-	#define UART2_BUFSIZE	128
+	#define UART2_BUFSIZE	256
 	#if UART2_MUTEX		
 		uart_init(2,9600,UART2_BUFSIZE,TRUE,UART2_MUTEX_PRIO);
 	#else
