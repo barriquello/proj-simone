@@ -376,7 +376,7 @@ static char *_fmt(const char *format, const struct tm *t, char *pt, const char *
 
           tm = *t;
           mkt = mktime(&tm);
-          sprintf(buf, "%lu", mkt);
+          snprintf(buf, sizeof(buf)-1, "%lu", mkt);
           pt = _add(buf, pt, ptlim);
           continue;
         }
@@ -507,7 +507,7 @@ static char *_fmt(const char *format, const struct tm *t, char *pt, const char *
 static char *_conv(const int n, const char *format, char *pt, const char *ptlim) {
   char  buf[32];
 
-  sprintf(buf, format, n);
+  snprintf(buf, sizeof(buf)-1, format, n);
   return _add(buf, pt, ptlim);
 }
 

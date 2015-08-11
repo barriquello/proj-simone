@@ -12,10 +12,18 @@
 const char inifile[] = "test.ini";
 const char inifile2[] = "testplain.ini";
 
+#if DEBUG_MININI
+#define PRINTF(...) printf(__VA_ARGS__);
+#else
+#define PRINTF(...)
+#endif
+
+int Callback(const char *section, const char *key, const char *value, const void *userdata);
+
 int Callback(const char *section, const char *key, const char *value, const void *userdata)
 {
   (void)userdata; /* this parameter is not used in this example */
-  printf("    [%s]\t%s=%s\n", section, key, value);
+  PRINTF("    [%s]\t%s=%s\n", section, key, value);
   return 1;
 }
 

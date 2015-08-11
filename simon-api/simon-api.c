@@ -2,7 +2,7 @@
  * simon-api.c
  *
  *  Created on: Jul 22, 2015
- *      Author: Universidade Federal
+ *      Author: UFSM
  */
 
 
@@ -20,12 +20,16 @@ INT8U get_server_confirmation(char* server_reply);
 static input in = NULL;
 static output out = NULL;
 
-//static unsigned char (*putch)(char);
+#if DEBUG_SIMON
+#define PRINTF(...) printf(__VA_ARGS__);
+#else
+#define PRINTF(...)
+#endif
 
 static char message[1024];
 static char server_reply[1024];
-int recv_size;
 static char* hostname = SERVER_NAME;
+INT16U recv_size;
 
 INT8U simon_init(input _in, output _out, set_host sethost)
 {
@@ -48,11 +52,11 @@ INT8U simon_get_time(struct tm * t)
 	{
 		return !OK;
 	}
-	if(out(message , strlen(message)) != 0)
+	if(out(message , (INT16U)strlen(message)) != 0)
 	{
 		return !OK;
 	}
-	if(in(server_reply , &recv_size) != 0)
+	if(in(server_reply , (INT16U*)&recv_size) != 0)
 	{
 		return !OK;
 	}
@@ -81,11 +85,11 @@ INT8U simon_send_data(INT8U *buf, INT16U len)
 	{
 		return !OK;
 	}
-	if(out(message , strlen(message)) != 0)
+	if(out(message, (INT16U)strlen(message)) != 0)
 	{
 		return !OK;
 	}
-	if(in(server_reply , &recv_size) != 0)
+	if(in(server_reply , (INT16U*) &recv_size) != 0)
 	{
 		return !OK;
 	}
@@ -147,7 +151,7 @@ void get_server_time(char* server_reply, struct tm *ts)
 		default:
 			break;
 		}
-		printf( " %s\n", token );
+		PRINTF( " %s\n", token );
 		token = strtok(NULL, " ");
 	}
 

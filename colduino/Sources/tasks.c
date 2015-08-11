@@ -267,7 +267,7 @@ void Tarefa_GPRS(void)
 		  */
 		  tentativas++; 
 		  modem_send(SEND_STRING2);
-		  sprintf(valor,"%d", cnt);
+		  snprintf(valor,sizeof(valor)-1,"%d", cnt);
 		  modem_send(valor);
 		  modem_send(SEND_STRING3);
 		  NEWLINE();

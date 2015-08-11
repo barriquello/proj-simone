@@ -45,7 +45,7 @@ INT8U esp_set_hostname(CHAR8 *host)
 	return OK;
 }
 
-INT8U esp_set_ip(void)
+INT8U esp_get_ip(void)
 {
 	if(hostname == NULL)
 	{
@@ -145,16 +145,9 @@ esp_ret_t at_esp_open(void)
 	return ESP_OK;
 }
 
-#define SEND_STRING "AT+CIPSENDI=0,\"GET /input/post.json?json={p:3}&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\\r\\nHost: emon-gpsnetcms.rhcloud.com\\r\\n\\r\\n\\r\\n\""
-
-#define SEND_STRING1 "AT+CIPSENDI=0,\"GET /input/post.json?json={"
-//#define SEND_STRING2 ("}&" API_KEY " HTTP/1.1\r\nHost: " ESP_TCP_SERVER_NAME "\r\n\r\n\r\n")
-#define SEND_STRING2 "}&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\\r\\nHost: emon-gpsnetcms.rhcloud.com\\r\\n\\r\\n\\r\\n\""
-
-esp_ret_t at_esp_send(INT8U num, CHAR8* field, CHAR8* val)
+esp_ret_t at_esp_send(INT8U* dados)
 {
-	INT8U idx;
-	
+		
 	if(esp_state != OPEN)
 	{
 		return ESP_STATE_ERR;
@@ -162,21 +155,16 @@ esp_ret_t at_esp_send(INT8U num, CHAR8* field, CHAR8* val)
 	
 	/* sending */	
 	esp_acquire();
-#if 0	
-	esp_print(SEND_STRING);
-	esp_print("\r\n");
 	
+#if 0	
+	#define SEND_STRING "AT+CIPSENDI=0,\"GET /input/post.json?json={p:3}&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\\r\\nHost: emon-gpsnetcms.rhcloud.com\\r\\n\\r\\n\\r\\n\""
+	esp_print(SEND_STRING);
+	esp_print("\r\n");	
 #else	
-	esp_print(SEND_STRING1);
-	for (idx = 0; idx<num; idx++)
+	if(dados != NULL)
 	{
-		//esp_print(field[idx]);
-		esp_print(field);
-		esp_putchar(':');
-		//esp_print(val[idx]);		
-		esp_print(val);
+		esp_print(dados);	
 	}
-	esp_print(SEND_STRING2);
 #endif	
 	
 	esp_print("\r\n");
@@ -203,8 +191,7 @@ esp_ret_t at_esp_receive(CHAR8* buff, INT8U* len)
 	esp_release();		
 	printSer(USE_USB,"\r\n");
 		
-	/* try to receive */
-	
+	/* try to receive */	
 	return ESP_OK;
 }
 

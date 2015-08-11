@@ -546,7 +546,7 @@ uint8_t http_send_data(char *data, uint8_t len)
 	
 	//Add a NULL terminating character to make it a proper string before printing
 	server_reply[recv_size] = '\0';
-	printf(server_reply);
+	PRINTF(server_reply);
 
 	return 0;
 }
@@ -601,7 +601,7 @@ void http_server_time(char* server_reply, struct tm *ts)
 		default:
 			break;
 		}
-		printf( " %s\n", token );
+		PRINTF( " %s\n", token );
 		token = strtok(NULL, " ");
 	}
 

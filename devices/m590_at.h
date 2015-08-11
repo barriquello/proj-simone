@@ -2,7 +2,7 @@
  * m590_at.h
  *
  *  Created on: Aug 7, 2015
- *      Author: Gisele
+ *      Author: UFSM
  */
 
 #ifndef M590_AT_H_
@@ -108,15 +108,18 @@ typedef enum
 
 m590_ret_t at_m590_init(void);
 m590_ret_t at_m590_open(void);
-m590_ret_t at_m590_send(INT8U num, CHAR8* field, CHAR8* val);
+m590_ret_t at_m590_send(INT8U* dados);
 m590_ret_t at_m590_receive(CHAR8* buff, INT8U* len);
 m590_ret_t at_m590_close(void);
 m590_ret_t at_m590_server(void);
+m590_ret_t at_m590_dns(char* param);
 CHAR8 at_m590_getchar(void);
 
 
+
 INT8U m590_set_hostname(CHAR8 *host);
-INT8U m590_set_ip(void);
+INT8U m590_get_ip(void);
+INT8U m590_set_ip(CHAR8* ip);
 
 
 #endif /* M590_AT_H_ */

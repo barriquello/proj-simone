@@ -998,7 +998,7 @@ void cmd_esp(char *param)
 			break;
 		case '2': at_esp_open();
 			break;
-		case '3': at_esp_send(1,"power","150");
+		case '3': at_esp_send(NULL);
 					break;
 		case '4': at_esp_receive(NULL,NULL);
 					break;					
@@ -1007,7 +1007,7 @@ void cmd_esp(char *param)
 		case '6':
 			at_esp_init();
 			at_esp_open();
-			at_esp_send(1,"power","150");
+			at_esp_send(NULL);
 			break;
 		default:
 			printf_usb(	"\r\n usage:\r\n"
@@ -1039,19 +1039,21 @@ void cmd_m590(char *param)
 			break;
 		case '2': at_m590_open();
 			break;
-		case '3': at_m590_send(1,"power","150");
-					break;
+		case '3': at_m590_send(NULL);
+			break;
 		case '4': at_m590_receive(NULL,NULL);
-					break;					
+			break;					
 		case '5': at_m590_close();
 			break;
 		case '6':
 			at_m590_init();
 			at_m590_open();
-			at_m590_send(1,"power","150");
+			at_m590_send(NULL);
 			break;	
 		case '7': at_m590_server();
 			break;			
+		case '8': at_m590_dns(param);
+			break;	
 		default:
 			printf_usb(	"\r\n usage:\r\n"
 						"1 - init \r\n"
