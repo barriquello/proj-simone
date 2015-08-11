@@ -9,7 +9,7 @@
 #include "esp8266_at.h"
 #include "BRTOS.h"
 #include "utils.h"
-#include "usb_terminal_commands.h"
+#include "terminal_commands.h"
 
 static esp_state_t esp_state = INIT;
 static char ip[16];

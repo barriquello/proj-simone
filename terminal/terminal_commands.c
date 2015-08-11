@@ -25,21 +25,20 @@
  */
 #include "AppConfig.h"
 #include "usb_terminal.h"
-#include "usb_terminal_commands.h"
+#include "terminal_commands.h"
 #include "virtual_com.h"
 #include "BRTOS.h"
 #include "debug_stack.h"
 #include "tasks.h"
 #include "utils.h"
 #include "da.h"
-//#include "sound_driver.h"
 #include "UART.h"
 #include "string.h"
 
 INT8U entradas[CONSOLE_BUFFER_SIZE]; //vetor para a entrada de dados
 
 // BRTOS version Command
-void usb_cmd_ver(char *param)
+void term_cmd_ver(char *param)
 {
   (void)*param;
   printf_usb("\n\r");
@@ -47,14 +46,14 @@ void usb_cmd_ver(char *param)
   printf_usb("\n\r");
 }
 
-const command_t usb_ver_cmd = {
-  "ver", usb_cmd_ver, "BRTOS Version"
+const command_t ver_cmd = {
+  "ver", term_cmd_ver, "BRTOS Version"
 };
 
 
 
 // TOP Command (similar to the linux command)
-void usb_cmd_top(char *param)
+void term_cmd_top(char *param)
 {
   (void)*param;
   printf_usb("\n\r");
@@ -64,26 +63,26 @@ void usb_cmd_top(char *param)
   Transmite_Task_Stacks(USE_USB);
 }
 
-const command_t usb_top_cmd = {
-  "top", usb_cmd_top, "BRTOS TOP"
+const command_t top_cmd = {
+  "top", term_cmd_top, "BRTOS TOP"
 };
 
 
 // Reason of Reset Command
-void usb_cmd_rst(char *param)
+void term_cmd_rst(char *param)
 {
   (void)*param;
   printf_usb("\n\r");
   Reason_of_Reset(USE_USB);
 }
 
-const command_t usb_rst_cmd = {
-  "rst", usb_cmd_rst, "CPU Reason of the Reset"
+const command_t rst_cmd = {
+  "rst", term_cmd_rst, "CPU Reason of the Reset"
 };
 
 // Core temperature Command
 extern INT16S CoreTemp;
-void usb_cmd_temp(char *param)
+void term_cmd_temp(char *param)
 {
   INT16S temp;
   CHAR8  string[8];
@@ -99,11 +98,11 @@ void usb_cmd_temp(char *param)
   printf_usb(" degrees");
 }
 
-const command_t usb_temp_cmd = {
-  "temp", usb_cmd_temp, "Show core temperature"
+const command_t temp_cmd = {
+  "temp", term_cmd_temp, "Show core temperature"
 };
 
-void cmd_setget_time(char *param){
+void term_cmd_setget_time(char *param){
 	
 	OS_RTC datetime; /* dd/mm/yyyy hh:mm:ss */
 	
@@ -285,12 +284,12 @@ print_date:
 }
 
 const command_t setget_time_cmd = {
-  "time", cmd_setget_time, "Set/Get OS Date and Time"
+  "time", term_cmd_setget_time, "Set/Get OS Date and Time"
 };
 
 
-// SD Card Read Command
-void cmd_cat(char *param)
+// File Read Command
+void term_cmd_cat(char *param)
 {  
   INT8U i       = 0;
   INT8U retorno = 0;
@@ -341,12 +340,12 @@ void cmd_cat(char *param)
 }
 
 const command_t cat_cmd = {
-  "cat", cmd_cat, "SD Card - Read file"
+  "cat", term_cmd_cat, "SD Card - Read file"
 };
 
 
-// SD Card List Files Command
-void cmd_ls(char *param)
+// List Files Command
+void term_cmd_ls(char *param)
 {  
   INT8U i       = 0;
   INT8U retorno = 0;  
@@ -378,12 +377,12 @@ void cmd_ls(char *param)
 }
 
 const command_t ls_cmd = {
-  "ls", cmd_ls, "SD Card - List files"
+  "ls", term_cmd_ls, "SD Card - List files"
 };
 
 
-// SD Card Change Dir Command
-void cmd_cd(char *param)
+// Change Dir Command
+void term_cmd_cd(char *param)
 {  
   INT8U i       = 0;
   INT8U retorno = 0;
@@ -434,7 +433,7 @@ void cmd_cd(char *param)
 }
 
 const command_t cd_cmd = {
-  "cd", cmd_cd, "SD Card - Change Dir"
+  "cd", term_cmd_cd, "SD Card - Change Dir"
 };
 
 // Mount SD Card Command
@@ -442,7 +441,7 @@ const command_t cd_cmd = {
 extern char musics[WAV_LIST_SIZE][WAV_NAME_SIZE];
 #endif
 
-void cmd_mount(char *param)
+void term_cmd_mount(char *param)
 {    
   INT8U status = 0;
   INT8U i = 0;
@@ -470,12 +469,12 @@ void cmd_mount(char *param)
 }
 
 const command_t mount_cmd = {
-  "mount", cmd_mount, "Mount SD Card"
+  "mount", term_cmd_mount, "Mount SD Card"
 };
 
 
 // Safely remove SD Card Command
-void cmd_sr(char *param)
+void term_cmd_sr(char *param)
 {  
   (void)*param;
   
@@ -484,12 +483,12 @@ void cmd_sr(char *param)
 }
 
 const command_t sr_cmd = {
-  "sr", cmd_sr, "Safely remove the SD Card"
+  "sr", term_cmd_sr, "Safely remove the SD Card"
 };
 
 
-// SD Card Delete Command
-void cmd_rm(char *param)
+// File Delete Command
+void term_cmd_rm(char *param)
 {  
   INT8U     i       = 0;
   INT8U     retorno = 0;
@@ -531,8 +530,7 @@ void cmd_rm(char *param)
 		printSer(USE_USB, (CHAR8*)"\r\nFunction failed.\r\n");
 	} else {
 		printSer(USE_USB, (CHAR8*)"\r\nAll contents were successfully removed.\n");
-	}
-	
+	}	
   }
   else
   {
@@ -557,12 +555,12 @@ void cmd_rm(char *param)
 }
 
 const command_t rm_cmd = {
-  "rm", cmd_rm, "SD Card - Delete File or Directory"
+  "rm", term_cmd_rm, "SD Card - Delete File or Directory"
 };
 
 
-// SD Card Rename Command
-void cmd_rn(char *param)
+// File Rename Command
+void term_cmd_rn(char *param)
 {  
   INT8U     i       = 0;
   INT8U     retorno = 0;
@@ -613,12 +611,12 @@ void cmd_rn(char *param)
 }
 
 const command_t rn_cmd = {
-  "rn", cmd_rn, "SD Card - Rename File"
+  "rn", term_cmd_rn, "SD Card - Rename File"
 };
 
 
-// SD Card Create File Command
-void cmd_cr(char *param)
+// Create File Command
+void term_cmd_cr(char *param)
 {  
   INT8U i       = 0;
   INT8U retorno = 0;
@@ -669,12 +667,12 @@ void cmd_cr(char *param)
 }
 
 const command_t cr_cmd = {
-  "cr", cmd_cr, "SD Card - Create file"
+  "cr", term_cmd_cr, "SD Card - Create file"
 };
 
 
-// SD Card Make Dir Command
-void cmd_mkdir(char *param)
+// Make Dir Command
+void term_cmd_mkdir(char *param)
 {  
   INT8U i       = 0;
   INT8U retorno = 0;
@@ -725,12 +723,12 @@ void cmd_mkdir(char *param)
 }
 
 const command_t mkdir_cmd = {
-  "mkdir", cmd_mkdir, "SD Card - Make Dir"
+  "mkdir", term_cmd_mkdir, "SD Card - Make Dir"
 };
 
 
-// SD Card Copy File Command
-void cmd_cp(char *param)
+// Copy File Command
+void term_cmd_cp(char *param)
 {  
   INT8U     i       = 0;
   INT8U     retorno = 0;
@@ -781,12 +779,12 @@ void cmd_cp(char *param)
 }
 
 const command_t cp_cmd = {
-  "cp", cmd_cp, "SD Card - Copy File"
+  "cp", term_cmd_cp, "SD Card - Copy File"
 };
 
 
-// SD Card Write File Test Command
-void cmd_wt(char *param)
+// Write File Test Command
+void term_cmd_wt(char *param)
 {  
   INT8U i       = 0;
   INT8U retorno = 0; 
@@ -828,7 +826,7 @@ void cmd_wt(char *param)
 }
 
 const command_t wt_cmd = {
-  "wt", cmd_wt, "SD Card - Write Uptime - Test for write file"
+  "wt", term_cmd_wt, "SD Card - Write Uptime - Test for write file"
 };
 
 static INT8U stdout = USE_USB;
@@ -842,7 +840,7 @@ extern BRTOS_Queue *Serial2;
 
 
 // Print a string in the terminal
-void cmd_echo(char *param)
+void term_cmd_echo(char *param)
 {
 	INT8U caracter;
 	if(param == NULL) return;
@@ -889,11 +887,11 @@ void cmd_echo(char *param)
 }
 
 const command_t echo_cmd = {
-  "echo", cmd_echo, "Print the string in the terminal"
+  "echo", term_cmd_echo, "Print the string in the terminal"
 };
 
 // Print a string in the terminal
-void cmd_echo_out(char *param)
+void term_cmd_echo_out(char *param)
 {	
 	INT8U std_output;
 	printSer(USE_USB, "\n\r");	
@@ -925,7 +923,7 @@ void cmd_echo_out(char *param)
 }
 
 const command_t echo_stdout_cmd = {
-  "stdout", cmd_echo_out, "Set std output for echo cmd"
+  "stdout", term_cmd_echo_out, "Set std output for echo cmd"
 };
 
 
@@ -986,10 +984,7 @@ void echo (char *string, char Terminalbackup)
 
 #include "esp8266_at.h"
 
-//const INT8U esp_buffer_send[];
-//INT8U esp_buffer_rx[64];
-
-void cmd_esp(char *param)
+void term_cmd_esp(char *param)
 {	
 	printf_usb("\r\n");
 	switch (param[0])
@@ -1021,16 +1016,13 @@ void cmd_esp(char *param)
 }
 
 const command_t esp_cmd = {
-  "esp", cmd_esp, "Control ESP8266"
+  "esp", term_cmd_esp, "Control ESP8266"
 };
 
 
 #include "m590_at.h"
 
-//const INT8U esp_buffer_send[];
-//INT8U esp_buffer_rx[64];
-
-void cmd_m590(char *param)
+void term_cmd_m590(char *param)
 {	
 	printf_usb("\r\n");
 	switch (param[0])
@@ -1069,7 +1061,7 @@ void cmd_m590(char *param)
 }
 
 const command_t m590_cmd = {
-  "m590", cmd_m590, "Control M590 modem"
+  "m590", term_cmd_m590, "Control M590 modem"
 };
 
 // D/A converter sin wave Command

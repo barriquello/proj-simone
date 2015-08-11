@@ -23,21 +23,22 @@
 #include "AppConfig.h"
 #include "virtual_com.h"
 #include "usb_terminal.h"
-#include "usb_terminal_commands.h"
+#include "terminal_commands.h"
 #include "led_onboard.h"
 
 #pragma warn_implicitconv off
 
 void System_Time(void)
 {
-	// task setup
+
+	/* task setup */
 	INT16U milis = 0;
 	INT16U segundos = 0;
-
+	
 	OSResetTime();
 
-	led_onboard_init();
-	
+	/* LED onboard ON */
+	led_onboard_init();	
 	led_onboard_on();
 	
 	#if RTC_PRESENTE
@@ -50,22 +51,24 @@ void System_Time(void)
 		}
 	#endif	
 	
+	/* LED onboard OFF */
 	led_onboard_off();
 
-	// task main loop
+	/* task main loop */
 	for (;;)
 	{
 		#if (WATCHDOG == 1)
 			__RESET_WATCHDOG();
 		#endif     
 
-		DelayTask(10);
+		DelayTask(10);	/* delay 10ms */
 		milis += 10;
 		
-		if (milis >= 1000)
+		if (milis >= 1000) /* 1000ms ? */
 		{
 			milis = 0;
 			
+			/* Update time and calendar */
 			OSUpdateUptime();
 			OSUpdateCalendar();
 			
@@ -75,17 +78,14 @@ void System_Time(void)
 				segundos = 0;
 				
 				#if RTC_PRESENTE				
-					Resync_calendar();  // resync with RTC every 3600s = 60min = 1h
+					Resync_calendar();  /* resync with RTC every 3600s = 60min = 1h */
 				#endif				
 				
 			}
 		}
-
-		///////////////////////////////////////////////////
-		///   FatFS Timer Handler                       ///
-		///////////////////////////////////////////////////
-		disk_timerproc();
-		///////////////////////////////////////////////////        
+		
+		/* FatFS Timer Handler  */	
+		disk_timerproc();       
 	}
 
 }
@@ -118,7 +118,6 @@ void Terminal_Task(void)
 {
 	/* task setup */
 	(void) CDC_Init(); /* Initialize the USB CDC Application */
-
 	usb_terminal_init(cdc_putch);
 	
 #if TERM_UART1
@@ -140,10 +139,10 @@ void Terminal_Task(void)
 
 #endif	
 
-	(void) usb_terminal_add_cmd((command_t*) &usb_ver_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &usb_top_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &usb_rst_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &usb_temp_cmd);
+	(void) usb_terminal_add_cmd((command_t*) &ver_cmd);
+	(void) usb_terminal_add_cmd((command_t*) &top_cmd);
+	(void) usb_terminal_add_cmd((command_t*) &rst_cmd);
+	(void) usb_terminal_add_cmd((command_t*) &temp_cmd);
 	(void) usb_terminal_add_cmd((command_t*) &setget_time_cmd);
 	(void) usb_terminal_add_cmd((command_t*) &cat_cmd);
 	(void) usb_terminal_add_cmd((command_t*) &ls_cmd);

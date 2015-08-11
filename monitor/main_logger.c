@@ -137,13 +137,12 @@ static int  timer_expired(struct timer *t);
 static void timer_set(struct timer *t, int usecs);
 /*---------------------------------------------------------------------------*/
 
-//log_header_t config_h; 		/* header for logger config */
-
 #include <time.h>
 #include <string.h>
 
 uint8_t http_send_data(char *data, uint8_t len);
 uint8_t http_get_time(struct tm *t);
+
 #if _WIN32
 uint8_t dns_get_ipaddress(char* ip, char *hostname);
 #endif

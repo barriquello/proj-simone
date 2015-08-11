@@ -677,7 +677,7 @@ void disk_timerproc (void)
 	#ifndef USE_OS
   	if (Timer1) Timer1--;
   	if (Timer2) Timer2--;
-  #else
+  	#else
     if (Timer2) Timer2--;
 	#endif
 	

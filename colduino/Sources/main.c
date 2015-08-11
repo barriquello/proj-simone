@@ -10,26 +10,19 @@ extern "C"
 /******************************************************************************
  * @file main.c
  * @author Carlos H. Barriquello
- * @version
- * @date
- * @brief   This software is the GPRS_TRAFO project for Coldfire V1 JE256
+ * @brief  This is the main entry point of the software
  *****************************************************************************/
 
 #if ((defined _MCF51MM256_H) || (defined _MCF51JE256_H) || (defined _MCF51JE128_H))
-/* checksum bypass */
 const unsigned char boot:0x040A = 0x00;   //zero out checksum to bypass boot loader
-
-
 #endif /* (defined _MCF51MM256_H) || (defined _MCF51JE256_H) */
 
 /******************************************************************************
  * @name        main
- * @brief       This function initializes the system, enables the interrupts and calls the application
+ * @brief       This function calls the application
  * @param       None
  * @return      None
  *****************************************************************************/
-void main_app(void);
-
 void main(void)
 {
 
@@ -40,6 +33,5 @@ void main(void)
 		__RESET_WATCHDOG();
 		/* __RESET_WATCHDOG(); by default, COP is disabled with device init. When enabling, also reset the watchdog. */
 	} /* loop forever */
-	/* please make sure that you never leave main */
 }
 

@@ -54,54 +54,6 @@ void putcharSer(INT8U SerialPort, CHAR8 caracter)
 	}	
 }
 
-INT32U StringToInteger(char p[])
-{
-	INT32U k = 0;
-	while (*p)
-	{
-		k = (k << 3) + (k << 1) + (*p) - '0';
-		p++;
-	}
-	return k;
-}
-
-#if 0
-int strcmp(char s1[], char s2[])
-{
-	for (; *s1 == *s2; s1++, s2++)
-	{
-		if (*s1 == '\0')
-		{
-			return 0;
-		}
-	}
-	return *s1 - *s2;
-}
-
-void strcpy(char dest[], char src[])
-{
-	unsigned i;
-	for (i = 0; src[i] != '\0'; ++i)
-		dest[i] = src[i];
-	dest[i] = '\0';
-}
-
-void strcat(char dest[], char src[])
-{
-	INT8U i, j;
-	for (i = 0; dest[i] != '\0'; i++);
-	for (j = 0; src[j] != '\0'; j++)
-		dest[i + j] = src[j];
-	dest[i + j] = '\0';
-}
-
-int strlen(char *str)
-{
-	char *s;
-	for (s = str; *s; ++s);
-	return (s - str);
-}
-#endif
 
 /* reverse:  reverse string s in place */
 void reverse(char s[])
@@ -116,6 +68,19 @@ void reverse(char s[])
 	}
 }
 
+#if 0
+
+INT32U StringToInteger(char p[])
+{
+	INT32U k = 0;
+	while (*p)
+	{
+		k = (k << 3) + (k << 1) + (*p) - '0';
+		p++;
+	}
+	return k;
+}
+
 /* conv inteiro n para string s */
 void IntToString(int n, char s[])
 {
@@ -128,6 +93,7 @@ void IntToString(int n, char s[])
 	s[i] = '\0';
 	reverse(s);
 }
+#endif
 
 char *ltoa(long N, char *str, int base)
 {
@@ -442,3 +408,41 @@ void PrintDateTime(OSDateTime *dt, CHAR8 *buff)
 	Print2Digits(dt->time.RTC_Minute,ZEROS_ALIGN, &buff[10]);
 	Print2Digits(dt->time.RTC_Second,ZEROS_ALIGN, &buff[12]);
 }
+
+#if 0
+int strcmp(char s1[], char s2[])
+{
+	for (; *s1 == *s2; s1++, s2++)
+	{
+		if (*s1 == '\0')
+		{
+			return 0;
+		}
+	}
+	return *s1 - *s2;
+}
+
+void strcpy(char dest[], char src[])
+{
+	unsigned i;
+	for (i = 0; src[i] != '\0'; ++i)
+		dest[i] = src[i];
+	dest[i] = '\0';
+}
+
+void strcat(char dest[], char src[])
+{
+	INT8U i, j;
+	for (i = 0; dest[i] != '\0'; i++);
+	for (j = 0; src[j] != '\0'; j++)
+		dest[i + j] = src[j];
+	dest[i + j] = '\0';
+}
+
+int strlen(char *str)
+{
+	char *s;
+	for (s = str; *s; ++s);
+	return (s - str);
+}
+#endif

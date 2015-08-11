@@ -8,22 +8,18 @@ extern "C"
 #endif
 
 /******************************************************************************
- * @file main.c
+ * @file main_app.c
  * @author Carlos H. Barriquello
- * @version
- * @date
  * @brief   This software is the main entry of the project
  *****************************************************************************/
 
 
 /******************************************************************************
  * @name        main_app
- * @brief       This function initializes the system, enables the interrupts and calls the application
+ * @brief       This function initializes the system and installs the application tasks
  * @param       None
  * @return      None
  *****************************************************************************/
-void main_app(void);
-void main_monitor(void);
 
 void main_app(void)
 {
@@ -33,9 +29,10 @@ void main_app(void)
 	/* init the MCU system */
 	System_Init();
 
-	// Initialize BRTOS
+	/* Init BRTOS system */
 	BRTOS_Init();
 
+	/* Install task for keeping system clock time */
 	if (InstallTask(&System_Time, "System Time", 256, 31, NULL) != OK)
 	{
 		while (1){};
@@ -134,7 +131,7 @@ void main_app(void)
 	};
 #endif
 
-	// Start Task Scheduler
+	/* Start Task Scheduler */
 	if (BRTOSStart() != OK)
 	{
 		while (1){};

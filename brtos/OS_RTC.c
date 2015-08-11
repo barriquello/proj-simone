@@ -144,8 +144,6 @@ void OSUpdateUptime(void)
 			{
 				Hora.RTC_Hour = 0;
 				Data.RTC_Day++;
-				
-
 			}
 		}
 	}

@@ -18,6 +18,8 @@ typedef struct {
   const char *help_txt;
 } command_t;
 
+#define CONSOLE_BUFFER_SIZE  (144)
+
 extern int terminal_add_cmd(command_t *cmd);
 extern int terminal_delete_cmd(command_t *cmd);
 extern void terminal_init(void);

@@ -26,7 +26,7 @@
 #include "types.h"          		/* Contains User Defined Data Types */
 #include "usb_cdc.h"        		/* USB CDC Class Header File */
 #include "usb_terminal.h"			/* Informs the size of the terminal buffer */
-#include "usb_terminal_commands.h"	/* USB terminal commands - functions */
+#include "terminal_commands.h"		/* Terminal commands - functions */
 #include "virtual_com.h"    		/* Virtual COM Application Header File */
 #include <stdio.h>
 

@@ -8,7 +8,7 @@
 #include "m590_at.h"
 #include "BRTOS.h"
 #include "utils.h"
-#include "usb_terminal_commands.h"
+#include "terminal_commands.h"
 #include "string.h"
 #include "stdio.h"
 
