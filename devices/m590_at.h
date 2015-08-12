@@ -10,6 +10,7 @@
 
 #include "OS_types.h"
 #include "UART.h"
+#include "terminal_io.h"
 
 // configuration 
 #define M590_BAUD 			9600

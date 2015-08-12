@@ -27,17 +27,15 @@
 #pragma warn_implicitconv off
 
 #include <stdarg.h>
-#include "usb_terminal.h"
+#include "terminal.h"
 #include "printf_lib.h"
 
 
-#define putchar(x) putchar_usb(x)
+#define putchar(x) putchar_terminal(x)
 
 
 static void printchar(char **str, int c)
 {
-	//extern int putchar(int c);
-	
 	if (str) {
 		**str = (char)c;
 		++(*str);

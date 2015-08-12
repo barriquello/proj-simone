@@ -4,14 +4,6 @@
 #define SPACE_ALIGN (INT8U)1
 #define ZEROS_ALIGN (INT8U)2
 
-#define USE_USB		0
-#define USE_UART1	1
-#define USE_UART2	2
-
-
-void printSer(INT8U SerialPort, CHAR8 *string);
-void putcharSer(INT8U SerialPort, CHAR8 caracter);
-
 void reverse(char s[]);
 void IntToString(int n , char str[]);
 INT32U StringToInteger(char p[]);

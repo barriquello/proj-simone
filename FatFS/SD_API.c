@@ -5,6 +5,7 @@
 #include "drivers.h"
 #include "utils.h"
 #include "string.h"
+#include "terminal_io.h"
 
 
 #pragma warn_implicitconv off

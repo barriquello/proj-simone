@@ -8,8 +8,10 @@
 
 #include "esp8266_at.h"
 #include "BRTOS.h"
-#include "utils.h"
+#include "terminal_io.h"
 #include "terminal_commands.h"
+#include "virtual_com.h"
+#include "utils.h"
 
 static esp_state_t esp_state = INIT;
 static char ip[16];
@@ -20,7 +22,7 @@ static void at_esp_print_reply(void)
 	INT8U c;
 	DelayTask(1000);
 	while((c=at_esp_getchar()) != (CHAR8)-1){
-		putchar_usb(c);
+		putcharSer(USE_USB,c);
 	}
 }
 
@@ -95,8 +97,7 @@ esp_ret_t at_esp_init(void)
 	esp_print("AT+CWMODE=3\r\n");
 	at_esp_print_reply();
 	esp_release();	
-	printSer(USE_USB,"\r\n");
-	
+	printSer(USE_USB,"\r\n");	
 	
 	esp_acquire();
 	esp_print(("AT+CWJAP=\"" ESP_AP "\",\"" ESP_PWD "\"\r\n"));

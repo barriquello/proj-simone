@@ -22,11 +22,17 @@ typedef struct {
 
 extern int terminal_add_cmd(command_t *cmd);
 extern int terminal_delete_cmd(command_t *cmd);
-extern void terminal_init(void);
+extern void terminal_init(unsigned char (*putch_)(char));
 extern void terminal_process(void);
-extern int skipp_space(char *cmd_line, int start);
-extern int find_word(char *cmd_line, int start);
-extern int cmp_str(char *a, char *b);
+extern int term_skipp_space(char *cmd_line, int start);
+extern int term_find_word(char *cmd_line, int start);
+extern int term_cmp_str(char *a, char *b);
+
+void SetSilentMode(char mode);
+unsigned char TerminalBackup(char *backup);
+
+extern void printf_terminal(char *s);
+extern void putchar_terminal(char c);
 
 #ifdef __cplusplus
 }

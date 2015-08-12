@@ -60,7 +60,10 @@ void cdc_process(void);
 unsigned char cdc_putch(char c);
 unsigned char GetStart_transactions(void);
 
-// Declara um ponteiro para o bloco de controle da Porta Serial
+void printf_usb(char *s);
+void putchar_usb(char c);
+
+// Declara um ponteiro para o bloco de controle da  USB
 extern BRTOS_Queue *USB;
 
 #endif 

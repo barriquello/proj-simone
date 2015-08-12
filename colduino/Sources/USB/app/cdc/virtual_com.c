@@ -25,7 +25,7 @@
 #include "derivative.h"     		/* include peripheral declarations */
 #include "types.h"          		/* Contains User Defined Data Types */
 #include "usb_cdc.h"        		/* USB CDC Class Header File */
-#include "usb_terminal.h"			/* Informs the size of the terminal buffer */
+#include "terminal.h"			/* Informs the size of the terminal buffer */
 #include "terminal_commands.h"		/* Terminal commands - functions */
 #include "virtual_com.h"    		/* Virtual COM Application Header File */
 #include <stdio.h>
@@ -236,6 +236,47 @@ unsigned char cdc_putch(char c)
   }
   return((uint_8)r);
 }
+
+/*****************************************************************************
+* Name:
+*    putchar_usb
+* In:
+*    c: character to be sent
+* Out:
+*
+* Description:
+*    Put one character into tx_buffer.
+*
+* Assumptions:
+*    --
+*****************************************************************************/
+void putchar_usb(char c)
+{
+    while(c != (char)cdc_putch(c)){};
+}
+
+/*****************************************************************************
+* Name:
+*    printf_usb
+* In:
+*    s: string to be sent
+* Out:
+*
+* Description:
+*    Put one string into tx_buffer.
+*
+* Assumptions:
+*    --
+*****************************************************************************/
+void printf_usb(char *s)
+{
+  while(*s)
+  {
+      while(*s != (char)cdc_putch(*s)){};
+      s++;
+  }
+}
+
 
 /******************************************************************************
  *

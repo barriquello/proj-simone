@@ -1,13 +1,11 @@
 #include "BRTOS.h"
 #include "debug_stack.h"
 #include "utils.h"
-#include "usb_terminal.h"
+#include "terminal.h"
 #include "uart.h"
+#include "terminal_io.h"
 
 #pragma warn_implicitconv off
-
-
-
 
 void Transmite_Uptime(INT8U Comm)
 {

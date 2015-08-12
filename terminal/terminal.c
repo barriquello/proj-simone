@@ -4,7 +4,6 @@
  ***************************************************************************/
 #include "types.h"
 #include "terminal.h"
-#include "usb_terminal.h"
 #include "virtual_com.h"
 
 #ifdef __cplusplus
@@ -29,29 +28,29 @@ extern "C" {
 /*****************************************************************************
  * Function predefinitions.
  *****************************************************************************/
-static void usb_print_greeting(void);
-static void usb_cmd_help(char *param);
-static void usb_print_prompt(void);
-static int usb_find_command(char *name);
+static void term_print_greeting(void);
+static void term_cmd_help(char *param);
+static void term_print_prompt(void);
+static int  term_find_command(char *name);
 
 /*****************************************************************************
  * Module variables.
  *****************************************************************************/
-static const command_t usb_help_cmd = {
-  "help", usb_cmd_help, "Prints help about commands. "
+static const command_t term_help_cmd = {
+  "help", term_cmd_help, "Prints help about commands. "
 };
 
 static char			SilentMode = 0; 
-static char 		usb_cmd_line[256];
-static uint_8 		usb_cmd_line_ndx;
+static char 		term_cmd_line[256];
+static uint_8 		term_cmd_line_ndx;
 
-static uint_8 		usb_n_cmd;
-static command_t 	*usb_cmds[MAX_CMDS];
+static uint_8 		term_n_cmd;
+static command_t 	*term_cmds[MAX_CMDS];
 
 static unsigned char (*putch)(char);
 
 
-void putchar_usb(char c)
+void putchar_terminal(char c)
 {
     while(c != (char)putch(c)){};
 }
@@ -68,7 +67,7 @@ void putchar_usb(char c)
  * Assumptions:
  *
  *****************************************************************************/
-void printf_usb(char *s)
+void printf_terminal(char *s)
 {
   while(*s)
   {
@@ -93,10 +92,10 @@ void printf_usb(char *s)
  * Assumptions:
  *
  *****************************************************************************/
-int usb_skipp_space(char *usb_cmd_line, int start)
+int term_skipp_space(char *term_cmd_line, int start)
 {
   /* Skip leading whitespace. */
-  while(usb_cmd_line[start] == ' ' || usb_cmd_line[start] == '\t')
+  while(term_cmd_line[start] == ' ' || term_cmd_line[start] == '\t')
   {
     start++;
   }
@@ -119,11 +118,11 @@ int usb_skipp_space(char *usb_cmd_line, int start)
  * Assumptions:
  *    --
  *****************************************************************************/
-int usb_find_word(char *usb_cmd_line, int start)
+int term_find_word(char *term_cmd_line, int start)
 {
   /* Find end of this word. */
-  while(usb_cmd_line[start] != ' ' && usb_cmd_line[start] != '\t' 
-        && usb_cmd_line[start] != '\0')
+  while(term_cmd_line[start] != ' ' && term_cmd_line[start] != '\t' 
+        && term_cmd_line[start] != '\0')
   {
     start++;
   }
@@ -146,7 +145,7 @@ int usb_find_word(char *usb_cmd_line, int start)
  * Assumptions:
  *    --
  *****************************************************************************/
-int usb_cmp_str(char *a, char *b)
+int term_cmp_str(char *a, char *b)
 {
   int x=0;
   do
@@ -177,7 +176,7 @@ int usb_cmp_str(char *a, char *b)
 * Assumptions:
 *    --
 *****************************************************************************/
-static void usb_cmd_help(char *param)
+static void term_cmd_help(char *param)
 {
   int x;
   int y;
@@ -186,22 +185,22 @@ static void usb_cmd_help(char *param)
   (void)param;
   printf_usb("\r\nI understand the following commands:\r\n");
 
-  for(x=0; x < usb_n_cmd; x++)
+  for(x=0; x < term_n_cmd; x++)
   {
     printf_usb("  ");
-    name = (char*)usb_cmds[x]->txt;
+    name = (char*)term_cmds[x]->txt;
     y = 0;
     while(*name)
     {
       y++;
       name++;
     }
-    printf_usb((char *)usb_cmds[x]->txt);
+    printf_usb((char *)term_cmds[x]->txt);
     for(y;y<MAX_CMD_SIZE;y++)
     {
       printf_usb(" ");
     }
-    printf_usb((char *)usb_cmds[x]->help_txt);
+    printf_usb((char *)term_cmds[x]->help_txt);
     printf_usb("\r\n");
   }
   printf_usb("\r\n");
@@ -223,7 +222,7 @@ static void usb_cmd_help(char *param)
 * Assumptions:
 *    --
 *****************************************************************************/
-static void usb_print_prompt(void)
+static void term_print_prompt(void)
 {
   printf_usb("\r\n>");
 }
@@ -243,7 +242,7 @@ static void usb_print_prompt(void)
 * Assumptions:
 *    --
 *****************************************************************************/
-static void usb_print_greeting(void)
+static void term_print_greeting(void)
 {
   printf_usb("CDC Virtual Comm Demo.\r\n");
 }
@@ -264,12 +263,12 @@ static void usb_print_greeting(void)
 * Assumptions:
 *    --
 *****************************************************************************/
-static int usb_find_command(char *name)
+static int term_find_command(char *name)
 {
   int x;
-  for(x=0; x < usb_n_cmd; x++)
+  for(x=0; x < term_n_cmd; x++)
   { /* If command found, execute it. */
-    if (usb_cmp_str(name, (char *) usb_cmds[x]->txt))
+    if (term_cmp_str(name, (char *) term_cmds[x]->txt))
     {
       return(x);
     }
@@ -294,18 +293,18 @@ static int usb_find_command(char *name)
 * Assumptions:
 *    --
 *****************************************************************************/
-void usb_terminal_init(unsigned char (*putch_)(char))
+void terminal_init(unsigned char (*putch_)(char))
 {
-  usb_cmd_line[sizeof(usb_cmd_line)-1]='\0';
-  usb_cmd_line_ndx=0;
+  term_cmd_line[sizeof(term_cmd_line)-1]='\0';
+  term_cmd_line_ndx=0;
 
-  usb_cmds[0]=(void *)&usb_help_cmd;
-  usb_n_cmd=1;
+  term_cmds[0]=(void *)&term_help_cmd;
+  term_n_cmd=1;
   
   putch=putch_;
 
  //print_greeting();
- //usb_print_prompt();
+ //term_print_prompt();
 }
 
 /*****************************************************************************
@@ -323,7 +322,7 @@ void usb_terminal_init(unsigned char (*putch_)(char))
 * Assumptions:
 *    --
 *****************************************************************************/
-void usb_terminal_process(void)
+void terminal_process(void)
 {
   unsigned char data;
   char c;
@@ -345,7 +344,7 @@ void usb_terminal_process(void)
     	  }
       }else
       {
-        if (usb_cmd_line_ndx)
+        if (term_cmd_line_ndx)
         {
           while(c!=(char)(*putch)(c)){};
         }
@@ -368,7 +367,7 @@ void usb_terminal_process(void)
 #endif	    		
     		break;
     	case 0x7F: //DEL
-    		if (usb_cmd_line_ndx)
+    		if (term_cmd_line_ndx)
 			{
 			  while(c!=(char)(*putch)(c)){};
 			}
@@ -393,41 +392,41 @@ void usb_terminal_process(void)
 #endif
         
     
-    /* Execute command if enter is received, or usb_cmd_line is full. */
-    if ((c=='\r') || (usb_cmd_line_ndx == sizeof(usb_cmd_line)-2))
+    /* Execute command if enter is received, or term_cmd_line is full. */
+    if ((c=='\r') || (term_cmd_line_ndx == sizeof(term_cmd_line)-2))
     {
-      int usb_start = usb_skipp_space(usb_cmd_line, 0);
-      int usb_end = usb_find_word(usb_cmd_line, usb_start);
-      int usb_x;
+      int term_start = term_skipp_space(term_cmd_line, 0);
+      int term_end = term_find_word(term_cmd_line, term_start);
+      int term_x;
 
       /* Separate command string from parameters, and close
          parameters string. */
-      usb_cmd_line[usb_end]=usb_cmd_line[usb_cmd_line_ndx]='\0';
+      term_cmd_line[term_end]=term_cmd_line[term_cmd_line_ndx]='\0';
 
       /* Identify command. */
-      usb_x=usb_find_command(usb_cmd_line+usb_start);
+      term_x=term_find_command(term_cmd_line+term_start);
       
       /* Command not found. */
-      if (usb_x == -1)
+      if (term_x == -1)
       {
         printf_usb("\r\nUnknown command!\r\n");
       }
       else
       {
-        (*usb_cmds[usb_x]->func)(usb_cmd_line+usb_end+1);
+        (*term_cmds[term_x]->func)(term_cmd_line+term_end+1);
       }
-      usb_cmd_line_ndx=0;
-      usb_print_prompt();      
+      term_cmd_line_ndx=0;
+      term_print_prompt();      
       SetSilentMode((char)FALSE);
     }
     else
-    { /* Put character to usb_cmd_line. */
+    { /* Put character to term_cmd_line. */
       if (c=='\b')
       {
-        if (usb_cmd_line_ndx > 0)
+        if (term_cmd_line_ndx > 0)
         {
-          usb_cmd_line[usb_cmd_line_ndx]='\0';
-          usb_cmd_line_ndx--;
+          term_cmd_line[term_cmd_line_ndx]='\0';
+          term_cmd_line_ndx--;
         }
       }
 #if 1      
@@ -439,19 +438,19 @@ void usb_terminal_process(void)
       {
           if (c == 0x7F)
           {    	  
-              if (usb_cmd_line_ndx)
+              if (term_cmd_line_ndx)
               {
-                  usb_cmd_line[usb_cmd_line_ndx]=0;
-				  usb_cmd_line_ndx--;
-				  usb_cmd_line[usb_cmd_line_ndx]=0; 
+                  term_cmd_line[term_cmd_line_ndx]=0;
+				  term_cmd_line_ndx--;
+				  term_cmd_line[term_cmd_line_ndx]=0; 
               }
           }else
           {
-              usb_cmd_line[usb_cmd_line_ndx++]=c;
+              term_cmd_line[term_cmd_line_ndx++]=c;
 #if 0              
               if(c=='\r')
               {
-            	  usb_cmd_line[usb_cmd_line_ndx++]='\n';  
+            	  term_cmd_line[term_cmd_line_ndx++]='\n';  
               }
 #endif              
           }
@@ -478,13 +477,13 @@ unsigned char TerminalBackup(char *backup)
 {
 	unsigned char i = 0;
 	
-	for(i=0;i<usb_cmd_line_ndx;i++)
+	for(i=0;i<term_cmd_line_ndx;i++)
 	{
-		*backup++ = usb_cmd_line[i];
+		*backup++ = term_cmd_line[i];
 		if (i >= ((CONSOLE_BUFFER_SIZE/2)-1)) break;
 	}
 	
-	usb_cmd_line_ndx = 0;
+	term_cmd_line_ndx = 0;
 	
 	return i;
 }
@@ -504,15 +503,15 @@ unsigned char TerminalBackup(char *backup)
 * Assumptions:
 *    --
 *****************************************************************************/
-int usb_terminal_add_cmd(command_t *cmd)
+int terminal_add_cmd(command_t *cmd)
 {
-  if (usb_n_cmd >= MAX_CMDS)
+  if (term_n_cmd >= MAX_CMDS)
   {
     return(1);
   }
 
-  usb_cmds[usb_n_cmd]=cmd;
-  usb_n_cmd++;
+  term_cmds[term_n_cmd]=cmd;
+  term_n_cmd++;
   return(0);
 }
 
@@ -531,22 +530,22 @@ int usb_terminal_add_cmd(command_t *cmd)
 * Assumptions:
 *    --
 *****************************************************************************/
-int usb_terminal_delete_cmd(command_t *cmd)
+int terminal_delete_cmd(command_t *cmd)
 {
   int x;
 
-  for(x=0; x<usb_n_cmd; x++)
+  for(x=0; x<term_n_cmd; x++)
   {
-    if (usb_cmds[x] == cmd)
+    if (term_cmds[x] == cmd)
     {
-      while(x<usb_n_cmd-1)
+      while(x<term_n_cmd-1)
       {
-        usb_cmds[x]=usb_cmds[x+1];
+        term_cmds[x]=term_cmds[x+1];
         x++;
       }
 
-      usb_cmds[x]=0;
-      usb_n_cmd--;
+      term_cmds[x]=0;
+      term_n_cmd--;
       
       return(0);
     }

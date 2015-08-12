@@ -1,6 +1,6 @@
 /****************************************************************************************
 * 
-*   FILE        :    usb_terminal_commands.c
+*   FILE        :    terminal_commands.c
 *   DATE CREATED:    
 *   DESCRIPTION	:    
 *
@@ -18,21 +18,22 @@
 ****************************************************************************************/
 
 /*
- * usb_terminal_commands.c
+ * terminal_commands.c
  *
  *  Created on: 12/05/2011
  *      Author: gustavo
  */
-#include "AppConfig.h"
-#include "usb_terminal.h"
-#include "terminal_commands.h"
-#include "virtual_com.h"
 #include "BRTOS.h"
+#include "AppConfig.h"
+#include "terminal.h"
+#include "terminal_commands.h"
+#include "terminal_io.h"
+#include "virtual_com.h"
+#include "UART.h"
+#include "utils.h"
 #include "debug_stack.h"
 #include "tasks.h"
-#include "utils.h"
 #include "da.h"
-#include "UART.h"
 #include "string.h"
 
 INT8U entradas[CONSOLE_BUFFER_SIZE]; //vetor para a entrada de dados

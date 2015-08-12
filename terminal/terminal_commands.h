@@ -8,7 +8,7 @@
 #ifndef _TERMINAL_COMMANDS_H_
 #define _TERMINAL_COMMANDS_H_
 
-#include "usb_terminal.h"
+#include "terminal.h"
 
 
 // BRTOS version Command

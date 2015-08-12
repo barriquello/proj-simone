@@ -22,7 +22,7 @@
 #include "tasks.h"
 #include "AppConfig.h"
 #include "virtual_com.h"
-#include "usb_terminal.h"
+#include "terminal.h"
 #include "terminal_commands.h"
 #include "led_onboard.h"
 
@@ -118,7 +118,7 @@ void Terminal_Task(void)
 {
 	/* task setup */
 	(void) CDC_Init(); /* Initialize the USB CDC Application */
-	usb_terminal_init(cdc_putch);
+	terminal_init(cdc_putch);
 	
 #if TERM_UART1
 	#define UART1_BUFSIZE	256
@@ -139,31 +139,31 @@ void Terminal_Task(void)
 
 #endif	
 
-	(void) usb_terminal_add_cmd((command_t*) &ver_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &top_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &rst_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &temp_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &setget_time_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &cat_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &ls_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &cd_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &mount_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &sr_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &rm_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &rn_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &cr_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &mkdir_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &cp_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &wt_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &echo_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &echo_stdout_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &esp_cmd);
-	(void) usb_terminal_add_cmd((command_t*) &m590_cmd);	
+	(void) terminal_add_cmd((command_t*) &ver_cmd);
+	(void) terminal_add_cmd((command_t*) &top_cmd);
+	(void) terminal_add_cmd((command_t*) &rst_cmd);
+	(void) terminal_add_cmd((command_t*) &temp_cmd);
+	(void) terminal_add_cmd((command_t*) &setget_time_cmd);
+	(void) terminal_add_cmd((command_t*) &cat_cmd);
+	(void) terminal_add_cmd((command_t*) &ls_cmd);
+	(void) terminal_add_cmd((command_t*) &cd_cmd);
+	(void) terminal_add_cmd((command_t*) &mount_cmd);
+	(void) terminal_add_cmd((command_t*) &sr_cmd);
+	(void) terminal_add_cmd((command_t*) &rm_cmd);
+	(void) terminal_add_cmd((command_t*) &rn_cmd);
+	(void) terminal_add_cmd((command_t*) &cr_cmd);
+	(void) terminal_add_cmd((command_t*) &mkdir_cmd);
+	(void) terminal_add_cmd((command_t*) &cp_cmd);
+	(void) terminal_add_cmd((command_t*) &wt_cmd);
+	(void) terminal_add_cmd((command_t*) &echo_cmd);
+	(void) terminal_add_cmd((command_t*) &echo_stdout_cmd);
+	(void) terminal_add_cmd((command_t*) &esp_cmd);
+	(void) terminal_add_cmd((command_t*) &m590_cmd);	
 
 	while (1)
 	{
 		/* Call the application task */
-		usb_terminal_process();
+		terminal_process();
 	}
 }
 #endif
@@ -205,7 +205,7 @@ void Terminal_Task(void)
 
 #define modem_receive()		at_esp_getchar() 
 #define modem_send(x)		esp_print(x)
-#define modem_wait_reply()	DelayTask(1000); while((c=modem_receive()) != (CHAR8)-1){putchar_usb(c);};
+#define modem_wait_reply()	DelayTask(1000); while((c=modem_receive()) != (CHAR8)-1){putcharSer(USE_USB,c);};
 #define NEWLINE() 			modem_send(("\r\n"));
 
 char resp_server_ok[12];

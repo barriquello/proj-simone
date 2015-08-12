@@ -30,7 +30,7 @@ static void at_m590_print_reply(void)
 	INT8U c;
 	DelayTask(1000);
 	while((c=at_m590_getchar()) != (CHAR8)-1){
-		putchar_usb(c);
+		putcharSer(USE_USB,c);
 	}
 }
 
@@ -406,7 +406,7 @@ m590_ret_t at_m590_send(INT8U* dados)
 	{
 		result_ok = TRUE;
 		
-#if 0					
+#if 1					
 	#define M590_SEND_STRING "GET /input/post.json?json={p:3}&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n"
 	#define M590_SEND_STRING2 "GET /monitor/set.json?monitorid=10&data=20,20,20,20&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n"
 		

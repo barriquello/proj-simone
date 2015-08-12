@@ -10,6 +10,8 @@
 
 #include "OS_types.h"
 #include "UART.h"
+#include "virtual_com.h"
+#include "terminal_io.h"
 
 // configuration 
 #define ESP_BAUD 9600

@@ -1,59 +1,10 @@
 #include "BRTOS.h"
 #include "utils.h"
-#include "usb_terminal.h"
-#include "uart.h"
 
 #include <stdlib.h>
 #include <string.h>
 
 #pragma warn_implicitconv off
-
-
-void printSer(INT8U SerialPort, CHAR8 *string)
-{
-	switch(SerialPort)
-	{
-	  case USE_UART1:
-	    #if (ENABLE_UART1 == TRUE)
-	    printf_uart1(string);
-	    #endif
-	    break;
-	  case USE_UART2:
-	    #if (ENABLE_UART2 == TRUE)
-	    printf_uart2(string);
-	    #endif	  
-	    break;
-	  case USE_USB:
-	    printf_usb(string);
-	    break;	    	    
-	  default:
-	    break;
-	}
-}
-
-
-void putcharSer(INT8U SerialPort, CHAR8 caracter)
-{
-	switch(SerialPort) 
-	{
-	  case USE_UART1:
-	    #if (ENABLE_UART1 == TRUE)
-	    putchar_uart1(caracter);
-	    #endif
-	    break;
-	  case USE_UART2:
-	    #if (ENABLE_UART2 == TRUE)
-	    putchar_uart2(caracter);
-	    #endif	  
-	    break;
-	  case USE_USB:
-	    putchar_usb(caracter);
-	    break;	    	    
-	  default:
-	    break;
-	}	
-}
-
 
 /* reverse:  reverse string s in place */
 void reverse(char s[])
