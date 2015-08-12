@@ -8,9 +8,9 @@ extern "C"
 #endif
 
 /******************************************************************************
- * @file main.c
- * @author Carlos H. Barriquello
- * @brief  This is the main entry point of the software
+ * \file main.c
+ * \author Carlos H. Barriquello
+ * \brief  This is the main entry point of the software
  *****************************************************************************/
 
 #if ((defined _MCF51MM256_H) || (defined _MCF51JE256_H) || (defined _MCF51JE128_H))
@@ -18,10 +18,10 @@ const unsigned char boot:0x040A = 0x00;   //zero out checksum to bypass boot loa
 #endif /* (defined _MCF51MM256_H) || (defined _MCF51JE256_H) */
 
 /******************************************************************************
- * @name        main
- * @brief       This function calls the application
- * @param       None
- * @return      None
+ * \name        main
+ * \brief       This function calls the application
+ * \param       None
+ * \return      None
  *****************************************************************************/
 void main(void)
 {

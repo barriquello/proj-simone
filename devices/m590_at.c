@@ -23,6 +23,17 @@ static char ip[16];
 static char *hostname = NULL;
 static INT8U gReceiveBuffer[256];
 
+#define DEBUG_PRINT 0
+
+#if DEBUG_PRINT
+#define PRINT(...) 		printSer(USE_USB,__VA_ARGS__);
+#define PRINT_BUF(...)  printSer(USE_USB,__VA_ARGS__);
+#else
+#define PRINT(...)
+#define PRINT_BUF(...)
+#endif
+
+
 #define UNUSED(x)   (void)x;
 
 static void at_m590_print_reply(void)
@@ -85,7 +96,7 @@ static void m590_get_reply_print(void)
 	DelayTask(200);
 	memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
 	at_m590_get_reply(gReceiveBuffer,(INT16U)sizeof(gReceiveBuffer)); 
-	printSer(USE_USB,gReceiveBuffer); 
+	PRINT_BUF(gReceiveBuffer); 
 }
 
 static void m590_get_reply(void)
@@ -115,7 +126,7 @@ INT8U CreatePPP(void)
 
 		memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
 		at_m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer));
-		printSer(USE_USB,gReceiveBuffer);
+		PRINT_BUF(gReceiveBuffer);
 		
 		if(strstr((char *)gReceiveBuffer,(char *)"OK"))
 		{
@@ -145,11 +156,11 @@ INT8U CreateTCPLink(char *linkStr)
 		
 	memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
 	at_m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer));
-	printSer(USE_USB,gReceiveBuffer);	
+	PRINT_BUF(gReceiveBuffer);	
 	
 	if( strstr((char *)gReceiveBuffer,"+TCPSETUP:0,OK"))
 	{
-		printSer(USE_USB, "TCP established!\r\n");
+		PRINT("TCP established!\r\n");
 		return TRUE;
 	}
 	return FALSE;
@@ -174,7 +185,7 @@ INT8U TCPIP_SendData(INT8U * dados)
 
 		memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
 		at_m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer));
-		printSer(USE_USB,gReceiveBuffer);
+		PRINT_BUF(gReceiveBuffer);
 		
 		if( strstr((char *)gReceiveBuffer,"+IPSTATUS:0,CONNECT,TCP") )
 		{
@@ -209,11 +220,11 @@ INT8U TCPIP_SendData(INT8U * dados)
 					
 					memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
 					at_m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer));
-					printSer(USE_USB,gReceiveBuffer);		
+					PRINT_BUF(gReceiveBuffer);		
 					
 					if( strstr((char *)gReceiveBuffer,"+TCPSEND:0"))
 					{
-						printSer(USE_USB,"\r\nsend ok\r\n");
+						PRINT("\r\nsend ok\r\n");
 						
 						m590_print("at+ipstatus=0\r");
 						DelayTask(10);
@@ -222,13 +233,13 @@ INT8U TCPIP_SendData(INT8U * dados)
 						{
 							memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
 							len = at_m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer));
-							printSer(USE_USB,gReceiveBuffer);							
+							PRINT_BUF(gReceiveBuffer);							
 							if( strstr((char *)gReceiveBuffer,"+TCPRECV:0"))
 							{
 								do{
 									memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
 									len = at_m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer));
-									printSer(USE_USB,gReceiveBuffer);	
+									PRINT_BUF(gReceiveBuffer);	
 								}while(len > 0);								
 								return TRUE;
 							}
@@ -240,18 +251,18 @@ INT8U TCPIP_SendData(INT8U * dados)
 					}
 					else if( strstr((char *)gReceiveBuffer,"+TCPSEND:Error"))
 					{
-						printSer(USE_USB,"\r\nsend error\r\n");
+						PRINT("\r\nsend error\r\n");
 						return FALSE;
 					}
 					else if( strstr((char *)gReceiveBuffer,"+TCPSEND:Buffer not enough"))
 					{
-						printSer(USE_USB,"\r\nsend error: Buffer not enough \r\n");
+						PRINT("\r\nsend error: Buffer not enough \r\n");
 						return FALSE;
 					}else
 					{
 						memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
 						at_m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer));
-						printSer(USE_USB,gReceiveBuffer);
+						PRINT_BUF(gReceiveBuffer);
 					}
 				}
 			}
@@ -263,7 +274,7 @@ INT8U TCPIP_SendData(INT8U * dados)
 		}
 		
 		out:
-			printSer(USE_USB,"\r\nsend error, tcp connection failed \r\n");
+			PRINT("\r\nsend error, tcp connection failed \r\n");
 			return FALSE;
 	}
 }
@@ -339,7 +350,7 @@ m590_ret_t at_m590_open(void)
 	
 	if(m590_state != M590_CLOSE)
 	{
-		printSer(USE_USB,"Open fail \r\n");
+		PRINT("Open fail \r\n");
 		return M590_STATE_ERR;		
 	}
 	
@@ -361,7 +372,7 @@ m590_ret_t at_m590_open(void)
 			if(strstr((char *)gReceiveBuffer,"+XIIC:    1"))
 			{
 				result_ok = TRUE;
-				printSer(USE_USB, "PPP established!\r\n");
+				PRINT("PPP established!\r\n");
 				break;
 			}else
 			{
@@ -420,7 +431,7 @@ m590_ret_t at_m590_send(INT8U* dados)
 	}
 	else
 	{
-		printSer(USE_USB, "TCP connection fail\r\n");
+		PRINT("TCP connection fail\r\n");
 	}	
 	
 	m590_release();		

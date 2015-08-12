@@ -36,7 +36,7 @@ static int  term_find_command(char *name);
 /*****************************************************************************
  * Module variables.
  *****************************************************************************/
-static const command_t term_help_cmd = {
+static CONST command_t term_help_cmd = {
   "help", term_cmd_help, "Prints help about commands. "
 };
 

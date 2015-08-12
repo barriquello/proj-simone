@@ -14,9 +14,6 @@
 void get_server_time(char* server_reply, struct tm *ts);
 INT8U get_server_confirmation(char* server_reply);
 
-#define API_KEY  "90a004390f3530d0ba10199ac2b1ac3d"
-#define SERVER_NAME "emon-gpsnetcms.rhcloud.com"
-
 static input in = NULL;
 static output out = NULL;
 
@@ -26,6 +23,9 @@ static output out = NULL;
 #define PRINTF(...)
 #endif
 
+char simon_hostname[MAX_HOSTNAME_LEN];
+char simon_apikey[MAX_APIKEY_LEN];
+
 static char message[1024];
 static char server_reply[1024];
 static char* hostname = SERVER_NAME;
@@ -34,8 +34,10 @@ INT16U recv_size;
 INT8U simon_init(input _in, output _out, set_host sethost)
 {
 	in = _in;
-	out = _out;
-	sethost(hostname);	
+	out = _out;		
+	simon_set_apikey(API_KEY);		/* set a default key */
+	simon_set_hostname(SERVER_NAME); /* set a default server */
+	sethost(hostname); 
 	return OK;
 }
 
@@ -156,7 +158,34 @@ void get_server_time(char* server_reply, struct tm *ts)
 	}
 
 	if (mktime(&t) < 0) {;}
-	(*ts) = t;
-
-	
+	(*ts) = t;	
 }
+
+char* simon_get_apikey(void)
+{
+	simon_apikey[MAX_APIKEY_LEN-1] = '\0';
+	return (char*)&simon_apikey;
+}
+
+void simon_set_apikey(char* apikey)
+{
+	if(apikey != NULL)
+	{
+		strncpy(simon_apikey,apikey,MAX_APIKEY_LEN-1);
+	}
+}
+
+char* simon_get_hostname(void)
+{
+	simon_hostname[MAX_HOSTNAME_LEN-1] = '\0';
+	return (char*)&simon_hostname;
+}
+
+void simon_set_hostname(char* hostname)
+{
+	if(hostname != NULL)
+	{
+		strncpy(simon_hostname,hostname,MAX_HOSTNAME_LEN-1);
+	}
+}
+

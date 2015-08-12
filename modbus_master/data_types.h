@@ -5,20 +5,25 @@
 #ifndef __DATA_TYPES_H
 #define __DATA_TYPES_H
 
+#include "stdint.h"
 
+#define _STDINT_H	1
 
+#ifndef _STDINT_H
 /******************************************************************************/
 /*                            Data types                                      */
 /******************************************************************************/
 typedef signed char             int8_t;
 typedef unsigned char           uint8_t;
-typedef signed char             sint8_t;
-typedef unsigned int            bool_t;
 typedef short                   int16_t;
 typedef unsigned short          uint16_t;
-typedef signed short            sint16_t;
 typedef signed int              int32_t;
 typedef unsigned int            uint32_t;
+#endif
+
+typedef signed char             sint8_t;
+typedef signed short            sint16_t;
+typedef unsigned int            bool_t;
 typedef signed int              sint32_t;
 typedef long                    long32_t;
 typedef unsigned long           ulong32_t;

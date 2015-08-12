@@ -62,7 +62,6 @@ static char *PrintDecimal(INT16S val, CHAR8 *buff)
    }
 }
 
-
 // Imprimir ID, nome, prioridade, stack
 // memoria total heap de tarefas
 // memoria total heap de filas

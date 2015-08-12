@@ -5,20 +5,18 @@
 #include "SD.h"
 #include "ff.h"
 
+#if PLATAFORMA == COLDUINO
+#define CONST
+#else
+#define CONST const
+#endif
+
 
 /* Defines */
 #define SD_FAT_MUTEX_EN		1		// Enable SD/FAT file system mutex
 #define SD_BMP				0		// Enable SD/BMP file read
 #define SD_GLCD_CALIB		0
 #define SD_WAVE				0		// Enable SD/WAVE file read
-
-
-
-#if (SD_WAVE ==1)
-	#define TestWaveFileSuport 	1
-	#define WAV_NAME_SIZE		13
-	#define WAV_LIST_SIZE		20
-#endif
 
 /// SD defines
 #define API_COMMAND_FAIL     (INT8U)0x80
@@ -65,10 +63,10 @@ INT8U cmd_verify_zeros(INT8U *pfile, INT8U num);
 extern FIL      file_obj;
 
 //Mensagens padrão da API do SD
-extern const INT8U *SD_API_FILE_NOT_FOUND;
-extern const INT8U *SD_API_FILE_INVALID;
-extern const INT8U *SD_API_CARD_BUSY;
-extern const INT8U *SD_API_CARD_NOT_PRESENT;
+extern CONST INT8U SD_API_FILE_NOT_FOUND[];
+extern CONST INT8U SD_API_FILE_INVALID[];
+extern CONST INT8U SD_API_CARD_BUSY[];
+extern CONST INT8U SD_API_CARD_NOT_PRESENT[];
 
 
 /******** COMANDS USED IN THE APPLICATION *************/
@@ -117,64 +115,11 @@ typedef enum
  VERBOSE_OFF
 } SD_STATE;
 
-enum   //estados existentes na máqiuna
+enum   
 {
     NOME,
     EXTENSAO,
     FIM,
 };
-
-
-#if (SD_WAVE == 1)
-	//Wave File Header - The Canonical Form:
-	//Wave data files is little-endian. Big-endian Wave's have the identifier RIFX instead of RIFF.
-	//8-bit samples are stored as unsigned bytes, ranging from 0 to 255.
-	//16-bit samples are stored as 2's-complement signed integers, ranging from -32768 to 32767.
-
-	// Struct aligned in 2 bytes: __attribute__((packed, aligned(2)))
-	#pragma push
-	#pragma pack(2)
-	typedef struct 
-	{	
-	   unsigned long	ChunkID;		//4 bytes = "RIFF" / decimal: 1179011410 / 0x46464952 little-endian / 0x52494646 big-endian form
-	   unsigned long	ChunkSize;		//4 bytes
-	   unsigned long	Format; 		//4 bytes = "WAVE" / decimal: 1163280727/ 0x57415645 big-endian form 
-	   unsigned long	Subchunk1ID; 	//4 bytes = "fmt"  /decimal:544501094 / 0x666d7420 big-endian form
-	   unsigned long	Subchunk1Size; 	//4 bytes
-	   unsigned short	AudioFormat;	//2 bytes: 0 =???;  1 = Linear quantization (0x1000 big-endian form); Others = compression
-	   unsigned short	NumChannels;	//2 bytes: Mono = 1 (0x1000 big-endian form); Stereo = 2(0x2000 big-endian form); etc.
-	   unsigned long	SampleRate;		//4 bytes: 8000, 44100 (0x44AC0000 big-endian form ), etc.
-	   unsigned long	ByteRate;		//4 bytes: SampleRate * NumChannels * BitsPerSample/8
-	   unsigned short	BlockAlign;		//2 bytes: NumChannels * BitsPerSample/8
-	   unsigned short	BitsPerSamples;	//2 bytes: 8 = 8 bits; 16 = 16 bits; etc.
-	   unsigned long	Subchunk2ID;	//4 bytes = "data" /decimal:220982 / 0x64617461 big-endian form
-	   unsigned long	Subchunk2Size;	//4 bytes: NumSamples * NumChannels * BitsPerSample/8
-	// unsigned long 	Data;			//(ChunkSize) bytes 
-	} WAVE_FILE;
-	#pragma pop
-	
-	typedef struct { 
-		   INT8U*	Buff;
-		   INT16U	Size;
-		   INT16U 	SampleRate;		//SampleRate	
-		   INT8U	BitRate;		//BitsPerSamples	
-		   INT8U	NumChannels;	//NumChannels
-
-		} WAVE_BUFFER;
-	
-#endif
-
-#if (SD_WAVE == 1)
-	void 	Wave_NullBufferError(void);
-	INT8U 	Wave_ReadFile(CHAR8 *FileName, INT8U* Buffer0, INT8U* Buffer1);
-	void	Wave_SetSampleRate(INT16U WaveSampleRate);
-	void	InstallPlayComponents(void);
-	void 	WavListFiles(char **files);
-	extern  INT8U		 WaveBuffer0[512];	// Play Buffer A
-	extern  INT8U		 WaveBuffer1[512];	// Play Buffer B
-	extern  BRTOS_Sem	 *SyncWaveBuffer;	//Semaforo
-	extern  BRTOS_Mbox	 *SendWaveBuffer;	//Mail box
-	extern  WAVE_BUFFER  WaveBuff;			// Wave play buffer + info	
-#endif
 
 #endif

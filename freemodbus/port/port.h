@@ -82,6 +82,13 @@ typedef int32_t                 LONG;
 #define FALSE                   0
 #endif
 
+#if PLATAFORMA == COLDUINO
+#define CONST
+#else
+#define CONST const
+#endif
+
+
 /* SaveStatusReg() stores the STATUS Register here */
 extern INT16U                   CPU_SR;
 

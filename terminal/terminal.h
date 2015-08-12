@@ -34,6 +34,12 @@ unsigned char TerminalBackup(char *backup);
 extern void printf_terminal(char *s);
 extern void putchar_terminal(char c);
 
+#if PLATAFORMA == COLDUINO
+#define CONST 
+#else
+#define CONST const
+#endif
+
 #ifdef __cplusplus
 }
 #endif

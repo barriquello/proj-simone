@@ -33,15 +33,24 @@
 
 #include "stdio.h"
 #include "time_lib.h"
+#include "stdint.h"
+
+
+#if PLATAFORMA == COLDUINO
+#define CONST
+#else
+#define CONST const
+#endif
+
 
 static struct tm tmbuf;
 
-const int _ytab[2][12] = {
+CONST uint8_t _ytab[2][12] = {
   {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
   {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };
 
-int _daylight = 0;                  // Non-zero if daylight savings time is used
+uint8_t _daylight = 0;                  // Non-zero if daylight savings time is used
 long _dstbias = 0;                  // Offset for Daylight Saving Time
 long _timezone = 0;                 // Difference in seconds between GMT and local time
 
@@ -228,24 +237,24 @@ extern const char *_months[];
 extern const char *_months_abbrev[];
 #endif
 
-const char *_days[] = {
+CONST char *_days[] = {
   "Sunday", "Monday", "Tuesday", "Wednesday",
   "Thursday", "Friday", "Saturday"
 };
 
-const char *_days_abbrev[] = {
+CONST char *_days_abbrev[] = {
   "Sun", "Mon", "Tue", "Wed", 
   "Thu", "Fri", "Sat"
 };
 
-const char *_months[] = {
+CONST char *_months[] = {
   "January", "February", "March",
   "April", "May", "June",
   "July", "August", "September",
   "October", "November", "December"
 };
 
-const char *_months_abbrev[] = {
+CONST char *_months_abbrev[] = {
   "Jan", "Feb", "Mar",
   "Apr", "May", "Jun",
   "Jul", "Aug", "Sep",

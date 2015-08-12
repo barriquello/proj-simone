@@ -30,7 +30,7 @@
 							<option id="com.freescale.coldfire.toolchain.sharedoption.sym.915172174" name="Generate Symbolic Info" superClass="com.freescale.coldfire.toolchain.sharedoption.sym" value="com.freescale.coldfire.toolchain.sharedoption.sym.full" valueType="enumerated"/>
 							<option id="com.freescale.coldfire.toolchain.sharedoption.model.1093593630" name="Model" superClass="com.freescale.coldfire.toolchain.sharedoption.model" value="com.freescale.coldfire.toolchain.sharedoption.model.ewl" valueType="enumerated"/>
 							<option id="com.freescale.coldfire.toolchain.sharedoption.librarian.2013850069" name="Enable automatic library configurations" superClass="com.freescale.coldfire.toolchain.sharedoption.librarian" value="true" valueType="boolean"/>
-							<option id="com.freescale.coldfire.toolchain.sharedoption.iomode.141964835" name="IO mode" superClass="com.freescale.coldfire.toolchain.sharedoption.iomode" value="com.freescale.coldfire.toolchain.sharedoption.iomode.buffered" valueType="enumerated"/>
+							<option id="com.freescale.coldfire.toolchain.sharedoption.iomode.141964835" name="IO mode" superClass="com.freescale.coldfire.toolchain.sharedoption.iomode" value="com.freescale.coldfire.toolchain.sharedoption.iomode.raw" valueType="enumerated"/>
 							<targetPlatform archList="all" binaryParser="org.eclipse.cdt.core.ELF" id="com.freescale.coldfire.toolchain.platform.1999659639" name="ColdFire Target Platform" superClass="com.freescale.coldfire.toolchain.platform"/>
 							<builder buildPath="${ProjDirPath}/FLASH" errorParsers="org.eclipse.cdt.core.GmakeErrorParser;com.freescale.core.ide.cdt.errorParsers.MwErrorParser;com.freescale.core.ide.cdt.errorParsers.MPWErrorParser;com.freescale.core.ide.cdt.errorParsers.MwfeErrorParser" id="com.freescale.coldfire.toolchain.builder.1204206947" keepEnvironmentInBuildfile="false" name="GNU Make Builder" parallelBuildOn="true" parallelBuildWorkspaceOn="true" parallelizationNumber="-1" superClass="com.freescale.coldfire.toolchain.builder">
 								<outputEntries>
@@ -46,79 +46,97 @@
 								</option>
 								<option id="com.freescale.coldfire.cdt.toolchain.option.linkorder.114547100" name="Link Order" superClass="com.freescale.coldfire.cdt.toolchain.option.linkorder" valueType="stringList">
 									<listOptionValue builtIn="false" value="Project_Settings/Startup_Code/startcf.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/FatFS/SD.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/FatFS/SD_API.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/FatFS/ff.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/FatFS/option/ccsbcs.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/MBMaster.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/MBSlave.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/Sound/sound_driver.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/app/cdc/usb_terminal.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/app/cdc/usb_terminal_commands.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/app/cdc/virtual_com.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/app/msd/disk.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/class/usb_cdc.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/class/usb_cdc_pstn.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/class/usb_msc.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/class/usb_msc_scsi.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/common/usb_class.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/common/usb_descriptor.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/common/usb_framework.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/driver/cfv1/usb_dci.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/driver/usb_driver.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/USB/driver/usbevent.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/BRTOS.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/OS_RTC.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/mbox.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/mutex.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/queue.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/semaphore.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/brtos/timers.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/datalogger.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/ACM_keyboard.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/AD.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/AD_keyboard.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/DA.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/PWM.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/SPI.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/Timer1Second.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/Timer_RTC_DS1307.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/UART.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/debug_stack.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/eeprom.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/iic.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/iic2.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/lcd.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/mcu_driver.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/rtc_ds1307.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/sw_i2c.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/timer2.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/drivers/utils.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/exceptions.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/CFV1_port/port/portevent.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/CFV1_port/port/portserial.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/CFV1_port/port/porttimer.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/ascii/mbascii.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbfunccoils.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbfuncdiag.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbfuncdisc.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbfuncholding.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbfuncinput.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbfuncother.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/functions/mbutils.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/mb.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/rtu/mbcrc.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/rtu/mbrtu.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/modbus/tcp/mbtcp.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/hal/HAL.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/libs/printf-colduino.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/main.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/tasks.c"/>
 									<listOptionValue builtIn="false" value="Lib/mcf51je256.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/freemodbus/CFV1_port/modbus_pm210.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/modbus_master_lib/crc16.c"/>
-									<listOptionValue builtIn="false" value="Sources/colduino_gprs/modbus_master_lib/modbus.c"/>
+									<listOptionValue builtIn="false" value="CodeWarrior_CFV1/HAL.c"/>
+									<listOptionValue builtIn="false" value="FatFs/SD_API.c"/>
+									<listOptionValue builtIn="false" value="FatFs/ff.c"/>
+									<listOptionValue builtIn="false" value="Sources/MBMaster.c"/>
+									<listOptionValue builtIn="false" value="Sources/MBSlave.c"/>
+									<listOptionValue builtIn="false" value="Sources/USB/app/cdc/virtual_com.c"/>
+									<listOptionValue builtIn="false" value="Sources/USB/app/msd/disk.c"/>
+									<listOptionValue builtIn="false" value="Sources/USB/class/usb_cdc.c"/>
+									<listOptionValue builtIn="false" value="Sources/USB/class/usb_cdc_pstn.c"/>
+									<listOptionValue builtIn="false" value="Sources/USB/class/usb_msc.c"/>
+									<listOptionValue builtIn="false" value="Sources/USB/class/usb_msc_scsi.c"/>
+									<listOptionValue builtIn="false" value="Sources/USB/common/usb_class.c"/>
+									<listOptionValue builtIn="false" value="Sources/USB/common/usb_descriptor.c"/>
+									<listOptionValue builtIn="false" value="Sources/USB/common/usb_framework.c"/>
+									<listOptionValue builtIn="false" value="Sources/USB/driver/cfv1/usb_dci.c"/>
+									<listOptionValue builtIn="false" value="Sources/USB/driver/usb_driver.c"/>
+									<listOptionValue builtIn="false" value="Sources/USB/driver/usbevent.c"/>
+									<listOptionValue builtIn="false" value="Sources/datalogger.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/ACM_keyboard.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/AD.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/AD_keyboard.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/DA.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/PWM.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/SPI.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/Timer1Second.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/UART.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/iic.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/iic2.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/led_onboard.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/mcu_driver.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/sw_i2c.c"/>
+									<listOptionValue builtIn="false" value="Sources/drivers/timer2.c"/>
+									<listOptionValue builtIn="false" value="Sources/exceptions.c"/>
+									<listOptionValue builtIn="false" value="Sources/main.c"/>
+									<listOptionValue builtIn="false" value="Sources/tasks.c"/>
+									<listOptionValue builtIn="false" value="app/main_app.c"/>
+									<listOptionValue builtIn="false" value="brtos/BRTOS.c"/>
+									<listOptionValue builtIn="false" value="brtos/OSInfo.c"/>
+									<listOptionValue builtIn="false" value="brtos/OS_RTC.c"/>
+									<listOptionValue builtIn="false" value="brtos/mbox.c"/>
+									<listOptionValue builtIn="false" value="brtos/mutex.c"/>
+									<listOptionValue builtIn="false" value="brtos/queue.c"/>
+									<listOptionValue builtIn="false" value="brtos/semaphore.c"/>
+									<listOptionValue builtIn="false" value="brtos/timers.c"/>
+									<listOptionValue builtIn="false" value="devices/RTC_DS1307.c"/>
+									<listOptionValue builtIn="false" value="devices/SD.c"/>
+									<listOptionValue builtIn="false" value="devices/eeprom.c"/>
+									<listOptionValue builtIn="false" value="devices/esp8266_at.c"/>
+									<listOptionValue builtIn="false" value="devices/http_client.c"/>
+									<listOptionValue builtIn="false" value="devices/lcd.c"/>
+									<listOptionValue builtIn="false" value="devices/m590_at.c"/>
+									<listOptionValue builtIn="false" value="devices/rs485.c"/>
+									<listOptionValue builtIn="false" value="devices/terminal_io.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/modbus/ascii/mbascii.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbfunccoils.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbfuncdiag.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbfuncdisc.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbfuncholding.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbfuncinput.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbfuncother.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbutils.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/modbus/mb.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/modbus/rtu/mbcrc.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/modbus/rtu/mbrtu.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/modbus/tcp/mbtcp.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/port/portevent.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/port/portserial.c"/>
+									<listOptionValue builtIn="false" value="freemodbus/port/porttimer.c"/>
+									<listOptionValue builtIn="false" value="libs/assert.c"/>
+									<listOptionValue builtIn="false" value="libs/debug_stack.c"/>
+									<listOptionValue builtIn="false" value="libs/printf_lib.c"/>
+									<listOptionValue builtIn="false" value="libs/random_lib.c"/>
+									<listOptionValue builtIn="false" value="libs/time_lib.c"/>
+									<listOptionValue builtIn="false" value="libs/utils.c"/>
+									<listOptionValue builtIn="false" value="libs/utils_tests.c"/>
+									<listOptionValue builtIn="false" value="minINI/minIni.c"/>
+									<listOptionValue builtIn="false" value="minINI/test.c"/>
+									<listOptionValue builtIn="false" value="modbus_master/crc16.c"/>
+									<listOptionValue builtIn="false" value="modbus_master/modbus.c"/>
+									<listOptionValue builtIn="false" value="modbus_slaves/modbus_pm210.c"/>
+									<listOptionValue builtIn="false" value="modbus_slaves/modbus_ts.c"/>
+									<listOptionValue builtIn="false" value="modbus_slaves/port.c"/>
+									<listOptionValue builtIn="false" value="monitor/monitor.c"/>
+									<listOptionValue builtIn="false" value="monitor/monitor_main.c"/>
+									<listOptionValue builtIn="false" value="monitor/monitor_tests.c"/>
+									<listOptionValue builtIn="false" value="simon-api/simon-api.c"/>
+									<listOptionValue builtIn="false" value="terminal/terminal.c"/>
+									<listOptionValue builtIn="false" value="terminal/terminal_commands.c"/>
 								</option>
+								<option id="com.freescale.coldfire.toolchain.linker.base.generateList.1355151461" superClass="com.freescale.coldfire.toolchain.linker.base.generateList" value="true" valueType="boolean"/>
 								<inputType id="com.freescale.coldfire.toolchain.linker.base.input.1991355322" name="Linker Input" superClass="com.freescale.coldfire.toolchain.linker.base.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -169,7 +187,7 @@
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.code.120238436" name="Code Model" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.code" value="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.code.far" valueType="enumerated"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.peep.149651344" name="Peephole (-peephole)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.peep" value="true" valueType="boolean"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.coloring.689682538" name="Register Coloring (-coloring)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.coloring" value="true" valueType="boolean"/>
-								<option id="com.freescale.coldfire.toolchain.compiler.base.options.optLevel.1830335566" name="Optimization Level (-opt)" superClass="com.freescale.coldfire.toolchain.compiler.base.options.optLevel" value="com.freescale.coldfire.toolchain.compiler.base.optionCategory.optimization.optlevel.1" valueType="enumerated"/>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.options.optLevel.1830335566" name="Optimization Level (-opt)" superClass="com.freescale.coldfire.toolchain.compiler.base.options.optLevel" value="com.freescale.coldfire.toolchain.compiler.base.optionCategory.optimization.optlevel.3" valueType="enumerated"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sche.2012111504" name="Instruction Scheduling (-scheduling)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sche" value="true" valueType="boolean"/>
 								<inputType id="com.freescale.coldfire.toolchain.compiler.base.input.1268974395" name="C Source File" superClass="com.freescale.coldfire.toolchain.compiler.base.input"/>
 								<inputType id="com.freescale.coldfire.toolchain.compiler.base.input.c++.2093161631" name="C++ Source File" superClass="com.freescale.coldfire.toolchain.compiler.base.input.c++"/>

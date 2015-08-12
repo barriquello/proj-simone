@@ -38,8 +38,8 @@ void main_app(void)
 		while (1){};
 	};
 	
-#if 0	
-	if (InstallTask(&main_monitor, "Monitor 1", 1024, 10, NULL) != OK)
+#if 1	
+	if (InstallTask(&main_monitor, "Monitors", 1024, 10, NULL) != OK)
 	{
 		while (1){};
 	};

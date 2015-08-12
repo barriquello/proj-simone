@@ -34,7 +34,7 @@
 #if defined NDEBUG
   #define assert(e)
 #else
-  #include <assert.h>
+  #include "assert.h"
 #endif
 
 #include <string.h>

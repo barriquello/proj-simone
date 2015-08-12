@@ -42,12 +42,12 @@ INT8U entradas[CONSOLE_BUFFER_SIZE]; //vetor para a entrada de dados
 void term_cmd_ver(char *param)
 {
   (void)*param;
-  printf_usb("\n\r");
-  printf_usb((CHAR8*)version);
-  printf_usb("\n\r");
+  printf_terminal("\n\r");
+  printf_terminal((CHAR8*)version);
+  printf_terminal("\n\r");
 }
 
-const command_t ver_cmd = {
+CONST command_t ver_cmd = {
   "ver", term_cmd_ver, "BRTOS Version"
 };
 
@@ -57,14 +57,14 @@ const command_t ver_cmd = {
 void term_cmd_top(char *param)
 {
   (void)*param;
-  printf_usb("\n\r");
+  printf_terminal("\n\r");
   Transmite_CPU_Load(USE_USB);
   Transmite_Uptime(USE_USB);
   Transmite_RAM_Ocupada(USE_USB);
   Transmite_Task_Stacks(USE_USB);
 }
 
-const command_t top_cmd = {
+CONST command_t top_cmd = {
   "top", term_cmd_top, "BRTOS TOP"
 };
 
@@ -73,11 +73,11 @@ const command_t top_cmd = {
 void term_cmd_rst(char *param)
 {
   (void)*param;
-  printf_usb("\n\r");
+  printf_terminal("\n\r");
   Reason_of_Reset(USE_USB);
 }
 
-const command_t rst_cmd = {
+CONST command_t rst_cmd = {
   "rst", term_cmd_rst, "CPU Reason of the Reset"
 };
 
@@ -94,12 +94,12 @@ void term_cmd_temp(char *param)
   UserExitCritical();
   
   PrintDecimal(temp, string);
-  printf_usb("\n\r");
-  printf_usb((CHAR8*)&string[3]);
-  printf_usb(" degrees");
+  printf_terminal("\n\r");
+  printf_terminal((CHAR8*)&string[3]);
+  printf_terminal(" degrees");
 }
 
-const command_t temp_cmd = {
+CONST command_t temp_cmd = {
   "temp", term_cmd_temp, "Show core temperature"
 };
 
@@ -217,16 +217,16 @@ time_format_error:
 	if( cmp == 0 || cmp == -1)
 	{		
 		if (cmp == 0)
-			printf_usb("\n\r =");
+			printf_terminal("\n\r =");
 		else
-			printf_usb("\n\r <");
+			printf_terminal("\n\r <");
 		
 		goto print_date;
 		
 	}
 	else
 	{
-		printf_usb("\n\r > ");
+		printf_terminal("\n\r > ");
 		
 		datetime = rtc;
 		goto print_date;	
@@ -236,37 +236,37 @@ print_date:
 	char string[5];
 			
 	/* print current Date & Time */
-	printf_usb("\n\r");
+	printf_terminal("\n\r");
 	
 	/* day */
 	Print2Digits(datetime.Day, ZEROS_ALIGN, string);
-	printf_usb((CHAR8*)string);
-	printf_usb("/");
+	printf_terminal((CHAR8*)string);
+	printf_terminal("/");
 	
 	/* month */
 	Print2Digits(datetime.Month, ZEROS_ALIGN, string);
-	printf_usb((CHAR8*)string);
-	printf_usb("/");
+	printf_terminal((CHAR8*)string);
+	printf_terminal("/");
 	
 	/* year */
 	Print4Digits(datetime.Year, ZEROS_ALIGN, string);
-	printf_usb((CHAR8*)string);
-	printf_usb(" ");
+	printf_terminal((CHAR8*)string);
+	printf_terminal(" ");
 	
 	/* hour */
 	Print2Digits(datetime.Hour, ZEROS_ALIGN, string);
-	printf_usb((CHAR8*)string);
-	printf_usb(":");
+	printf_terminal((CHAR8*)string);
+	printf_terminal(":");
 	
 	/* minutes */
 	Print2Digits(datetime.Min, ZEROS_ALIGN, string);
-	printf_usb((CHAR8*)string);
-	printf_usb(":");
+	printf_terminal((CHAR8*)string);
+	printf_terminal(":");
 	
 	/* seconds */
 	Print2Digits(datetime.Sec, ZEROS_ALIGN, string);
-	printf_usb((CHAR8*)string);	
-	printf_usb("\n\r");
+	printf_terminal((CHAR8*)string);	
+	printf_terminal("\n\r");
 
 #else	
 	print_date:
@@ -277,14 +277,14 @@ print_date:
 		PrintDateTime(&timestamp, string);
 				
 		/* print current Date & Time */
-		printf_usb("\n\r");
-		printf_usb((CHAR8*)string);
-		printf_usb("\n\r");
+		printf_terminal("\n\r");
+		printf_terminal((CHAR8*)string);
+		printf_terminal("\n\r");
 #endif		
 	
 }
 
-const command_t setget_time_cmd = {
+CONST command_t setget_time_cmd = {
   "time", term_cmd_setget_time, "Set/Get OS Date and Time"
 };
 
@@ -340,7 +340,7 @@ void term_cmd_cat(char *param)
   }
 }
 
-const command_t cat_cmd = {
+CONST command_t cat_cmd = {
   "cat", term_cmd_cat, "SD Card - Read file"
 };
 
@@ -377,7 +377,7 @@ void term_cmd_ls(char *param)
   }  
 }
 
-const command_t ls_cmd = {
+CONST command_t ls_cmd = {
   "ls", term_cmd_ls, "SD Card - List files"
 };
 
@@ -433,7 +433,7 @@ void term_cmd_cd(char *param)
   }
 }
 
-const command_t cd_cmd = {
+CONST command_t cd_cmd = {
   "cd", term_cmd_cd, "SD Card - Change Dir"
 };
 
@@ -469,7 +469,7 @@ void term_cmd_mount(char *param)
   #endif
 }
 
-const command_t mount_cmd = {
+CONST command_t mount_cmd = {
   "mount", term_cmd_mount, "Mount SD Card"
 };
 
@@ -483,7 +483,7 @@ void term_cmd_sr(char *param)
   (void)SDCard_SafeRemove(VERBOSE_ON);
 }
 
-const command_t sr_cmd = {
+CONST command_t sr_cmd = {
   "sr", term_cmd_sr, "Safely remove the SD Card"
 };
 
@@ -555,7 +555,7 @@ void term_cmd_rm(char *param)
   }  
 }
 
-const command_t rm_cmd = {
+CONST command_t rm_cmd = {
   "rm", term_cmd_rm, "SD Card - Delete File or Directory"
 };
 
@@ -611,7 +611,7 @@ void term_cmd_rn(char *param)
   }  
 }
 
-const command_t rn_cmd = {
+CONST command_t rn_cmd = {
   "rn", term_cmd_rn, "SD Card - Rename File"
 };
 
@@ -667,7 +667,7 @@ void term_cmd_cr(char *param)
   }
 }
 
-const command_t cr_cmd = {
+CONST command_t cr_cmd = {
   "cr", term_cmd_cr, "SD Card - Create file"
 };
 
@@ -723,7 +723,7 @@ void term_cmd_mkdir(char *param)
   }
 }
 
-const command_t mkdir_cmd = {
+CONST command_t mkdir_cmd = {
   "mkdir", term_cmd_mkdir, "SD Card - Make Dir"
 };
 
@@ -779,7 +779,7 @@ void term_cmd_cp(char *param)
   }  
 }
 
-const command_t cp_cmd = {
+CONST command_t cp_cmd = {
   "cp", term_cmd_cp, "SD Card - Copy File"
 };
 
@@ -826,7 +826,7 @@ void term_cmd_wt(char *param)
   }
 }
 
-const command_t wt_cmd = {
+CONST command_t wt_cmd = {
   "wt", term_cmd_wt, "SD Card - Write Uptime - Test for write file"
 };
 
@@ -887,7 +887,7 @@ void term_cmd_echo(char *param)
 #endif	
 }
 
-const command_t echo_cmd = {
+CONST command_t echo_cmd = {
   "echo", term_cmd_echo, "Print the string in the terminal"
 };
 
@@ -923,7 +923,7 @@ void term_cmd_echo_out(char *param)
 
 }
 
-const command_t echo_stdout_cmd = {
+CONST command_t echo_stdout_cmd = {
   "stdout", term_cmd_echo_out, "Set std output for echo cmd"
 };
 
@@ -985,9 +985,17 @@ void echo (char *string, char Terminalbackup)
 
 #include "esp8266_at.h"
 
+CONST char cmd_esp_help[] = {
+		"\r\n usage:\r\n"
+		"1 - init \r\n"
+		"2 - open \r\n"
+		"3 - send \r\n"
+		"4 - receive \r\n"
+		"5 - close \r\n"		
+};
 void term_cmd_esp(char *param)
 {	
-	printf_usb("\r\n");
+	printf_terminal("\r\n");
 	switch (param[0])
 	{
 		case '1': at_esp_init();
@@ -1006,26 +1014,31 @@ void term_cmd_esp(char *param)
 			at_esp_send(NULL);
 			break;
 		default:
-			printf_usb(	"\r\n usage:\r\n"
-						"1 - init \r\n"
-						"2 - open \r\n"
-						"3 - send \r\n"
-						"4 - receive \r\n"
-						"5 - close \r\n"
-					  );
+			printf_terminal(cmd_esp_help);
 	}
 }
 
-const command_t esp_cmd = {
+CONST command_t esp_cmd = {
   "esp", term_cmd_esp, "Control ESP8266"
 };
 
 
 #include "m590_at.h"
 
+CONST char cmd_m590_help[] = {
+		"\r\n usage:\r\n"
+		"1 - init \r\n"
+		"2 - open \r\n"
+		"3 - send \r\n"
+		"4 - receive \r\n"
+		"5 - close \r\n"
+		"6 - init, open, send \r\n"
+		"7 - server \r\n"
+};
+
 void term_cmd_m590(char *param)
 {	
-	printf_usb("\r\n");
+	printf_terminal("\r\n");
 	switch (param[0])
 	{
 		case '1': at_m590_init();
@@ -1048,20 +1061,12 @@ void term_cmd_m590(char *param)
 		case '8': at_m590_dns(param);
 			break;	
 		default:
-			printf_usb(	"\r\n usage:\r\n"
-						"1 - init \r\n"
-						"2 - open \r\n"
-						"3 - send \r\n"
-						"4 - receive \r\n"
-						"5 - close \r\n"
-						"6 - init, open, send \r\n"
-						"7 - server \r\n"
-					  );
+			printf_terminal(cmd_m590_help);
 	}
 	param[0] = 0;
 }
 
-const command_t m590_cmd = {
+CONST command_t m590_cmd = {
   "m590", term_cmd_m590, "Control M590 modem"
 };
 
@@ -1088,358 +1093,8 @@ void cmd_sin2da(char *param)
   }    
 }
 
-const command_t sin2da_cmd = 
+CONST command_t sin2da_cmd = 
 {
   "sin2da", cmd_sin2da, "Play a sin wave through D/A converter"
 };
-
-/*----------------------------------------------------------------------*/
-/* Play Wave sound from SD Card Command									*/
-/*----------------------------------------------------------------------*/
-#if (SD_WAVE == 1)
-extern BRTOS_Sem   	    *Play;
-extern BRTOS_Mutex 		*SLCDResource;
-extern INT8U			PlayState;
-extern OSTime 			Play_Time;
-CHAR8 					SoundName[(CONSOLE_BUFFER_SIZE/2)];
-
-// Play Wave sound from SD Card Command
-void cmd_play (char *param)
-{  
-  INT8U i       	= 0;
-  INT8U retorno 	= 0;
-  INT8U playstate 	= 0;
-  
-  i = 0;  
-  entradas[0] = 0x20;
-  i++;
-  
-  while(*param)
-  {
-    if (i < CONSOLE_BUFFER_SIZE)
-    {  
-      entradas[i] = *param;
-      i++;
-      param++;
-    }else
-    {
-      break;
-    }
-  }
-  
-  // verifica o nome digitado, e retorna em name1
-  retorno = file_name_verify(&SoundName[0],&SoundName[0],(INT8U*)&entradas[0],1);
-  
-  if(retorno==API_COMMAND_OK)
-  {
-	UserEnterCritical();
-	playstate = PlayState;
-	UserExitCritical();
-
-	switch(playstate)
-	{
-		case STOP:
-			if ((GetCardStat() & STA_NOINIT) != STA_NOINIT)
-			{
-			  //Play file			
-			  printSer(USE_USB, "\n\rPlaying the file ");
-			  printSer(USE_USB, &SoundName[0]);
-			  printSer(USE_USB, "\n\r");
-			  
-			   
-			  // Muda estado do player de audio
-			  UserEnterCritical();
-			  PlayState = PLAYING;
-			  UserExitCritical();
-			   
-			  //Libera para dar Play
-			  (void)OSSemPost(Play);
-			}else
-			{
-				printSer(USE_USB, (CHAR8*)SD_API_CARD_NOT_PRESENT);
-			}
-		   break;
-
-		case PAUSE:
-			printSer(USE_USB, "\n\rThere is already a file being played...\n\r");
-			break;		   
-		   
-		case PLAYING:
-			printSer(USE_USB, "\n\rThere is already a file being played...\n\r");
-			break;
-			
-		default:
-			break;
-	}
-  }
-  else
-  {
-	  printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
-  }  
-  
-  for(i=0;i<CONSOLE_BUFFER_SIZE;i++)
-  {
-    // Limpa o buffer de entradas
-    entradas[i] = 0;
-  }
-}
-
-
-const command_t play_cmd = {
-  "play", cmd_play, "SD Card - Play Wave sound"
-};
-
-
-/*----------------------------------------------------------------------*/
-/* Pause a playing Wave sound from SD Card Command						*/
-/*----------------------------------------------------------------------*/
-void cmd_pause(char *param)
-{
-	INT8U playstate = 0;
-	
-	(void)*param;
-	UserEnterCritical();
-	playstate = PlayState;
-	UserExitCritical();
-
-	switch(playstate)
-	{
-		case STOP:
-			printSer(USE_USB, "\n\rThere is no sound to be paused...\n\r");
-			break;
-			
-		case PLAYING:
-			printSer(USE_USB, "\n\rPaused...\n\r");		
-			
-			// Muda estado do player de audio
-			UserEnterCritical();
-			PlayState = PAUSE;
-			UserExitCritical();
-			
-			BlockPriority(ReadWaveFilePriority);			
-			break;
-			
-		case PAUSE:
-			printSer(USE_USB, "\n\rContinuing to play...\n\r");			
-			
-			// Muda estado do player de audio						
-			UserEnterCritical();
-			PlayState = PLAYING;
-			UserExitCritical();
-			
-			UnBlockPriority(ReadWaveFilePriority);			
-			break;
-		
-		default:
-			break;
-	}
-  
-}
-
-const command_t pause_cmd = {
-  "pause", cmd_pause, "Pause the current playing sound"
-};
-
-
-/*----------------------------------------------------------------------*/
-/* Stop a playing Wave sound from SD Card Command						*/
-/*----------------------------------------------------------------------*/
-void cmd_stop(char *param)
-{
-	INT8U playstate = 0;
-	
-	(void)*param;
-	UserEnterCritical();
-	playstate = PlayState;
-	UserExitCritical();
-
-	switch(playstate)
-	{
-		case STOP:
-			printSer(USE_USB, "\n\rThere is no sound to be stopped...\n\r");
-			break;
-			
-		case PLAYING:
-			printSer(USE_USB, "\n\rThe file being played was stopped...\n\r");
-			
-			UserEnterCritical();
-			PlayState = STOP;
-			UserExitCritical();
-			
-			// Reset play time counter
-			OSResetTime(&Play_Time);
-			break;
-			
-		case PAUSE:
-			printSer(USE_USB, "\n\rThe file being played was stopped...\n\r");
-			
-			UserEnterCritical();
-			PlayState = STOP;
-			UserExitCritical();
-			
-			// Reset play time counter
-			OSResetTime(&Play_Time);
-			
-			UnBlockPriority(ReadWaveFilePriority);		
-			break;
-		
-		default:
-			break;
-	}
-  
-}
-
-const command_t stop_cmd = {
-  "stop", cmd_stop, "Stop the current playing sound"
-};
-
-
-void cmd_vol(char *param)
-{  
-  INT8U i       = 0;
-  INT8U retorno = 0;
-  CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
-  CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
-  
-  for(i=0;i<(CONSOLE_BUFFER_SIZE/2);i++)
-  {
-    // Limpa o buffer de entradas
-    name1[i] = 0;
-    name2[i] = 0;
-  }      
-  
-  i = 0;  
-  entradas[0] = 0x20;
-  i++;
-  
-  while(*param)
-  {
-    if (i < CONSOLE_BUFFER_SIZE)
-    {  
-      entradas[i] = *param;
-      i++;
-      param++;
-    }else
-    {
-      break;
-    }
-  }
-  
-  // verifica o nome digitado, e retorna em name1
-  retorno = file_name_verify(name1,name2,(INT8U*)&entradas[0],1);
-  
-  if(retorno==API_COMMAND_OK)
-  {
-	  (void)ChangeVol(name1,VERBOSE_ON);
-  
-  }
-  else
-  {
-	  printSer(USE_USB, "Invalid argument");
-  }  
-  
-  for(i=0;i<CONSOLE_BUFFER_SIZE;i++)
-  {
-    // Limpa o buffer de entradas
-    entradas[i] = 0;
-  }
-}
-
-
-const command_t vol_cmd = {
-  "vol", cmd_vol, "Control Audio Volume"
-};
-
-void cmd_play_LCD (char *param)
-{  
-  INT8U i       	= 0;
-  INT8U retorno 	= 0;
-  INT8U playstate 	= 0;
-  
-
-	UserEnterCritical();
-	playstate = PlayState;
-	UserExitCritical();
-	
-	while(*param)
-	{
-		SoundName[i++] = *param++;
-	}
-	SoundName[i] = 0;
-		
-	switch(playstate)
-	{
-		case STOP:
-			if ((GetCardStat() & STA_NOINIT) != STA_NOINIT)
-			{
-			  //Play file			
-			   
-			  // Muda estado do player de audio
-			  UserEnterCritical();
-			  PlayState = PLAYING;
-			  UserExitCritical();
-			   
-			  //Libera para dar Play
-			  (void)OSSemPost(Play);
-			}
-		   break;
-
-		case PAUSE:
-			// Muda estado do player de audio						
-			UserEnterCritical();
-			PlayState = PLAYING;
-			UserExitCritical();
-			
-			UnBlockPriority(ReadWaveFilePriority);	
-			break;		   
-		   
-		case PLAYING:
-			// Muda estado do player de audio
-			UserEnterCritical();
-			PlayState = PAUSE;
-			UserExitCritical();
-			
-			BlockPriority(ReadWaveFilePriority);
-			break;
-			
-		default:
-			break;
-	}
-}
-
-void cmd_stop_LCD(void)
-{
-	INT8U playstate = 0;
-	
-	UserEnterCritical();
-	playstate = PlayState;
-	UserExitCritical();
-
-	switch(playstate)
-	{
-		case STOP:
-			break;
-			
-		case PLAYING:
-			UserEnterCritical();
-			PlayState = STOP;
-			UserExitCritical();
-			break;
-			
-		case PAUSE:
-			UserEnterCritical();
-			PlayState = STOP;
-			UserExitCritical();
-			
-			UnBlockPriority(ReadWaveFilePriority);		
-			break;
-		
-		default:
-			break;
-	}
-  
-}
-
-
-#endif
 

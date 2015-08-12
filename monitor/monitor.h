@@ -106,6 +106,7 @@ static int log_rename(TCHAR *source, const TCHAR *dest)
 #endif
 
 void	print_erro(char *format, ...);
+//void	print_erro(char *string);
 
 #define LOG_HEADER_LEN		 50
 #define LOG_MAX_ENTRY_SIZE   256
@@ -115,8 +116,6 @@ void	print_erro(char *format, ...);
 #define MAX_NUM_OF_ENTRIES   ((uint32_t)(-1))
 #define MAX_NUM_OF_LOGGERS	 2
 #define NUM_OF_FIELDS        4
-#define MAX_HOSTNAME_LEN	 (32+1)
-#define MAX_APIKEY_LEN	 	 (32+1)
 
 //#define LOG_DIR_NAME 		 "./logs"
 //#define TIME_INTERVAL 		 5
@@ -206,8 +205,6 @@ typedef union
 	}bit;
 }log_config_ok_t;
 
-void byte2hex(char *ret, uint8_t c);
-void int2hex(char *ret, uint16_t c);
 void test_logger(void);
 
 uint8_t log_init(uint8_t logger_num);
@@ -227,5 +224,9 @@ void log_settimestamp(uint8_t logger_num, char* filename);
 
 char* log_getfilename_to_write(uint8_t logger_num);
 char* log_getfilename_to_read(uint8_t logger_num);
+
+void main_monitor(void);
+void monitor_readentry(INT8U monitor_num);
+void monitor_writeentry(INT8U monitor_num);
 
 #endif /* LOGGER_H_ */

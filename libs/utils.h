@@ -4,6 +4,9 @@
 #define SPACE_ALIGN (INT8U)1
 #define ZEROS_ALIGN (INT8U)2
 
+void utils_tests(void);
+
+
 void reverse(char s[]);
 void IntToString(int n , char str[]);
 INT32U StringToInteger(char p[]);
@@ -24,5 +27,16 @@ void PrintDecimal(signed short int val, char *buff);
 void PrintDateTime(OSDateTime *dt, CHAR8 *buff);
 
 #define ByteSwap(A)     (A=(A<<8)+(A>>8))
+
 INT32U LWordSwap(INT32U u32DataSwap);
 
+#include "stdint.h"
+char tohex(uint8_t val);
+char tobcd(uint8_t val);
+void u8tobcd(char *ret, uint8_t c);
+uint8_t hex2val(char c);
+
+void byte2hex(char *ret, uint8_t c);
+void int2hex(char *ret, uint16_t c);
+uint8_t hex2byte(char c1, char c2);
+uint16_t byte2int(uint8_t c1, uint8_t c2);

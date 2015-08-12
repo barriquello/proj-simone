@@ -7,6 +7,13 @@
 #include "string.h"
 #include "terminal_io.h"
 
+#define DEBUG_PRINT 0
+
+#if DEBUG_PRINT
+#define PRINT(...) printf_lib(__VA_ARGS__);
+#else
+#define PRINT(...)
+#endif
 
 #pragma warn_implicitconv off
 
@@ -38,11 +45,10 @@ CHAR8 Lfname[256];
 
 
 //Mensagens padrão da API do SD
-const INT8U *SD_API_FILE_NOT_FOUND={"\n\rFile or directory not found.\n\r"};
-const INT8U *SD_API_FILE_INVALID={"\n\rInvalid file or directory name.\n\r"};
-const INT8U *SD_API_CARD_BUSY={"\n\rSD card busy !!!\n\r"};
-const INT8U *SD_API_CARD_NOT_PRESENT={"\n\rSD card is not present or not initialized !\n\r"};
-
+CONST INT8U SD_API_FILE_NOT_FOUND[]={"\n\rFile or directory not found.\n\r"};
+CONST INT8U SD_API_FILE_INVALID[]={"\n\rInvalid file or directory name.\n\r"};
+CONST INT8U SD_API_CARD_BUSY[]={"\n\rSD card busy !!!\n\r"};
+CONST INT8U SD_API_CARD_NOT_PRESENT[]={"\n\rSD card is not present or not initialized !\n\r"};
 
 
 void SDCard_ResourceInit(INT8U priority)
@@ -58,8 +64,6 @@ void SDCard_ResourceInit(INT8U priority)
   (void)priority;
 #endif  
 }
-
-
 
 
 INT8U SDCard_Init(INT8U verbose)
@@ -85,7 +89,7 @@ INT8U SDCard_Init(INT8U verbose)
   {
     if (verbose == VERBOSE_ON)
     {
-      printf_lib( "\n\rSD card is already mounted!\n\r");
+    	PRINT("\n\rSD card is already mounted!\n\r");
     }
     return SD_OK;
   }
@@ -96,7 +100,7 @@ INT8U SDCard_Init(INT8U verbose)
     {
       if (verbose == VERBOSE_ON)
       {
-        printf_lib( "\n\rSD card is not present!\n\r");
+    	  PRINT("\n\rSD card is not present!\n\r");
       }
       return NO_SD_CARD;
     }   
@@ -104,7 +108,7 @@ INT8U SDCard_Init(INT8U verbose)
     {
       if (verbose == VERBOSE_ON)
       {    
-        printf_lib( "\n\rSD card detected...\n\r");
+    	  PRINT("\n\rSD card detected.\n\r");
       }
       
       // Initialize SD card
@@ -118,7 +122,7 @@ INT8U SDCard_Init(INT8U verbose)
         {
           if (verbose == VERBOSE_ON)
           {
-            printf_lib( "\n\rFailed to mount SD card !\n\r");
+        	  PRINT("\n\rFailed to mount SD card !\n\r");
           }
           
           return MOUNT_SD_FAILS;
@@ -126,30 +130,30 @@ INT8U SDCard_Init(INT8U verbose)
         {
           if (verbose == VERBOSE_ON)
           {
-              printf_lib( "\n\r");
+        	  PRINT("\n\r");
               switch(GetCardType())
               {
                 case CT_MMC:
-                  printf_lib( "MMC Card ver 3");
+                	PRINT("MMC Card ver 3");
                   break;
 
                 case CT_SD1:
-                  printf_lib( "SD Card ver 1");
+                	PRINT( "SD Card ver 1");
                   break;
                   
                 case CT_SD2:
-                  printf_lib( "SD Card ver 2");
+                	PRINT("SD Card ver 2");
                   break;
                   
                 case CT_SDC:
-                  printf_lib( "SDHC Card");
+                	PRINT("SDHC Card");
                   break;
                   
                 default:
-                  printf_lib( "Unknown Card");
+                	PRINT("Unknown Card");
                   break;
               }
-              printf_lib( " mounted !\n\r");
+              PRINT(" mounted !\n\r");
           }
           return SD_OK;
         }
@@ -157,7 +161,7 @@ INT8U SDCard_Init(INT8U verbose)
       {
         if (verbose == VERBOSE_ON)
         {
-          printf_lib( "\n\rFailed to initialize SD card !\n\r");
+        	PRINT("\n\rFailed to initialize SD card !\n\r");
         }
         
         return INIT_SD_FAILS;
@@ -188,7 +192,7 @@ INT8U SDCard_SafeRemove(INT8U verbose)
       
       if (verbose == VERBOSE_ON)
       {
-        printf_lib( "\n\rIt is safe to remove the SD card!\n\r");
+    	  PRINT( "\n\rIt is safe to remove the SD card!\n\r");
       }
       return SD_OK;
     }
@@ -200,7 +204,7 @@ INT8U SDCard_SafeRemove(INT8U verbose)
       
       if (verbose == VERBOSE_ON)
       {
-        printf_lib( SD_API_CARD_BUSY);
+    	  PRINT( SD_API_CARD_BUSY);
       }    
       
       return SD_BUSY;
@@ -210,7 +214,7 @@ INT8U SDCard_SafeRemove(INT8U verbose)
   {
       if (verbose == VERBOSE_ON)
       {
-        printf_lib( SD_API_CARD_NOT_PRESENT);
+    	  PRINT( SD_API_CARD_NOT_PRESENT);
       }
       return SD_FAT_ERROR;
   }    
@@ -234,7 +238,7 @@ void ListFiles(INT8U *pname1)
         sd_command = SD_FILE_LISTING;
 
         // list files
-      	printf_lib( "\n\r");
+        PRINT( "\n\r");
       	if (*pname1 == 0)
       	{
       	  ptr = ".";
@@ -265,7 +269,7 @@ void ListFiles(INT8U *pname1)
   						p1 += Finfo.fsize;
   					}
 
-  					printf_lib("%c%c%c%c%c %u/%02u/%02u %02u:%02u %9u  %s",
+  					PRINT("%c%c%c%c%c %u/%02u/%02u %02u:%02u %9u  %s",
   							(Finfo.fattrib & AM_DIR) ? 'D' : '-',
   							(Finfo.fattrib & AM_RDO) ? 'R' : '-',
   							(Finfo.fattrib & AM_HID) ? 'H' : '-',
@@ -277,18 +281,18 @@ void ListFiles(INT8U *pname1)
   				  Finfo.fname[0] = 0;
             
             #if _USE_LFN
-				printf_lib("  %s\n\r", Lfname);					
+  				PRINT("  %s\n\r", Lfname);					
             #else
-  				printf_lib( "\n\r");
+  				PRINT( "\n\r");
             #endif
   				}
 				}
 
-				printf_lib("%4u File(s), %u bytes total \n\r%4u Dir(s)", s1, p1, s2);
+				PRINT("%4u File(s), %u bytes total \n\r%4u Dir(s)", s1, p1, s2);
 
 				if (f_getfree(ptr, (DWORD*)&p1, &fs) == FR_OK)
 				{
-					printf_lib(", %u bytes free \n\r", p1 * fs->csize * 512);
+					PRINT(", %u bytes free \n\r", p1 * fs->csize * 512);
 				}
         
         sd_command = SD_INACTIVE;
@@ -296,12 +300,12 @@ void ListFiles(INT8U *pname1)
       }
       else
       {
-        printf_lib( SD_API_CARD_BUSY);  
+    	  PRINT( SD_API_CARD_BUSY);  
       }              
     }
     else
     {
-      printf_lib( SD_API_CARD_NOT_PRESENT);
+    	PRINT( SD_API_CARD_NOT_PRESENT);
     }
 
     #if (SD_FAT_MUTEX_EN == 1)
@@ -395,12 +399,12 @@ void CSVListFiles(char **files)
       }
       else
       {
-        //printf_lib( SD_API_CARD_BUSY);  
+        //PRINT( SD_API_CARD_BUSY);  
       }              
     }
     else
     {
-      //printf_lib( SD_API_CARD_NOT_PRESENT);
+      //PRINT( SD_API_CARD_NOT_PRESENT);
     }
 
     #if (SD_FAT_MUTEX_EN == 1)
@@ -408,11 +412,7 @@ void CSVListFiles(char **files)
     #endif
 }
 
-
-                                               
-
-
-
+  
 #define ReadDataHandle(SerPort, data) putcharSer(SerPort, data)
 
 
@@ -437,7 +437,7 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
       {  
         if (verbose == VERBOSE_ON)
         {          
-        	printf_lib( "\n\r");
+        	PRINT("\n\r");
         }
         
 		p2 = 0;  			
@@ -478,11 +478,11 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
         //Sets these variables to inactive states
         sd_command = SD_INACTIVE;        
         
-        printf_lib("\n\r%u bytes read with %u bytes/sec.\n\r", p2, s2 ? (p2 * 100 / s2) : 0);
+        PRINT("\n\r%u bytes read with %u bytes/sec.\n\r", p2, s2 ? (p2 * 100 / s2) : 0);
         
         if (verbose == VERBOSE_ON)
         {
-        	printf_lib( "\n\r");
+        	PRINT( "\n\r");
         }
         
         #if (SD_FAT_MUTEX_EN == 1)
@@ -496,9 +496,9 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
         //If the file was not found, the system is halted
         if (verbose == VERBOSE_ON)
         {
-          printf_lib( "\n\r");
-          printf_lib( (CHAR8*)FileName);
-          printf_lib( " not found.\n\r");
+        	PRINT( "\n\r");
+        	PRINT( (CHAR8*)FileName);
+        	PRINT( " not found.\n\r");
         }
         
         sd_command = SD_INACTIVE;
@@ -518,7 +518,7 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
       
       if (verbose == VERBOSE_ON)
       {
-    	  printf_lib( (CHAR8*)SD_API_CARD_BUSY);
+    	  PRINT( (CHAR8*)SD_API_CARD_BUSY);
       }      
       
       return SD_BUSY;      
@@ -528,7 +528,7 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
   {
       if (verbose == VERBOSE_ON)
       {
-    	  printf_lib( (CHAR8*)SD_API_CARD_NOT_PRESENT);
+    	  PRINT( (CHAR8*)SD_API_CARD_NOT_PRESENT);
       }
       return SD_FAT_ERROR;
   }
@@ -559,7 +559,7 @@ INT8U ChangeDir(CHAR8 *FileName, INT8U verbose)
         
         if (verbose == VERBOSE_ON)
         {
-        	printf_lib( (CHAR8*)"\n\r");
+        	PRINT( (CHAR8*)"\n\r");
         }
         
         return SD_OPEN_DIR_OK;
@@ -574,9 +574,9 @@ INT8U ChangeDir(CHAR8 *FileName, INT8U verbose)
         
         if (verbose == VERBOSE_ON)
         {
-          printf_lib( (CHAR8*)"\n\rDirectory ");
-          printf_lib( (CHAR8*)FileName);
-          printf_lib( (CHAR8*)" does not exist !\n\r");
+        	PRINT( (CHAR8*)"\n\rDirectory ");
+        	PRINT( (CHAR8*)FileName);
+        	PRINT( (CHAR8*)" does not exist !\n\r");
         }
         return SD_OPEN_DIR_FAILURE;
       }
@@ -589,7 +589,7 @@ INT8U ChangeDir(CHAR8 *FileName, INT8U verbose)
 
       if (verbose == VERBOSE_ON)
       {
-    	  printf_lib( (CHAR8*)SD_API_CARD_BUSY);
+    	  PRINT( (CHAR8*)SD_API_CARD_BUSY);
       }      
 
       return SD_BUSY;
@@ -599,7 +599,7 @@ INT8U ChangeDir(CHAR8 *FileName, INT8U verbose)
   {
       if (verbose == VERBOSE_ON)
       {
-    	  printf_lib( (CHAR8*)SD_API_CARD_NOT_PRESENT);
+    	  PRINT( (CHAR8*)SD_API_CARD_NOT_PRESENT);
       }
       return SD_FAT_ERROR;
   }
@@ -634,9 +634,9 @@ INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
         
         if (verbose == VERBOSE_ON)
         {
-          printf_lib( (CHAR8*)"\n\r");
-          printf_lib( (CHAR8*)FileName);
-          printf_lib( (CHAR8*)" was created successfully.\n\r");
+        	PRINT( (CHAR8*)"\n\r");
+        	PRINT( (CHAR8*)FileName);
+        	PRINT( (CHAR8*)" was created successfully.\n\r");
         }          
         
         return SD_CREATE_FILE_OK;
@@ -651,9 +651,9 @@ INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
         
         if (verbose == VERBOSE_ON)
         {
-          printf_lib( (CHAR8*)"\n\r");
-          printf_lib( (CHAR8*)FileName);
-          printf_lib( (CHAR8*)" was not created.\n\r");
+        	PRINT( (CHAR8*)"\n\r");
+        	PRINT( (CHAR8*)FileName);
+        	PRINT( (CHAR8*)" was not created.\n\r");
         }
         return SD_CREATE_FILE_FAILURE;
       }
@@ -666,7 +666,7 @@ INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
 
       if (verbose == VERBOSE_ON)
       {
-    	printf_lib( (CHAR8*)SD_API_CARD_BUSY);
+    	  PRINT( (CHAR8*)SD_API_CARD_BUSY);
       }      
 
       return SD_BUSY;
@@ -676,7 +676,7 @@ INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
   {
       if (verbose == VERBOSE_ON)
       {
-    	printf_lib( (CHAR8*)SD_API_CARD_NOT_PRESENT);
+    	  PRINT( (CHAR8*)SD_API_CARD_NOT_PRESENT);
       }
       return SD_FAT_ERROR;
   }
@@ -707,9 +707,9 @@ INT8U CreateDir(CHAR8 *FileName, INT8U verbose)
         
         if (verbose == VERBOSE_ON)
         {
-          printf_lib( (CHAR8*)"\n\rDirectory ");
-          printf_lib( (CHAR8*)FileName);
-          printf_lib( (CHAR8*)" was created successfully.\n\r");
+        	PRINT( (CHAR8*)"\n\rDirectory ");
+        	PRINT( (CHAR8*)FileName);
+        	PRINT( (CHAR8*)" was created successfully.\n\r");
         }          
         
         return SD_CREATE_DIR_OK;
@@ -724,9 +724,9 @@ INT8U CreateDir(CHAR8 *FileName, INT8U verbose)
         
         if (verbose == VERBOSE_ON)
         {
-          printf_lib( (CHAR8*)"\n\rDirectory ");
-          printf_lib( (CHAR8*)FileName);
-          printf_lib( (CHAR8*)" was not created.\n\r");
+        	PRINT( (CHAR8*)"\n\rDirectory ");
+        	PRINT( (CHAR8*)FileName);
+        	PRINT( (CHAR8*)" was not created.\n\r");
         }
         return SD_CREATE_DIR_FAILURE;
       }
@@ -739,7 +739,7 @@ INT8U CreateDir(CHAR8 *FileName, INT8U verbose)
 
       if (verbose == VERBOSE_ON)
       {
-    	printf_lib( (CHAR8*)SD_API_CARD_BUSY);
+    	  PRINT( (CHAR8*)SD_API_CARD_BUSY);
       }
 
       return SD_BUSY;
@@ -749,7 +749,7 @@ INT8U CreateDir(CHAR8 *FileName, INT8U verbose)
   {
       if (verbose == VERBOSE_ON)
       {
-    	printf_lib( (CHAR8*)SD_API_CARD_NOT_PRESENT);
+    	  PRINT( (CHAR8*)SD_API_CARD_NOT_PRESENT);
       }
       return SD_FAT_ERROR;
   }
@@ -783,9 +783,9 @@ INT8U DeleteFile(CHAR8 *FileName, INT8U verbose)
       {
         if (verbose == VERBOSE_ON)
         {
-        	printf_lib( (CHAR8*)"\n\r");                       
-        	printf_lib( (CHAR8*)FileName);
-        	printf_lib( (CHAR8*)" deleted! \n\r");
+        	PRINT( (CHAR8*)"\n\r");                       
+        	PRINT( (CHAR8*)FileName);
+        	PRINT( (CHAR8*)" deleted! \n\r");
         }
         return SD_FILE_DELETED;
       }
@@ -795,8 +795,8 @@ INT8U DeleteFile(CHAR8 *FileName, INT8U verbose)
         {
           if (verbose == VERBOSE_ON)
           {
-        	  printf_lib( (CHAR8*)"\n\rDelete file or directory denied.\n\r");
-        	  printf_lib( (CHAR8*)"Directory is not empty or file is write-protected.\n\r");        
+        	  PRINT( (CHAR8*)"\n\rDelete file or directory denied.\n\r");
+        	  PRINT( (CHAR8*)"Directory is not empty or file is write-protected.\n\r");        
           }
           return SD_DELETE_FILE_DENIED;
         }
@@ -804,7 +804,7 @@ INT8U DeleteFile(CHAR8 *FileName, INT8U verbose)
         {
           if (verbose == VERBOSE_ON)
           {
-              printf_lib( SD_API_FILE_NOT_FOUND);         
+        	  PRINT( SD_API_FILE_NOT_FOUND);         
           }
           return SD_FILE_NOT_FOUND;
         }
@@ -818,7 +818,7 @@ INT8U DeleteFile(CHAR8 *FileName, INT8U verbose)
 
       if (verbose == VERBOSE_ON)
       {
-    	printf_lib( (CHAR8*)SD_API_CARD_BUSY);
+    	  PRINT( (CHAR8*)SD_API_CARD_BUSY);
       }
 
       return SD_BUSY;
@@ -828,7 +828,7 @@ INT8U DeleteFile(CHAR8 *FileName, INT8U verbose)
   {
       if (verbose == VERBOSE_ON)
       {
-    	printf_lib( (CHAR8*)SD_API_CARD_NOT_PRESENT);
+    	  PRINT( (CHAR8*)SD_API_CARD_NOT_PRESENT);
       }
       return SD_FAT_ERROR;
   }
@@ -863,7 +863,7 @@ INT8U RenameFile(CHAR8 *OldFileName,CHAR8 *NewFileName, INT8U verbose)
       {
         if (verbose == VERBOSE_ON)
         {      
-          printf_lib( (CHAR8*)"\n\rFile found and renamed !\n\r");      
+        	PRINT( (CHAR8*)"\n\rFile found and renamed !\n\r");      
         }
         return SD_FILE_RENAMED;
       }
@@ -871,7 +871,7 @@ INT8U RenameFile(CHAR8 *OldFileName,CHAR8 *NewFileName, INT8U verbose)
       {
         if (verbose == VERBOSE_ON)
         {      
-          printf_lib( (CHAR8*)SD_API_FILE_NOT_FOUND);       
+        	PRINT( (CHAR8*)SD_API_FILE_NOT_FOUND);       
         }
         return SD_FILE_NOT_FOUND;
       }
@@ -884,7 +884,7 @@ INT8U RenameFile(CHAR8 *OldFileName,CHAR8 *NewFileName, INT8U verbose)
 
       if (verbose == VERBOSE_ON)
       {
-    	printf_lib( (CHAR8*)SD_API_CARD_BUSY);
+    	  PRINT( (CHAR8*)SD_API_CARD_BUSY);
       }
 
       return SD_BUSY;
@@ -894,7 +894,7 @@ INT8U RenameFile(CHAR8 *OldFileName,CHAR8 *NewFileName, INT8U verbose)
   {
       if (verbose == VERBOSE_ON)
       {
-    	printf_lib( (CHAR8*)SD_API_CARD_NOT_PRESENT);
+    	  PRINT( (CHAR8*)SD_API_CARD_NOT_PRESENT);
       }
       return SD_FAT_ERROR;
   }
@@ -928,7 +928,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
         
         if (verbose == VERBOSE_ON)
         {      
-          printf_lib( (CHAR8*)"\n\rSource file does not exist !\n\r");      
+        	PRINT( (CHAR8*)"\n\rSource file does not exist !\n\r");      
         }
         return SD_COPY_FILE_FAILURE;      
       }
@@ -972,7 +972,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
           
           if (verbose == VERBOSE_ON)
           {                
-        	printf_lib( (CHAR8*)"\n\rDestination file could not be created or already exist !\n\r");       
+        	  PRINT( (CHAR8*)"\n\rDestination file could not be created or already exist !\n\r");       
           }
             
           f_close(&file_obj);
@@ -982,7 +982,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
 
       if (verbose == VERBOSE_ON)
       {                			
-        printf_lib( (CHAR8*)"\n\rCopying file ...\n\r");
+    	  PRINT( (CHAR8*)"\n\rCopying file\n\r");
       }
       
 	  SetFatTimer((INT32U)0);  
@@ -1003,7 +1003,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
       if (verbose == VERBOSE_ON)
       {      
         GetFatTimer(&p2);                                   
-        printf_lib("\n\r%u bytes copied with %u bytes/sec.\n\r", p1, p2 ? (p1 * 100 / p2) : 0);    
+        PRINT("\n\r%u bytes copied with %u bytes/sec.\n\r", p1, p2 ? (p1 * 100 / p2) : 0);    
       }
       
       sd_command = SD_INACTIVE;
@@ -1022,7 +1022,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
 
       if (verbose == VERBOSE_ON)
       {
-    	printf_lib( (CHAR8*)SD_API_CARD_BUSY);
+    	  PRINT( (CHAR8*)SD_API_CARD_BUSY);
       }
 
       return SD_BUSY;
@@ -1032,7 +1032,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
   {
       if (verbose == VERBOSE_ON)
       {
-    	printf_lib( (CHAR8*)SD_API_CARD_NOT_PRESENT);
+    	  PRINT( (CHAR8*)SD_API_CARD_NOT_PRESENT);
       }
       return SD_FAT_ERROR;
   }
@@ -1078,7 +1078,7 @@ INT8U WriteUptimeLog(INT8U verbose)
         
         if (verbose == VERBOSE_ON)
         {
-          printf_lib( (CHAR8*)"\n\rUptime written !\n\r");                         
+        	PRINT( (CHAR8*)"\n\rUptime written !\n\r");                         
         }
         
         return SD_FILE_WRITTEN;
@@ -1091,7 +1091,7 @@ INT8U WriteUptimeLog(INT8U verbose)
 
       if (verbose == VERBOSE_ON)
       {
-    	printf_lib( (CHAR8*)SD_API_CARD_BUSY);
+    	  PRINT( (CHAR8*)SD_API_CARD_BUSY);
       }
 
       return SD_BUSY;
@@ -1101,7 +1101,7 @@ INT8U WriteUptimeLog(INT8U verbose)
   {
       if (verbose == VERBOSE_ON)
       {
-    	printf_lib( (CHAR8*)SD_API_CARD_NOT_PRESENT);
+    	  PRINT( (CHAR8*)SD_API_CARD_NOT_PRESENT);
       }
       return SD_FAT_ERROR;
   }

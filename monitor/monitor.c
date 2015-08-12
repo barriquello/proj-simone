@@ -1,161 +1,54 @@
 /*
- * logger.c
+ * monitor.c
  *
  *  Created on: 15/04/2015
- *      Author: Universidade Federal
+ *      Author: UFSM
  */
 
-#include "logger.h"
-
-uint8_t http_get_time(struct tm *ts);
-uint8_t http_send_data(char *data, uint8_t len);
+#include "monitor.h"
+#include "utils.h"
+#include "assert.h"
+#include "simon-api.h"
 
 #ifdef _WIN32
-#define DEBUG_LOGGER 1
+#include "http_client.h"
+#define DEBUG_MONITOR 1
 #endif
 
-#if DEBUG_LOGGER
+#if DEBUG_MONITOR
 #define PRINTF(...) printf(__VA_ARGS__);
 #else
 #define PRINTF(...)
 #endif
 
+#define MONITOR_TESTS 0
+
 extern log_state_t logger_state[MAX_NUM_OF_LOGGERS];
 
-static char tohex(uint8_t val)
-{
-	if(val>15) val = 15;
-
-	if(val>9)
-	{
-		return ((val-10) + 'A');
-	}else
-	{
-		return (val + '0');
-	}
-}
-
-static char tobcd(uint8_t val)
-{
-	if(val>9) val = 9;
-	return (val + '0');
-}
-
-void byte2hex(char *ret, uint8_t c)
-{
-	ret[0] = tohex((c>>4)&0x0F);
-	ret[1] = tohex(c&0x0F);
-}
-
-void int2hex(char *ret, uint16_t c)
-{
-	byte2hex(ret,(uint8_t)(c>>8)&0xFF);
-	byte2hex(ret+2,(uint8_t)(c)&0xFF);
-}
-
-void u8tobcd(char *ret, uint8_t c)
-{
-	uint8_t d;
-	while(c>100){c-=100;} // keep below 99
-	d = (c/10);
-	ret[0] = tobcd(d);
-	ret[1] = tobcd(c-d*10);
-}
-
-
-uint8_t hex2val(char c)
-{
-	if(c >= 'A' && c <= 'F') return (c - 'A' + 10);
-	if(c >= '0' && c <= '9') return (c - '0');
-	return 0; // 0 for any other case
-}
-
-static uint8_t hex2byte(char c1, char c2)
-{
-	return (hex2val(c1)*16 + hex2val(c2));
-}
-
-static uint16_t byte2int(uint8_t c1, uint8_t c2)
-{
-	return (uint16_t)(c1*256 + c2);
-}
-
 LOG_FILETYPE stderr_f;
-char buffer_erro[256];
-#define error_file		"erro.txt"
 
+char buffer_erro[256];
+
+#define error_file		"erro.txt"
 #include <stdarg.h>
 /*-----------------------------------------------------------------------------------*/
-void
-print_erro(char *format, ...)
+void print_erro(char *format, ...)
+//void print_erro(char *string)
 {
 
+	
+#if 1
   va_list argptr;
   va_start(argptr, format);
   vsprintf(buffer_erro, format, argptr);
   va_end(argptr);
+#endif  
 
   if(log_openwrite(error_file,&stderr_f))
   {
 	  (void)log_write(buffer_erro,&stderr_f);
 	  (void)log_close(&stderr_f);
   }
-}
-/*-----------------------------------------------------------------------------------*/
-
-#include <assert.h>
-void test_hextoint(void)
-{
-	uint16_t r;
-	r = hex2byte('A','B');
-	assert(r==0xAB);
-
-	r = hex2byte('1','9');
-	assert(r==0x19);
-
-	r = byte2int(hex2byte('A','B'),hex2byte('1','9'));
-	assert(r==0xAB19);
-}
-
-void test_inttohex(void)
-{
-
-	char ret[4];
-	byte2hex(ret,0xFF);
-	assert((ret[0] == 'F') && (ret[1]== 'F'));
-
-	byte2hex(ret,0x11);
-	assert((ret[0] == '1') && (ret[1]== '1'));
-
-	byte2hex(ret,0xA0);
-	assert((ret[0] == 'A') && (ret[1]== '0'));
-
-	byte2hex(ret,0x9E);
-	assert((ret[0] == '9') && (ret[1]== 'E'));
-
-	int2hex(ret,0xFF11);
-	assert((ret[0] == 'F') && (ret[1]== 'F') && (ret[2] == '1') && (ret[3]== '1'));
-
-	int2hex(ret,0xA09E);
-	assert((ret[0] == 'A') && (ret[1]== '0') && (ret[2] == '9') && (ret[3]== 'E'));
-}
-
-void test_u8tobcd(void)
-{
-	char ret[4];
-
-	u8tobcd(ret,99);
-	assert((ret[0] == '9') && (ret[1]== '9'));
-
-	u8tobcd(ret,13);
-	assert((ret[0] == '1') && (ret[1]== '3'));
-}
-
-void test_logger(void)
-{
-	test_hextoint();
-	test_inttohex();
-	test_u8tobcd();
 }
 
 
@@ -316,6 +209,7 @@ void log_newheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16
 
 #ifndef _WIN32
 #include "time_lib.h"
+#include "http_client.h"
 #else
 #include "time.h"
 #endif
@@ -329,7 +223,8 @@ void log_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 #define SERVER_TIME 1
 #if SERVER_TIME
 	struct tm t;
-	http_get_time(&t);
+	//http_get_time(&t);
+	simon_get_time(&t);
 	time_now = mktime(&t);
 #else
 	time_now = time(NULL);
@@ -505,7 +400,9 @@ uint8_t log_entry_send(log_entry_t* entry, uint8_t len)
 
 	if(cnt > 0)
 	{
+#ifdef _WIN32			
 		http_send_data(data_vector,cnt);
+#endif			
 	}
 
 	return 1;
@@ -694,6 +591,59 @@ char* log_getfilename_to_read(uint8_t logger_num)
 {
 	return logger_state[logger_num].log_name_reading;
 }
+
+void monitor_writeentry(INT8U monitor_num)
+{
+	char string[20];
+	uint16_t cnt = 0;
+	
+#if MONITOR_TESTS
+	uint16_t vetor_dados[3]={0x1111,0x2222,0x3333};	
+	log_createentry(string,vetor_dados,3);
+
+	assert((string[0] == '1') && (string[1]== '1') && (string[2] == '1') && (string[3]== '1') &&
+			(string[0+4] == '2') && (string[1+4]== '2') && (string[2+4] == '2') && (string[3+4]== '2') &&
+			(string[0+2*4] == '3') && (string[1+2*4]== '3') && (string[2+2*4] == '3') && (string[3+2*4]== '3'));
+
+#endif		
+
+	/* change to log dir */
+	log_chdir(logger_state[monitor_num].log_dir_name);
+	cnt = log_writeentry(log_getfilename_to_write(monitor_num),string);
+
+	/* change to parent dir */
+	log_chdir("..");
+
+	PRINTF("Entry written %d\r\n", cnt);
+}
+
+void monitor_readentry(INT8U monitor_num)
+{
+	log_entry_t entry;
+	uint8_t string[20];
+	uint32_t nread;
+	char buffer[sizeof(long)*8+1];
+
+	char* fname = log_getfilename_to_read(monitor_num);
+	entry.values = string;
+
+	/* change to log dir */
+	log_chdir(logger_state[monitor_num].log_dir_name);
+
+	if((nread = log_readentry(monitor_num, fname, &entry)) != 0)
+	{
+		if( nread < MAX_NUM_OF_ENTRIES)
+		{
+			PRINTF((char*)entry.values);
+			PRINTF(ltoa((long)entry.ts,buffer,10));
+		}
+	}
+
+	/* change to parent dir */
+	log_chdir("..");
+
+}
+
 
 
 

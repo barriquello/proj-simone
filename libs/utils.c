@@ -93,7 +93,7 @@ INT32U LWordSwap(INT32U u32DataSwap)
 	return (u32Temp);
 }
 
-#if 1
+#if 0
 void PrintDecimal(INT16S val, CHAR8 *buff)
 {
 	INT16U backup;
@@ -130,7 +130,6 @@ void PrintDecimal(INT16S val, CHAR8 *buff)
 	// Completes the string for sign information
 	*(buff + i) = s;  // Sign character
 }
-#endif
 
 void Print4Digits(INT16U number, INT8U align, CHAR8 *buff)
 {
@@ -348,6 +347,32 @@ void Print2Digits(INT8U number, INT8U align, CHAR8 *buff)
 		*(buff + i) = 0;
 	}
 }
+#else
+#include "stdio.h"
+void PrintDecimal(INT16S val, CHAR8 *buff)
+{	
+	snprintf(buff,5,"%d",val);
+}
+
+#define UNUSED(x)		(void)(x);
+void Print2Digits(INT8U number, INT8U align, CHAR8 *buff)
+{
+	UNUSED(align);
+	snprintf(buff,2,"%d",number);
+}
+
+void Print3Digits(unsigned short int number, unsigned char align, char *buff)
+{
+	UNUSED(align);
+	snprintf(buff,3,"%d",number);
+}
+
+void Print4Digits(unsigned short int number, unsigned char align, char *buff)
+{
+	UNUSED(align);
+	snprintf(buff,4,"%d",number);
+}
+#endif
 
 // formato yyyymmddhhmmss
 void PrintDateTime(OSDateTime *dt, CHAR8 *buff)
@@ -397,3 +422,62 @@ int strlen(char *str)
 	return (s - str);
 }
 #endif
+
+
+char tohex(uint8_t val)
+{
+	if(val>15) val = 15;
+
+	if(val>9)
+	{
+		return ((val-10) + 'A');
+	}else
+	{
+		return (val + '0');
+	}
+}
+
+char tobcd(uint8_t val)
+{
+	if(val>9) val = 9;
+	return (val + '0');
+}
+
+void byte2hex(char *ret, uint8_t c)
+{
+	ret[0] = tohex((c>>4)&0x0F);
+	ret[1] = tohex(c&0x0F);
+}
+
+void int2hex(char *ret, uint16_t c)
+{
+	byte2hex(ret,(uint8_t)(c>>8)&0xFF);
+	byte2hex(ret+2,(uint8_t)(c)&0xFF);
+}
+
+void u8tobcd(char *ret, uint8_t c)
+{
+	uint8_t d;
+	while(c>100){c-=100;} // keep below 99
+	d = (c/10);
+	ret[0] = tobcd(d);
+	ret[1] = tobcd(c-d*10);
+}
+
+
+uint8_t hex2val(char c)
+{
+	if(c >= 'A' && c <= 'F') return (c - 'A' + 10);
+	if(c >= '0' && c <= '9') return (c - '0');
+	return 0; // 0 for any other case
+}
+
+uint8_t hex2byte(char c1, char c2)
+{
+	return (hex2val(c1)*16 + hex2val(c2));
+}
+
+uint16_t byte2int(uint8_t c1, uint8_t c2)
+{
+	return (uint16_t)(c1*256 + c2);
+}

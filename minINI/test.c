@@ -2,7 +2,7 @@
  *
  *  gcc -o test test.c minIni.c
  */
-#include <assert.h>
+#include "assert.h"
 #include <stdio.h>
 #include <string.h>
 #include "minIni.h"

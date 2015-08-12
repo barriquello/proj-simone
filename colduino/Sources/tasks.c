@@ -157,7 +157,7 @@ void Terminal_Task(void)
 	(void) terminal_add_cmd((command_t*) &wt_cmd);
 	(void) terminal_add_cmd((command_t*) &echo_cmd);
 	(void) terminal_add_cmd((command_t*) &echo_stdout_cmd);
-	(void) terminal_add_cmd((command_t*) &esp_cmd);
+	//(void) terminal_add_cmd((command_t*) &esp_cmd);
 	(void) terminal_add_cmd((command_t*) &m590_cmd);	
 
 	while (1)
@@ -383,9 +383,7 @@ void Tarefa_termometro(void)
 	{
 		(void) DelayTask(30000); /* 30s */
 
-		//////////////////////////////////////////////////////////////
-		// Adquire temperatura do core
-		//////////////////////////////////////////////////////////////
+		/* Mede temperatura do core */
 		UserEnterCritical();
 		digital_temp = ADConvert(TEMP_SENSOR_CH);
 		UserExitCritical();

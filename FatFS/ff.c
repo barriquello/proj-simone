@@ -123,8 +123,6 @@
 #include "diskio.h"		/* Declarations of disk I/O functions */
 
 
-
-
 /*--------------------------------------------------------------------------
 
    Module Private Definitions
@@ -545,9 +543,6 @@ static const BYTE ExCvt[] = _EXCVT;	/* Upper conversion table for extended chara
 
 
 
-
-
-
 /*--------------------------------------------------------------------------
 
    Module Private Functions
@@ -559,9 +554,11 @@ static const BYTE ExCvt[] = _EXCVT;	/* Upper conversion table for extended chara
 /* String functions                                                      */
 /*-----------------------------------------------------------------------*/
 
+#if 0
 /* Copy memory to memory */
 static
-void mem_cpy (void* dst, const void* src, UINT cnt) {
+void mem_cpy (void* dst, const void* src, UINT cnt) 
+{
 	BYTE *d = (BYTE*)dst;
 	const BYTE *s = (const BYTE*)src;
 
@@ -594,6 +591,7 @@ int mem_cmp (const void* dst, const void* src, UINT cnt) {
 	while (cnt-- && (r = *d++ - *s++) == 0) ;
 	return r;
 }
+#endif
 
 /* Check if chr is contained in the string */
 static
@@ -602,6 +600,10 @@ int chk_chr (const char* str, int chr) {
 	return *str;
 }
 
+#include "string.h"
+#define mem_cpy		memcpy
+#define mem_set		memset
+#define mem_cmp		memcmp
 
 
 
