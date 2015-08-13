@@ -7,10 +7,15 @@
 
 #include "m590_at.h"
 #include "BRTOS.h"
+#include "printf_lib.h"
 #include "utils.h"
 #include "terminal_commands.h"
 #include "string.h"
-#include "stdio.h"
+
+#ifdef _WIN32
+#include <stdio.h>
+#endif
+
 
 INT8U CreatePPP(void);
 INT8U CreateTCPLink(char *linkStr);
@@ -191,7 +196,7 @@ INT8U TCPIP_SendData(INT8U * dados)
 		{
 			len = length;
 			send = dados;			
-			snprintf(gReceiveBuffer,sizeof(gReceiveBuffer)-1, "at+tcpsend=0,%d\r",len);
+			SNPRINTF(gReceiveBuffer,sizeof(gReceiveBuffer)-1, "at+tcpsend=0,%d\r",len);
 			m590_print(gReceiveBuffer);			
 			DelayTask(10);
 			
@@ -285,7 +290,7 @@ INT8U TCPIP_SendData(INT8U * dados)
 INT8U CreateSingleTCPLink(unsigned char iLinkNum,char *strServerIP,char *strPort)
 {
 	memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
-	snprintf(gReceiveBuffer,sizeof(gReceiveBuffer)-1,"AT+TCPSETUP=%d,%s,%s\r",iLinkNum,strServerIP,strPort);
+	SNPRINTF(gReceiveBuffer,sizeof(gReceiveBuffer)-1,"AT+TCPSETUP=%d,%s,%s\r",iLinkNum,strServerIP,strPort);
 	if(!CreateTCPLink(gReceiveBuffer))  
 	{
 		return FALSE;

@@ -86,21 +86,26 @@ T20150101073300S ->
 
  */
 
-
-#include <stdio.h>
+#include "printf_lib.h"
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
+
+#ifdef _WIN32
+#include <stdio.h>
+#endif
 
 #include "assert.h"
 #include "minIni.h"
 #include "monitor.h"
 #include "simon-api.h"
 
-static uint8_t num_monitores = MAX_NUM_OF_LOGGERS;
-static uint8_t logger = 0;
-log_state_t logger_state[MAX_NUM_OF_LOGGERS];
+#include "SD_API.h"
+#include "AppConfig.h"
 
+static uint8_t 	num_monitores = MAX_NUM_OF_LOGGERS;
+static uint8_t 	logger = 0;
+log_state_t 	logger_state[MAX_NUM_OF_LOGGERS];
 log_config_ok_t config_check;
 
 
@@ -112,6 +117,12 @@ log_config_ok_t config_check;
 #define PRINTF(...) printf(__VA_ARGS__);
 #else
 #define PRINTF(...)
+#endif
+
+#if PLATAFORMA == COLDUINO
+#define CONST
+#else
+#define CONST const
 #endif
 
 /*---------------------------------------------------------------------------*/
@@ -134,8 +145,9 @@ log_config_ok_t config_check;
  * used in this example. The actual implementation of the functions
  * can be found at the end of this file.
  */
-struct timer { int start, interval; };
-static int  timer_expired(struct timer *t);
+typedef unsigned long long clock_t;
+struct timer { clock_t start, interval; };
+static clock_t  timer_expired(struct timer *t);
 static void timer_set(struct timer *t, int usecs);
 /*---------------------------------------------------------------------------*/
 void sleep_forever(void);
@@ -170,7 +182,7 @@ char getchar_timeout(int timeout)
 }
 #else
 char getchar_timeout(int timeout)
-{;}
+{(void)timeout;}
 #endif
 
 /* We must always include pt.h in our protothreads code. */
@@ -189,7 +201,7 @@ volatile uint8_t log_is_connected = 0;
 static char set_input = 0;
 
 #define sizearray(a)  (sizeof(a) / sizeof((a)[0]))
-const char config_inifile[] = "config.ini";
+CONST char config_inifile[] = "config.ini";
 
 /*---------------------------------------------------------------------------*/
 
@@ -236,17 +248,16 @@ PT_THREAD(log_read_thread(struct pt *pt))
   PT_END(pt);
 }
 
-
-
 #ifdef _WIN32
 
-static int clock_time(void)
-{ return (int)GetTickCount(); }
+static clock_t clock_time(void)
+{ return (clock_t)GetTickCount(); }
 
 #else /* _WIN32 */
 
-unsigned long static clock = 0;
-static int clock_time(void)
+	
+static clock_t clock = 0;
+static clock_t clock_time(void)
 {
   return clock;
 }
@@ -258,15 +269,18 @@ void BRTOS_TimerHook(void)
 
 #endif /* _WIN32 */
 
-static int timer_expired(struct timer *t)
-{ return (int)(clock_time() - t->start) >= (int)t->interval; }
+static clock_t timer_expired(struct timer *t)
+{ return (clock_t)(clock_time() - t->start) >= (clock_t)t->interval; }
 
 static void timer_set(struct timer *t, int interval)
 { t->interval = interval; t->start = clock_time(); }
 /*---------------------------------------------------------------------------*/
 
 #include <string.h> /* memcpy, memset */
-#include <stdio.h> /* snprintf */
+#ifdef _WIN32
+#include <stdio.h> /* SNPRINTF */
+#endif
+
 
 //#define API_KEY  "90a004390f3530d0ba10199ac2b1ac3d"
 //#define SERVER_NAME "emon-gpsnetcms.rhcloud.com"
@@ -295,7 +309,7 @@ uint8_t build_data_vector(char* ptr_data, uint8_t *data, uint8_t len)
 	while(len > 0)
 	{
 		len--;
-		offset = snprintf(ptr_data, max_len,"%d,", *data);
+		offset = SNPRINTF(ptr_data, max_len,"%d,", *data);
 		if(offset < 0 || offset >= max_len)
 		{
 			return 1;
@@ -427,8 +441,11 @@ void main_monitor(void)
 #ifdef _WIN32
 	struct timeb start, end;
 	uint16_t diff;
+#else
+	INT8U status = 0;
 #endif	
 
+	
 	uint8_t log_num = 0;
 
 	 /* Initialize the protothread state variables with PT_INIT(). */
@@ -448,6 +465,21 @@ void main_monitor(void)
 	fflush(stdout);
 #endif
 
+#ifndef _WIN32	
+	
+		/* Detect and init the SD card */
+		while(SDCard_ResourceInit(SDCARD_MUTEX_PRIORITY) == NULL)
+		{
+			DelayTask(1000);
+		}
+		do
+		{
+			status = SDCard_Init(VERBOSE_OFF);
+			DelayTask(1000);
+		} while (status != SD_OK);
+#endif		
+		
+	
 	config_check.byte = 0;
 	ini_browse(Callback_inifile, NULL, config_inifile);
 	config_check_erro(); /* check configuration */
@@ -530,7 +562,7 @@ void sleep_forever(void)
 	{
 		#ifndef _WIN32
 			/* sleep forever */
-			__RESET_WATCHDOG();
+			DelayTask(1000);
 		#endif
 	}
 }

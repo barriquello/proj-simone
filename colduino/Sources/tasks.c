@@ -18,6 +18,7 @@
  *********************************************************************************************************/
 
 #include "BRTOS.h"
+#include "printf_lib.h"
 #include "drivers.h"
 #include "tasks.h"
 #include "AppConfig.h"
@@ -25,6 +26,7 @@
 #include "terminal.h"
 #include "terminal_commands.h"
 #include "led_onboard.h"
+
 
 #pragma warn_implicitconv off
 
@@ -198,10 +200,14 @@ void Terminal_Task(void)
  * 
  * 
  * */
-#include "stdio.h"
+
 #include "string.h"
 #include "utils.h"
 #include "esp8266_at.h"
+
+#ifdef _WIN32
+#include <stdio.h>
+#endif
 
 #define modem_receive()		at_esp_getchar() 
 #define modem_send(x)		esp_print(x)
@@ -266,7 +272,7 @@ void Tarefa_GPRS(void)
 		  */
 		  tentativas++; 
 		  modem_send(SEND_STRING2);
-		  snprintf(valor,sizeof(valor)-1,"%d", cnt);
+		  SNPRINTF(valor,sizeof(valor)-1,"%d", cnt);
 		  modem_send(valor);
 		  modem_send(SEND_STRING3);
 		  NEWLINE();

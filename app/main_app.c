@@ -33,13 +33,13 @@ void main_app(void)
 	BRTOS_Init();
 
 	/* Install task for keeping system clock time */
-	if (InstallTask(&System_Time, "System Time", 256, 31, NULL) != OK)
+	if (InstallTask(&System_Time, "System Time", 256+64, 31, NULL) != OK)
 	{
 		while (1){};
 	};
 	
 #if 1	
-	if (InstallTask(&main_monitor, "Monitors", 1024, 10, NULL) != OK)
+	if (InstallTask(&main_monitor, "Monitors", 1024+512, 10, NULL) != OK)
 	{
 		while (1){};
 	};

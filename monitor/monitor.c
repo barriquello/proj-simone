@@ -6,6 +6,7 @@
  */
 
 #include "monitor.h"
+#include "printf_lib.h"
 #include "utils.h"
 #include "assert.h"
 #include "simon-api.h"
@@ -33,14 +34,12 @@ char buffer_erro[256];
 #include <stdarg.h>
 /*-----------------------------------------------------------------------------------*/
 void print_erro(char *format, ...)
-//void print_erro(char *string)
 {
 
-	
 #if 1
   va_list argptr;
   va_start(argptr, format);
-  vsprintf(buffer_erro, format, argptr);
+  VSPRINTF(buffer_erro, format, argptr);  
   va_end(argptr);
 #endif  
 
@@ -370,7 +369,7 @@ uint16_t build_entry_to_send(char* ptr_data, uint8_t *data, uint8_t len)
 		hex2 = *data++;
 		val = hex2byte(hex1,hex2);
 
-		offset = snprintf(ptr_data, max_len,"%d,", val);
+		offset = SNPRINTF(ptr_data, max_len,"%d,", val);
 		if(offset < 0 || offset >= max_len)
 		{
 			return 0;

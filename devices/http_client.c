@@ -7,9 +7,14 @@
 
 
 #include "http_client.h"
+#include "printf_lib.h"
 #include <string.h>
-#include <stdio.h>
 #include "simon-api.h"
+
+#define STDIO
+#ifdef STDIO
+#include <stdio.h>
+#endif
 
 #ifdef _WIN32
 #include <winsock2.h>
@@ -64,10 +69,10 @@ uint8_t http_send_data(char *data, uint8_t len)
 		dprintf("Could not get ip from address : %s" , hostname);
 	}
 	
-	snprintf(request, 1024, send_monitor, monitor_id, data, simon_get_apikey());
+	SNPRINTF(request, 1024, send_monitor, monitor_id, data, simon_get_apikey());
 
 	/// Form request
-	snprintf(message, 1024,
+	SNPRINTF(message, 1024,
 	     "%s HTTP/1.1\r\n"
 	     "Host: %s\r\n"
 	     "\r\n\r\n", request, hostname);
@@ -210,11 +215,11 @@ uint8_t http_get_time(struct tm *ts)
 		dprintf("Could not get ip from address : %s" , hostname);
 	}
 
-	//snprintf(request, 1024, get_time_request, API_KEY);
-	//snprintf(request, 1024, get_time_request);
+	//SNPRINTF(request, 1024, get_time_request, API_KEY);
+	//SNPRINTF(request, 1024, get_time_request);
 
 	/// Form request
-	snprintf(message, 1024,
+	SNPRINTF(message, 1024,
 	     "%s HTTP/1.1\r\n"
 	     "Host: %s\r\n"
 	     "\r\n\r\n", get_time_request, hostname);

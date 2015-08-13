@@ -136,7 +136,7 @@
 									<listOptionValue builtIn="false" value="terminal/terminal.c"/>
 									<listOptionValue builtIn="false" value="terminal/terminal_commands.c"/>
 								</option>
-								<option id="com.freescale.coldfire.toolchain.linker.base.generateList.1355151461" superClass="com.freescale.coldfire.toolchain.linker.base.generateList" value="true" valueType="boolean"/>
+								<option id="com.freescale.coldfire.toolchain.linker.base.generateList.1355151461" name="Generate Listing File" superClass="com.freescale.coldfire.toolchain.linker.base.generateList" value="true" valueType="boolean"/>
 								<inputType id="com.freescale.coldfire.toolchain.linker.base.input.1991355322" name="Linker Input" superClass="com.freescale.coldfire.toolchain.linker.base.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -213,7 +213,7 @@
 					<sourceEntries>
 						<entry excluding="terminal|simon-api|monitor|libs|modbus_master|devices|app|minINI|modbus_slaves|modbus_master_lib|FatFs|freemodbus|CodeWarrior_CFV1|Sources/colduino_gprs/FatFS/option/cc932.c|Sources/colduino_gprs/FatFS/bkp|Sources/colduino_gprs/FatFS/option/cc949.c|Sources/minINI/test.c|Sources/colduino_gprs/FatFS/option/cc950.c|Sources/colduino_gprs/libmodbus/modbus.c|Sources/minINI/minGlue-efsl.h|Sources/minINI/minIni.c|Sources/FatFS/option/cc936.c|Sources/colduino_gprs/libmodbus/tests/unit-test-master.c|Sources/minINI/minGlue-mdd.h|Sources/FatFS/option/cc932.c|hal|Sources/colduino_gprs/FatFS/option/ccsbcs.c|Sources/FatFS/option/cc949.c|Sources/colduino_gprs/FatFS/option/unicode.c|Sources/colduino_gprs/libmodbus/modbus-tcp-private.h|Sources/freemodbus/modbus|Sources/minINI/minGlue-stdio.h|core|Sources/minINI/minGlue.h|Sources/minINI/minGlue-ccs.h|xmacro|Sources/minINI/minIni.h|Sources/colduino_gprs/libmodbus/tests/unit-test-slave.c|Sources/FatFS/option/cc950.c|Sources/minINI/minGlue-ffs.h|Sources/minINI/minGlue-FatFs.h|Sources/FatFS/option/syscall.c|Sources/colduino_gprs/FatFS/option/syscall.c|lc|Sources/FatFS/option/unicode.c|Sources/FatFS/option/ccsbcs.c|Sources/colduino_gprs/FatFS/option/cc936.c|Sources/colduino_gprs/libmodbus/modbus-tcp.h|Sources/colduino_gprs/libmodbus/modbus-tcp.c|Sources/minINI/wxMinIni.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CodeWarrior_CFV1"/>
-						<entry excluding="option/unicode.c|option/syscall.c|option/ccsbcs.c|option/cc950.c|option/cc949.c|option/cc936.c|option/cc932.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="FatFs"/>
+						<entry excluding="option/unicode.c|option/ccsbcs.c|option/cc950.c|option/cc949.c|option/cc936.c|option/cc932.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="FatFs"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="app"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="devices"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="freemodbus"/>

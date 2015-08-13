@@ -445,28 +445,12 @@ extern char musics[WAV_LIST_SIZE][WAV_NAME_SIZE];
 void term_cmd_mount(char *param)
 {    
   INT8U status = 0;
-  INT8U i = 0;
-  
-  #if (SD_WAVE != 1)
+  INT8U i = 0; 
+
   (void)*param;
-  #endif
   
   // Initialize SD card
   status = SDCard_Init(VERBOSE_ON);
-  
-  #if (SD_WAVE == 1)
-  if ((status == SD_OK) && (*param == 'r'))
-  {
-	  // Clean WAV list
-	  for (i=0;i<WAV_LIST_SIZE;i++)
-	  {
-		  musics[i][0] = 0;
-	  }
-	  
-	  //fill the new WAV list
-	  WavListFiles((char**)musics);
-  }
-  #endif
 }
 
 CONST command_t mount_cmd = {

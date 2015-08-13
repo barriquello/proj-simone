@@ -217,3 +217,13 @@ int snprintf_lib( char *buf, unsigned int count, const char *format, ... )
         va_start( args, format );
         return print( &buf, format, args );
 }
+
+int vsprintf_lib(char *out, const char *format, ...)
+{
+        va_list args;
+        
+        va_start( args, format );
+        return print( &out, format, args );
+}
+
+

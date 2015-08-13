@@ -219,5 +219,5 @@
 <stringAttribute key="org.eclipse.debug.ui.ATTR_REDIRECT_TO_SOCKET_HOST" value=""/>
 <stringAttribute key="org.eclipse.debug.ui.ATTR_REDIRECT_TO_SOCKET_PORT" value=""/>
 <stringAttribute key="process_factory_id" value="com.freescale.cdt.debug.cw.core.ProcessFactoryID"/>
-<stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="0x400,&amp;STACK[0],&amp;ISRSTACK[0],ISRSTACK,Serial1,0x008014f4,0x00801d88,0x00801d70,0xec40"/>
+<stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="0x400,&amp;STACK[0],&amp;ISRSTACK[0],ISRSTACK,Serial1,0x008014f4,0x00801d88,0x00801d70,0xec40,0x801c7c"/>
 </launchConfiguration>

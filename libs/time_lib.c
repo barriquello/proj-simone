@@ -30,11 +30,10 @@
 // OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF 
 // SUCH DAMAGE.
 // 
-
-#include "stdio.h"
+#include "printf_lib.h"
 #include "time_lib.h"
+#include "stdio.h"
 #include "stdint.h"
-
 
 #if PLATAFORMA == COLDUINO
 #define CONST
@@ -385,7 +384,7 @@ static char *_fmt(const char *format, const struct tm *t, char *pt, const char *
 
           tm = *t;
           mkt = mktime(&tm);
-          snprintf(buf, sizeof(buf)-1, "%lu", mkt);
+          SNPRINTF(buf, sizeof(buf)-1, "%lu", mkt);
           pt = _add(buf, pt, ptlim);
           continue;
         }
@@ -516,7 +515,7 @@ static char *_fmt(const char *format, const struct tm *t, char *pt, const char *
 static char *_conv(const int n, const char *format, char *pt, const char *ptlim) {
   char  buf[32];
 
-  snprintf(buf, sizeof(buf)-1, format, n);
+  SNPRINTF(buf, sizeof(buf)-1, format, n);
   return _add(buf, pt, ptlim);
 }
 

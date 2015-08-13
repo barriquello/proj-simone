@@ -4,7 +4,9 @@
 /*------------------------------------------------------------------------*/
 
 
-#include "../ff.h"
+#include "ff.h"
+#include "SD_API.h"
+#include "AppConfig.h"
 
 
 #if _FS_REENTRANT
@@ -24,8 +26,8 @@ int ff_cre_syncobj (	/* !=0:Function succeeded, ==0:Could not create due to any 
 	int ret;
 
 
-	*sobj = CreateMutex(NULL, FALSE, NULL);		/* Win32 */
-	ret = (int)(*sobj != INVALID_HANDLE_VALUE);
+// *sobj = CreateMutex(NULL, FALSE, NULL);		/* Win32 */
+// ret = (int)(*sobj != INVALID_HANDLE_VALUE);
 
 //	*sobj = SyncObjects[vol];			/* uITRON (give a static created sync object) */
 //	ret = 1;							/* The initial value of the semaphore must be 1. */
@@ -36,6 +38,11 @@ int ff_cre_syncobj (	/* !=0:Function succeeded, ==0:Could not create due to any 
 //	*sobj = xSemaphoreCreateMutex();	/* FreeRTOS */
 //	ret = (int)(*sobj != NULL);
 
+	
+
+	*sobj = SDCard_ResourceInit(SDCARD_MUTEX_PRIORITY);	/* BRTOS */
+	ret = (int)(*sobj != NULL);
+	
 	return ret;
 }
 
@@ -53,10 +60,10 @@ int ff_del_syncobj (	/* !=0:Function succeeded, ==0:Could not delete due to any 
 	_SYNC_t sobj		/* Sync object tied to the logical drive to be deleted */
 )
 {
-	int ret;
+	int ret = 0;
 
 
-	ret = CloseHandle(sobj);	/* Win32 */
+// ret = CloseHandle(sobj);	/* Win32 */
 
 //	ret = 1;					/* uITRON (nothing to do) */
 
@@ -84,7 +91,7 @@ int ff_req_grant (	/* 1:Got a grant to access the volume, 0:Could not get a gran
 {
 	int ret;
 
-	ret = (int)(WaitForSingleObject(sobj, _FS_TIMEOUT) == WAIT_OBJECT_0);	/* Win32 */
+//	ret = (int)(WaitForSingleObject(sobj, _FS_TIMEOUT) == WAIT_OBJECT_0);	/* Win32 */
 
 //	ret = (int)(wai_sem(sobj) == E_OK);			/* uITRON */
 
@@ -93,6 +100,10 @@ int ff_req_grant (	/* 1:Got a grant to access the volume, 0:Could not get a gran
 
 //	ret = (int)(xSemaphoreTake(sobj, _FS_TIMEOUT) == pdTRUE);	/* FreeRTOS */
 
+	#if (SD_FAT_MUTEX_EN == 1)
+		ret = (int)(OSMutexAcquire(sobj) == OK); /* BRTOS */
+	#endif
+	
 	return ret;
 }
 
@@ -108,13 +119,17 @@ void ff_rel_grant (
 	_SYNC_t sobj	/* Sync object to be signaled */
 )
 {
-	ReleaseMutex(sobj);		/* Win32 */
+//	ReleaseMutex(sobj);		/* Win32 */
 
 //	sig_sem(sobj);			/* uITRON */
 
 //	OSMutexPost(sobj);		/* uC/OS-II */
 
 //	xSemaphoreGive(sobj);	/* FreeRTOS */
+	
+#if (SD_FAT_MUTEX_EN == 1)
+	OSMutexRelease(sobj);   /* BRTOS */
+#endif
 }
 
 #endif

@@ -1,7 +1,6 @@
 
 #include "hardware.h"
 #include "Timer1Second.h"
-#include "printf_lib.h"
 
 void Timer1SecondSetup()
 {
@@ -38,8 +37,7 @@ void Clear1SecondInterrupt()
 /*
  interrupt VectorNumber_Vtod void tod_ISR(void)
  {
- printf_colduino("1s interrupt ocurred");
- Clear1SecondInterrupt();
+ 	 Clear1SecondInterrupt();
  }*/
 
 #if (NESTING_INT == 1)

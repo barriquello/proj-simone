@@ -1,8 +1,10 @@
 #include "BRTOS.h"
 #include "utils.h"
 
+#include "printf_lib.h"
 #include <stdlib.h>
 #include <string.h>
+
 
 #pragma warn_implicitconv off
 
@@ -351,26 +353,26 @@ void Print2Digits(INT8U number, INT8U align, CHAR8 *buff)
 #include "stdio.h"
 void PrintDecimal(INT16S val, CHAR8 *buff)
 {	
-	snprintf(buff,5,"%d",val);
+	SNPRINTF(buff,5,"%d",val);
 }
 
 #define UNUSED(x)		(void)(x);
 void Print2Digits(INT8U number, INT8U align, CHAR8 *buff)
 {
 	UNUSED(align);
-	snprintf(buff,2,"%d",number);
+	SNPRINTF(buff,2,"%d",number);
 }
 
 void Print3Digits(unsigned short int number, unsigned char align, char *buff)
 {
 	UNUSED(align);
-	snprintf(buff,3,"%d",number);
+	SNPRINTF(buff,3,"%d",number);
 }
 
 void Print4Digits(unsigned short int number, unsigned char align, char *buff)
 {
 	UNUSED(align);
-	snprintf(buff,4,"%d",number);
+	SNPRINTF(buff,4,"%d",number);
 }
 #endif
 

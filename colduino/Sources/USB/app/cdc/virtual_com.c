@@ -28,7 +28,10 @@
 #include "terminal.h"			/* Informs the size of the terminal buffer */
 #include "terminal_commands.h"		/* Terminal commands - functions */
 #include "virtual_com.h"    		/* Virtual COM Application Header File */
+
+#ifdef _WIN32
 #include <stdio.h>
+#endif
 
 #if (defined _MCF51MM256_H) || (defined _MCF51JE256_H) || (defined _MCF51JE128_H)
 #include "exceptions.h"

@@ -7,9 +7,14 @@
 
 
 #include "simon-api.h"
+#include "printf_lib.h"
 #include "stdlib.h"
-#include "stdio.h"
 #include "string.h"
+
+#define STDIO
+#ifdef STDIO
+#include <stdio.h>
+#endif
 
 void get_server_time(char* server_reply, struct tm *ts);
 INT8U get_server_confirmation(char* server_reply);
@@ -45,7 +50,7 @@ INT8U simon_get_time(struct tm * t)
 {
 	char* get_time_request = "GET /time/local&apikey=%s";
 	
-	snprintf(message, 1024,
+	SNPRINTF(message, 1024,
 		     "%s HTTP/1.1\r\n"
 		     "Host: %s\r\n"
 		     "\r\n\r\n", get_time_request, hostname);
@@ -75,10 +80,10 @@ INT8U simon_send_data(INT8U *buf, INT16U len)
 {
 	char* send_monitor = "GET /monitor/set.json?monitorid=%d&data=%s&apikey=%s";
 	
-	snprintf(server_reply, 1024, send_monitor, buf[0], &buf[1], API_KEY);
+	SNPRINTF(server_reply, 1024, send_monitor, buf[0], &buf[1], API_KEY);
 	
 	/// Form request
-	snprintf(message, 1024,
+	SNPRINTF(message, 1024,
 		     "%s HTTP/1.1\r\n"
 		     "Host: %s\r\n"
 		     "\r\n\r\n", server_reply, hostname);

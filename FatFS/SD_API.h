@@ -44,7 +44,7 @@ INT8U file_name_verify(CHAR8 *pname1,CHAR8 *pname2, INT8U *pfile, INT8U num);
 INT8U ChangeDir(CHAR8 *FileName, INT8U verbose);
 INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose);
 INT8U WriteUptimeLog(INT8U verbose);
-void SDCard_ResourceInit(INT8U priority);
+BRTOS_Mutex * SDCard_ResourceInit(INT8U priority);
 INT8U GetLastCreatedFileName(char fileName[]);
 INT8U WriteFile(FIL* fp,  const char* filename, INT8U *ptr_data, INT8U length);
 

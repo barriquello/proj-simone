@@ -7,9 +7,9 @@
 #include "string.h"
 #include "terminal_io.h"
 
-#define DEBUG_PRINT 0
+#define SD_PRINT 0
 
-#if DEBUG_PRINT
+#if SD_PRINT
 #define PRINT(...) printf_lib(__VA_ARGS__);
 #else
 #define PRINT(...)
@@ -19,7 +19,7 @@
 
 
 #if (SD_FAT_MUTEX_EN == 1)
-  BRTOS_Mutex *SDCardResource;
+  BRTOS_Mutex *SDCardResource = NULL;
 #endif
   
 SD_STATE  sd_command = SD_INACTIVE;    // Variable to indicate commands for SD
@@ -51,18 +51,16 @@ CONST INT8U SD_API_CARD_BUSY[]={"\n\rSD card busy !!!\n\r"};
 CONST INT8U SD_API_CARD_NOT_PRESENT[]={"\n\rSD card is not present or not initialized !\n\r"};
 
 
-void SDCard_ResourceInit(INT8U priority)
+BRTOS_Mutex * SDCard_ResourceInit(INT8U priority)
 {
   // Cria um mutex informando que o recurso está disponível
   // Prioridade máxima a acessar o recurso = priority
 #if (SD_FAT_MUTEX_EN == 1)
-  if (OSMutexCreate(&SDCardResource,priority) != ALLOC_EVENT_OK)
-  {
-    while(1){};
-  };  
+  OSMutexCreate(&SDCardResource,priority);
 #else
   (void)priority;
 #endif  
+  return SDCardResource;
 }
 
 

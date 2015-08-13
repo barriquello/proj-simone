@@ -47,10 +47,9 @@ void test_writelogts(INT8U logger)
 
 #if _WIN32	
     struct tm ts = *localtime(&(time_t){time(NULL)});
-    strftime(timestamp,80,"T%Y%m%d%H%M%SS\r\n",&ts);
-#endif
-    
+    strftime(timestamp,80,"T%Y%m%d%H%M%SS\r\n",&ts);    
     puts(timestamp);
+#endif    
 
    if(log_openread(log_getfilename_to_write(logger),&fp))
    {

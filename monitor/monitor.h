@@ -8,9 +8,12 @@
 #ifndef LOGGER_H_
 #define LOGGER_H_
 
-#include "stdio.h"
 #include "stdlib.h"
 #include "stdint.h"
+
+#ifdef _WIN32
+#include <stdio.h>
+#endif
 
 #ifndef _WIN32
 #include "time_lib.h"
@@ -106,7 +109,6 @@ static int log_rename(TCHAR *source, const TCHAR *dest)
 #endif
 
 void	print_erro(char *format, ...);
-//void	print_erro(char *string);
 
 #define LOG_HEADER_LEN		 50
 #define LOG_MAX_ENTRY_SIZE   256
