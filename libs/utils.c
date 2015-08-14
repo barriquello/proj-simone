@@ -1,4 +1,8 @@
+
+#ifndef _WIN32
 #include "BRTOS.h"
+#endif
+
 #include "utils.h"
 
 #include "printf_lib.h"
@@ -22,10 +26,9 @@ void reverse(char s[])
 }
 
 #if 0
-
-INT32U StringToInteger(char p[])
+uint32_t StringToInteger(char p[])
 {
-	INT32U k = 0;
+	uint32_t k = 0;
 	while (*p)
 	{
 		k = (k << 3) + (k << 1) + (*p) - '0';
@@ -85,9 +88,9 @@ char *ltoa(long N, char *str, int base)
       return str;
 }
 
-INT32U LWordSwap(INT32U u32DataSwap)
+uint32_t LWordSwap(uint32_t u32DataSwap)
 {
-	INT32U u32Temp;
+	uint32_t u32Temp;
 	u32Temp = (u32DataSwap & 0xFF000000) >> 24;
 	u32Temp += (u32DataSwap & 0xFF0000) >> 8;
 	u32Temp += (u32DataSwap & 0xFF00) << 8;
@@ -96,11 +99,11 @@ INT32U LWordSwap(INT32U u32DataSwap)
 }
 
 #if 0
-void PrintDecimal(INT16S val, CHAR8 *buff)
+void PrintDecimal(INT16S val, char *buff)
 {
-	INT16U backup;
-	INT32U i = 0;
-	CHAR8 s = ' ';
+	uint16_t backup;
+	uint32_t i = 0;
+	char s = ' ';
 
 	// Fill buffer with spaces
 	for (i = 0; i < 6; i++)
@@ -133,12 +136,12 @@ void PrintDecimal(INT16S val, CHAR8 *buff)
 	*(buff + i) = s;  // Sign character
 }
 
-void Print4Digits(INT16U number, INT8U align, CHAR8 *buff)
+void Print4Digits(uint16_t number, uint8_t align, char *buff)
 {
-	INT8U caracter = 0;
-	INT8U mil, cent, dez;
-	INT8U escreve_zero = FALSE;
-	INT32U i = 0;
+	uint8_t caracter = 0;
+	uint8_t mil, cent, dez;
+	uint8_t escreve_zero = FALSE;
+	uint32_t i = 0;
 
 	if (number < 10000)
 	{
@@ -230,12 +233,12 @@ void Print4Digits(INT16U number, INT8U align, CHAR8 *buff)
 	}
 }
 
-void Print3Digits(INT16U number, INT8U align, CHAR8 *buff)
+void Print3Digits(uint16_t number, uint8_t align, char *buff)
 {
-	INT8U caracter = 0;
-	INT8U cent, dez;
-	INT8U escreve_zero = FALSE;
-	INT32U i = 0;
+	uint8_t caracter = 0;
+	uint8_t cent, dez;
+	uint8_t escreve_zero = FALSE;
+	uint32_t i = 0;
 
 	if (number < 1000)
 	{
@@ -303,12 +306,12 @@ void Print3Digits(INT16U number, INT8U align, CHAR8 *buff)
 	}
 }
 
-void Print2Digits(INT8U number, INT8U align, CHAR8 *buff)
+void Print2Digits(uint8_t number, uint8_t align, char *buff)
 {
-	INT8U caracter = 0;
-	INT8U dez;
-	INT8U escreve_zero = FALSE;
-	INT32U i = 0;
+	uint8_t caracter = 0;
+	uint8_t dez;
+	uint8_t escreve_zero = FALSE;
+	uint32_t i = 0;
 
 	if (number < 100)
 	{
@@ -351,13 +354,13 @@ void Print2Digits(INT8U number, INT8U align, CHAR8 *buff)
 }
 #else
 #include "stdio.h"
-void PrintDecimal(INT16S val, CHAR8 *buff)
+void PrintDecimal(int16_t val, char *buff)
 {	
 	SNPRINTF(buff,5,"%d",val);
 }
 
 #define UNUSED(x)		(void)(x);
-void Print2Digits(INT8U number, INT8U align, CHAR8 *buff)
+void Print2Digits(uint8_t number, uint8_t align, char *buff)
 {
 	UNUSED(align);
 	SNPRINTF(buff,2,"%d",number);
@@ -376,8 +379,9 @@ void Print4Digits(unsigned short int number, unsigned char align, char *buff)
 }
 #endif
 
+#ifndef _WIN32
 // formato yyyymmddhhmmss
-void PrintDateTime(OSDateTime *dt, CHAR8 *buff)
+void PrintDateTime(OSDateTime *dt, char *buff)
 {
 	Print4Digits(dt->date.RTC_Year,ZEROS_ALIGN, &buff[0]);
 	Print2Digits(dt->date.RTC_Month,ZEROS_ALIGN, &buff[4]);
@@ -386,6 +390,7 @@ void PrintDateTime(OSDateTime *dt, CHAR8 *buff)
 	Print2Digits(dt->time.RTC_Minute,ZEROS_ALIGN, &buff[10]);
 	Print2Digits(dt->time.RTC_Second,ZEROS_ALIGN, &buff[12]);
 }
+#endif
 
 #if 0
 int strcmp(char s1[], char s2[])
@@ -410,7 +415,7 @@ void strcpy(char dest[], char src[])
 
 void strcat(char dest[], char src[])
 {
-	INT8U i, j;
+	uint8_t i, j;
 	for (i = 0; dest[i] != '\0'; i++);
 	for (j = 0; src[j] != '\0'; j++)
 		dest[i + j] = src[j];

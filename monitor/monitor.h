@@ -228,7 +228,7 @@ char* log_getfilename_to_write(uint8_t logger_num);
 char* log_getfilename_to_read(uint8_t logger_num);
 
 void main_monitor(void);
-void monitor_readentry(INT8U monitor_num);
-void monitor_writeentry(INT8U monitor_num);
+void monitor_readentry(uint8_t monitor_num);
+void monitor_writeentry(uint8_t monitor_num);
 
 #endif /* LOGGER_H_ */

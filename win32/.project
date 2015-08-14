@@ -69,6 +69,11 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>libs</name>
+			<type>2</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/libs</locationURI>
+		</link>
+		<link>
 			<name>minINI</name>
 			<type>2</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/minINI</locationURI>
@@ -77,6 +82,11 @@
 			<name>monitor</name>
 			<type>2</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/monitor</locationURI>
+		</link>
+		<link>
+			<name>simon-api</name>
+			<type>2</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/simon-api</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

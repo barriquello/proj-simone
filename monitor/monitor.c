@@ -6,10 +6,10 @@
  */
 
 #include "monitor.h"
-#include "printf_lib.h"
 #include "utils.h"
 #include "assert.h"
 #include "simon-api.h"
+#include "printf_lib.h"
 
 #ifdef _WIN32
 #include "http_client.h"
@@ -591,7 +591,7 @@ char* log_getfilename_to_read(uint8_t logger_num)
 	return logger_state[logger_num].log_name_reading;
 }
 
-void monitor_writeentry(INT8U monitor_num)
+void monitor_writeentry(uint8_t monitor_num)
 {
 	char string[20];
 	uint16_t cnt = 0;
@@ -616,7 +616,7 @@ void monitor_writeentry(INT8U monitor_num)
 	PRINTF("Entry written %d\r\n", cnt);
 }
 
-void monitor_readentry(INT8U monitor_num)
+void monitor_readentry(uint8_t monitor_num)
 {
 	log_entry_t entry;
 	uint8_t string[20];

@@ -18,11 +18,16 @@
 #define DAYSPERNYEAR   365
 #define DAYSPERWEEK    7
 
+
+#ifndef _WIN32
 #include "BRTOS.h"
+#endif
+
 #include <time.h>
 
-
-typedef INT32U time_t;
+#ifndef _WIN32
+typedef uint32_t time_t;
+#endif
 
 #if 0
 #ifndef _TM_DEFINED
@@ -62,6 +67,9 @@ struct tm
 time_t mktime(struct tm *tmbuf);
 struct tm *localtime(const time_t *timer);
 size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *t);
+
+#ifndef _WIN32
 time_t ConvertDateTimeToUnixTime(OSDateTime * dt);
+#endif
 
 #endif

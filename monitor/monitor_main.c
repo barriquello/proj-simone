@@ -86,22 +86,24 @@ T20150101073300S ->
 
  */
 
-#include "printf_lib.h"
 #include <stdlib.h>
 #include <time.h>
 #include <string.h>
 
 #ifdef _WIN32
 #include <stdio.h>
+#include "http_client.h"
+#else
+#include "SD_API.h"
+#include "AppConfig.h"
 #endif
+
+#include "printf_lib.h"
 
 #include "assert.h"
 #include "minIni.h"
 #include "monitor.h"
 #include "simon-api.h"
-
-#include "SD_API.h"
-#include "AppConfig.h"
 
 static uint8_t 	num_monitores = MAX_NUM_OF_LOGGERS;
 static uint8_t 	logger = 0;
@@ -145,7 +147,9 @@ log_config_ok_t config_check;
  * used in this example. The actual implementation of the functions
  * can be found at the end of this file.
  */
+#ifndef _WIN32
 typedef unsigned long long clock_t;
+#endif
 struct timer { clock_t start, interval; };
 static clock_t  timer_expired(struct timer *t);
 static void timer_set(struct timer *t, int usecs);
@@ -434,6 +438,15 @@ void config_check_erro(void)
 		sleep_forever();
 	}
 }
+
+#ifdef _WIN32
+void main_monitor(void);
+
+void main(void)
+{
+	main_monitor();
+}
+#endif
 
 void main_monitor(void)
 {

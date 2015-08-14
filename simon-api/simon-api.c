@@ -16,8 +16,12 @@
 #include <stdio.h>
 #endif
 
+#ifdef _WIN32
+#include "stdint.h"
+#endif
+
 void get_server_time(char* server_reply, struct tm *ts);
-INT8U get_server_confirmation(char* server_reply);
+uint8_t get_server_confirmation(char* server_reply);
 
 static input in = NULL;
 static output out = NULL;
@@ -34,9 +38,9 @@ char simon_apikey[MAX_APIKEY_LEN];
 static char message[1024];
 static char server_reply[1024];
 static char* hostname = SERVER_NAME;
-INT16U recv_size;
+uint16_t recv_size;
 
-INT8U simon_init(input _in, output _out, set_host sethost)
+uint8_t simon_init(input _in, output _out, set_host sethost)
 {
 	in = _in;
 	out = _out;		
@@ -46,7 +50,7 @@ INT8U simon_init(input _in, output _out, set_host sethost)
 	return OK;
 }
 
-INT8U simon_get_time(struct tm * t)
+uint8_t simon_get_time(struct tm * t)
 {
 	char* get_time_request = "GET /time/local&apikey=%s";
 	
@@ -59,11 +63,11 @@ INT8U simon_get_time(struct tm * t)
 	{
 		return !OK;
 	}
-	if(out(message , (INT16U)strlen(message)) != 0)
+	if(out(message , (uint16_t)strlen(message)) != 0)
 	{
 		return !OK;
 	}
-	if(in(server_reply , (INT16U*)&recv_size) != 0)
+	if(in(server_reply , (uint16_t)&recv_size) != 0)
 	{
 		return !OK;
 	}
@@ -76,7 +80,7 @@ INT8U simon_get_time(struct tm * t)
 	return OK;	
 }
 
-INT8U simon_send_data(INT8U *buf, INT16U len)
+uint8_t simon_send_data(uint8_t *buf, uint16_t len)
 {
 	char* send_monitor = "GET /monitor/set.json?monitorid=%d&data=%s&apikey=%s";
 	
@@ -92,11 +96,11 @@ INT8U simon_send_data(INT8U *buf, INT16U len)
 	{
 		return !OK;
 	}
-	if(out(message, (INT16U)strlen(message)) != 0)
+	if(out(message, (uint16_t)strlen(message)) != 0)
 	{
 		return !OK;
 	}
-	if(in(server_reply , (INT16U*) &recv_size) != 0)
+	if(in(server_reply , (uint16_t*) &recv_size) != 0)
 	{
 		return !OK;
 	}
@@ -105,7 +109,7 @@ INT8U simon_send_data(INT8U *buf, INT16U len)
 	return get_server_confirmation(server_reply);
 }
 
-INT8U get_server_confirmation(char* server_reply)
+uint8_t get_server_confirmation(char* server_reply)
 {
 	/* search server confirmation: HTTP 200 OK */
 	return OK;

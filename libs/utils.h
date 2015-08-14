@@ -1,4 +1,8 @@
+#ifndef _WIN32
 #include "BRTOS.h"
+#endif
+
+#include "stdint.h"
 
 #define NO_ALIGN    (INT8U)0
 #define SPACE_ALIGN (INT8U)1
@@ -6,10 +10,9 @@
 
 void utils_tests(void);
 
-
 void reverse(char s[]);
 void IntToString(int n , char str[]);
-INT32U StringToInteger(char p[]);
+uint32_t StringToInteger(char p[]);
 char *ltoa(long N, char *str, int base);
 
 #if 0
@@ -24,13 +27,15 @@ void Print4Digits(unsigned short int number, unsigned char align, char *buff);
 void Print3Digits(unsigned short int number, unsigned char align, char *buff);
 void Print2Digits(unsigned char number, unsigned char align, char *buff);
 void PrintDecimal(signed short int val, char *buff);
-void PrintDateTime(OSDateTime *dt, CHAR8 *buff);
+
+#ifndef _WIN32
+void PrintDateTime(OSDateTime *dt, char *buff);
+#endif
 
 #define ByteSwap(A)     (A=(A<<8)+(A>>8))
 
-INT32U LWordSwap(INT32U u32DataSwap);
+uint32_t LWordSwap(uint32_t u32DataSwap);
 
-#include "stdint.h"
 char tohex(uint8_t val);
 char tobcd(uint8_t val);
 void u8tobcd(char *ret, uint8_t c);

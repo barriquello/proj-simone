@@ -27,9 +27,12 @@
 #pragma warn_implicitconv off
 
 #include <stdarg.h>
-#include "terminal.h"
-#include "printf_lib.h"
 
+#ifndef _WIN32
+#include "terminal.h"
+#endif
+
+#include "printf_lib.h"
 
 #define putchar(x) putchar_terminal(x)
 

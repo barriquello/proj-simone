@@ -33,14 +33,13 @@
 #include "printf_lib.h"
 #include "time_lib.h"
 #include "stdio.h"
-#include "stdint.h"
+#include <stdint.h>
 
 #if PLATAFORMA == COLDUINO
 #define CONST
 #else
 #define CONST const
 #endif
-
 
 static struct tm tmbuf;
 
@@ -49,30 +48,30 @@ CONST uint8_t _ytab[2][12] = {
   {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };
 
-uint8_t _daylight = 0;                  // Non-zero if daylight savings time is used
+uint8_t _daylight = 0;              // Non-zero if daylight savings time is used
 long _dstbias = 0;                  // Offset for Daylight Saving Time
 long _timezone = 0;                 // Difference in seconds between GMT and local time
 
 struct tm *gmtime_r(const time_t *timer, struct tm *tmbuf) {
   time_t time = *timer;
-  INT32U dayclock, dayno;
+  uint32_t dayclock, dayno;
   int year = EPOCH_YR;
 
-  dayclock = (INT32U) time % SECS_DAY;
-  dayno = (INT32U) time / SECS_DAY;
+  dayclock = (uint32_t) time % SECS_DAY;
+  dayno = (uint32_t) time / SECS_DAY;
 
   tmbuf->tm_sec = dayclock % 60;
   tmbuf->tm_min = (dayclock % 3600) / 60;
   tmbuf->tm_hour = dayclock / 3600;
   tmbuf->tm_wday = (dayno + 4) % 7; // Day 0 was a thursday
-  while (dayno >= (INT32U) YEARSIZE(year)) {
+  while (dayno >= (uint32_t) YEARSIZE(year)) {
     dayno -= YEARSIZE(year);
     year++;
   }
   tmbuf->tm_year = year - YEAR0;
   tmbuf->tm_yday = dayno;
   tmbuf->tm_mon = 0;
-  while (dayno >= (INT32U) _ytab[LEAPYEAR(year)][tmbuf->tm_mon]) {
+  while (dayno >= (uint32_t) _ytab[LEAPYEAR(year)][tmbuf->tm_mon]) {
     dayno -= _ytab[LEAPYEAR(year)][tmbuf->tm_mon];
     tmbuf->tm_mon++;
   }
@@ -209,7 +208,7 @@ time_t mktime(struct tm *tmbuf)
   return (time_t) seconds;
 }
 
-
+#ifndef _WIN32
 time_t ConvertDateTimeToUnixTime(OSDateTime * dt)
 {
 	struct tm tm;
@@ -227,6 +226,7 @@ time_t ConvertDateTimeToUnixTime(OSDateTime * dt)
 	
 	return unix_time;
 }
+#endif
 
 #if 0
 extern long _timezone;

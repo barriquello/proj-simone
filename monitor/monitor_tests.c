@@ -15,7 +15,7 @@
 
 extern log_state_t logger_state[MAX_NUM_OF_LOGGERS];
 
-void test_openlog(INT8U logger)
+void test_openlog(uint8_t logger)
 {
 
    LOG_FILETYPE fp;
@@ -38,7 +38,7 @@ void test_openlog(INT8U logger)
 
 }
 
-void test_writelogts(INT8U logger)
+void test_writelogts(uint8_t logger)
 {
 
 	LOG_FILETYPE fp;
@@ -77,7 +77,7 @@ void test_createentry(void)
 
 }
 
-void test_setheader(INT8U logger)
+void test_setheader(uint8_t logger)
 {
 	log_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 	h.h1.version = 0;
@@ -87,7 +87,7 @@ void test_setheader(INT8U logger)
 	log_setheader(log_getfilename_to_write(logger), &h);
 }
 
-void test_getheader(INT8U logger)
+void test_getheader(uint8_t logger)
 {
 	log_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 	log_getheader(log_getfilename_to_write(logger), &h);
