@@ -105,10 +105,10 @@ T20150101073300S ->
 #include "monitor.h"
 #include "simon-api.h"
 
-static uint8_t 	num_monitores = MAX_NUM_OF_LOGGERS;
-static uint8_t 	logger = 0;
-log_state_t 	logger_state[MAX_NUM_OF_LOGGERS];
-log_config_ok_t config_check;
+static uint8_t 	num_monitores = MAX_NUM_OF_MONITORES;
+static uint8_t 	monitores_em_uso = 0;
+monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
+monitor_config_ok_t config_check;
 
 
 #ifdef _WIN32
@@ -127,6 +127,16 @@ log_config_ok_t config_check;
 #define CONST const
 #endif
 
+CONST char config_error_msg[7][60] = 
+{
+	"Config Erro: faltando num_monitores ou maior que %d \n\r. ",
+	"Config Erro: faltando simon server \n\r.                  ",
+	"Config Erro: faltando apikey \n\r.                        ",
+	"Config Erro: faltando gprs server \n\r.                   ",
+	"Monitor erro: %d, modbus slave não suportado \r\n         ",
+	"Monitor erro: %d, entrada analógica não suportada \r\n    ",
+	"Monitor erro: %d, tipo não suportado\r\n                  ",
+};
 /*---------------------------------------------------------------------------*/
 /*
  * Finally, the implementation of the simple timer library follows.
@@ -147,12 +157,7 @@ log_config_ok_t config_check;
  * used in this example. The actual implementation of the functions
  * can be found at the end of this file.
  */
-#ifndef _WIN32
-typedef unsigned long long clock_t;
-#endif
-struct timer { clock_t start, interval; };
-static clock_t  timer_expired(struct timer *t);
-static void timer_set(struct timer *t, int usecs);
+
 /*---------------------------------------------------------------------------*/
 void sleep_forever(void);
 
@@ -165,7 +170,7 @@ void wait (unsigned int secs) {
 
 
 #include "conio.h"
-char getchar_timeout(int timeout)
+static char getchar_timeout(int timeout)
 {
 
    int timer = 0 ;
@@ -185,22 +190,16 @@ char getchar_timeout(int timeout)
    }
 }
 #else
-char getchar_timeout(int timeout)
+static char getchar_timeout(int timeout)
 {(void)timeout;}
 #endif
 
-/* We must always include pt.h in our protothreads code. */
-#include "pt.h"
+static struct pt monitor_input_pt;
+mon_timer_t input_timer;
 
-static struct pt log_read_pt, log_write_pt,log_input_pt;
-/*
- * We use two timers: one for the log write protothread and
- * one for the log read protothread.
- */
-static struct timer logread_timer, logwrite_timer, log_input_timer;
-volatile uint8_t log_running = 1;
-volatile uint8_t log_uploading = 1;
-volatile uint8_t log_is_connected = 0;
+volatile uint8_t monitor_running = 1;
+volatile uint8_t monitor_uploading = 1;
+volatile uint8_t monitor_is_connected = 0;
 
 static char set_input = 0;
 
@@ -209,45 +208,46 @@ CONST char config_inifile[] = "config.ini";
 
 /*---------------------------------------------------------------------------*/
 
+#ifdef _WIN32
 static
-PT_THREAD(log_set_input(struct pt *pt))
+PT_THREAD(monitor_set_input(struct pt *pt))
 {
 
   PT_BEGIN(pt);
   while(1)
   {
-	  timer_set(&log_input_timer, 30*1000); // 30s
-	  PT_WAIT_UNTIL(pt, timer_expired(&log_input_timer));
+	  timer_set(&input_timer, 30*1000); // 30s
+	  PT_WAIT_UNTIL(pt, timer_expired(&input_timer));
 	  set_input = 's';
   }
   PT_END(pt);
 }
+#endif
 
 static
-PT_THREAD(log_write_thread(struct pt *pt))
+PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 {
 
   PT_BEGIN(pt);
   while(1)
   {
-		timer_set(&logwrite_timer, logger_state[logger].config_h.time_interv*1000);
-		PT_WAIT_UNTIL(pt, log_running && timer_expired(&logwrite_timer));
-		monitor_writeentry(logger);
+		timer_set(&monitor_state[_monitor].write_timer, monitor_state[_monitor].config_h.time_interv*1000);
+		PT_WAIT_UNTIL(pt, monitor_running && timer_expired(&monitor_state[_monitor].write_timer));
+		monitor_writer(_monitor);
   }
   PT_END(pt);
 }
 
 static
-PT_THREAD(log_read_thread(struct pt *pt))
+PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 {
 
   PT_BEGIN(pt);
   while(1)
   {
-		timer_set(&logread_timer, 1000);
-		PT_WAIT_UNTIL(pt, log_uploading && timer_expired(&logread_timer));
-		monitor_readentry(logger);
-
+		timer_set(&monitor_state[_monitor].read_timer, 1000);
+		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(&monitor_state[_monitor].read_timer));
+		monitor_reader(_monitor);
   }
   PT_END(pt);
 }
@@ -258,7 +258,6 @@ static clock_t clock_time(void)
 { return (clock_t)GetTickCount(); }
 
 #else /* _WIN32 */
-
 	
 static clock_t clock = 0;
 static clock_t clock_time(void)
@@ -270,13 +269,12 @@ void BRTOS_TimerHook(void)
 {
 	clock++;
 }
-
 #endif /* _WIN32 */
 
-static clock_t timer_expired(struct timer *t)
+static clock_t timer_expired(mon_timer_t *t)
 { return (clock_t)(clock_time() - t->start) >= (clock_t)t->interval; }
 
-static void timer_set(struct timer *t, int interval)
+static void timer_set(mon_timer_t *t, int interval)
 { t->interval = interval; t->start = clock_time(); }
 /*---------------------------------------------------------------------------*/
 
@@ -327,7 +325,7 @@ uint8_t build_data_vector(char* ptr_data, uint8_t *data, uint8_t len)
 #endif
 
 
-int Callback_inifile(const char *section, const char *key, const char *value, const void *userdata)
+static int callback_inifile(const char *section, const char *key, const char *value, const void *userdata)
 {
   
     static int mon_cnt = 0;
@@ -341,8 +339,8 @@ int Callback_inifile(const char *section, const char *key, const char *value, co
 
 		if(strcmp(key,"num_monitores") == 0)
 		{
-			num_monitores = strtoul(value,NULL,0);
-			if(num_monitores > MAX_NUM_OF_LOGGERS)
+			num_monitores = (uint8_t)strtoul(value,NULL,0);
+			if(num_monitores > MAX_NUM_OF_MONITORES)
 			{
 				PRINTF("Erro: num_monitores superior ao suportado\n\r.");
 			}else
@@ -374,30 +372,40 @@ int Callback_inifile(const char *section, const char *key, const char *value, co
 
   		if(field_cnt == 0)
   		{
-  			logger_state[mon_cnt].sync_state = NOT_SYNC;
+  			monitor_state[mon_cnt].state = IN_USE;
   		}
 
 		/* configura monitores */
 		if(strcmp(key,"id") == 0)
 		{
-			logger_state[mon_cnt].config_h.mon_id = strtoul(value,NULL,0);
+			monitor_state[mon_cnt].config_h.mon_id = (uint8_t)strtoul(value,NULL,0);
 			++field_cnt;
 		}
 
+		if(strcmp(key,"tipo") == 0)
+		{
+			monitor_state[mon_cnt].tipo = (char) *value;
+			++field_cnt;
+		}
+		if(strcmp(key,"codigo") == 0)
+		{
+			monitor_state[mon_cnt].codigo =  (uint8_t)strtoul(value,NULL,0);
+			++field_cnt;
+		}
 		if(strcmp(key,"nome") == 0)
 		{
-			strncpy(logger_state[mon_cnt].log_dir_name, value, sizearray(logger_state[mon_cnt].log_dir_name));
+			strncpy(monitor_state[mon_cnt].monitor_dir_name, value, sizearray(monitor_state[mon_cnt].monitor_dir_name));
 			++field_cnt;
 		}
 		if(strcmp(key,"intervalo") == 0)
 		{
-			logger_state[mon_cnt].config_h.time_interv = strtoul(value,NULL,0);
+			monitor_state[mon_cnt].config_h.time_interv = (uint16_t)strtoul(value,NULL,0);
 			++field_cnt;
 		}
 
 		if(strcmp(key,"tamanho") == 0)
 		{
-			logger_state[mon_cnt].config_h.entry_size = strtoul(value,NULL,0);
+			monitor_state[mon_cnt].config_h.entry_size = (uint16_t)strtoul(value,NULL,0);
 			++field_cnt;
 		}
 		if(field_cnt == NUM_OF_FIELDS)
@@ -411,27 +419,31 @@ int Callback_inifile(const char *section, const char *key, const char *value, co
   	return 1;
 }
 
-void config_check_erro(void)
+static void config_check_erro(void)
 {
 	int erro = 0;
 	if(config_check.bit.num_mon_ok == 0)
 	{
-		print_erro("Config Erro: faltando num_monitores ou maior que %d \n\r.", MAX_NUM_OF_LOGGERS);
+		//print_erro("Config Erro: faltando num_monitores ou maior que %d \n\r.", MAX_NUM_OF_MONITORES);
+		print_erro(config_error_msg[1], MAX_NUM_OF_MONITORES);
 		erro++;
 	}
 	if(config_check.bit.server_ok == 0)
 	{
-		print_erro("Config Erro: faltando simon server \n\r.");
+		//print_erro("Config Erro: faltando simon server \n\r.");
+		print_erro(config_error_msg[2]);
 		erro++;
 	}
 	if(config_check.bit.key_ok == 0)
 	{
-		print_erro("Config Erro: faltando apikey \n\r.");
+		//print_erro("Config Erro: faltando apikey \n\r.");
+		print_erro(config_error_msg[3]);
 		erro++;
 	}
-	if(config_check.bit.gprs_server_ok == 0)
+	if(config_check.bit.gprs_apn_ok == 0)
 	{
-		print_erro("Config Erro: faltando gprs server \n\r.");
+		//print_erro("Config Erro: faltando gprs server \n\r.");
+		print_erro(config_error_msg[4]);
 	}
 	if (erro)
 	{
@@ -448,6 +460,9 @@ void main(void)
 }
 #endif
 
+#include "modbus_slaves.h"
+extern CONST modbus_slave_t * modbus_slaves_all[];
+
 void main_monitor(void)
 {
 
@@ -457,13 +472,12 @@ void main_monitor(void)
 #else
 	INT8U status = 0;
 #endif	
-
 	
-	uint8_t log_num = 0;
-
-	 /* Initialize the protothread state variables with PT_INIT(). */
-	  PT_INIT(&log_read_pt);
-	  PT_INIT(&log_write_pt);
+	uint8_t monitor_num = 0;
+	  
+#ifdef _WIN32	
+	  PT_INIT(&monitor_input_pt);
+#endif
 
 	PRINTF("help:\r\nq-quit\r\np-stop logger\r\nc-continue logger\r\ns-synch\r\nu-start upload\r\nv-stop upload\r\n");
 
@@ -494,16 +508,55 @@ void main_monitor(void)
 		
 	
 	config_check.byte = 0;
-	ini_browse(Callback_inifile, NULL, config_inifile);
-	config_check_erro(); /* check configuration */
+	ini_browse(callback_inifile, NULL, config_inifile);
+	config_check_erro(); /* verifica configuracao */
 
-	for (log_num = 0; log_num < num_monitores; log_num++)
-	{
-		if(log_init(log_num))
+	monitores_em_uso = 0;
+	for (monitor_num = 0; monitor_num < num_monitores; monitor_num++)
+	{		
+		if(	monitor_state[monitor_num].state == UNUSED
+			|| monitor_init(monitor_num) != OK)
 		{
-			PRINTF("Log init erro: %d", log_num);
+			print_erro("Log init erro: %d", monitor_num);
 			sleep_forever();
 		}
+		
+		if(monitor_state[monitor_num].tipo == 'M')
+		{			
+			if(monitor_state[monitor_num].codigo < NUM_MODBUS_SLAVES)
+			{
+				if(modbus_slaves_all[monitor_state[monitor_num].codigo] == NULL) goto modbus_slave_erro;
+				if(modbus_slaves_all[monitor_state[monitor_num].codigo]->slave_reader == NULL) goto modbus_slave_erro;			
+				monitor_state[monitor_num].read_data = modbus_slaves_all[monitor_state[monitor_num].codigo]->slave_reader;
+				
+			}else
+			{
+				modbus_slave_erro:
+				//print_erro("Monitor erro: %d, modbus slave não suportado \r\n", monitor_num);
+				print_erro(config_error_msg[5], monitor_num);
+				sleep_forever();
+			}
+		}
+		else 
+		if(monitor_state[monitor_num].tipo == 'A')
+		{
+			analog_input_erro:
+			//print_erro("Monitor erro: %d, entrada analógica não suportada \r\n", monitor_num);
+			print_erro(config_error_msg[6], monitor_num);
+			sleep_forever();	
+		}
+		else
+		{
+			//print_erro("Monitor erro: %d, tipo não suportado\r\n", monitor_num);
+			print_erro(config_error_msg[7], monitor_num);
+			sleep_forever();
+		}			
+		
+		monitor_state[monitor_num].state = IN_USE;
+		monitores_em_uso++;
+		/* Inicializa as threads deste monitor */
+		PT_INIT(&monitor_state[monitor_num].read_pt);
+		PT_INIT(&monitor_state[monitor_num].write_pt);
 	}
 	
 #ifdef _WIN32	
@@ -512,14 +565,21 @@ void main_monitor(void)
 
 	while(1)
 	{
+	
 		char c;
+		
+		for (monitor_num = 0; monitor_num < monitores_em_uso; monitor_num++)
+		{
+			monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
+			monitor_read_thread(&monitor_state[monitor_num].read_pt, monitor_num);
+		}
 
-		log_write_thread(&log_write_pt);
-		log_read_thread(&log_read_pt);
-
-		log_set_input(&log_input_pt);
+#ifdef _WIN32			
+		monitor_set_input(&monitor_input_pt);
+#endif		
 
 		c=getchar_timeout(1);
+		
 		if(c == 0 && set_input != 0)
 		{
 			c=set_input;
@@ -529,17 +589,18 @@ void main_monitor(void)
 		{
 			case 'q': 				// parar
 				goto out;
-			case 's': log_is_connected = 1;
+			case 's': monitor_is_connected = 1;
 					break;
-			case 'c': log_running = 1; // iniciar ou continuar
+			case 'c': monitor_running = 1; // iniciar ou continuar
 				break;
-			case 'p': log_running = 0; // parar
+			case 'p': monitor_running = 0; // parar
 				break;
-			case 'u': log_uploading = 1; // iniciar ou continuar upload
+			case 'u': monitor_uploading = 1; // iniciar ou continuar upload
 				break;
-			case 'v': log_uploading = 0; // parar upload
+			case 'v': monitor_uploading = 0; // parar upload
 				break;
 		}
+		
 		#ifndef _WIN32
 			DelayTask(1000); // executa a cada 1s
 		#endif
@@ -557,11 +618,7 @@ void main_monitor(void)
 	getchar();
 #else
 	sleep_forever:
-	while(1)
-	{
-		/* sleep forever */
-		__RESET_WATCHDOG();
-	}
+	sleep_forever();
 #endif
 
 	return;

@@ -36,8 +36,9 @@
 #include "string.h"
 
 typedef enum {
-	MODBUS_PM210 = 0,
-	MODBUS_TS = 1,
+	MODBUS_NULL = 0,
+	MODBUS_PM210 = 1,
+	MODBUS_TS = 2,
 	MODBUS_NONE
 }eMBSlaves;
 

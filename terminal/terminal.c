@@ -37,7 +37,7 @@ static int  term_find_command(char *name);
  * Module variables.
  *****************************************************************************/
 static CONST command_t term_help_cmd = {
-  "help", term_cmd_help, "Prints help about commands. "
+  "help", term_cmd_help, "Help of commands"
 };
 
 static char			SilentMode = 0; 

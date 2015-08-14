@@ -34,7 +34,7 @@ uint8_t simon_get_time(struct tm * t);
 uint8_t simon_send_data(uint8_t *buf, uint16_t len);
 char* simon_get_apikey(void);
 char* simon_get_hostname(void);
-void simon_set_apikey(char*);
-void simon_set_hostname(char*);
+void simon_set_apikey(const char*);
+void simon_set_hostname(const char*);
 
 #endif /* SIMON_API_H_ */

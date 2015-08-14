@@ -33,7 +33,7 @@
 /* Put CFV2 descriptors in RAM */
 #define USB_DESC_CONST
 #else
-#define USB_DESC_CONST	const
+#define USB_DESC_CONST	//const
 #endif
 
 /*****************************************************************************

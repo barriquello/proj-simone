@@ -176,7 +176,7 @@ char* simon_get_apikey(void)
 	return (char*)&simon_apikey;
 }
 
-void simon_set_apikey(char* apikey)
+void simon_set_apikey(const char* apikey)
 {
 	if(apikey != NULL)
 	{
@@ -190,7 +190,7 @@ char* simon_get_hostname(void)
 	return (char*)&simon_hostname;
 }
 
-void simon_set_hostname(char* hostname)
+void simon_set_hostname(const char* hostname)
 {
 	if(hostname != NULL)
 	{

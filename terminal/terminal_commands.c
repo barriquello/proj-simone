@@ -468,7 +468,7 @@ void term_cmd_sr(char *param)
 }
 
 CONST command_t sr_cmd = {
-  "sr", term_cmd_sr, "Safely remove the SD Card"
+  "sr", term_cmd_sr, "Remove SD Card"
 };
 
 
@@ -540,7 +540,7 @@ void term_cmd_rm(char *param)
 }
 
 CONST command_t rm_cmd = {
-  "rm", term_cmd_rm, "SD Card - Delete File or Directory"
+  "rm", term_cmd_rm, "Delete File or Dir"
 };
 
 
@@ -811,7 +811,7 @@ void term_cmd_wt(char *param)
 }
 
 CONST command_t wt_cmd = {
-  "wt", term_cmd_wt, "SD Card - Write Uptime - Test for write file"
+  "wt", term_cmd_wt, "Write Uptime"
 };
 
 static INT8U stdout = USE_USB;
@@ -872,7 +872,7 @@ void term_cmd_echo(char *param)
 }
 
 CONST command_t echo_cmd = {
-  "echo", term_cmd_echo, "Print the string in the terminal"
+  "echo", term_cmd_echo, "Print in terminal"
 };
 
 // Print a string in the terminal
@@ -908,7 +908,7 @@ void term_cmd_echo_out(char *param)
 }
 
 CONST command_t echo_stdout_cmd = {
-  "stdout", term_cmd_echo_out, "Set std output for echo cmd"
+  "stdout", term_cmd_echo_out, "Set output for echo"
 };
 
 
@@ -1079,6 +1079,6 @@ void cmd_sin2da(char *param)
 
 CONST command_t sin2da_cmd = 
 {
-  "sin2da", cmd_sin2da, "Play a sin wave through D/A converter"
+  "sin2da", cmd_sin2da, "Sin wave to DAC"
 };
 

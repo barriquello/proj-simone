@@ -10,6 +10,7 @@
 
 #include "stdlib.h"
 #include "stdint.h"
+#include "pt.h"
 
 #ifdef _WIN32
 #include <stdio.h>
@@ -18,7 +19,7 @@
 #ifndef _WIN32
 #include "time_lib.h"
 #include "printf_lib.h"
-#define puts(x)		printf_lib(x)
+#define  puts(x)		printf_lib(x)
 #else
 #include "time.h"
 #endif
@@ -29,29 +30,29 @@
 
 #if _WIN32
 #include <dirent.h>
-#define LOG_FILETYPE                  FILE*
-#define log_openread(filename,file)   ((*(file) = fopen((filename),"rb+")) != NULL)
-#define log_openwrite(filename,file)  ((*(file) = fopen((filename),"wb")) != NULL)
-#define log_openappend(filename,file)  ((*(file) = fopen((filename),"ab+")) != NULL)
-#define log_close(file)               (fclose(*(file)) == 0)
-#define log_read(buffer,size,file)    (fgets((char*)(buffer),(size),*(file)) != NULL)
-#define log_write(buffer,file)        (fputs((char*)(buffer),*(file)) >= 0)
-#define log_rename(source,dest)       (rename((source), (dest)) == 0)
-#define log_remove(filename)          (remove(filename) == 0)
+#define LOG_FILETYPE                  	  FILE*
+#define monitor_openread(filename,file)   ((*(file) = fopen((filename),"rb+")) != NULL)
+#define monitor_openwrite(filename,file)  ((*(file) = fopen((filename),"wb")) != NULL)
+#define monitor_openappend(filename,file)  ((*(file) = fopen((filename),"ab+")) != NULL)
+#define monitor_close(file)               (fclose(*(file)) == 0)
+#define monitor_read(buffer,size,file)    (fgets((char*)(buffer),(size),*(file)) != NULL)
+#define monitor_write(buffer,file)        (fputs((char*)(buffer),*(file)) >= 0)
+#define monitor_rename(source,dest)       (rename((source), (dest)) == 0)
+#define monitor_remove(filename)          (remove(filename) == 0)
 
 #define LOG_FILEPOS                   fpos_t
-#define log_tell(file,pos)            ((*(pos) = ftell(*(file))) != (-1L)) //(fgetpos(*(file), (pos)) == 0)
-#define log_seek(file,pos)            (fseek(*(file), *(pos), SEEK_SET) == 0) // (fsetpos(*(file), (pos)) == 0)
+#define monitor_tell(file,pos)            ((*(pos) = ftell(*(file))) != (-1L)) //(fgetpos(*(file), (pos)) == 0)
+#define monitor_seek(file,pos)            (fseek(*(file), *(pos), SEEK_SET) == 0) // (fsetpos(*(file), (pos)) == 0)
 
 #define LOG_DIRTYPE                   DIR*
 #define LOG_DIRINFO 				  struct dirent *
 #define LOG_FILEINFO 				  struct stat
-#define log_stat(filename, fileinfo)  (stat((filename), (fileinfo)) == -1)
-#define log_opendir(dirname,dir)	  (((dir) = opendir(dirname)) != NULL)
-#define log_closedir(dir)			  closedir(dir)
-#define log_readdir(dirinfo,dir)  	  (((dirinfo) = readdir(dir)) != NULL)
-#define log_chdir(dirname)			  chdir(dirname)
-#define log_mkdir(dirname)			  _mkdir(dirname)
+#define monitor_stat(filename, fileinfo)  (stat((filename), (fileinfo)) == -1)
+#define monitor_opendir(dirname,dir)	  (((dir) = opendir(dirname)) != NULL)
+#define monitor_closedir(dir)			  closedir(dir)
+#define monitor_readdir(dirinfo,dir)  	  (((dirinfo) = readdir(dir)) != NULL)
+#define monitor_chdir(dirname)			  chdir(dirname)
+#define monitor_mkdir(dirname)			  _mkdir(dirname)
 #endif
 
 #if _WIN32
@@ -69,20 +70,20 @@
 #include "ff.h"                   /* include tff.h for FatFs */
 
 #define LOG_FILETYPE    			   FIL
-#define log_openread(filename,file)   (f_open((file), (filename), FA_READ+FA_OPEN_EXISTING) == FR_OK)
-#define log_openwrite(filename,file)  (f_open((file), (filename), FA_WRITE+FA_CREATE_ALWAYS) == FR_OK)
-#define log_openappend(filename,file) (f_open((file), (filename), FA_WRITE) == FR_OK)
-#define log_close(file)               (f_close(file) == FR_OK)
-#define log_read(buffer,size,file)    f_gets((buffer), (size),(file))
-#define log_write(buffer,file)        f_puts((buffer), (file))
-#define log_remove(filename)          (f_unlink(filename) == FR_OK)
+#define monitor_openread(filename,file)   (f_open((file), (filename), FA_READ+FA_OPEN_EXISTING) == FR_OK)
+#define monitor_openwrite(filename,file)  (f_open((file), (filename), FA_WRITE+FA_CREATE_ALWAYS) == FR_OK)
+#define monitor_openappend(filename,file) (f_open((file), (filename), FA_WRITE) == FR_OK)
+#define monitor_close(file)               (f_close(file) == FR_OK)
+#define monitor_read(buffer,size,file)    f_gets((buffer), (size),(file))
+#define monitor_write(buffer,file)        f_puts((buffer), (file))
+#define monitor_remove(filename)          (f_unlink(filename) == FR_OK)
 
 #define LOG_FILEPOS                   DWORD
-#define log_tell(file,pos)            (*(pos) = f_tell((file)))
-#define log_seek(file,pos)            (f_lseek((file), *(pos)) == FR_OK)
+#define monitor_tell(file,pos)            (*(pos) = f_tell((file)))
+#define monitor_seek(file,pos)            (f_lseek((file), *(pos)) == FR_OK)
 
 #include "string.h"
-static int log_rename(TCHAR *source, const TCHAR *dest)
+static int monitor_rename(TCHAR *source, const TCHAR *dest)
 {
   /* Function f_rename() does not allow drive letters in the destination file */
   const char *drive = strchr(dest, ':');
@@ -93,12 +94,12 @@ static int log_rename(TCHAR *source, const TCHAR *dest)
 #define LOG_DIRTYPE                   DIR
 #define LOG_DIRINFO 				  FILINFO
 #define LOG_FILEINFO 				  FILINFO
-#define log_stat(filename, fileinfo)  (f_stat((filename), (fileinfo)) == FR_OK)
-#define log_opendir(dirname,dir)	  (f_opendir(&(dir),dirname) == FR_OK)
-#define log_closedir(dir)			  f_closedir(&(dir))
-#define log_readdir(dirinfo,dir)  	  (f_readdir(&(dir), &(dirinfo)) == FR_OK)
-#define log_chdir(dirname)			  f_chdir(dirname)
-#define log_mkdir(dirname)			  f_mkdir(dirname)
+#define monitor_stat(filename, fileinfo)  (f_stat((filename), (fileinfo)) == FR_OK)
+#define monitor_opendir(dirname,dir)	  (f_opendir(&(dir),dirname) == FR_OK)
+#define monitor_closedir(dir)			  f_closedir(&(dir))
+#define monitor_readdir(dirinfo,dir)  	  (f_readdir(&(dir), &(dirinfo)) == FR_OK)
+#define monitor_chdir(dirname)			  f_chdir(dirname)
+#define monitor_mkdir(dirname)			  f_mkdir(dirname)
 
 #endif
 
@@ -116,7 +117,7 @@ void	print_erro(char *format, ...);
 #define LOG_FILENAME_START   "99123123.txt"
 #define LOG_METAFILE   		 ".0.txt"
 #define MAX_NUM_OF_ENTRIES   ((uint32_t)(-1))
-#define MAX_NUM_OF_LOGGERS	 2
+#define MAX_NUM_OF_MONITORES 3
 #define NUM_OF_FIELDS        4
 
 //#define LOG_DIR_NAME 		 "./logs"
@@ -149,7 +150,7 @@ typedef struct
 	time_t ts; /* entry timestamp - unix time */
 	uint8_t size; /* size of entry in number of bytes, must be not greater than LOG_MAX_ENTRY_SIZE */
 	uint8_t *values; /* pointer to 8-bit entry values */
-}log_entry_t;
+}monitor_entry_t;
 
 typedef struct
 {
@@ -157,7 +158,7 @@ typedef struct
 	uint8_t mon_id;
 	uint16_t entry_size;
 	uint16_t time_interv;
-}log_headerl1_t;
+}monitor_headerl1_t;
 
 typedef struct
 {
@@ -168,30 +169,52 @@ typedef struct
 	uint8_t	min;	/* Minutes: 0-59 */
 	uint8_t	sec;	/* Seconds: 0-59 */
 	uint8_t synched; /* synch flag: (1) TRUE (0) FALSE */
-}log_headerl2_t;
+}monitor_headerl2_t;
 
 typedef struct
 {
-	log_headerl1_t h1; /* version, id, entry size and time interval */
-	log_headerl2_t h2; /* timestamp and synch flag */
+	monitor_headerl1_t h1; /* version, id, entry size and time interval */
+	monitor_headerl2_t h2; /* timestamp and synch flag */
 	uint16_t last_idx;	/* index of last sent line */
 	uint16_t count;		/* entries count */
-}log_header_t;
+}monitor_header_t;
 
 typedef enum{
-	NOT_SYNC = 0,
-	SYNC=1
-} log_sync_t;
+	UNUSED = 0,
+	IN_USE = 1
+} monitor_used_t;
+
+#ifndef _WIN32
+typedef unsigned long long clock_t;
+#endif
+
+typedef struct timer 
+{ 
+	clock_t start;
+	clock_t interval; 
+}mon_timer_t;
+static clock_t  timer_expired(mon_timer_t *t);
+static void timer_set(mon_timer_t *t, int usecs);
+
+typedef struct pt pt_t;
+
+typedef uint8_t (*data_reader)(uint8_t* buf, uint8_t max_len);
 
 typedef struct
 {
-	log_sync_t sync_state;
-	char  log_name_writing[FILENAME_MAX_LENGTH];
-	char  log_name_reading[FILENAME_MAX_LENGTH];
-	char  log_dir_name[FILENAME_MAX_LENGTH];
-	log_headerl1_t config_h;
-
-}log_state_t;
+	monitor_used_t state;
+	char  monitor_name_writing[FILENAME_MAX_LENGTH];
+	char  monitor_name_reading[FILENAME_MAX_LENGTH];
+	char  monitor_dir_name[FILENAME_MAX_LENGTH];
+	monitor_headerl1_t config_h;
+	mon_timer_t read_timer;
+	mon_timer_t write_timer;	
+	pt_t read_pt;
+	pt_t write_pt;
+	char tipo;
+	uint8_t codigo;
+	data_reader read_data;
+}monitor_state_t;
 
 typedef union
 {
@@ -200,35 +223,35 @@ typedef union
 		uint8_t num_mon_ok	:1;	/* num. de monitores ok */
 		uint8_t server_ok	:1;	/* server ok */
 		uint8_t	key_ok		:1;	/* Api Key ok */
-		uint8_t	gprs_server_ok:1;	/* GPRS server ok */
-		uint8_t	unused1:1 ;	/* Unused */
-		uint8_t	unused2:1 ;	/* Unused*/
+		uint8_t	gprs_apn_ok :1;	/* GPRS access point ok */
+		uint8_t	gprs_user_ok:1 ;/* GPRS user ok */
+		uint8_t	gprs_pwd_ok :1 ;/* GPRS password ok */
 		uint8_t unused3:1 ; /* Unused */
 	}bit;
-}log_config_ok_t;
+}monitor_config_ok_t;
 
 void test_logger(void);
 
-uint8_t log_init(uint8_t logger_num);
-void log_sync(char*);
+uint8_t monitor_init(uint8_t monitor_num);
+void monitor_sync(char*);
 
-void log_makeheader(char log_header[], log_header_t * h);
-void log_setheader(char* filename, log_header_t * h);
-void log_getheader(char* filename, log_header_t * h);
-void log_newheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size);
+void monitor_makeheader(char monitor_header[], monitor_header_t * h);
+void monitor_setheader(char* filename, monitor_header_t * h);
+void monitor_getheader(char* filename, monitor_header_t * h);
+void monitor_newheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size);
 
-void log_createentry(char* string, uint16_t *dados, uint16_t len);
-uint16_t log_writeentry(char* filename, char* entry);
-uint32_t log_readentry(uint8_t logger_num, char* filename, log_entry_t* entry);
+void monitor_createentry(char* string, uint16_t *dados, uint16_t len);
+uint16_t monitor_writeentry(char* filename, char* entry);
+uint32_t monitor_readentry(uint8_t monitor_num, char* filename, monitor_entry_t* entry);
 
-void log_gettimestamp(struct tm * ts, uint32_t time_elapsed_s);
-void log_settimestamp(uint8_t logger_num, char* filename);
+void monitor_gettimestamp(struct tm * ts, uint32_t time_elapsed_s);
+void monitor_settimestamp(uint8_t monitor_num, char* filename);
 
-char* log_getfilename_to_write(uint8_t logger_num);
-char* log_getfilename_to_read(uint8_t logger_num);
+char* monitor_getfilename_to_write(uint8_t monitor_num);
+char* monitor_getfilename_to_read(uint8_t monitor_num);
 
 void main_monitor(void);
-void monitor_readentry(uint8_t monitor_num);
-void monitor_writeentry(uint8_t monitor_num);
+void monitor_reader(uint8_t monitor_num);
+void monitor_writer(uint8_t monitor_num);
 
 #endif /* LOGGER_H_ */

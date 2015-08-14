@@ -12,6 +12,8 @@
 #define RTC_PRESENTE  		0
 #define GPRSMODEM_PRESENTE  0
 #define PM200_PRESENTE   	0
+#define TS_PRESENTE   		0
+#define NULL_PRESENTE   	1
 
 #if RTC_PRESENTE
 #include "Timer_RTC_DS1307.h"
@@ -35,6 +37,14 @@
 #define ARDUINO 	2
 
 #define PLATAFORMA  COLDUINO
+
+#if PLATAFORMA == COLDUINO
+#define CONST
+#define STRING_IN_RAM  (char [])
+#else
+#define CONST const
+#define STRING_IN_RAM
+#endif
 
 
 

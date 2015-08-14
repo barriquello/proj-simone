@@ -43,22 +43,22 @@ eMBErrorCode eMBRegDiscreteCB_TS ( UCHAR * pucRegBuffer, USHORT usAddress, USHOR
 static eMBSlaves Slave_Selected = MODBUS_NONE;
 #define MODBUS_NUM_SLAVES  (3)
 
-const peMBRegInputCB _eMBRegInputCB[MODBUS_NUM_SLAVES] = 
+CONST peMBRegInputCB _eMBRegInputCB[MODBUS_NUM_SLAVES] = 
 {
 		eMBRegInputCB_PM210, eMBRegInputCB_TS, eMBRegInputCB_def
 };
 
-const peMBRegHoldingCB _eMBRegHoldingCB[MODBUS_NUM_SLAVES] = 
+CONST peMBRegHoldingCB _eMBRegHoldingCB[MODBUS_NUM_SLAVES] = 
 {
 		eMBRegHoldingCB_PM210, eMBRegHoldingCB_TS, eMBRegHoldingCB_def
 };
 
-const peMBRegCoilsCB _eMBRegCoilsCB[MODBUS_NUM_SLAVES] = 
+CONST peMBRegCoilsCB _eMBRegCoilsCB[MODBUS_NUM_SLAVES] = 
 {
 		eMBRegCoilsCB_PM210, eMBRegCoilsCB_TS, eMBRegCoilsCB_def
 };
 
-const peMBRegDiscreteCB _eMBRegDiscreteCB[MODBUS_NUM_SLAVES] = 
+CONST peMBRegDiscreteCB _eMBRegDiscreteCB[MODBUS_NUM_SLAVES] = 
 {
 		eMBRegDiscreteCB_PM210, eMBRegDiscreteCB_TS, eMBRegDiscreteCB_def
 };

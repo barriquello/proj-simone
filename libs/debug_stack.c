@@ -7,6 +7,17 @@
 
 #pragma warn_implicitconv off
 
+#ifdef _WIN32
+#define DEBUG_STACK_PRINT 1
+#endif
+
+#if DEBUG_STACK_PRINT
+#define DPRINTF(a,...) printSer(a,__VA_ARGS__);
+#else
+#define DPRINTF(a,...)
+#endif
+
+
 void Transmite_Uptime(INT8U Comm)
 {
    OSTime Uptime;
@@ -18,27 +29,27 @@ void Transmite_Uptime(INT8U Comm)
    UpDate = OSUpDate();
    UserExitCritical();
    
-   printSer(Comm, "UPTIME: ");
+   DPRINTF(Comm, "UPTIME: ");
 
    // Só funciona até 255 dias
    if(UpDate.RTC_Day > 0)
    {    
       Print3Digits(UpDate.RTC_Day, NO_ALIGN, string);
-      printSer(Comm, string);
-      printSer(Comm, "d ");
+      DPRINTF(Comm, string);
+      DPRINTF(Comm, "d ");
    }
    
    Print2Digits(Uptime.RTC_Hour, NO_ALIGN, string);
-   printSer(Comm, string);
-   printSer(Comm, "h ");
+   DPRINTF(Comm, string);
+   DPRINTF(Comm, "h ");
    
    Print2Digits(Uptime.RTC_Minute, NO_ALIGN, string);
-   printSer(Comm, string);
-   printSer(Comm, "m ");
+   DPRINTF(Comm, string);
+   DPRINTF(Comm, "m ");
 
    Print2Digits(Uptime.RTC_Second, NO_ALIGN, string);
-   printSer(Comm, string);
-   printSer(Comm, "s\n\r");
+   DPRINTF(Comm, string);
+   DPRINTF(Comm, "s\n\r");
 }
 
 
@@ -50,7 +61,7 @@ void Transmite_RAM_Ocupada(INT8U Comm)
     CHAR8  string[7];
     INT8U  i = 0;
    
-    printSer(Comm, "MEMORY: ");
+    DPRINTF(Comm, "MEMORY: ");
     
     UserEnterCritical();
     SPAddress = iStackAddress * sizeof(OS_CPU_TYPE);
@@ -67,9 +78,9 @@ void Transmite_RAM_Ocupada(INT8U Comm)
     		break;	
 		}
     };
-    printSer(Comm, &string[i]);
+    DPRINTF(Comm, &string[i]);
 
-    printSer(Comm, " of ");
+    DPRINTF(Comm, " of ");
        
     PrintDecimal(HEAP_SIZE, string);
     i = 0;
@@ -82,9 +93,9 @@ void Transmite_RAM_Ocupada(INT8U Comm)
     		break;	
 		}
     };     
-    printSer(Comm, &string[i]);
+    DPRINTF(Comm, &string[i]);
     
-    printSer(Comm, "\n\r");
+    DPRINTF(Comm, "\n\r");
 }
 
 
@@ -98,15 +109,15 @@ void Transmite_Task_Stacks(INT8U Comm)
     INT32U *i = 0; 
     INT32U *p = 0; 
    
-    printSer(Comm, "\n\rTASK STACK:\n\r");    
+    DPRINTF(Comm, "\n\rTASK STACK:\n\r");    
           
     for (j=1;j<=NumberOfInstalledTasks;j++)
     {  
       putcharSer(Comm, '[');
       putcharSer(Comm, j+'0');
-      printSer(Comm, "] ");
-      printSer(Comm, (char*)ContextTask[j].TaskName);
-      printSer(Comm, ": ");
+      DPRINTF(Comm, "] ");
+      DPRINTF(Comm, (char*)ContextTask[j].TaskName);
+      DPRINTF(Comm, ": ");
       
       UserEnterCritical();
       i = (INT32U*)ContextTask[j].StackPoint;
@@ -154,23 +165,23 @@ void Transmite_Task_Stacks(INT8U Comm)
       UserExitCritical();
       
       Print4Digits(VirtualStack, NO_ALIGN, string);
-      printSer(Comm, string);
+      DPRINTF(Comm, string);
       
-      printSer(Comm,  " of ");
+      DPRINTF(Comm,  " of ");
 
       VirtualStack = (ContextTask[j].StackInit - (INT32U) x);
       
       Print4Digits(VirtualStack, NO_ALIGN, string);
-      printSer(Comm, string);
+      DPRINTF(Comm, string);
       
-      printSer(Comm, "\n\r");
+      DPRINTF(Comm, "\n\r");
     }
     
     putcharSer(Comm, '[');
     putcharSer(Comm, j+'0');
-    printSer(Comm, "] ");
+    DPRINTF(Comm, "] ");
 
-    printSer(Comm, "Idle Task: ");
+    DPRINTF(Comm, "Idle Task: ");
     
     UserEnterCritical();
     i = (INT32U*)ContextTask[NUMBER_OF_TASKS+1].StackPoint;
@@ -211,17 +222,17 @@ void Transmite_Task_Stacks(INT8U Comm)
     UserExitCritical();
       
     Print4Digits(VirtualStack, NO_ALIGN, string);
-    printSer(Comm, string);
+    DPRINTF(Comm, string);
     
-    printSer(Comm,  " of ");
+    DPRINTF(Comm,  " of ");
 
     VirtualStack = (ContextTask[NUMBER_OF_TASKS+1].StackInit - (INT32U) x);
     
     Print4Digits(VirtualStack, NO_ALIGN, string);
-    printSer(Comm, string);
+    DPRINTF(Comm, string);
     
     
-    printSer(Comm, "\n\r");
+    DPRINTF(Comm, "\n\r");
 }
 
 
@@ -238,11 +249,11 @@ void Transmite_CPU_Load(INT8U Comm)
     percent = LastOSDuty;
     UserExitCritical();   
    
-    printSer(Comm, "CPU LOAD: ");
+    DPRINTF(Comm, "CPU LOAD: ");
     
     if (percent >= 1000)
     {
-      printSer(Comm, "100 %");    
+      DPRINTF(Comm, "100 %");    
     }
     else
     {
@@ -258,7 +269,7 @@ void Transmite_CPU_Load(INT8U Comm)
         putcharSer(Comm, caracter);
         putcharSer(Comm, '%');
     }
-    printSer(Comm, "\n\r");
+    DPRINTF(Comm, "\n\r");
 }
 #endif
 
@@ -272,38 +283,38 @@ void Reason_of_Reset(INT8U Comm)
   switch(reason)
   {
     case 0b00000000:
-      printSer(Comm, "Reset caused by BDM");
+      DPRINTF(Comm, "Reset caused by BDM");
       break;
       
     case 0b00000010:
-      printSer(Comm, "Reset caused by low voltage");
+      DPRINTF(Comm, "Reset caused by low voltage");
       break;      
       
     case 0b00001000:
-      printSer(Comm, "Reset caused by illegal address");
+      DPRINTF(Comm, "Reset caused by illegal address");
       break;
       
     case 0b00010000:
-      printSer(Comm, "Reset caused by illegal opcode");
+      DPRINTF(Comm, "Reset caused by illegal opcode");
       break;
       
     case 0b00100000:
-      printSer(Comm, "Reset caused by watchdog");
+      DPRINTF(Comm, "Reset caused by watchdog");
       break;
       
     case 0b01000000:
-      printSer(Comm, "Reset caused by reset pin");
+      DPRINTF(Comm, "Reset caused by reset pin");
       break;
       
     case 0b10000010:
     case 0b10000000:
-      printSer(Comm, "Power-on Reset (Cold reset)");
+      DPRINTF(Comm, "Power-on Reset (Cold reset)");
       break;
       
     default:
-      printSer(Comm, "Unknown reason - Code: ");
+      DPRINTF(Comm, "Unknown reason - Code: ");
       Print3Digits(reason, NO_ALIGN, string);
-      printSer(Comm, string);
+      DPRINTF(Comm, string);
       break;
   }
 }
@@ -368,35 +379,35 @@ void Send_OSTrace(INT8U Comm){
             switch(OSTrace_snapshot[i] & 0x07)
             {
               case ISR_ONLY:
-                printSer(Comm, "ISR ONLY"); 
+                DPRINTF(Comm, "ISR ONLY"); 
                 break;         
               case ISR_TICK:
                 #if(OS_TICK_SHOW == 1)  
-                  printSer(Comm, "ISR TICK"); 
+                  DPRINTF(Comm, "ISR TICK"); 
                 #endif
                 break;
               case SEMPOST:
-                printSer(Comm, "ISR SEMPOST");        
+                DPRINTF(Comm, "ISR SEMPOST");        
                 break;
               case QUEUEPOST:
-                printSer(Comm, "ISR QUEUEPOST");
+                DPRINTF(Comm, "ISR QUEUEPOST");
                 break;
               case MUTEXPOST:
-                printSer(Comm, "ISR MUTEXPOST");
+                DPRINTF(Comm, "ISR MUTEXPOST");
                 break;
               case OS_IDLE:
                 #if(OS_IDLE_SHOW == 1)
-                  printSer(Comm, "ISR IDLE");
+                  DPRINTF(Comm, "ISR IDLE");
                 #endif
                 break; 
               default:
-                printSer(Comm, "________");
+                DPRINTF(Comm, "________");
                 break;
             }
         }else
         {
            #if(OS_IDLE_SHOW == 1)  
-            printSer(Comm, "TASK ");
+            DPRINTF(Comm, "TASK ");
             car = OSTrace_snapshot[i]>>5;
             car = (car / 10) + 48;
             putcharSer(Comm, car);
@@ -408,36 +419,36 @@ void Send_OSTrace(INT8U Comm){
            if((OSTrace_snapshot[i]>>5) != (NUMBER_OF_TASKS+1))
            {
               TaskName = ContextTask[OSTrace_snapshot[i]>>5].TaskName;
-              printSer(Comm, TaskName);
+              DPRINTF(Comm, TaskName);
               putcharSer(Comm, ' ');
            }
           #endif  
             
             switch(OSTrace_snapshot[i] & 0x07){
               case DELAYTASK:
-                printSer(Comm, "DELAYTASK");
+                DPRINTF(Comm, "DELAYTASK");
                 break;
               case SEMPEND:
-                printSer(Comm, "SEMPEND");
+                DPRINTF(Comm, "SEMPEND");
                 break;
               case QUEUEPEND:
-                printSer(Comm, "QUEUEPEND");
+                DPRINTF(Comm, "QUEUEPEND");
                 break;
               case MUTEXPEND:
-                printSer(Comm, "MUTEXPEND");
+                DPRINTF(Comm, "MUTEXPEND");
                 break;
               case SEMPOST:
-                printSer(Comm, "SEMPOST");        
+                DPRINTF(Comm, "SEMPOST");        
                 break;
               case QUEUEPOST:
-                printSer(Comm, "QUEUEPOST");
+                DPRINTF(Comm, "QUEUEPOST");
                 break;
               case MUTEXPOST:
-                printSer(Comm, "MUTEXPOST");
+                DPRINTF(Comm, "MUTEXPOST");
                 break;
               case OS_IDLE:
                 #if(OS_IDLE_SHOW == 1)
-                  printSer(Comm, "IDLE");
+                  DPRINTF(Comm, "IDLE");
                 #endif
                 break; 
               default:
@@ -445,7 +456,7 @@ void Send_OSTrace(INT8U Comm){
             }
         }
 
-        printSer(Comm, " - ");
+        DPRINTF(Comm, " - ");
     }   
     j += MAX_TRACE_LINE;
     putcharSer(Comm, LF); 

@@ -2,10 +2,7 @@
 #include "drivers.h"
 #include "tasks.h"
 #include "AppConfig.h"
-
 #include "modbus.h" /* master lib */
-
-#if TESTE_MODBUS
 
 // Declares a queue structure for the Modbus Master Input
 OS_QUEUE ModbusMaster_InBuffer;
@@ -36,7 +33,9 @@ static void ModbusMasterTxData(const uint8_t * const _pData, const uint32_t _dat
 uint8_t queryBuffer[QUERY_BUFSIZE];
 uint8_t answerBuffer[ANSWER_BUFSIZE];
 
+#include "modbus_slave_null.h"
 #include "modbus_pm210.h"
+#include "modbus_ts.h"
 
 //==============================================================================
 // Task: Task_modbus_master_test()
@@ -205,4 +204,3 @@ void Modbus_SlaveSelect(eMBSlaves slave_option)
 	ModbusSetSlave(slave_option);
 }
 
-#endif

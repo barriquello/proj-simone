@@ -12,10 +12,27 @@ extern "C" {
 
 typedef void (cmd_func)(char *params);
 
+#if PLATAFORMA == COLDUINO
+#define CONST 
+#define INROM 	0
+#else
+#define CONST 	const
+#define INROM 	1
+#endif
+
+
 typedef struct {
+#if INROM
   const char *txt;
+#else
+  char txt[8];
+#endif
   cmd_func * func;
+#if INROM
   const char *help_txt;
+#else
+  char help_txt[24];
+#endif
 } command_t;
 
 #define CONSOLE_BUFFER_SIZE  (144)
@@ -33,12 +50,6 @@ unsigned char TerminalBackup(char *backup);
 
 extern void printf_terminal(char *s);
 extern void putchar_terminal(char c);
-
-#if PLATAFORMA == COLDUINO
-#define CONST 
-#else
-#define CONST const
-#endif
 
 #ifdef __cplusplus
 }

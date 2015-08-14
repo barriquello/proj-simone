@@ -34,7 +34,9 @@
 
 #include "printf_lib.h"
 
+#if DISABLE_SNPRINTF
 #define putchar(x) putchar_terminal(x)
+#endif
 
 
 static void printchar(char **str, int c)

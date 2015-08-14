@@ -12,14 +12,16 @@
 
 #define sizearray(a)  (sizeof(a) / sizeof((a)[0]))
 
-const char inifile[] = "test.ini";
-const char inifile2[] = "testplain.ini";
-
 #if DEBUG_MININI
 #define PRINTF(...) printf(__VA_ARGS__);
 #else
 #define PRINTF(...)
 #endif
+
+#if 0
+
+const char inifile[] = "test.ini";
+const char inifile2[] = "testplain.ini";
 
 int Callback(const char *section, const char *key, const char *value, const void *userdata);
 
@@ -30,7 +32,6 @@ int Callback(const char *section, const char *key, const char *value, const void
   return 1;
 }
 
-#if 0
 int main(void)
 {
   char str[100];

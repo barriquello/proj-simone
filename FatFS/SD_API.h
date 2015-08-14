@@ -4,13 +4,7 @@
 #include "BRTOS.h"
 #include "SD.h"
 #include "ff.h"
-
-#if PLATAFORMA == COLDUINO
-#define CONST
-#else
-#define CONST const
-#endif
-
+#include "AppConfig.h"
 
 /* Defines */
 #define SD_FAT_MUTEX_EN		1		// Enable SD/FAT file system mutex

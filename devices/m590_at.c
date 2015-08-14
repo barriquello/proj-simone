@@ -38,7 +38,6 @@ static INT8U gReceiveBuffer[256];
 #define PRINT_BUF(...)
 #endif
 
-
 #define UNUSED(x)   (void)x;
 
 static void at_m590_print_reply(void)

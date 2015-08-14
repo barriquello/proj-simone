@@ -156,7 +156,7 @@ void Terminal_Task(void)
 	(void) terminal_add_cmd((command_t*) &cr_cmd);
 	(void) terminal_add_cmd((command_t*) &mkdir_cmd);
 	(void) terminal_add_cmd((command_t*) &cp_cmd);
-	(void) terminal_add_cmd((command_t*) &wt_cmd);
+	//(void) terminal_add_cmd((command_t*) &wt_cmd);
 	(void) terminal_add_cmd((command_t*) &echo_cmd);
 	(void) terminal_add_cmd((command_t*) &echo_stdout_cmd);
 	//(void) terminal_add_cmd((command_t*) &esp_cmd);
