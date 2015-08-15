@@ -13,8 +13,10 @@
 
 #if DEBUG_STACK_PRINT
 #define DPRINTF(a,...) printSer(a,__VA_ARGS__);
+#define DPUTCHAR(a,b)  putcharSer(a,b);
 #else
 #define DPRINTF(a,...)
+#define DPUTCHAR(a,b)	
 #endif
 
 
@@ -113,8 +115,8 @@ void Transmite_Task_Stacks(INT8U Comm)
           
     for (j=1;j<=NumberOfInstalledTasks;j++)
     {  
-      putcharSer(Comm, '[');
-      putcharSer(Comm, j+'0');
+      DPUTCHAR(Comm, '[');
+      DPUTCHAR(Comm, j+'0');
       DPRINTF(Comm, "] ");
       DPRINTF(Comm, (char*)ContextTask[j].TaskName);
       DPRINTF(Comm, ": ");
@@ -138,24 +140,6 @@ void Transmite_Task_Stacks(INT8U Comm)
     	if(p>=i) break;
       }
       
-#if 0      
-      k = 0;
-      while(k<8)
-      {
-        if (i <= x)
-        {
-          break;
-        }
-        if (*i == 0)
-        {
-          k++;
-        }else 
-        {
-          k = 0;
-        }
-        i--;
-      } 
-#endif      
       
 #include "stdlib.h"
       
@@ -177,10 +161,9 @@ void Transmite_Task_Stacks(INT8U Comm)
       DPRINTF(Comm, "\n\r");
     }
     
-    putcharSer(Comm, '[');
-    putcharSer(Comm, j+'0');
+    DPUTCHAR(Comm, '[');
+    DPUTCHAR(Comm, j+'0');
     DPRINTF(Comm, "] ");
-
     DPRINTF(Comm, "Idle Task: ");
     
     UserEnterCritical();
@@ -196,26 +179,6 @@ void Transmite_Task_Stacks(INT8U Comm)
 		if(p>=i) break;
 	 }
 
-#if 0
-    k = 0;
-    while(k<32)
-    {
-      if (i <= x)
-      {
-        break;
-      }
-      if (*i == 0)
-      {
-        k++;
-      }else 
-      {
-        k = 0;
-      }
-      i--;
-    } 
-#endif    
-    
-    
     UserEnterCritical();
     //VirtualStack = ContextTask[NUMBER_OF_TASKS+1].StackInit - ((INT32U)i + (INT32U)4);
     VirtualStack = ContextTask[NUMBER_OF_TASKS+1].StackInit - (INT32U) p;
@@ -229,8 +192,7 @@ void Transmite_Task_Stacks(INT8U Comm)
     VirtualStack = (ContextTask[NUMBER_OF_TASKS+1].StackInit - (INT32U) x);
     
     Print4Digits(VirtualStack, NO_ALIGN, string);
-    DPRINTF(Comm, string);
-    
+    DPRINTF(Comm, string);   
     
     DPRINTF(Comm, "\n\r");
 }
@@ -260,14 +222,14 @@ void Transmite_CPU_Load(INT8U Comm)
         cent = (percent/100);
         caracter = cent + 48;
         if(caracter != 48)
-          putcharSer(Comm, caracter);
+          DPUTCHAR(Comm, caracter);
         dez = ((percent - cent*100)/10);
         caracter = dez + 48;
-        putcharSer(Comm, caracter);
-        putcharSer(Comm, '.');
+        DPUTCHAR(Comm, caracter);
+        DPUTCHAR(Comm, '.');
         caracter = (percent%10) + 48;
-        putcharSer(Comm, caracter);
-        putcharSer(Comm, '%');
+        DPUTCHAR(Comm, caracter);
+        DPUTCHAR(Comm, '%');
     }
     DPRINTF(Comm, "\n\r");
 }
@@ -410,17 +372,17 @@ void Send_OSTrace(INT8U Comm){
             DPRINTF(Comm, "TASK ");
             car = OSTrace_snapshot[i]>>5;
             car = (car / 10) + 48;
-            putcharSer(Comm, car);
+            DPUTCHAR(Comm, car);
             car = OSTrace_snapshot[i]>>5;
             car = (car%10) + 48;
-            putcharSer(Comm, car);
-            putcharSer(Comm, ' ');
+            DPUTCHAR(Comm, car);
+            DPUTCHAR(Comm, ' ');
           #else
            if((OSTrace_snapshot[i]>>5) != (NUMBER_OF_TASKS+1))
            {
               TaskName = ContextTask[OSTrace_snapshot[i]>>5].TaskName;
               DPRINTF(Comm, TaskName);
-              putcharSer(Comm, ' ');
+              DPUTCHAR(Comm, ' ');
            }
           #endif  
             
@@ -459,10 +421,10 @@ void Send_OSTrace(INT8U Comm){
         DPRINTF(Comm, " - ");
     }   
     j += MAX_TRACE_LINE;
-    putcharSer(Comm, LF); 
+    DPUTCHAR(Comm, LF); 
   } while(j < MAX_DEPTH_TRACE);
 
-  putcharSer(Comm, CR);
+  DPUTCHAR(Comm, CR);
 
 }
 

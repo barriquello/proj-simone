@@ -538,7 +538,7 @@ static WCHAR LfnBuf[_MAX_LFN+1];
 #endif
 
 #ifdef _EXCVT
-static const BYTE ExCvt[] = _EXCVT;	/* Upper conversion table for extended characters */
+static CONST BYTE ExCvt[] = _EXCVT;	/* Upper conversion table for extended characters */
 #endif
 
 

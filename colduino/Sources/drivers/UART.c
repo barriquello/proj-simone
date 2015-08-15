@@ -30,6 +30,11 @@ OS_QUEUE SerialPortBuffer2;
 BRTOS_Queue *Serial2;
 #endif
 
+INT16U uart_get_baudrate_regval(INT16U baudrate)
+{
+	return (INT16U)(configCPU_CLOCK_HZ/baudrate/16);	
+}
+
 void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8U priority)
 {
 	
@@ -83,29 +88,7 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 			// 0x270 = 2400  bauds at 24Mhz     // 0x138 = 4800  bauds at 24Mhz
 			// 0x9C  = 9600  bauds at 24Mhz     // 0x4E  = 19200 bauds at 24Mhz
 			// 0x20  = 38400 bauds at 24Mhz     // 0x16  = 57600 bauds at 24Mhz
-			switch (baudrate)
-			{
-			case 2400:
-				SCI1BD = 0x270;
-				break;
-			case 4800:
-				SCI1BD = 0x138;
-				break;
-			case 9600:
-				SCI1BD = 0x9C;
-				break;
-			case 19200:
-				SCI1BD = 0x4E;
-				break;
-			case 38400:
-				SCI1BD = 0x20;
-				break;
-			case 57600:
-				SCI1BD = 0x16;
-				break;
-			default:
-				break;
-			}
+			SCI1BD = uart_get_baudrate_regval(baudrate);
 
 			/* SCI1C3: ORIE=1,NEIE=1,FEIE=1,PEIE=1 */
 			//SCI1C3 |= 0x0F; /* Enable error interrupts */
@@ -169,30 +152,8 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 
 			// 0x270 = 2400  bauds at 24Mhz     // 0x138 = 4800  bauds at 24Mhz
 			// 0x9C  = 9600  bauds at 24Mhz     // 0x4E  = 19200 bauds at 24Mhz
-			// 0x20  = 38400 bauds at 24Mhz     // 0x16  = 57600 bauds at 24Mhz
-			switch (baudrate)
-			{
-			case 2400:
-				SCI2BD = 0x270;
-				break;
-			case 4800:
-				SCI2BD = 0x138;
-				break;
-			case 9600:
-				SCI2BD = 0x9C;
-				break;
-			case 19200:
-				SCI2BD = 0x4E;
-				break;
-			case 38400:
-				SCI2BD = 0x20;
-				break;
-			case 57600:
-				SCI2BD = 0x16;
-				break;
-			default:
-				break;
-			}
+			// 0x20  = 38400 bauds at 24Mhz     // 0x16  = 57600 bauds at 24Mhz			
+			SCI2BD = uart_get_baudrate_regval(baudrate);
 
 			/* SCI1C3: ORIE=1,NEIE=1,FEIE=1,PEIE=1 */
 			SCI2C3 |= 0x0F; /* Enable error interrupts */

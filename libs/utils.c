@@ -25,7 +25,7 @@ void reverse(char s[])
 	}
 }
 
-#if 0
+
 uint32_t StringToInteger(char p[])
 {
 	uint32_t k = 0;
@@ -37,6 +37,7 @@ uint32_t StringToInteger(char p[])
 	return k;
 }
 
+#if 0
 /* conv inteiro n para string s */
 void IntToString(int n, char s[])
 {

@@ -101,6 +101,7 @@ static void m590_get_reply_print(void)
 	memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
 	at_m590_get_reply(gReceiveBuffer,(INT16U)sizeof(gReceiveBuffer)); 
 	PRINT_BUF(gReceiveBuffer); 
+	printSer(USE_USB,"\r\n");
 }
 
 static void m590_get_reply(void)
@@ -296,7 +297,16 @@ INT8U CreateSingleTCPLink(unsigned char iLinkNum,char *strServerIP,char *strPort
 	}
 	return TRUE;
 }
-									
+	
+#define CONST 
+CONST char m590_init_cmd[][11] = 
+{
+		"AT+CREG?\r\n ",
+		"AT+XISP=0\r\n",
+		"AT+XISP=0\r\n",
+		"AT+XIIC=1\r\n",
+		"AT+XIIC?\r\n "
+};
 m590_ret_t at_m590_init(void)
 {
 		
@@ -310,36 +320,29 @@ m590_ret_t at_m590_init(void)
 	/* check init */
 	m590_acquire();	
 	
-	m590_print("AT\r\n");	
-	GET_REPLY_PRINT();
-	printSer(USE_USB,"\r\n");
+	//m590_print("AT+CREG?\r\n");
+	m590_print(m590_init_cmd[0]);
+	GET_REPLY_PRINT();		
 	
-	m590_print("AT+CREG?\r\n");
+	//m590_print("AT+XISP=0\r\n");
+	m590_print(m590_init_cmd[1]);
 	GET_REPLY_PRINT();
-	printSer(USE_USB,"\r\n");	
-	
-	m590_print("AT+XISP=0\r\n");
-	GET_REPLY_PRINT();
-	printSer(USE_USB,"\r\n");	
 
 	m590_print(("AT+CGDCONT=1,\"IP\",\"" M590_APN "\"\r\n"));
 	GET_REPLY_PRINT();
-	printSer(USE_USB,"\r\n");
 
 	m590_print(("AT+XGAUTH=1,1,\"" M590_PWD "\",\"" M590_PWD "\"\r\n"));
 	GET_REPLY_PRINT();
-	printSer(USE_USB,"\r\n");	
 
-	m590_print("AT+XIIC=1\r\n");
-	GET_REPLY_PRINT();
-	printSer(USE_USB,"\r\n");	
-	
-	m590_print("AT+XIIC?\r\n");
+	//m590_print("AT+XIIC=1\r\n");
+	m590_print(m590_init_cmd[2]);
 	GET_REPLY_PRINT();
 	
-	m590_release();	
+	//m590_print("AT+XIIC?\r\n");
+	m590_print(m590_init_cmd[3]);
+	GET_REPLY_PRINT();
 	
-	printSer(USE_USB,"\r\n");
+	m590_release();		
 	
 	m590_state = M590_CLOSE;
 	return M590_OK;
@@ -400,6 +403,12 @@ m590_ret_t at_m590_open(void)
 	
 }
 
+#define M590_TESTE 1
+#if M590_TESTE		
+#define CONST 
+CONST char M590_SEND_STRING[] = "GET /input/post.json?json={p:3}&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n";
+CONST char M590_SEND_STRING2[] = "GET /monitor/set.json?monitorid=10&data=20,20,20,20&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n";
+#endif
 
 m590_ret_t at_m590_send(INT8U* dados)
 {
@@ -421,10 +430,7 @@ m590_ret_t at_m590_send(INT8U* dados)
 	{
 		result_ok = TRUE;
 		
-#if 1					
-	#define M590_SEND_STRING "GET /input/post.json?json={p:3}&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n"
-	#define M590_SEND_STRING2 "GET /monitor/set.json?monitorid=10&data=20,20,20,20&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n"
-		
+#if M590_TESTE						
 		TCPIP_SendData(M590_SEND_STRING);		
 #else	
 		if(dados != NULL)

@@ -953,12 +953,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
           NewDstName++;
         }
         
-        while(*CopyName)
-        {
-          *NewDstName = *CopyName;
-          CopyName++;
-          NewDstName++;
-        }               
+        strcpy(NewDstName,CopyName);
         
         if (f_open(&file_obj2, DstFileName, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
         {                
@@ -1105,6 +1100,7 @@ INT8U WriteUptimeLog(INT8U verbose)
   }
 }
 
+#include <ctype.h>
 
 INT8U file_name_verify(CHAR8 *pname1,CHAR8 *pname2, INT8U *pfile, INT8U num)
 {
@@ -1112,7 +1108,7 @@ INT8U file_name_verify(CHAR8 *pname1,CHAR8 *pname2, INT8U *pfile, INT8U num)
    INT8U j=0;
    INT8U number = num;
    INT8U test_caps = 0;
-   INT32U estado = NOME;   
+   INT8U estado = NOME;   
 
    while (num) 
    {   
@@ -1129,23 +1125,11 @@ INT8U file_name_verify(CHAR8 *pname1,CHAR8 *pname2, INT8U *pfile, INT8U num)
               case NOME:   //estado inicial, começa pelo nome do arquivo
                 if(*pfile!='.')//faz a leitura do nome até encontar o ponto ou o número máximo de caracteres estourar
                 {
-                   switch(*pfile)
+                   
+                   if (!isalnum(*pfile))
                    {
-                    case 0x5C:
-                    //case '/':
-                    case '?':
-                    case ':':
-                    case '*':
-                    case '"':
-                    case '>':
-                    case '<':
-                    case '|':
-                    return API_FILENAME_ERROR;
-                    break;
-                    
-                    default:
-                    break;
-                   }
+					  return API_FILENAME_ERROR;
+                   }    
                    
                    if (num == 1)*pname1=*pfile; //faz a leitura letra por letra
                    if (num == 2)*pname2=*pfile; //se existirem dois nomes de arquivo (caso rename) le o segundo arquivo após ler o primeiro 
@@ -1159,19 +1143,16 @@ INT8U file_name_verify(CHAR8 *pname1,CHAR8 *pname2, INT8U *pfile, INT8U num)
                       return API_FILENAME_ERROR; 
                    }
                    
-                   if ((number > 1) && (num == 2))
+                   if(*pfile==0x20)
                    {
-                      if(*pfile==0x20)
-                      {
-                        estado = FIM;
-                      }
-                   }
-                   else
-                   {
-                      if(*pfile==0x20)
-                      {
-                        return API_FILENAME_ERROR; 
-                      }                   
+					   if ((number > 1) && (num == 2))
+					   {                      
+						   estado = FIM;
+					   }
+					   else
+					   {                      
+						  return API_FILENAME_ERROR; 
+					   }
                    }
                                       
                    if(*pfile==0)
@@ -1197,23 +1178,10 @@ INT8U file_name_verify(CHAR8 *pname1,CHAR8 *pname2, INT8U *pfile, INT8U num)
                 case EXTENSAO:
                   if((*pfile!=0x20)&&(*pfile!=0))//verifica se não existe espaços ou caracteres incorretos
                   {
-                    switch(*pfile)
-                    {
-                      case 0x5C:
-                      //case '/':
-                      case '?':
-                      case ':':
-                      case '*':
-                      case '"':
-                      case '>':
-                      case '<':
-                      case '|':
-                        return API_FILENAME_ERROR;
-                      break;
-                    
-                      default:
-                      break;
-                    }                                        
+					if (!isalnum(*pfile))
+					{
+					  return API_FILENAME_ERROR;
+					}             
                     
                     if (num == 1)*pname1=*pfile;
                     if (num == 2)*pname2=*pfile;
@@ -1227,10 +1195,12 @@ INT8U file_name_verify(CHAR8 *pname1,CHAR8 *pname2, INT8U *pfile, INT8U num)
                     {                    	
                         if (num == 1)*pname1=0;
                         if (num == 2)*pname2=0;
-                    }
-                    if(j>=4) //se a extensão for maior do que três caracteres retorna erro
+                    }else
                     {
-                      return API_FILENAME_ERROR; 
+						if(j>=4) //se a extensão for maior do que três caracteres retorna erro
+						{
+						  return API_FILENAME_ERROR; 
+						}
                     }
                   }
                   else

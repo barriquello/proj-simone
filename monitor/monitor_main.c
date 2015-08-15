@@ -325,6 +325,8 @@ uint8_t build_data_vector(char* ptr_data, uint8_t *data, uint8_t len)
 #endif
 
 
+//#define strtoul(a,b,c) StringToInteger(a)
+
 static int callback_inifile(const char *section, const char *key, const char *value, const void *userdata)
 {
   
@@ -339,7 +341,9 @@ static int callback_inifile(const char *section, const char *key, const char *va
 
 		if(strcmp(key,"num_monitores") == 0)
 		{
-			num_monitores = (uint8_t)strtoul(value,NULL,0);
+			//num_monitores = (uint8_t)strtoul(value,NULL,0);
+			num_monitores = (uint8_t)StringToInteger((char*)value);
+			
 			if(num_monitores > MAX_NUM_OF_MONITORES)
 			{
 				PRINTF("Erro: num_monitores superior ao suportado\n\r.");
@@ -378,7 +382,7 @@ static int callback_inifile(const char *section, const char *key, const char *va
 		/* configura monitores */
 		if(strcmp(key,"id") == 0)
 		{
-			monitor_state[mon_cnt].config_h.mon_id = (uint8_t)strtoul(value,NULL,0);
+			monitor_state[mon_cnt].config_h.mon_id = (uint8_t)StringToInteger(value); //strtoul(value,NULL,0);
 			++field_cnt;
 		}
 
@@ -389,7 +393,7 @@ static int callback_inifile(const char *section, const char *key, const char *va
 		}
 		if(strcmp(key,"codigo") == 0)
 		{
-			monitor_state[mon_cnt].codigo =  (uint8_t)strtoul(value,NULL,0);
+			monitor_state[mon_cnt].codigo =  (uint8_t)StringToInteger((char*)value); //strtoul(value,NULL,0);
 			++field_cnt;
 		}
 		if(strcmp(key,"nome") == 0)
@@ -399,13 +403,13 @@ static int callback_inifile(const char *section, const char *key, const char *va
 		}
 		if(strcmp(key,"intervalo") == 0)
 		{
-			monitor_state[mon_cnt].config_h.time_interv = (uint16_t)strtoul(value,NULL,0);
+			monitor_state[mon_cnt].config_h.time_interv = (uint16_t)StringToInteger((char*)value); //strtoul(value,NULL,0);
 			++field_cnt;
 		}
 
 		if(strcmp(key,"tamanho") == 0)
 		{
-			monitor_state[mon_cnt].config_h.entry_size = (uint16_t)strtoul(value,NULL,0);
+			monitor_state[mon_cnt].config_h.entry_size = (uint16_t)StringToInteger((char*)value); //strtoul(value,NULL,0);
 			++field_cnt;
 		}
 		if(field_cnt == NUM_OF_FIELDS)

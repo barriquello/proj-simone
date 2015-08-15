@@ -54,6 +54,14 @@ void putchar_terminal(char c)
 {
     while(c != (char)putch(c)){};
 }
+
+
+void getchar_terminal(char *c)
+{    
+	INT8U data;
+	(void)OSQueuePend(USB, &data, 0);
+	*c=(char)data;
+}
 /*****************************************************************************
  * Name:
  *    print
@@ -224,7 +232,7 @@ static void term_cmd_help(char *param)
 *****************************************************************************/
 static void term_print_prompt(void)
 {
-  printf_usb("\r\n>");
+  printf_terminal("\r\n>");
 }
 
 /*****************************************************************************
@@ -244,7 +252,7 @@ static void term_print_prompt(void)
 *****************************************************************************/
 static void term_print_greeting(void)
 {
-  printf_usb("CDC Virtual Comm Demo.\r\n");
+	printf_terminal("CDC Virtual Comm Demo.\r\n");
 }
 
 /*****************************************************************************
@@ -324,71 +332,44 @@ void terminal_init(unsigned char (*putch_)(char))
 *****************************************************************************/
 void terminal_process(void)
 {
-  unsigned char data;
   char c;
   static char skip_mode = 0;
   
   while(1)
   {
-	(void)OSQueuePend(USB, &data, 0);
-	c=(char)data;
-    
+	
+	getchar_terminal(&c);
 #if 0	
-    if ((c != '\n') && (c != '\r'))
-    {
-      if (c != 0x7F) // DEL
-      {
-    	  if (SilentMode == FALSE)
-    	  {
-    		  while(c!=(char)(*putch)(c)){};
-    	  }
-      }else
-      {
-        if (term_cmd_line_ndx)
-        {
-          while(c!=(char)(*putch)(c)){};
-        }
-      }
-    }
-#else
     switch(c)
     {
     	case '\n':
     		break;
     	case '\r':
-#if 0      		
-    		if(skip_mode == 1 && SilentMode == FALSE)
-    		{
-				while(c!=(char)(*putch)(c)){};				
-				c='\n';
-				while(c!=(char)(*putch)(c)){};
-				c='\r';		
-    		}
-#endif	    		
     		break;
     	case 0x7F: //DEL
     		if (term_cmd_line_ndx)
 			{
 			  while(c!=(char)(*putch)(c)){};
 			}
-    		break;
-#if 0      		
-    	case '"':
-    		if(skip_mode == 0)
-    		{
-    			skip_mode = 1;
-    		}else
-    		{
-    			skip_mode = 0;
-    		}
-#endif    		
+    		break;  		
     	default:
       	  if (SilentMode == FALSE)
       	  {
       		  while(c!=(char)(*putch)(c)){};
-      	  }
-    		
+      	  }    		
     }
+#else
+	  if (SilentMode == FALSE)
+	  {
+		  if(c !='\n' && c!='\r')
+		  {
+			  if(c != 0x7F || term_cmd_line_ndx) //DEL
+			  {
+				  while(c!=(char)(*putch)(c)){};
+			  }			  
+		  }
+	  } 
+    
 #endif
         
     
@@ -409,7 +390,7 @@ void terminal_process(void)
       /* Command not found. */
       if (term_x == -1)
       {
-        printf_usb("\r\nUnknown command!\r\n");
+        printf_terminal("\r\nUnknown command!\r\n");
       }
       else
       {
@@ -446,13 +427,7 @@ void terminal_process(void)
               }
           }else
           {
-              term_cmd_line[term_cmd_line_ndx++]=c;
-#if 0              
-              if(c=='\r')
-              {
-            	  term_cmd_line[term_cmd_line_ndx++]='\n';  
-              }
-#endif              
+              term_cmd_line[term_cmd_line_ndx++]=c;             
           }
       }
     }    
