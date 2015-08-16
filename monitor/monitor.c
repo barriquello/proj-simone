@@ -46,7 +46,7 @@ char buffer_erro[256];
 #define error_file		"erro.txt"
 #include <stdarg.h>
 /*-----------------------------------------------------------------------------------*/
-void print_erro(char *format, ...)
+void print_erro(const char *format, ...)
 {
 
   va_list argptr;

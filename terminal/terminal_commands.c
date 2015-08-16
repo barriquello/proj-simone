@@ -708,7 +708,7 @@ CONST command_t echo_stdout_cmd = {
 };
 
 
-void echo_post(INT8U * dados, INT8U len)
+void echo_post(const INT8U * dados, INT8U len)
 {
 	while(len>0)
 	{
@@ -735,9 +735,9 @@ void echo (char *string, char Terminalbackup)
     }
     
     SetSilentMode(TRUE);
-    echo_post(command_start,strlen(command_start));
-    echo_post(string,strlen(string));
-    echo_post(command_end,strlen(command_end));
+    echo_post(command_start,(INT8U)strlen(command_start));
+    echo_post(string,(INT8U)strlen(string));
+    echo_post(command_end,(INT8U)strlen(command_end));
     
     if (Terminalbackup == TRUE)
     {		
@@ -776,7 +776,7 @@ void term_cmd_esp(char *param)
 			at_esp_send(NULL);
 			break;
 		default:
-			printf_terminal(cmd_esp_help);
+			printf_terminal((char*)cmd_esp_help);
 	}
 }
 
@@ -823,7 +823,7 @@ void term_cmd_m590(char *param)
 		case '8': at_m590_dns(param);
 			break;	
 		default:
-			printf_terminal(cmd_m590_help);
+			printf_terminal((char*)cmd_m590_help);
 	}
 	param[0] = 0;
 }

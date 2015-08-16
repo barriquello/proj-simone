@@ -138,6 +138,9 @@
 									<listOptionValue builtIn="false" value="modbus_slaves/modbus_slave_null.c"/>
 								</option>
 								<option id="com.freescale.coldfire.toolchain.linker.base.generateList.1355151461" name="Generate Listing File" superClass="com.freescale.coldfire.toolchain.linker.base.generateList" value="true" valueType="boolean"/>
+								<option id="com.freescale.coldfire.toolchain.linker.base.generateLinkMap.unusedObjs.1201179257" name="Generate Link Map - List Unused Objects" superClass="com.freescale.coldfire.toolchain.linker.base.generateLinkMap.unusedObjs" value="true" valueType="boolean"/>
+								<option id="com.freescale.coldfire.toolchain.linker.base.generateLinkMap.closure.1758000247" name="Generate Link Map - Show Transitive Closure" superClass="com.freescale.coldfire.toolchain.linker.base.generateLinkMap.closure" value="true" valueType="boolean"/>
+								<option id="com.freescale.coldfire.toolchain.linker.base.input.lfile.461653238" name="Library Files (-l+file)" superClass="com.freescale.coldfire.toolchain.linker.base.input.lfile" valueType="libs"/>
 								<inputType id="com.freescale.coldfire.toolchain.linker.base.input.1991355322" name="Linker Input" superClass="com.freescale.coldfire.toolchain.linker.base.input">
 									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
@@ -155,6 +158,13 @@
 									<listOptionValue builtIn="false" value="../../freemodbus/modbus/tcp"/>
 									<listOptionValue builtIn="false" value="../../freemodbus/modbus/ascii"/>
 									<listOptionValue builtIn="false" value="../../devices"/>
+									<listOptionValue builtIn="false" value="../../freemodbus/port"/>
+									<listOptionValue builtIn="false" value="../../modbus_master"/>
+									<listOptionValue builtIn="false" value="../../libs"/>
+									<listOptionValue builtIn="false" value="../../monitor"/>
+									<listOptionValue builtIn="false" value="../../monitor/pt"/>
+									<listOptionValue builtIn="false" value="../../simon-api"/>
+									<listOptionValue builtIn="false" value="../../terminal"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Headers&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/USB/app/msd&quot;"/>
@@ -174,13 +184,6 @@
 									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_Runtime/Runtime_ColdFire/Source&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/derivatives/device/include&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/derivatives/device/asm_include&quot;"/>
-									<listOptionValue builtIn="false" value="../../freemodbus/port"/>
-									<listOptionValue builtIn="false" value="../../modbus_master"/>
-									<listOptionValue builtIn="false" value="../../libs"/>
-									<listOptionValue builtIn="false" value="../../monitor"/>
-									<listOptionValue builtIn="false" value="../../monitor/pt"/>
-									<listOptionValue builtIn="false" value="../../simon-api"/>
-									<listOptionValue builtIn="false" value="../../terminal"/>
 								</option>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sdata.456667483" name="Use .sdata/.sbiss for (byte in integer between -1..32K)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sdata" value="0" valueType="string"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.input.include.system.1788546878" name="System Path (-I- -I)" superClass="com.freescale.coldfire.toolchain.compiler.base.input.include.system"/>
@@ -191,6 +194,8 @@
 								<option id="com.freescale.coldfire.toolchain.compiler.base.options.optLevel.1830335566" name="Optimization Level (-opt)" superClass="com.freescale.coldfire.toolchain.compiler.base.options.optLevel" value="com.freescale.coldfire.toolchain.compiler.base.optionCategory.optimization.optlevel.3" valueType="enumerated"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sche.2012111504" name="Instruction Scheduling (-scheduling)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sche" value="true" valueType="boolean"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.options.inlining.1696580601" name="Inlining" superClass="com.freescale.coldfire.toolchain.compiler.base.options.inlining" value="com.freescale.coldfire.toolchain.compiler.base.options.inline.off" valueType="enumerated"/>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.debugging.nostdinc.1893855445" name="Do not use MWCIncludes variable (-nostdinc)" superClass="com.freescale.coldfire.toolchain.compiler.base.debugging.nostdinc" value="true" valueType="boolean"/>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.debugging.c.1523212667" name="Compile Only, Do Not Link (-c)" superClass="com.freescale.coldfire.toolchain.compiler.base.debugging.c" value="false" valueType="boolean"/>
 								<inputType id="com.freescale.coldfire.toolchain.compiler.base.input.1268974395" name="C Source File" superClass="com.freescale.coldfire.toolchain.compiler.base.input"/>
 								<inputType id="com.freescale.coldfire.toolchain.compiler.base.input.c++.2093161631" name="C++ Source File" superClass="com.freescale.coldfire.toolchain.compiler.base.input.c++"/>
 							</tool>
@@ -213,7 +218,7 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="terminal|simon-api|monitor|libs|modbus_master|devices|app|minINI|modbus_slaves|modbus_master_lib|FatFs|freemodbus|CodeWarrior_CFV1|Sources/colduino_gprs/FatFS/option/cc932.c|Sources/colduino_gprs/FatFS/bkp|Sources/colduino_gprs/FatFS/option/cc949.c|Sources/minINI/test.c|Sources/colduino_gprs/FatFS/option/cc950.c|Sources/colduino_gprs/libmodbus/modbus.c|Sources/minINI/minGlue-efsl.h|Sources/minINI/minIni.c|Sources/FatFS/option/cc936.c|Sources/colduino_gprs/libmodbus/tests/unit-test-master.c|Sources/minINI/minGlue-mdd.h|Sources/FatFS/option/cc932.c|hal|Sources/colduino_gprs/FatFS/option/ccsbcs.c|Sources/FatFS/option/cc949.c|Sources/colduino_gprs/FatFS/option/unicode.c|Sources/colduino_gprs/libmodbus/modbus-tcp-private.h|Sources/freemodbus/modbus|Sources/minINI/minGlue-stdio.h|core|Sources/minINI/minGlue.h|Sources/minINI/minGlue-ccs.h|xmacro|Sources/minINI/minIni.h|Sources/colduino_gprs/libmodbus/tests/unit-test-slave.c|Sources/FatFS/option/cc950.c|Sources/minINI/minGlue-ffs.h|Sources/minINI/minGlue-FatFs.h|Sources/FatFS/option/syscall.c|Sources/colduino_gprs/FatFS/option/syscall.c|lc|Sources/FatFS/option/unicode.c|Sources/FatFS/option/ccsbcs.c|Sources/colduino_gprs/FatFS/option/cc936.c|Sources/colduino_gprs/libmodbus/modbus-tcp.h|Sources/colduino_gprs/libmodbus/modbus-tcp.c|Sources/minINI/wxMinIni.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="EWL_C|terminal|simon-api|monitor|libs|modbus_master|devices|app|minINI|modbus_slaves|modbus_master_lib|FatFs|freemodbus|CodeWarrior_CFV1|Sources/colduino_gprs/FatFS/option/cc932.c|Sources/colduino_gprs/FatFS/bkp|Sources/colduino_gprs/FatFS/option/cc949.c|Sources/minINI/test.c|Sources/colduino_gprs/FatFS/option/cc950.c|Sources/colduino_gprs/libmodbus/modbus.c|Sources/minINI/minGlue-efsl.h|Sources/minINI/minIni.c|Sources/FatFS/option/cc936.c|Sources/colduino_gprs/libmodbus/tests/unit-test-master.c|Sources/minINI/minGlue-mdd.h|Sources/FatFS/option/cc932.c|hal|Sources/colduino_gprs/FatFS/option/ccsbcs.c|Sources/FatFS/option/cc949.c|Sources/colduino_gprs/FatFS/option/unicode.c|Sources/colduino_gprs/libmodbus/modbus-tcp-private.h|Sources/freemodbus/modbus|Sources/minINI/minGlue-stdio.h|core|Sources/minINI/minGlue.h|Sources/minINI/minGlue-ccs.h|xmacro|Sources/minINI/minIni.h|Sources/colduino_gprs/libmodbus/tests/unit-test-slave.c|Sources/FatFS/option/cc950.c|Sources/minINI/minGlue-ffs.h|Sources/minINI/minGlue-FatFs.h|Sources/FatFS/option/syscall.c|Sources/colduino_gprs/FatFS/option/syscall.c|lc|Sources/FatFS/option/unicode.c|Sources/FatFS/option/ccsbcs.c|Sources/colduino_gprs/FatFS/option/cc936.c|Sources/colduino_gprs/libmodbus/modbus-tcp.h|Sources/colduino_gprs/libmodbus/modbus-tcp.c|Sources/minINI/wxMinIni.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CodeWarrior_CFV1"/>
 						<entry excluding="option/unicode.c|option/ccsbcs.c|option/cc950.c|option/cc949.c|option/cc936.c|option/cc932.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="FatFs"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="app"/>
@@ -244,6 +249,9 @@
 	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
 	<storageModule moduleId="scannerConfiguration">
 		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="com.freescale.coldfire.toolchain.configuration.116853397;com.freescale.coldfire.toolchain.configuration.116853397.;com.freescale.coldfire.toolchain.compiler.debug.940251024;com.freescale.coldfire.toolchain.compiler.base.input.1268974395">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.freescale.coldfire.cdt.c.symbols.toolchain.discoveryProfile"/>
+		</scannerConfigBuildInfo>
 		<scannerConfigBuildInfo instanceId="com.freescale.coldfire.toolchain.configuration.116853397;com.freescale.coldfire.toolchain.configuration.116853397.;com.freescale.coldfire.toolchain.compiler.debug.940251024;com.freescale.coldfire.toolchain.compiler.base.input.c++.2093161631">
 			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.freescale.coldfire.cdt.cpp.symbols.toolchain.discoveryProfile"/>
 			<profile id="com.freescale.coldfire.cdt.cpp.symbols.toolchain.discoveryProfile">
@@ -266,9 +274,6 @@
 					<parser enabled="true"/>
 				</scannerInfoProvider>
 			</profile>
-		</scannerConfigBuildInfo>
-		<scannerConfigBuildInfo instanceId="com.freescale.coldfire.toolchain.configuration.116853397;com.freescale.coldfire.toolchain.configuration.116853397.;com.freescale.coldfire.toolchain.compiler.debug.940251024;com.freescale.coldfire.toolchain.compiler.base.input.1268974395">
-			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="com.freescale.coldfire.cdt.c.symbols.toolchain.discoveryProfile"/>
 		</scannerConfigBuildInfo>
 	</storageModule>
 </cproject>

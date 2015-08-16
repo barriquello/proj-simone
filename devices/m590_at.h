@@ -36,7 +36,7 @@
 	#endif
 	#define	M590_UART_PINS 		UART1_PTD6_PTD7
 	#define M590_UART_MUTEX		UART1_MUTEX
-	#define m590_print(x)		printSer(USE_UART1,x);
+	#define m590_print(x)		printSer(USE_UART1,(char*)x);
 	#define m590_putchar(x)		putcharSer(USE_UART1,x)
 	extern BRTOS_Queue 			*Serial1;
 	#define M590_QUEUE			Serial1

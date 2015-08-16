@@ -50,6 +50,7 @@ unsigned char TerminalBackup(char *backup);
 
 extern void printf_terminal(char *s);
 extern void putchar_terminal(char c);
+extern void getchar_terminal(char *c);
 
 #ifdef __cplusplus
 }

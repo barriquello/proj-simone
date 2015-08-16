@@ -86,7 +86,7 @@
 		<link>
 			<name>terminal</name>
 			<type>2</type>
-			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/terminal</locationURI>
+			<locationURI>PARENT-1-PROJECT_LOC/terminal</locationURI>
 		</link>
 	</linkedResources>
 </projectDescription>

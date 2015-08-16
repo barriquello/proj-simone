@@ -1,3 +1,26 @@
+/* The License
+ * 
+ * Copyright (c) 2015 Universidade Federal de Santa Maria
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+
+*/
 #include "BRTOS.h"
 #include "drivers.h"
 #include "tasks.h"
@@ -8,17 +31,17 @@ extern "C"
 #endif
 
 /******************************************************************************
- * @file main_app.c
- * @author Carlos H. Barriquello
- * @brief   This software is the main entry of the project
+ * \file main_app.c
+ * \author Carlos H. Barriquello
+ * \brief   This software is the main entry of the project
  *****************************************************************************/
 
 
 /******************************************************************************
- * @name        main_app
- * @brief       This function initializes the system and installs the application tasks
- * @param       None
- * @return      None
+ * \name        main_app
+ * \brief       This function initializes the system and installs the application tasks
+ * \param       None
+ * \return      None
  *****************************************************************************/
 
 void main_app(void)
@@ -31,17 +54,20 @@ void main_app(void)
 
 	/* Init BRTOS system */
 	BRTOS_Init();
+	
+	/* Init LED onboard */
+	led_onboard_init();	
 
-	/* Install task for keeping system clock time */
+	/* Install task for keeping system clock, date and time */
 	if (InstallTask(&System_Time, "System Time", 256+64, 31, NULL) != OK)
 	{
-		while (1){};
+		sleep_forever();
 	};
 	
 #if 1	
 	if (InstallTask(&main_monitor, "Monitors", 1024+512, 10, NULL) != OK)
 	{
-		while (1){};
+		sleep_forever();
 	};
 #endif	
 
@@ -109,9 +135,9 @@ void main_app(void)
 
 
 #if (USB_CLASS_TYPE == BRTOS_USB_CDC)
-	if (InstallTask(&Terminal_Task, "USB Terminal Task", 1024, 15, NULL) != OK)
+	if (InstallTask(&Terminal_Task, "Terminal", 1024, 15, NULL) != OK)
 	{
-		while (1){};
+		sleep_forever();
 	};
 #endif
 #endif
@@ -138,4 +164,57 @@ void main_app(void)
 	};
 #endif	
 }
+
+/* function to handle any system error */
+#ifndef _WIN32
+#include "led_onboard.h"
+#endif
+
+void sleep_forever(void)
+{
+
+	while(1)
+	{
+		#ifndef _WIN32
+			/* sleep forever */
+			led_onboard_on();
+			DelayTask(500); 
+			led_onboard_off();
+			DelayTask(500);
+		#endif
+	}
+}
+
+
+/* function to handle printf/scanf */
+#ifndef _WIN32
+
+#include "terminal.h"
+
+void InitializeUART(void);
+void WriteUARTN(char c);
+char ReadUARTN(void);
+
+void InitializeUART(void)
+{
+		
+}
+
+
+void WriteUARTN(char c)
+{
+	putchar_terminal(c);	
+}
+
+
+char ReadUARTN(void)
+{
+	char c;
+	getchar_terminal(&c);
+	return c;
+}
+#endif
+
+
+
 

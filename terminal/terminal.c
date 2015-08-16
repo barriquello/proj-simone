@@ -36,7 +36,7 @@ static int  term_find_command(char *name);
 /*****************************************************************************
  * Module variables.
  *****************************************************************************/
-static CONST command_t term_help_cmd = {
+static const command_t term_help_cmd = {
   "help", term_cmd_help, "Help of commands"
 };
 
@@ -157,8 +157,11 @@ int term_find_word(char *term_cmd_line, int start)
  * Assumptions:
  *    --
  *****************************************************************************/
+#include "string.h"
 int term_cmp_str(char *a, char *b)
 {
+  
+#if 0	
   int x=0;
   do
   {
@@ -170,6 +173,10 @@ int term_cmp_str(char *a, char *b)
   } while(a[x] != '\0' && b[x] != '\0');
 
   return(a[x]==b[x] ? 1 : 0);
+#else
+  return ((strcmp(a,b) == 0) ? 1 : 0);
+#endif  
+  
 }
 
 

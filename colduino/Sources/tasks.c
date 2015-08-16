@@ -1,21 +1,26 @@
-/*********************************************************************************************************
- *                                               BRTOS
- *                                Brazilian Real-Time Operating System
- *                            Acronymous of Basic Real-Time Operating System
- *
- *                              
- *                                  Open Source RTOS under MIT License
- *
- *
- *
- *                                              OS Tasks
- *
- *
- *   Author:   Gustavo Weber Denardin
- *   Revision: 1.0
- *   Date:     20/03/2009
- *
- *********************************************************************************************************/
+/* The License
+ * 
+ * Copyright (c) 2015 Universidade Federal de Santa Maria
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+
+*/
 
 #include "BRTOS.h"
 #include "printf_lib.h"
@@ -27,9 +32,7 @@
 #include "terminal_commands.h"
 #include "led_onboard.h"
 
-
-#pragma warn_implicitconv off
-
+/* Task to keep system date and time */
 void System_Time(void)
 {
 
@@ -40,7 +43,6 @@ void System_Time(void)
 	OSResetTime();
 
 	/* LED onboard ON */
-	led_onboard_init();	
 	led_onboard_on();
 	
 	#if RTC_PRESENTE
@@ -70,7 +72,7 @@ void System_Time(void)
 		{
 			milis = 0;
 			
-			/* Update time and calendar */
+			/* update time and calendar */
 			OSUpdateUptime();
 			OSUpdateCalendar();
 			
@@ -109,20 +111,21 @@ void Mass_Storage_Device_Task(void)
 
 #if (USB_CLASS_TYPE == BRTOS_USB_CDC)
 
-#define TERM_UART1  1
-#define TERM_UART2  1
-
 #define TERM1_PINS   UART1_PTA1_PTA2
 //#define TERM2_PINS   UART2_PTE5_PTE6
 #define TERM2_PINS   UART2_PTF1_PTF2
 
+/* Task to process terminal commands */
 void Terminal_Task(void)
 {
 	/* task setup */
-	(void) CDC_Init(); /* Initialize the USB CDC Application */
+	
+	/* Init the USB CDC Application */
+	(void) CDC_Init(); 
 	terminal_init(cdc_putch);
 	
-#if TERM_UART1
+	/* Init the UART 1 */
+#if ENABLE_UART1
 	#define UART1_BUFSIZE	256
 	#if UART1_MUTEX	
 		uart_init(1,9600,UART1_BUFSIZE,TRUE,UART1_MUTEX_PRIO);
@@ -131,7 +134,8 @@ void Terminal_Task(void)
 	#endif
 #endif		
 	
-#if TERM_UART2
+	/* Init the UART 2 */
+#if ENABLE_UART2
 	#define UART2_BUFSIZE	256
 	#if UART2_MUTEX		
 		uart_init(2,9600,UART2_BUFSIZE,TRUE,UART2_MUTEX_PRIO);
@@ -141,6 +145,7 @@ void Terminal_Task(void)
 
 #endif	
 
+	/* Add terminal commands */
 	(void) terminal_add_cmd((command_t*) &ver_cmd);
 	(void) terminal_add_cmd((command_t*) &top_cmd);
 	(void) terminal_add_cmd((command_t*) &rst_cmd);
@@ -164,7 +169,7 @@ void Terminal_Task(void)
 
 	while (1)
 	{
-		/* Call the application task */
+		/* process incoming terminal commands */
 		terminal_process();
 	}
 }

@@ -15,6 +15,7 @@
 #include "AD_keyboard.h"
 #include "ACM_keyboard.h"
 #include "timer2.h"
+#include "led_onboard.h"
 //#include "disk.h"
 //#include "lcd.h"
 //#include "sound_driver.h"

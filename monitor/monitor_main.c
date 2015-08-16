@@ -1,9 +1,8 @@
 /*
  ============================================================================
- Name        : monitor_main.c
- Author      : Carlos H. Barriquello
- Version     :
- Description : Data logger
+ \file   monitor_main.c
+ \author Carlos H. Barriquello
+ \brief  Datalogger monitor
  ============================================================================
 
  - Arquivo de log local
@@ -125,19 +124,14 @@ monitor_config_ok_t config_check;
 #define CONST const
 #endif
 
-CONST char config_error_msg[7][60] = 
+CONST char monitor_error_msg[2][24] = 
 {
-	"Config Erro: faltando num_monitores ou maior que %d \n\r. ",
-	"Config Erro: faltando simon server \n\r.                  ",
-	"Config Erro: faltando apikey \n\r.                        ",
-	"Config Erro: faltando gprs server \n\r.                   ",
-	"Monitor erro: %d, modbus slave não suportado \r\n         ",
-	"Monitor erro: %d, entrada analógica não suportada \r\n    ",
-	"Monitor erro: %d, tipo não suportado\r\n                  ",
+	"Config erro: faltando  ",
+	"Monitor erro: %d       "	
 };
 /*---------------------------------------------------------------------------*/
 /*
- * Finally, the implementation of the simple timer library follows.
+ * Timer library
  */
 
 #ifdef _WIN32
@@ -148,13 +142,6 @@ CONST char config_error_msg[7][60] =
 #include "time_lib.h"
 #include "utils.h"
 #endif
-
-/*---------------------------------------------------------------------------*/
-/*
- * The following definitions are just for the simple timer library
- * used in this example. The actual implementation of the functions
- * can be found at the end of this file.
- */
 
 /*---------------------------------------------------------------------------*/
 void sleep_forever(void);
@@ -344,7 +331,8 @@ static int callback_inifile(const char *section, const char *key, const char *va
 			
 			if(num_monitores > MAX_NUM_OF_MONITORES)
 			{
-				PRINTF("Erro: num_monitores superior ao suportado\n\r.");
+				print_erro(monitor_error_msg[0]);
+				PRINTF("num_monitores superior ao suportado\n\r.");
 			}else
 			{
 				config_check.bit.num_mon_ok=1;
@@ -426,26 +414,27 @@ static void config_check_erro(void)
 	int erro = 0;
 	if(config_check.bit.num_mon_ok == 0)
 	{
-		//print_erro("Config Erro: faltando num_monitores ou maior que %d \n\r.", MAX_NUM_OF_MONITORES);
-		print_erro(config_error_msg[1], MAX_NUM_OF_MONITORES);
+		print_erro(monitor_error_msg[0]);
+		print_erro("num_monitores ou maior que %d \n\r.", MAX_NUM_OF_MONITORES);
 		erro++;
 	}
 	if(config_check.bit.server_ok == 0)
 	{
-		//print_erro("Config Erro: faltando simon server \n\r.");
-		print_erro(config_error_msg[2]);
+		
+		print_erro(monitor_error_msg[0]);
+		print_erro("simon server \n\r.");
 		erro++;
 	}
 	if(config_check.bit.key_ok == 0)
 	{
-		//print_erro("Config Erro: faltando apikey \n\r.");
-		print_erro(config_error_msg[3]);
+		print_erro(monitor_error_msg[0]);
+		print_erro("apikey \n\r.");
 		erro++;
 	}
 	if(config_check.bit.gprs_apn_ok == 0)
 	{
-		//print_erro("Config Erro: faltando gprs server \n\r.");
-		print_erro(config_error_msg[4]);
+		print_erro(monitor_error_msg[0]);
+		print_erro("gprs server \n\r.");		
 	}
 	if (erro)
 	{
@@ -468,34 +457,27 @@ extern CONST modbus_slave_t * modbus_slaves_all[];
 void main_monitor(void)
 {
 
+	uint8_t monitor_num = 0;
+	
 #ifdef _WIN32
 	struct timeb start, end;
 	uint16_t diff;
 #else
-	INT8U status = 0;
+	uint8_t status = 0;
 #endif	
-	
-	uint8_t monitor_num = 0;
 	  
-#ifdef _WIN32	
-	  PT_INIT(&monitor_input_pt);
-#endif
-
+#if _WIN32	
+	PT_INIT(&monitor_input_pt);
 	PRINTF("help:\r\nq-quit\r\np-stop logger\r\nc-continue logger\r\ns-synch\r\nu-start upload\r\nv-stop upload\r\n");
-
-#ifdef _WIN32
 	ftime(&start);
-#endif	
-
-#if _WIN32
+	
 	struct tm t;
 	http_get_time(&t);
 	printf ("Current local time and date: %s", asctime(&t));
 	fflush(stdout);
 #endif
 
-#ifndef _WIN32	
-	
+#ifndef _WIN32		
 		/* Detect and init the SD card */
 		while(SDCard_ResourceInit(SDCARD_MUTEX_PRIORITY) == NULL)
 		{
@@ -508,18 +490,19 @@ void main_monitor(void)
 		} while (status != SD_OK);
 #endif		
 		
-	
+	/* Read config.ini file and check configuration */
 	config_check.byte = 0;
 	ini_browse(callback_inifile, NULL, config_inifile);
-	config_check_erro(); /* verifica configuracao */
+	config_check_erro();
 
+	/* init monitors */
 	monitores_em_uso = 0;
 	for (monitor_num = 0; monitor_num < num_monitores; monitor_num++)
 	{		
 		if(	monitor_state[monitor_num].state == UNUSED
 			|| monitor_init(monitor_num) != OK)
 		{
-			print_erro("Log init erro: %d", monitor_num);
+			print_erro(monitor_error_msg[1], monitor_num);
 			sleep_forever();
 		}
 		
@@ -533,9 +516,9 @@ void main_monitor(void)
 				
 			}else
 			{
-				modbus_slave_erro:
-				//print_erro("Monitor erro: %d, modbus slave não suportado \r\n", monitor_num);
-				print_erro(config_error_msg[5], monitor_num);
+				modbus_slave_erro:				
+				print_erro(monitor_error_msg[1], monitor_num);
+				print_erro("modbus slave não suportado \r\n");
 				sleep_forever();
 			}
 		}
@@ -543,14 +526,14 @@ void main_monitor(void)
 		if(monitor_state[monitor_num].tipo == 'A')
 		{
 			analog_input_erro:
-			//print_erro("Monitor erro: %d, entrada analógica não suportada \r\n", monitor_num);
-			print_erro(config_error_msg[6], monitor_num);
+			print_erro(monitor_error_msg[1], monitor_num);
+			print_erro("entrada analógica não suportada \r\n");
 			sleep_forever();	
 		}
 		else
 		{
-			//print_erro("Monitor erro: %d, tipo não suportado\r\n", monitor_num);
-			print_erro(config_error_msg[7], monitor_num);
+			print_erro(monitor_error_msg[1], monitor_num);
+			print_erro("tipo não suportado\r\n");
 			sleep_forever();
 		}			
 		
@@ -626,43 +609,4 @@ void main_monitor(void)
 	return;
 
 }
-
-void sleep_forever(void)
-{
-
-	while(1)
-	{
-		#ifndef _WIN32
-			/* sleep forever */
-			DelayTask(1000);
-		#endif
-	}
-}
-
-
-#if 1
-
-void InitializeUART(void);
-void WriteUARTN(char c);
-char ReadUARTN(void);
-
-void InitializeUART(void)
-{
-		
-}
-
-
-void WriteUARTN(char c)
-{
-	(void)c;
-	
-}
-
-
-char ReadUARTN(void)
-{
-	return 0;
-}
-#endif
-
 

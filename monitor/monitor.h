@@ -109,7 +109,7 @@ static int monitor_rename(TCHAR *source, const TCHAR *dest)
 #define NULL  (void*)0
 #endif
 
-void	print_erro(char *format, ...);
+void	print_erro(const char *format, ...);
 
 #define LOG_HEADER_LEN		 50
 #define LOG_MAX_ENTRY_SIZE   256

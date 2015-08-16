@@ -23,8 +23,8 @@
 #ifndef _PORT_H
 #define _PORT_H
 
-//#include <assert.h>
-#define assert(x) while(!(x)){}
+#include "assert.h"
+//#define assert(x) while(!(x)){}
 
 #include "BRTOS.h"
 #include "drivers.h"

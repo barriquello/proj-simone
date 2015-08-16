@@ -40,6 +40,16 @@ static INT8U gReceiveBuffer[256];
 
 #define UNUSED(x)   (void)x;
 
+#define CONST const
+CONST char *m590_init_cmd[]= 
+{
+		"AT+CREG?\r\n",
+		"AT+XISP=0\r\n",
+		"AT+XIIC=1\r\n",
+		"AT+XIIC?\r\n",
+		"AT+IPSTATUS=0\r"
+};
+
 static void at_m590_print_reply(void)
 {
 	INT8U c;
@@ -126,7 +136,7 @@ INT8U CreatePPP(void)
 	do
 	{  
 		timeout++;		
-		m590_print("at+xiic=1\r");
+		m590_print(m590_init_cmd[4]);
     	DelayTask(200);   // wait 200ms
 
 		memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
@@ -185,7 +195,7 @@ INT8U TCPIP_SendData(INT8U * dados)
     while(1)
 	{
 		
-		m590_print("at+ipstatus=0\r");
+		m590_print(m590_init_cmd[5]);
 		DelayTask(100);
 
 		memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
@@ -231,7 +241,7 @@ INT8U TCPIP_SendData(INT8U * dados)
 					{
 						PRINT("\r\nsend ok\r\n");
 						
-						m590_print("at+ipstatus=0\r");
+						m590_print(m590_init_cmd[5]);
 						DelayTask(10);
 						timeout = 0;
 						do
@@ -298,15 +308,6 @@ INT8U CreateSingleTCPLink(unsigned char iLinkNum,char *strServerIP,char *strPort
 	return TRUE;
 }
 	
-#define CONST const
-CONST char m590_init_cmd[][11] = 
-{
-		"AT+CREG?\r\n ",
-		"AT+XISP=0\r\n",
-		"AT+XISP=0\r\n",
-		"AT+XIIC=1\r\n",
-		"AT+XIIC?\r\n "
-};
 m590_ret_t at_m590_init(void)
 {
 		
@@ -371,7 +372,7 @@ m590_ret_t at_m590_open(void)
 		do
 		{   
 			value++;			
-			m590_print("AT+XIIC?\r\n");	    	
+			m590_print(m590_init_cmd[3]);  	
 	    	DelayTask(500);   // 500ms	
 
 			GET_REPLY_PRINT();		
