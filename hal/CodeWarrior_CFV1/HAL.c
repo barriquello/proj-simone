@@ -44,7 +44,7 @@
   //////////////// ISR dedicated stack /////////////////
 
   #if (defined ISR_DEDICATED_STACK && defined ISR_DEDICATED_STACK == 1)
-  	OS_CPU_TYPE ISR_STACK[ISR_STACK_SIZE] = {0x49535253,0x5441434B};
+  	OS_CPU_TYPE ISR_STACK[ISR_STACK_SIZE]; //= {0x49535253,0x5441434B};
   	INT32U SPval_bkp = (INT32U)&ISR_STACK[ISR_STACK_SIZE-2];
   #endif
 

@@ -21,7 +21,7 @@
  * terminal_commands.c
  *
  *  Created on: 12/05/2011
- *      Author: gustavo
+ *      Author: UFSM
  */
 #include "BRTOS.h"
 #include "AppConfig.h"
@@ -297,29 +297,13 @@ void term_cmd_cat(char *param)
   CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
   CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
   
-  for(i=0;i<(CONSOLE_BUFFER_SIZE/2);i++)
-  {
-    // Limpa o buffer de entradas
-    name1[i] = 0;
-    name2[i] = 0;
-  }      
+  // Limpa o buffer de entradas
+  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(entradas,0x00,CONSOLE_BUFFER_SIZE); 
   
-  i = 0;  
-  entradas[0] = 0x20;
-  i++;
-  
-  while(*param)
-  {
-    if (i < CONSOLE_BUFFER_SIZE)
-    {  
-      entradas[i] = *param;
-      i++;
-      param++;
-    }else
-    {
-      break;
-    }
-  }
+  entradas[0] = 0x20;  
+  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
   
   // verifica o nome digitado
   retorno = file_name_verify(name1,name2,(INT8U*)&entradas[0],1);
@@ -333,11 +317,6 @@ void term_cmd_cat(char *param)
 	  printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
   }  
   
-  for(i=0;i<CONSOLE_BUFFER_SIZE;i++)
-  {
-    // Limpa o buffer de entradas
-    entradas[i] = 0;
-  }
 }
 
 CONST command_t cat_cmd = {
@@ -348,33 +327,15 @@ CONST command_t cat_cmd = {
 // List Files Command
 void term_cmd_ls(char *param)
 {  
-  INT8U i       = 0;
-  INT8U retorno = 0;  
-  INT8U name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
-  
+  INT8U name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
   
   (void)*param;
-  for(i=0;i<(CONSOLE_BUFFER_SIZE/2);i++)
-  {
-    // Limpa o buffer de entradas
-    name1[i] = 0;
-  }  
 
-  retorno = API_COMMAND_OK;
-  if(retorno==API_COMMAND_OK)
-  {
-    (void)ListFiles(name1);
-  }
-  else
-  {
-	  printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
-  }
+  // Limpa o buffer de entradas
+  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);
+  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
+  (void)ListFiles(name1);
   
-  for(i=0;i<CONSOLE_BUFFER_SIZE;i++)
-  {
-    // Limpa o buffer de entradas
-    entradas[i] = 0;
-  }  
 }
 
 CONST command_t ls_cmd = {
@@ -390,29 +351,13 @@ void term_cmd_cd(char *param)
   CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
   CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
   
-  for(i=0;i<(CONSOLE_BUFFER_SIZE/2);i++)
-  {
-    // Limpa o buffer de entradas
-    name1[i] = 0;
-    name2[i] = 0;
-  }      
+  // Limpa o buffer de entradas
+  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);
+  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);
+  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
   
-  i = 0;  
-  entradas[0] = 0x20;
-  i++;
-  
-  while(*param)
-  {
-    if (i < CONSOLE_BUFFER_SIZE)
-    {  
-      entradas[i] = *param;
-      i++;
-      param++;
-    }else
-    {
-      break;
-    }
-  }
+  entradas[0] = 0x20;  
+  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
   
   // verifica o nome digitado
   retorno = file_name_verify(name1,name2,(INT8U*)&entradas[0],1);
@@ -424,13 +369,8 @@ void term_cmd_cd(char *param)
   else
   {
 	  printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
-  }  
-  
-  for(i=0;i<CONSOLE_BUFFER_SIZE;i++)
-  {
-    // Limpa o buffer de entradas
-    entradas[i] = 0;
-  }
+  }   
+
 }
 
 CONST command_t cd_cmd = {
@@ -480,29 +420,16 @@ void term_cmd_rm(char *param)
   CHAR8     name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
   CHAR8     name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
   
-  for(i=0;i<(CONSOLE_BUFFER_SIZE/2);i++)
-  {
-    // Limpa o buffer de entradas
-    name1[i] = 0;
-    name2[i] = 0;
-  }      
+  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
   
   i = 0;  
   entradas[0] = 0x20;
   i++;
   
-  while(*param)
-  {
-    if (i < CONSOLE_BUFFER_SIZE)
-    {  
-      entradas[i] = *param;
-      i++;
-      param++;
-    }else
-    {
-      break;
-    }
-  }
+  entradas[0] = 0x20;  
+  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
   
   if (entradas[1] == '*') // remove all
   {
@@ -530,12 +457,6 @@ void term_cmd_rm(char *param)
 	  {
 		printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
 	  }
-  }
-  
-  for(i=0;i<CONSOLE_BUFFER_SIZE;i++)
-  {
-    // Limpa o buffer de entradas
-    entradas[i] = 0;
   }  
 }
 
@@ -547,34 +468,16 @@ CONST command_t rm_cmd = {
 // File Rename Command
 void term_cmd_rn(char *param)
 {  
-  INT8U     i       = 0;
   INT8U     retorno = 0;
   CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
   CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
   
-  for(i=0;i<(CONSOLE_BUFFER_SIZE/2);i++)
-  {
-    // Limpa o buffer de entradas
-    name1[i] = 0;
-    name2[i] = 0;
-  }      
-  i = 0;
+  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
   
-  entradas[0] = 0x20;
-  i++;
-  
-  while(*param)
-  {
-    if (i < CONSOLE_BUFFER_SIZE)
-    {  
-      entradas[i] = *param;
-      i++;
-      param++;
-    }else
-    {
-      break;
-    }
-  }
+  entradas[0] = 0x20;  
+  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
   
   // verifica o nome digitado
   retorno = file_name_verify(name2,name1,(INT8U*)&entradas[0],2);
@@ -587,12 +490,6 @@ void term_cmd_rn(char *param)
   {
 	printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
   }
-  
-  for(i=0;i<CONSOLE_BUFFER_SIZE;i++)
-  {
-    // Limpa o buffer de entradas
-    entradas[i] = 0;
-  }  
 }
 
 CONST command_t rn_cmd = {
@@ -603,34 +500,17 @@ CONST command_t rn_cmd = {
 // Create File Command
 void term_cmd_cr(char *param)
 {  
-  INT8U i       = 0;
   INT8U retorno = 0;
   CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
   CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
   
   
-  for(i=0;i<(CONSOLE_BUFFER_SIZE/2);i++)
-  {
-    // Limpa o buffer de entradas
-    name1[i] = 0;
-  }  
+  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
   
-  i = 0;
-  entradas[0] = 0x20;
-  i++;
-  
-  while(*param)
-  {
-    if (i < CONSOLE_BUFFER_SIZE)
-    {  
-      entradas[i] = *param;
-      i++;
-      param++;
-    }else
-    {
-      break;
-    }
-  }
+  entradas[0] = 0x20;  
+  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
   
   // verifica o nome digitado
   retorno = file_name_verify(name1,name2,(INT8U*)&entradas[0],1);
@@ -642,12 +522,6 @@ void term_cmd_cr(char *param)
   else
   {
 	printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
-  }
-  
-  for(i=0;i<CONSOLE_BUFFER_SIZE;i++)
-  {
-    // Limpa o buffer de entradas
-    entradas[i] = 0;
   }
 }
 
@@ -664,29 +538,12 @@ void term_cmd_mkdir(char *param)
   CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
   CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
   
-  for(i=0;i<(CONSOLE_BUFFER_SIZE/2);i++)
-  {
-    // Limpa o buffer de entradas
-    name1[i] = 0;
-    name2[i] = 0;
-  }      
+  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);   
+  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
   
-  i = 0;  
-  entradas[0] = 0x20;
-  i++;
-  
-  while(*param)
-  {
-    if (i < CONSOLE_BUFFER_SIZE)
-    {  
-      entradas[i] = *param;
-      i++;
-      param++;
-    }else
-    {
-      break;
-    }
-  }
+  entradas[0] = 0x20;  
+  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
   
   // verifica o nome digitado
   retorno = file_name_verify(name1,name2,(INT8U*)&entradas[0],1);
@@ -698,12 +555,6 @@ void term_cmd_mkdir(char *param)
   else
   {
 	printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
-  }  
-  
-  for(i=0;i<CONSOLE_BUFFER_SIZE;i++)
-  {
-    // Limpa o buffer de entradas
-    entradas[i] = 0;
   }
 }
 
@@ -720,29 +571,12 @@ void term_cmd_cp(char *param)
   CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
   CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
   
-  for(i=0;i<(CONSOLE_BUFFER_SIZE/2);i++)
-  {
-    // Limpa o buffer de entradas
-    name1[i] = 0;
-    name2[i] = 0;
-  }      
-  i = 0;
+  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
   
-  entradas[0] = 0x20;
-  i++;
-  
-  while(*param)
-  {
-    if (i < CONSOLE_BUFFER_SIZE)
-    {  
-      entradas[i] = *param;
-      i++;
-      param++;
-    }else
-    {
-      break;
-    }
-  }
+  entradas[0] = 0x20;  
+  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
   
   // verifica o nome digitado
   retorno = file_name_verify(name2,name1,(INT8U*)&entradas[0],2);
@@ -755,12 +589,6 @@ void term_cmd_cp(char *param)
   {
 	printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
   }
-  
-  for(i=0;i<CONSOLE_BUFFER_SIZE;i++)
-  {
-    // Limpa o buffer de entradas
-    entradas[i] = 0;
-  }  
 }
 
 CONST command_t cp_cmd = {
@@ -771,43 +599,11 @@ CONST command_t cp_cmd = {
 // Write File Test Command
 void term_cmd_wt(char *param)
 {  
-  INT8U i       = 0;
-  INT8U retorno = 0; 
   
-  entradas[0] = 0x20;
-  i++;
-  
-  while(*param)
-  {
-    if (i < CONSOLE_BUFFER_SIZE)
-    {  
-      entradas[i] = *param;
-      i++;
-      param++;
-    }else
-    {
-      break;
-    }
-  }
-  
-  // verifica o nome digitado
-  //retorno = file_name_verify(name1,name2,(INT8U*)&entradas[0],1);
-  retorno = API_COMMAND_OK;
-  
-  if(retorno==API_COMMAND_OK)
-  {
-    (void)WriteUptimeLog(VERBOSE_ON);
-  }
-  else
-  {
-	printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
-  }  
-  
-  for(i=0;i<CONSOLE_BUFFER_SIZE;i++)
-  {
-    // Limpa o buffer de entradas
-    entradas[i] = 0;
-  }
+  entradas[0] = 0x20;  
+  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);   
+ (void)WriteUptimeLog(VERBOSE_ON);
+ 
 }
 
 CONST command_t wt_cmd = {
@@ -912,14 +708,26 @@ CONST command_t echo_stdout_cmd = {
 };
 
 
+void echo_post(INT8U * dados, INT8U len)
+{
+	while(len>0)
+	{
+		if (OSQueuePost(USB, *dados) == BUFFER_UNDERRUN)
+		{ 
+		  OSCleanQueue(USB); // Problema: Estouro de buffer
+		}   
+		len--;
+	}
+}
+
 // Function used to print a string in the terminal by other tasks
 void echo (char *string, char Terminalbackup)
 {
     INT8U backup_cnt = 0;
     INT8U i = 0;
     char backup[(CONSOLE_BUFFER_SIZE/2)];
-	char *command_start = "echo ";
-    char *command_end   = "\n\r";
+	const char *command_start = "echo ";
+	const char *command_end   = "\n\r";
     
     if (Terminalbackup == TRUE)
     {
@@ -927,43 +735,13 @@ void echo (char *string, char Terminalbackup)
     }
     
     SetSilentMode(TRUE);
-    while (*command_start)
-    {
-			if (OSQueuePost(USB, *command_start++) == BUFFER_UNDERRUN)
-			{
-			  // Problema: Estouro de buffer
-			  OSCleanQueue(USB);
-			}
-    }    
-    
-	while (*string)
-    {
-			if (OSQueuePost(USB, *string++) == BUFFER_UNDERRUN)
-			{
-			  // Problema: Estouro de buffer
-			  OSCleanQueue(USB);
-			}
-    }
-    
-    while (*command_end)
-    {
-			if (OSQueuePost(USB, *command_end++) == BUFFER_UNDERRUN)
-			{
-			  // Problema: Estouro de buffer
-			  OSCleanQueue(USB);
-			}
-    }
+    echo_post(command_start,strlen(command_start));
+    echo_post(string,strlen(string));
+    echo_post(command_end,strlen(command_end));
     
     if (Terminalbackup == TRUE)
-    {
-		for(i=0;i<backup_cnt;i++)
-		{
-			if (OSQueuePost(USB, backup[i]) == BUFFER_UNDERRUN)
-			{
-			  // Problema: Estouro de buffer
-			  OSCleanQueue(USB);
-			}    	
-		}
+    {		
+    	echo_post(backup,backup_cnt);    	
     }
 }
 
@@ -987,9 +765,9 @@ void term_cmd_esp(char *param)
 		case '2': at_esp_open();
 			break;
 		case '3': at_esp_send(NULL);
-					break;
+			break;
 		case '4': at_esp_receive(NULL,NULL);
-					break;					
+			break;					
 		case '5': at_esp_close();
 			break;
 		case '6':

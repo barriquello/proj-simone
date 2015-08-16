@@ -66,6 +66,12 @@ struct tm
 };
 #endif
 
+extern long _timezone;
+extern const char *_days[];
+extern const char *_days_abbrev[];
+extern const char *_months[];
+extern const char *_months_abbrev[];
+
 time_t mktime(struct tm *tmbuf);
 struct tm *localtime(const time_t *timer);
 size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *t);

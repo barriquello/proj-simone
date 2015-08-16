@@ -298,7 +298,7 @@ INT8U CreateSingleTCPLink(unsigned char iLinkNum,char *strServerIP,char *strPort
 	return TRUE;
 }
 	
-#define CONST 
+#define CONST const
 CONST char m590_init_cmd[][11] = 
 {
 		"AT+CREG?\r\n ",
@@ -405,7 +405,7 @@ m590_ret_t at_m590_open(void)
 
 #define M590_TESTE 1
 #if M590_TESTE		
-#define CONST 
+#define CONST const
 CONST char M590_SEND_STRING[] = "GET /input/post.json?json={p:3}&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n";
 CONST char M590_SEND_STRING2[] = "GET /monitor/set.json?monitorid=10&data=20,20,20,20&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n";
 #endif

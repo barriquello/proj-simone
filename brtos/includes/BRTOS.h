@@ -1158,11 +1158,9 @@ void initEvents(void);
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 
-#define CONST  //const
-  
 extern       PriorityType OSReadyList;
 extern       PriorityType OSBlockedList;
-extern CONST PriorityType PriorityMask[configMAX_TASK_PRIORITY+1];
+extern const PriorityType PriorityMask[configMAX_TASK_PRIORITY+1];
 
 extern ContextType *Tail;
 extern ContextType *Head;

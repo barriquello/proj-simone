@@ -6,9 +6,7 @@
 #include "data_types.h"
 #include "crc16.h"
 
-#if PLATAFORMA == COLDUINO
-#define CONST
-#else
+#ifndef CONST
 #define CONST const
 #endif
 

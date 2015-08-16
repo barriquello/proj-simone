@@ -30,6 +30,8 @@ OS_QUEUE SerialPortBuffer2;
 BRTOS_Queue *Serial2;
 #endif
 
+INT16U uart_get_baudrate_regval(INT16U baudrate);
+
 INT16U uart_get_baudrate_regval(INT16U baudrate)
 {
 	return (INT16U)(configCPU_CLOCK_HZ/baudrate/16);	
@@ -55,9 +57,7 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 			return;
 		}
 	}
-	
-	if ((uart == 1) || (uart == 2))
-	{						
+			
 		// Configure UART 1
 #if (ENABLE_UART1 == TRUE)
 		if (uart == 1)
@@ -187,7 +187,7 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 			}
 		}
 #endif
-	}
+
 }
 
 // UART1 functions
@@ -284,9 +284,13 @@ void printf_uart1(CHAR8 *string)
 
 	while (*string)
 	{
+#if 0		
 		SCI1D = *string; /* Armazena o caracter a ser transmitido no registrador de transmissão */
 		SCI1C2_TCIE = 1;
 		(void) OSSemPend(SerialTX1, TX_TIMEOUT);
+#else
+		putchar_uart1(*string);
+#endif		
 		string++;
 	}
 
@@ -447,9 +451,14 @@ void printf_uart2(CHAR8 *string)
 
 	while (*string)
 	{
+#if 0		
 		SCI2D = *string; /* Armazena o caracter a ser transmitido no registrador de transmissão */
 		SCI2C2_TCIE = 1;
 		(void) OSSemPend(SerialTX2, TX_TIMEOUT);
+#else
+		putchar_uart2(*string);
+#endif		
+		string++;		
 		string++;
 	}
 }

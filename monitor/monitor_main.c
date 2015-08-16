@@ -105,7 +105,7 @@ T20150101073300S ->
 #include "monitor.h"
 #include "simon-api.h"
 
-static uint8_t 	num_monitores = MAX_NUM_OF_MONITORES;
+static uint8_t 	num_monitores;
 static uint8_t 	monitores_em_uso = 0;
 monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 monitor_config_ok_t config_check;
@@ -121,9 +121,7 @@ monitor_config_ok_t config_check;
 #define PRINTF(...)
 #endif
 
-#if PLATAFORMA == COLDUINO
-#define CONST
-#else
+#ifndef CONST
 #define CONST const
 #endif
 

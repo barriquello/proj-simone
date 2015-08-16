@@ -147,6 +147,7 @@ void disk_timerproc (void);
 void SD_CLKDelay(INT8U);
 INT8U GetCardType(void);
 INT8U GetCardStat(void);
+INT8U GetCardInit(void);
 void SetCardStat(INT8U state);
 void GetFatTimer(INT32U *time);
 void SetFatTimer(INT32U time);

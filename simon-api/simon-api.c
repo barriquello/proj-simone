@@ -115,12 +115,6 @@ uint8_t get_server_confirmation(char* server_reply)
 	return OK;
 }
 
-static const char *abmon[12] =
-{
-	"Jan", "Feb", "Mar", "Apr", "May", "Jun",
-	"Jul", "Aug", "Sep", "Oct", "Nov", "Dec"
-};
-
 #include "time_lib.h"
 void get_server_time(char* server_reply, struct tm *ts)
 {
@@ -146,7 +140,7 @@ void get_server_time(char* server_reply, struct tm *ts)
 		case 3:
 			if (1 != sscanf(token,"%s",(char*) mon)){;} // month
 			t.tm_mon = 0;
-			while (strcmp (abmon[t.tm_mon],mon) != 0)
+			while (strcmp (_months_abbrev[t.tm_mon],mon) != 0)
 			{
 				++t.tm_mon;
 			}

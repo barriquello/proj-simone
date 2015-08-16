@@ -50,18 +50,18 @@ static command_t 	*term_cmds[MAX_CMDS];
 static unsigned char (*putch)(char);
 
 
-void putchar_terminal(char c)
-{
-    while(c != (char)putch(c)){};
-}
-
-
 void getchar_terminal(char *c)
 {    
 	INT8U data;
 	(void)OSQueuePend(USB, &data, 0);
 	*c=(char)data;
 }
+
+void putchar_terminal(char c)
+{
+    while(c != (char)putch(c)){};
+}
+
 /*****************************************************************************
  * Name:
  *    print
@@ -79,7 +79,11 @@ void printf_terminal(char *s)
 {
   while(*s)
   {
+#if 0	  
       while(*s != (char)putch(*s)){};
+#else
+	  putchar_usb(*s);
+#endif		
       s++;
   }
 }

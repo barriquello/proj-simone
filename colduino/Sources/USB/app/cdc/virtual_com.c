@@ -275,7 +275,11 @@ void printf_usb(char *s)
 {
   while(*s)
   {
-      while(*s != (char)cdc_putch(*s)){};
+#if 0      
+	  while(*s != (char)cdc_putch(*s)){};
+#else
+	putchar_usb(*s);
+#endif				
       s++;
   }
 }
@@ -335,9 +339,7 @@ static void USB_App_Callback (
 					if (OSQueuePost(USB, dp_rcv->data_ptr[index]) == BUFFER_UNDERRUN)
 					{
 					  // Buffer overflow 					
-					   while(1){
-						   __RESET_WATCHDOG();
-					   }
+					   while(1){}
 					}
 				}
 			}

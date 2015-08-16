@@ -91,11 +91,9 @@
 									<listOptionValue builtIn="false" value="brtos/queue.c"/>
 									<listOptionValue builtIn="false" value="brtos/semaphore.c"/>
 									<listOptionValue builtIn="false" value="brtos/timers.c"/>
-									<listOptionValue builtIn="false" value="devices/RTC_DS1307.c"/>
 									<listOptionValue builtIn="false" value="devices/SD.c"/>
 									<listOptionValue builtIn="false" value="devices/eeprom.c"/>
 									<listOptionValue builtIn="false" value="devices/esp8266_at.c"/>
-									<listOptionValue builtIn="false" value="devices/http_client.c"/>
 									<listOptionValue builtIn="false" value="devices/lcd.c"/>
 									<listOptionValue builtIn="false" value="devices/m590_at.c"/>
 									<listOptionValue builtIn="false" value="devices/rs485.c"/>
@@ -135,6 +133,9 @@
 									<listOptionValue builtIn="false" value="simon-api/simon-api.c"/>
 									<listOptionValue builtIn="false" value="terminal/terminal.c"/>
 									<listOptionValue builtIn="false" value="terminal/terminal_commands.c"/>
+									<listOptionValue builtIn="false" value="FatFs/option/syscall.c"/>
+									<listOptionValue builtIn="false" value="devices/rtc_ds1307.c"/>
+									<listOptionValue builtIn="false" value="modbus_slaves/modbus_slave_null.c"/>
 								</option>
 								<option id="com.freescale.coldfire.toolchain.linker.base.generateList.1355151461" name="Generate Listing File" superClass="com.freescale.coldfire.toolchain.linker.base.generateList" value="true" valueType="boolean"/>
 								<inputType id="com.freescale.coldfire.toolchain.linker.base.input.1991355322" name="Linker Input" superClass="com.freescale.coldfire.toolchain.linker.base.input">
@@ -189,7 +190,7 @@
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.coloring.689682538" name="Register Coloring (-coloring)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.coloring" value="true" valueType="boolean"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.options.optLevel.1830335566" name="Optimization Level (-opt)" superClass="com.freescale.coldfire.toolchain.compiler.base.options.optLevel" value="com.freescale.coldfire.toolchain.compiler.base.optionCategory.optimization.optlevel.3" valueType="enumerated"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sche.2012111504" name="Instruction Scheduling (-scheduling)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sche" value="true" valueType="boolean"/>
-								<option id="com.freescale.coldfire.toolchain.compiler.base.options.inlining.1696580601" superClass="com.freescale.coldfire.toolchain.compiler.base.options.inlining" value="com.freescale.coldfire.toolchain.compiler.base.options.inline.off" valueType="enumerated"/>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.options.inlining.1696580601" name="Inlining" superClass="com.freescale.coldfire.toolchain.compiler.base.options.inlining" value="com.freescale.coldfire.toolchain.compiler.base.options.inline.off" valueType="enumerated"/>
 								<inputType id="com.freescale.coldfire.toolchain.compiler.base.input.1268974395" name="C Source File" superClass="com.freescale.coldfire.toolchain.compiler.base.input"/>
 								<inputType id="com.freescale.coldfire.toolchain.compiler.base.input.c++.2093161631" name="C++ Source File" superClass="com.freescale.coldfire.toolchain.compiler.base.input.c++"/>
 							</tool>

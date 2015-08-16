@@ -38,12 +38,8 @@
 
 #define PLATAFORMA  COLDUINO
 
-#if PLATAFORMA == COLDUINO
-#define CONST
-#define STRING_IN_RAM  (char [])
-#else
+#ifndef CONST
 #define CONST const
-#define STRING_IN_RAM
 #endif
 
 

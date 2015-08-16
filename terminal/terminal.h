@@ -12,11 +12,11 @@ extern "C" {
 
 typedef void (cmd_func)(char *params);
 
-#if PLATAFORMA == COLDUINO
-#define CONST 
-#define INROM 	0
-#else
-#define CONST 	const
+#ifndef CONST
+#define CONST const
+#endif
+
+#ifndef INROM
 #define INROM 	1
 #endif
 

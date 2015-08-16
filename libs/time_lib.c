@@ -35,9 +35,7 @@
 #include "stdio.h"
 #include <stdint.h>
 
-#if PLATAFORMA == COLDUINO
-#define CONST
-#else
+#ifndef CONST
 #define CONST const
 #endif
 
@@ -222,18 +220,9 @@ time_t ConvertDateTimeToUnixTime(OSDateTime * dt)
 	tm.tm_mon = dt->date.RTC_Month - 1;
 	tm.tm_mday = dt->date.RTC_Day;	
 	
-	unix_time = mktime(&tm);
-	
+	unix_time = mktime(&tm);	
 	return unix_time;
 }
-#endif
-
-#if 0
-extern long _timezone;
-extern const char *_days[];
-extern const char *_days_abbrev[];
-extern const char *_months[];
-extern const char *_months_abbrev[];
 #endif
 
 CONST char *_days[] = {
