@@ -4,27 +4,45 @@
 #include "AppConfig.h"
 #include "modbus.h" /* master lib */
 
-// Declares a queue structure for the Modbus Master Input
-OS_QUEUE ModbusMaster_InBuffer;
-BRTOS_Queue *qModbusMaster_In;
 static uint8_t ModbusMaster_state;
 
+#define MB_RS485 1
 
-#if (defined ENABLE_MASTER_UART && ENABLE_MASTER_UART==1)
-#define MODBUSMASTER_PUTCHAR(x) putchar_uart2(x)
+#if MB_RS485
+#include "rs485.h"
+#define MODBUSMASTER_PUTCHAR(x) putchar_rs485(x)
 #else
 #include "mb.h"
 #include "mbport.h"
+// Declares a queue structure for the Modbus Master Input
+OS_QUEUE ModbusMaster_InBuffer;
+BRTOS_Queue *qModbusMaster_In;
 extern OS_QUEUE ModbusSlave_InBuffer;
 #define MODBUSMASTER_PUTCHAR(x) OSWQueue(&ModbusSlave_InBuffer,(x)); pxMBFrameCBByteReceived();
 #endif
 
+static uint8_t ModbusMasterRxData(uint8_t * _pData, uint16_t timeout) 
+{
+	 
+#if MB_RS485	
+	return rs485_rx(_pData, timeout);
+#else
+	return (OSQueuePend(qModbusMaster_In,_pData, timeout) != TIMEOUT);	
+#endif
+}
+
+
 static void ModbusMasterTxData(const uint8_t * const _pData, const uint32_t _dataLen) 
 {
-	 uint8_t k; 
+	 
+#if MB_RS485	
+	rs485_tx(_pData,_dataLen);	 
+#else
+	uint8_t k; 
 	 for(k=0; k<_dataLen; k++) {
 		 MODBUSMASTER_PUTCHAR(*(_pData+k));		        
 	 }
+#endif
 }
 
 #define QUERY_BUFSIZE 	(8)
@@ -87,7 +105,7 @@ void Task_modbus_master_test(void)
 					ModbusMasterTxData(master_query.pQuery, master_query.queryLen);												
 								
 					/* wait 1 sec for the response */
-					if(OSQueuePend(qModbusMaster_In,&ucByteRx, 1000) != TIMEOUT)
+					if(ModbusMasterRxData(&ucByteRx,1000))
 					{
 						do
 						{							
@@ -101,7 +119,7 @@ void Task_modbus_master_test(void)
 								break;
 							}
 		                    
-						}while(OSQueuePend(qModbusMaster_In,&ucByteRx, 10) != TIMEOUT);
+						}while(ModbusMasterRxData(&ucByteRx,10));
 					}
 				}
 			}
@@ -122,14 +140,18 @@ void Task_modbus_master_test(void)
 uint8_t Modbus_init(void) 
 {
 
+#if MB_RS485 
+	rs485_init(9600,FALSE,0);	
+#else	
 	if(qModbusMaster_In != NULL && qModbusMaster_In->OSEventAllocated == TRUE) return TRUE;
-	
+		
 	if (OSQueueCreate(&ModbusMaster_InBuffer, MASTER_BUFSIZE, &qModbusMaster_In) != ALLOC_EVENT_OK)
 	{
 		return FALSE;
 	}
-	
+#endif
 	return TRUE;
+	
 }
 
 /* function to read data for logging */
@@ -169,7 +191,7 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 	ModbusMasterTxData(master_query.pQuery, master_query.queryLen);	
 	    	
 	/* wait 1 sec for the response */
-	if(OSQueuePend(qModbusMaster_In,&ucByteRx, 1000) != TIMEOUT)
+	if(ModbusMasterRxData(&ucByteRx,1000))
 	{
 		do
 		{							
@@ -186,7 +208,7 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 				goto success_exit;				
 			}
 			
-		}while(OSQueuePend(qModbusMaster_In,&ucByteRx, 10) != TIMEOUT);		
+		}while(ModbusMasterRxData(&ucByteRx,10));		
 	}
 	
 	error_exit:	

@@ -33,7 +33,7 @@ void rs485_acquire(void);
 void rs485_release(void);
 void rs485_putchar(INT8U caracter);
 void rs485_print(CHAR8 *string);
-void rs485_rx(CHAR8* caracter);
+INT8U rs485_rx(CHAR8* caracter, INT16U timeout);
 void rs485_tx(INT8U *data, INT16U len);
 
 

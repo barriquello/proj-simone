@@ -372,9 +372,10 @@ void Tarefa_RS485(void)
 	rs485_init(9600,FALSE,0);
 	for(;;)
 	{
-		rs485_rx(&c);
-		rs485_putchar(c);
-		DelayTask(10); /* 10 ms */
+		if(rs485_rx(&c,10))
+		{
+			rs485_putchar(c);
+		}
 	}
 }
 
@@ -407,11 +408,11 @@ void Tarefa_termometro(void)
 
 		if (digital_temp > 701)
 		{
-			temperature = 25 - (((digital_temp - 701) * 1000) / 1646);
+			temperature = 25 - (INT16S)(((digital_temp - 701) * 1000) / 1646);
 		}
 		else
 		{
-			temperature = 25 - (((digital_temp - 701) * 1000) / 1769);
+			temperature = 25 - (INT16S)(((digital_temp - 701) * 1000) / 1769);
 		}
 
 		UserEnterCritical();
