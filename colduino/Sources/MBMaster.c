@@ -6,7 +6,7 @@
 
 static uint8_t ModbusMaster_state;
 
-#define MB_RS485 1
+#define MB_RS485 0
 
 #if MB_RS485
 #include "rs485.h"

@@ -65,7 +65,7 @@ void main_app(void)
 	};
 	
 #if 1	
-	if (InstallTask(&main_monitor, "Monitors", 1024+512, 10, NULL) != OK)
+	if (InstallTask(&main_monitor, "Monitors", 1024+512+256, 10, NULL) != OK)
 	{
 		sleep_forever();
 	};

@@ -14,7 +14,7 @@ int snprintf_lib( char *buf, unsigned int count, const char *format, ... );
 int vsprintf_lib(char *out, const char *format, ...);
 
 #ifndef _WIN32
-//#define DISABLE_SNPRINTF 1
+#define DISABLE_SNPRINTF 1
 #endif
 
 #include <stdarg.h>

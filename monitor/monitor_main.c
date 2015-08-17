@@ -506,6 +506,7 @@ void main_monitor(void)
 			sleep_forever();
 		}
 		
+		/* monitor MODBUS? */
 		if(monitor_state[monitor_num].tipo == 'M')
 		{			
 			if(monitor_state[monitor_num].codigo < NUM_MODBUS_SLAVES)
@@ -523,11 +524,12 @@ void main_monitor(void)
 			}
 		}
 		else 
+			/* monitor Digital ou Analógico? */
 		if(monitor_state[monitor_num].tipo == 'A')
 		{
 			analog_input_erro:
 			print_erro(monitor_error_msg[1], monitor_num);
-			print_erro("entrada analógica não suportada \r\n");
+			print_erro("entrada digital ou analógica não suportada \r\n");
 			sleep_forever();	
 		}
 		else

@@ -3277,7 +3277,7 @@ FRESULT f_readdir (
 			res = dir_read(dp, 0);			/* Read an item */
 			if (res == FR_NO_FILE) {		/* Reached end of directory */
 				dp->sect = 0;
-				res = FR_OK;
+				//res = FR_OK;
 			}
 			if (res == FR_OK) {				/* A valid entry is found */
 				get_fileinfo(dp, fno);		/* Get the object information */

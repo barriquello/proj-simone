@@ -36,7 +36,7 @@
 
 /// Define the maximum number of Tasks to be Installed
 /// must always be equal or higher to NumberOfInstalledTasks
-#define NUMBER_OF_TASKS (INT8U)10
+#define NUMBER_OF_TASKS (INT8U)5
 
 /// Define if OS Trace is active
 #define OSTRACE 0
@@ -46,10 +46,10 @@
 #endif
 
 /// Define if TimerHook function is active
-#define TIMER_HOOK_EN 1
+#define TIMER_HOOK_EN 		   1
 
 /// Define if IdleHook function is active
-#define IDLE_HOOK_EN 0
+#define IDLE_HOOK_EN 		   0
 
 /// Enable or disable semaphore controls
 #define BRTOS_SEM_EN           1

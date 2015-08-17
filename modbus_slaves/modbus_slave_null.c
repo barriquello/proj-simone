@@ -22,30 +22,41 @@ static modbus_null_input_register_list NULL_IRList;
 
 uint8_t slave_null_read_data(uint8_t* buf, uint8_t max_len);
 
+#if !MODBUS_SLAVE_SIMULATION	
+#include "random_lib.h"
+#endif
+
 uint8_t slave_null_read_data(uint8_t* buf, uint8_t max_len)
 {
 			OSTime timestamp;
+			uint8_t nregs = 0;
 			
+			
+#if MODBUS_SLAVE_SIMULATION			
 			ModbusSetSlave(MODBUS_NULL);	/* Leitura dos dados de teste */
 			
 			/* Detecta equipamentos de medição e faz a leitura dos dados */					
-			Modbus_GetData(NULL_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (INT8U*)&NULL_IRList.Regs[0], 
+			Modbus_GetData(NULL_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (INT8U*)&NULL_IRList.Regs[NULL_REGLIST_OFFSET_NREGS], 
 					NULL_REGLIST_INPUT_START, NULL_REGLIST_INPUT_NREGS);	
-			
-			/* Get and set timestamp of reading */			
+#else	
+			/* return random data */	
+			for(nregs = NULL_REGLIST_OFFSET_NREGS; nregs < (NULL_REGLIST_INPUT_NREGS+NULL_REGLIST_OFFSET_NREGS);nregs++)
+			{				
+				NULL_IRList.Regs[nregs] = random_get();
+			}
+#endif
+			/* get and set timestamp of reading and device id */			
 			GetCalendarTime(&timestamp);	
 			SetTimeStamp(MODBUS_NULL, (INT8U*)NULL_IRList.Regs, &timestamp);
 			
-			if(sizeof(NULL_IRList.Regs) < max_len)
+			/* limit number of registers to the max. available */
+			if(max_len > sizeof(modbus_null_input_register_list)) 
 			{
-				memcpy(buf,NULL_IRList.Regs,sizeof(NULL_IRList.Regs));
-				return (sizeof(NULL_IRList.Regs));
-			}
-			else
-			{
-				return 0;
+				max_len = sizeof(modbus_null_input_register_list);
 			}
 			
+			memcpy(buf,NULL_IRList.Regs,max_len);						
+			return (max_len);			
 }
 
 CONST modbus_slave_t slave_NULL =

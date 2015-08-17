@@ -111,14 +111,14 @@ static int monitor_rename(TCHAR *source, const TCHAR *dest)
 
 void	print_erro(const char *format, ...);
 
-#define LOG_HEADER_LEN		 50
+#define LOG_HEADER_LEN		 52
 #define LOG_MAX_ENTRY_SIZE   256
 #define FILENAME_MAX_LENGTH  13
 #define LOG_FILENAME_START   "99123123.txt"
 #define LOG_METAFILE   		 ".0.txt"
 #define MAX_NUM_OF_ENTRIES   ((uint32_t)(-1))
 #define MAX_NUM_OF_MONITORES 3
-#define NUM_OF_FIELDS        4
+#define NUM_OF_FIELDS        6
 
 //#define LOG_DIR_NAME 		 "./logs"
 //#define TIME_INTERVAL 		 5

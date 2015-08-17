@@ -27,6 +27,11 @@
 
 extern monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 
+#define LOG_MAX_DATA_BUF_SIZE  	(LOG_MAX_ENTRY_SIZE/2)
+
+uint8_t monitor_data_buffer[LOG_MAX_DATA_BUF_SIZE];
+char monitor_char_buffer[LOG_MAX_ENTRY_SIZE];
+
 #include "modbus_slaves.h"
 extern CONST modbus_slave_t slave_NULL;
 extern CONST modbus_slave_t slave_PM210;
@@ -41,8 +46,6 @@ CONST modbus_slave_t * modbus_slaves_all[NUM_MODBUS_SLAVES] =
 
 LOG_FILETYPE stderr_f;
 
-char buffer_erro[256];
-
 #define error_file		"erro.txt"
 #include <stdarg.h>
 /*-----------------------------------------------------------------------------------*/
@@ -51,33 +54,33 @@ void print_erro(const char *format, ...)
 
   va_list argptr;
   va_start(argptr, format);
-  VSPRINTF(buffer_erro, format, argptr);  
+  VSPRINTF(monitor_char_buffer, format, argptr);  
   va_end(argptr);
 
   if(monitor_openwrite(error_file,&stderr_f))
   {
-	  (void)monitor_write(buffer_erro,&stderr_f);
+	  (void)monitor_write(monitor_char_buffer,&stderr_f);
 	  (void)monitor_close(&stderr_f);
   }
 }
 
 
-void monitor_createentry(char* string, uint16_t *dados, uint16_t len)
+void monitor_createentry(char* buffer, uint16_t *dados, uint16_t len)
 {
 
 	uint16_t dado = 0;
 	do
 	{
 		dado=*dados;
-		int2hex(string,dado);
-		string+=4;
+		int2hex(buffer,dado);
+		buffer+=4;
 		dados++;
 		len--;
 	}while(len > 0);
 
-	*string++='\r';
-	*string++='\n';
-	*string++='\0';
+	*buffer++='\r';
+	*buffer++='\n';
+	*buffer++='\0';
 }
 
 void monitor_makeheader(char monitor_header[], monitor_header_t * h)
@@ -114,10 +117,11 @@ void monitor_makeheader(char monitor_header[], monitor_header_t * h)
    monitor_header[50] = '\0';
 }
 
+char monitor_header[LOG_HEADER_LEN+1];
+
 void monitor_setheader(char* filename, monitor_header_t * h)
 {
-   LOG_FILETYPE fp;
-   char monitor_header[LOG_HEADER_LEN+1];
+   LOG_FILETYPE fp;  
 
    if(monitor_openread(filename,&fp))
    {
@@ -132,7 +136,6 @@ void monitor_getheader(char* filename, monitor_header_t * h)
 {
 
 	   LOG_FILETYPE fp;
-	   char monitor_header[LOG_HEADER_LEN+1];
 	   int idx = 0;
 	   char hex1,hex2;
 	   uint8_t b1,b2;
@@ -140,6 +143,8 @@ void monitor_getheader(char* filename, monitor_header_t * h)
 #define NEXT_2(res)	do{hex1 = monitor_header[idx++]; hex2 = monitor_header[idx++];} while(0); (res) = hex2byte(hex1,hex2);
 #define NEXT_4(res) do{hex1 = monitor_header[idx++]; hex2 = monitor_header[idx++]; b1 = hex2byte(hex1,hex2); hex1 = monitor_header[idx++];hex2 = monitor_header[idx++]; b2 = hex2byte(hex1,hex2);}while(0); (res) = byte2int(b1,b2);
 
+	   (void)monitor_close(&fp);
+	   
 	   if(monitor_openread(filename,&fp))
 	   {
 		   if(monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
@@ -602,23 +607,46 @@ char* monitor_getfilename_to_read(uint8_t monitor_num)
 }
 
 void monitor_writer(uint8_t monitor_num)
-{
-	char string[20];
+{	
 	uint16_t cnt = 0;
 	
 #if MONITOR_TESTS
 	uint16_t vetor_dados[3]={0x1111,0x2222,0x3333};	
-	monitor_createentry(string,vetor_dados,3);
+	monitor_createentry(monitor_char_buffer,vetor_dados,3);
 
-	assert((string[0] == '1') && (string[1]== '1') && (string[2] == '1') && (string[3]== '1') &&
-			(string[0+4] == '2') && (string[1+4]== '2') && (string[2+4] == '2') && (string[3+4]== '2') &&
-			(string[0+2*4] == '3') && (string[1+2*4]== '3') && (string[2+2*4] == '3') && (string[3+2*4]== '3'));
+	assert((monitor_char_buffer[0] == '1') && (monitor_char_buffer[1]== '1') && 
+			(monitor_char_buffer[2] == '1') && (monitor_char_buffer[3]== '1') &&
+			(monitor_char_buffer[0+4] == '2') && (monitor_char_buffer[1+4]== '2') && 
+			(monitor_char_buffer[2+4] == '2') && (monitor_char_buffer[3+4]== '2') &&
+			(monitor_char_buffer[0+2*4] == '3') && (monitor_char_buffer[1+2*4]== '3') && 
+			(monitor_char_buffer[2+2*4] == '3') && (monitor_char_buffer[3+2*4]== '3'));
+
+#else	
+	
+	/* check buffer size */
+	if(monitor_state[monitor_num].config_h.entry_size > LOG_MAX_DATA_BUF_SIZE)
+	{
+		print_erro("Monitor %d: buffer too small \r\n", monitor_num);
+		return;
+	}
+	
+	/* read data */
+	if(monitor_state[monitor_num].read_data(monitor_data_buffer,monitor_state[monitor_num].config_h.entry_size) == 0)
+	{
+		print_erro("Monitor %d: read failed\r\n", monitor_num);
+		return;
+	}
+	
+	/* convert data to hex char */
+	monitor_createentry(monitor_char_buffer,monitor_data_buffer,monitor_state[monitor_num].config_h.entry_size);
 
 #endif		
 
 	/* change to log dir */
 	monitor_chdir(monitor_state[monitor_num].monitor_dir_name);
-	cnt = monitor_writeentry(monitor_getfilename_to_write(monitor_num),string);
+	
+	/* write data (hex char) to file  */
+	cnt = monitor_writeentry(monitor_getfilename_to_write(monitor_num),monitor_char_buffer);
 
 	/* change to parent dir */
 	monitor_chdir("..");
@@ -629,12 +657,15 @@ void monitor_writer(uint8_t monitor_num)
 void monitor_reader(uint8_t monitor_num)
 {
 	monitor_entry_t entry;
-	uint8_t string[20];
 	uint32_t nread;
 	char buffer[sizeof(long)*8+1];
 
 	char* fname = monitor_getfilename_to_read(monitor_num);
-	entry.values = string;
+	
+	if(fname == NULL) return;
+	
+	memset(monitor_char_buffer,0x00,sizeof(monitor_char_buffer));
+	entry.values = monitor_char_buffer;
 
 	/* change to log dir */
 	monitor_chdir(monitor_state[monitor_num].monitor_dir_name);
