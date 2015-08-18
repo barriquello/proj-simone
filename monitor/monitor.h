@@ -69,18 +69,20 @@
  */
 #include "ff.h"                   /* include tff.h for FatFs */
 
-#define LOG_FILETYPE    			   FIL
+#define LOG_FILETYPE    			  	  FIL
 #define monitor_openread(filename,file)   (f_open((file), (filename), FA_READ+FA_OPEN_EXISTING) == FR_OK)
 #define monitor_openwrite(filename,file)  (f_open((file), (filename), FA_WRITE+FA_CREATE_ALWAYS) == FR_OK)
 #define monitor_openappend(filename,file) (f_open((file), (filename), FA_WRITE) == FR_OK)
 #define monitor_close(file)               (f_close(file) == FR_OK)
 #define monitor_read(buffer,size,file)    f_gets((buffer), (size),(file))
+//#define monitor_write(buffer,file)        ((f_lseek((file),f_size((file))) == FR_OK) && f_puts((buffer), (file)))
 #define monitor_write(buffer,file)        f_puts((buffer), (file))
 #define monitor_remove(filename)          (f_unlink(filename) == FR_OK)
 
-#define LOG_FILEPOS                   DWORD
+#define LOG_FILEPOS                   	  DWORD
 #define monitor_tell(file,pos)            (*(pos) = f_tell((file)))
 #define monitor_seek(file,pos)            (f_lseek((file), *(pos)) == FR_OK)
+#define monitor_seek_end(file)            (f_lseek((file), f_size((file))) == FR_OK)
 
 #include "string.h"
 static int monitor_rename(TCHAR *source, const TCHAR *dest)

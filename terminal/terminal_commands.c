@@ -320,7 +320,7 @@ void term_cmd_cat(char *param)
 }
 
 CONST command_t cat_cmd = {
-  "cat", term_cmd_cat, "SD Card - Read file"
+  "cat", term_cmd_cat, "Read file"
 };
 
 
@@ -339,7 +339,7 @@ void term_cmd_ls(char *param)
 }
 
 CONST command_t ls_cmd = {
-  "ls", term_cmd_ls, "SD Card - List files"
+  "ls", term_cmd_ls, "List files"
 };
 
 
@@ -374,7 +374,7 @@ void term_cmd_cd(char *param)
 }
 
 CONST command_t cd_cmd = {
-  "cd", term_cmd_cd, "SD Card - Change Dir"
+  "cd", term_cmd_cd, "Change dir"
 };
 
 // Mount SD Card Command
@@ -461,7 +461,7 @@ void term_cmd_rm(char *param)
 }
 
 CONST command_t rm_cmd = {
-  "rm", term_cmd_rm, "Delete File or Dir"
+  "rm", term_cmd_rm, "Del file or dir"
 };
 
 
@@ -493,7 +493,7 @@ void term_cmd_rn(char *param)
 }
 
 CONST command_t rn_cmd = {
-  "rn", term_cmd_rn, "SD Card - Rename File"
+  "rn", term_cmd_rn, "Rename file"
 };
 
 
@@ -526,7 +526,7 @@ void term_cmd_cr(char *param)
 }
 
 CONST command_t cr_cmd = {
-  "cr", term_cmd_cr, "SD Card - Create file"
+  "cr", term_cmd_cr, "Create file"
 };
 
 
@@ -559,7 +559,7 @@ void term_cmd_mkdir(char *param)
 }
 
 CONST command_t mkdir_cmd = {
-  "mkdir", term_cmd_mkdir, "SD Card - Make Dir"
+  "mkdir", term_cmd_mkdir, "Make dir"
 };
 
 
@@ -592,7 +592,7 @@ void term_cmd_cp(char *param)
 }
 
 CONST command_t cp_cmd = {
-  "cp", term_cmd_cp, "SD Card - Copy File"
+  "cp", term_cmd_cp, "Copy file"
 };
 
 
@@ -607,7 +607,7 @@ void term_cmd_wt(char *param)
 }
 
 CONST command_t wt_cmd = {
-  "wt", term_cmd_wt, "Write Uptime"
+  "wt", term_cmd_wt, "Write uptime"
 };
 
 static INT8U stdout = USE_USB;

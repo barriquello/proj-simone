@@ -64,6 +64,7 @@ void print_erro(const char *format, ...)
 	  }
   }
   /* log error */
+  (void)monitor_seek_end(&stderr_f);
   (void)monitor_write(monitor_char_buffer,&stderr_f);
   (void)monitor_close(&stderr_f);
 }
@@ -158,19 +159,19 @@ uint8_t monitor_getheader(char* filename, monitor_header_t * h)
 		   return 0;
 	   }
 	   
-	   if(monitor_header[idx++] == 'V')
+	   if(monitor_header[idx++] != 'V') return 0;
 	   {
 		   NEXT_2(h->h1.version);
 	   }
-	   if(monitor_header[idx++]  == 'M')
+	   if(monitor_header[idx++]  != 'M') return 0;
 	   {
 		   NEXT_2(h->h1.mon_id);
 	   }
-	   if(monitor_header[idx++] == 'B')
+	   if(monitor_header[idx++] != 'B') return 0;
 	   {
 		   NEXT_4(h->h1.entry_size);
 	   }
-	   if(monitor_header[idx++] == 'I')
+	   if(monitor_header[idx++] != 'I') return 0;
 	   {
 		   NEXT_4(h->h1.time_interv);
 	   }
@@ -182,7 +183,7 @@ uint8_t monitor_getheader(char* filename, monitor_header_t * h)
 		   return 0;
 	   }			   
 	   idx = 0;
-	   if(monitor_header[idx++] == 'T')
+	   if(monitor_header[idx++] != 'T') return 0;
 	   {
 		   NEXT_4(h->h2.year);
 		   NEXT_2(h->h2.mon);
@@ -200,7 +201,7 @@ uint8_t monitor_getheader(char* filename, monitor_header_t * h)
 		   return 0;
 	   }
 	   idx = 0;
-	   if(monitor_header[idx++] == 'P')
+	   if(monitor_header[idx++] != 'P') return 0;
 	   {
 		   NEXT_4(h->last_idx);
 	   }
@@ -212,7 +213,7 @@ uint8_t monitor_getheader(char* filename, monitor_header_t * h)
 		   return 0;
 	   }
 	   idx = 0;
-	   if(monitor_header[idx++] == 'C')
+	   if(monitor_header[idx++] != 'C') return 0;
 	   {
 		   NEXT_4(h->count);
 	   }
@@ -248,9 +249,7 @@ uint8_t monitor_validateheader(char* filename, uint8_t monitor_id, uint16_t inte
 		{
 			return 0;
 		}
-	}
-	
-	monitor_setheader(filename, &h);
+	}	
 	return 0;
 }
 
@@ -380,9 +379,9 @@ uint16_t monitor_writeentry(char* filename, char* entry)
 	{
 		if(monitor_openappend(filename,&fp))
 		{
-		   ret = monitor_write(entry,&fp);
+			monitor_seek_end(&fp);
+		   (void)monitor_write(entry,&fp);
 		   (void)monitor_close(&fp);
-		   assert(ret == 1);
 
 		   h.count++; // incrementa contador de entradas
 		   monitor_setheader(filename, &h);
@@ -699,6 +698,12 @@ void monitor_writer(uint8_t monitor_num)
 	
 	/* write data (hex char) to file  */
 	cnt = monitor_writeentry(monitor_getfilename_to_write(monitor_num),monitor_char_buffer);
+	
+	if(cnt == 0)
+	{
+		print_erro("Monitor %d: write failed\r\n", monitor_num);
+		return;
+	}
 
 	/* change to parent dir */
 	monitor_chdir("..");
