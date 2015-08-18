@@ -111,11 +111,11 @@ static int monitor_rename(TCHAR *source, const TCHAR *dest)
 
 void	print_erro(const char *format, ...);
 
-#define LOG_HEADER_LEN		 52
+#define LOG_HEADER_LEN		 50
 #define LOG_MAX_ENTRY_SIZE   256
 #define FILENAME_MAX_LENGTH  13
 #define LOG_FILENAME_START   "99123123.txt"
-#define LOG_METAFILE   		 ".0.txt"
+#define LOG_METAFILE   		 "metafile.txt"
 #define MAX_NUM_OF_ENTRIES   ((uint32_t)(-1))
 #define MAX_NUM_OF_MONITORES 3
 #define NUM_OF_FIELDS        6
@@ -237,8 +237,9 @@ void monitor_sync(char*);
 
 void monitor_makeheader(char monitor_header[], monitor_header_t * h);
 void monitor_setheader(char* filename, monitor_header_t * h);
-void monitor_getheader(char* filename, monitor_header_t * h);
-void monitor_newheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size);
+uint8_t monitor_getheader(char* filename, monitor_header_t * h);
+uint8_t monitor_newheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size);
+uint8_t monitor_validateheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size);
 
 void monitor_createentry(char* string, uint16_t *dados, uint16_t len);
 uint16_t monitor_writeentry(char* filename, char* entry);

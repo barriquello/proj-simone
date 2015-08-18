@@ -27,9 +27,8 @@
 
 extern monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 
-#define LOG_MAX_DATA_BUF_SIZE  	(LOG_MAX_ENTRY_SIZE/2)
-
-uint8_t monitor_data_buffer[LOG_MAX_DATA_BUF_SIZE];
+#define LOG_MAX_DATA_BUF_SIZE  (LOG_MAX_ENTRY_SIZE/2)
+uint16_t monitor_data_buffer[LOG_MAX_ENTRY_SIZE];
 char monitor_char_buffer[LOG_MAX_ENTRY_SIZE];
 
 #include "modbus_slaves.h"
@@ -57,11 +56,16 @@ void print_erro(const char *format, ...)
   VSPRINTF(monitor_char_buffer, format, argptr);  
   va_end(argptr);
 
-  if(monitor_openwrite(error_file,&stderr_f))
+  if(!monitor_openappend(error_file,&stderr_f))
   {
-	  (void)monitor_write(monitor_char_buffer,&stderr_f);
-	  (void)monitor_close(&stderr_f);
+	  if(!monitor_openwrite(error_file,&stderr_f))
+	  {
+		  return;
+	  }
   }
+  /* log error */
+  (void)monitor_write(monitor_char_buffer,&stderr_f);
+  (void)monitor_close(&stderr_f);
 }
 
 
@@ -77,7 +81,7 @@ void monitor_createentry(char* buffer, uint16_t *dados, uint16_t len)
 		dados++;
 		len--;
 	}while(len > 0);
-
+	
 	*buffer++='\r';
 	*buffer++='\n';
 	*buffer++='\0';
@@ -117,13 +121,13 @@ void monitor_makeheader(char monitor_header[], monitor_header_t * h)
    monitor_header[50] = '\0';
 }
 
-char monitor_header[LOG_HEADER_LEN+1];
+char monitor_header[LOG_HEADER_LEN+2];
 
 void monitor_setheader(char* filename, monitor_header_t * h)
 {
    LOG_FILETYPE fp;  
 
-   if(monitor_openread(filename,&fp))
+   if(monitor_openappend(filename,&fp))
    {
 	   monitor_makeheader(monitor_header,h);
 	   (void)monitor_write(monitor_header,&fp);
@@ -132,7 +136,7 @@ void monitor_setheader(char* filename, monitor_header_t * h)
 
 }
 
-void monitor_getheader(char* filename, monitor_header_t * h)
+uint8_t monitor_getheader(char* filename, monitor_header_t * h)
 {
 
 	   LOG_FILETYPE fp;
@@ -142,83 +146,112 @@ void monitor_getheader(char* filename, monitor_header_t * h)
 
 #define NEXT_2(res)	do{hex1 = monitor_header[idx++]; hex2 = monitor_header[idx++];} while(0); (res) = hex2byte(hex1,hex2);
 #define NEXT_4(res) do{hex1 = monitor_header[idx++]; hex2 = monitor_header[idx++]; b1 = hex2byte(hex1,hex2); hex1 = monitor_header[idx++];hex2 = monitor_header[idx++]; b2 = hex2byte(hex1,hex2);}while(0); (res) = byte2int(b1,b2);
+	   	   
+	   if(!monitor_openread(filename,&fp))
+	   {
+		   return 0;
+	   }
+
+	   /* process first header line */
+	   if(!monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
+	   {
+		   return 0;
+	   }
+	   
+	   if(monitor_header[idx++] == 'V')
+	   {
+		   NEXT_2(h->h1.version);
+	   }
+	   if(monitor_header[idx++]  == 'M')
+	   {
+		   NEXT_2(h->h1.mon_id);
+	   }
+	   if(monitor_header[idx++] == 'B')
+	   {
+		   NEXT_4(h->h1.entry_size);
+	   }
+	   if(monitor_header[idx++] == 'I')
+	   {
+		   NEXT_4(h->h1.time_interv);
+	   }
+	   assert (idx == 16);
+
+	   /* process second header line */
+	   if(!monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
+	   {
+		   return 0;
+	   }			   
+	   idx = 0;
+	   if(monitor_header[idx++] == 'T')
+	   {
+		   NEXT_4(h->h2.year);
+		   NEXT_2(h->h2.mon);
+		   NEXT_2(h->h2.mday);
+		   NEXT_2(h->h2.hour);
+		   NEXT_2(h->h2.min);
+		   NEXT_2(h->h2.sec);
+		   h->h2.synched = hex2val(monitor_header[idx++]);
+	   }
+	   assert (idx == 16);
+	
+	   /* process third header line */
+	   if(!monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
+	   {
+		   return 0;
+	   }
+	   idx = 0;
+	   if(monitor_header[idx++] == 'P')
+	   {
+		   NEXT_4(h->last_idx);
+	   }
+	   assert (idx == 5);
+
+	   /* process fourth header line */
+	   if(!monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
+	   {
+		   return 0;
+	   }
+	   idx = 0;
+	   if(monitor_header[idx++] == 'C')
+	   {
+		   NEXT_4(h->count);
+	   }
+	   assert (idx == 5);
 
 	   (void)monitor_close(&fp);
 	   
-	   if(monitor_openread(filename,&fp))
-	   {
-		   if(monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
-		   {
-			   if(monitor_header[idx++] == 'V')
-			   {
-				   NEXT_2(h->h1.version);
-			   }
-			   if(monitor_header[idx++]  == 'M')
-			   {
-				   NEXT_2(h->h1.mon_id);
-			   }
-			   if(monitor_header[idx++] == 'B')
-			   {
-				   NEXT_4(h->h1.entry_size);
-			   }
-			   if(monitor_header[idx++] == 'I')
-			   {
-				   NEXT_4(h->h1.time_interv);
-			   }
-			   assert (idx == 16);
-
-		   }
-
-		   // read next line
-		   if(monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
-		   {
-			   idx = 0;
-			   if(monitor_header[idx++] == 'T')
-			   {
-				   NEXT_4(h->h2.year);
-				   NEXT_2(h->h2.mon);
-				   NEXT_2(h->h2.mday);
-				   NEXT_2(h->h2.hour);
-				   NEXT_2(h->h2.min);
-				   NEXT_2(h->h2.sec);
-				   h->h2.synched = hex2val(monitor_header[idx++]);
-			   }
-			   assert (idx == 16);
-		   }
-
-		   // read next line
-		   if(monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
-		   {
-			   idx = 0;
-			   if(monitor_header[idx++] == 'P')
-			   {
-				   NEXT_4(h->last_idx);
-			   }
-			   assert (idx == 5);
-		   }
-
-		   // read next line
-		   if(monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
-		   {
-			   idx = 0;
-			   if(monitor_header[idx++] == 'C')
-			   {
-				   NEXT_4(h->count);
-			   }
-			   assert (idx == 5);
-		   }
-
-		   (void)monitor_close(&fp);
-	   }
+	   return 1;
 }
 
-void monitor_newheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size)
+uint8_t monitor_newheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size)
 {
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 	h.h1.mon_id = monitor_id;
 	h.h1.time_interv = interval;
 	h.h1.entry_size = entry_size;
 	monitor_setheader(filename, &h);
+	return monitor_getheader(filename, &h);
+}
+
+uint8_t monitor_validateheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size)
+{
+	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
+	if(monitor_getheader(filename, &h))
+	{
+		if( h.h1.mon_id == monitor_id && 
+			h.h1.time_interv == interval &&
+			h.h1.entry_size == entry_size)
+		{
+			return 1;
+		}
+		else
+		{
+			return 0;
+		}
+	}
+	
+	monitor_setheader(filename, &h);
+	return 0;
 }
 
 #ifndef _WIN32
@@ -343,20 +376,21 @@ uint16_t monitor_writeentry(char* filename, char* entry)
 	LOG_FILETYPE fp;
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 
-	monitor_getheader(filename, &h);
-
-	if(monitor_openappend(filename,&fp))
+	if(monitor_getheader(filename, &h))
 	{
-	   ret = monitor_write(entry,&fp);
-	   (void)monitor_close(&fp);
-	   assert(ret == 1);
+		if(monitor_openappend(filename,&fp))
+		{
+		   ret = monitor_write(entry,&fp);
+		   (void)monitor_close(&fp);
+		   assert(ret == 1);
 
-	   h.count++; // incrementa contador de entradas
-	   monitor_setheader(filename, &h);
+		   h.count++; // incrementa contador de entradas
+		   monitor_setheader(filename, &h);
 
-	}else
-	{
-	   assert(0);
+		}else
+		{
+			h.count = 0;
+		}
 	}
 
 	/* if file is not synched, try to synch */
@@ -396,10 +430,11 @@ uint16_t build_entry_to_send(char* ptr_data, uint8_t *data, uint8_t len)
 	return cnt;
 }
 
+char data_vector[256*4];
+
 uint8_t monitor_entry_send(monitor_entry_t* entry, uint8_t len)
 {
-
-	char data_vector[256*4];
+	
 	uint16_t cnt = 0;
 	cnt = build_entry_to_send(data_vector,entry->values,len);
 
@@ -516,7 +551,7 @@ uint8_t monitor_init(uint8_t monitor_num)
 
 	  strcpy(monitor_state[monitor_num].monitor_name_writing, LOG_FILENAME_START);
 
-	  if (monitor_stat(monitor_state[monitor_num].monitor_dir_name, &fnfo))
+	  if (!monitor_stat(monitor_state[monitor_num].monitor_dir_name, &fnfo))
 	  {
 		  monitor_mkdir(monitor_state[monitor_num].monitor_dir_name);
 	  }
@@ -534,6 +569,7 @@ uint8_t monitor_init(uint8_t monitor_num)
 	    monitor_closedir(d);
 	  }else
 	  {
+		  print_erro_and_exit:
 		  print_erro("Log init erro: %d", monitor_num);
 		  return !OK;
 	  }
@@ -542,19 +578,32 @@ uint8_t monitor_init(uint8_t monitor_num)
 	 monitor_chdir(monitor_state[monitor_num].monitor_dir_name);
 
      /* try open log or create it now */
-	 if(monitor_openread(monitor_state[monitor_num].monitor_name_writing,&fp))
-	 {
-	   (void)monitor_close(&fp);
-	 }else
+	 if(!monitor_openappend(monitor_state[monitor_num].monitor_name_writing,&fp))
 	 {
 	   if(monitor_openwrite(monitor_state[monitor_num].monitor_name_writing,&fp))
 	   {
-		   monitor_newheader(monitor_state[monitor_num].monitor_name_writing,0,
-				   monitor_state[monitor_num].config_h.time_interv,
-				   monitor_state[monitor_num].config_h.entry_size);
-		   (void)monitor_close(&fp);
+		   goto make_new_header;
+	   }else
+	   {
+		   goto print_erro_and_exit;
 	   }
 	 }
+	 /* validate header */
+	 if(!monitor_validateheader(monitor_state[monitor_num].monitor_name_writing,
+			   monitor_state[monitor_num].config_h.mon_id,
+			   monitor_state[monitor_num].config_h.time_interv,
+			   monitor_state[monitor_num].config_h.entry_size))
+	 {
+		 make_new_header:
+		 if(monitor_newheader(monitor_state[monitor_num].monitor_name_writing,
+		 				   monitor_state[monitor_num].config_h.mon_id,
+		 				   monitor_state[monitor_num].config_h.time_interv,
+		 				   monitor_state[monitor_num].config_h.entry_size) == 0)
+		   {
+			 goto print_erro_and_exit;
+		   }		 
+	 }
+	 (void)monitor_close(&fp);
 
      /* try open metalog or create a new one */
 	 if(monitor_openread(LOG_METAFILE,&fp))
@@ -588,6 +637,9 @@ uint8_t monitor_init(uint8_t monitor_num)
 		   strcpy(monitor_state[monitor_num].monitor_name_reading,monitor_state[monitor_num].monitor_name_writing);
 		   if(monitor_write(monitor_state[monitor_num].monitor_name_writing,&fp)){;}
 		   (void)monitor_close(&fp);
+	   }else
+	   {
+		   goto print_erro_and_exit;
 	   }
 	 }
 
@@ -631,14 +683,14 @@ void monitor_writer(uint8_t monitor_num)
 	}
 	
 	/* read data */
-	if(monitor_state[monitor_num].read_data(monitor_data_buffer,monitor_state[monitor_num].config_h.entry_size) == 0)
+	if(monitor_state[monitor_num].read_data((uint8_t*)monitor_data_buffer,(uint8_t)monitor_state[monitor_num].config_h.entry_size) == 0)
 	{
 		print_erro("Monitor %d: read failed\r\n", monitor_num);
 		return;
 	}
 	
 	/* convert data to hex char */
-	monitor_createentry(monitor_char_buffer,monitor_data_buffer,monitor_state[monitor_num].config_h.entry_size);
+	monitor_createentry(monitor_char_buffer,(uint16_t*)monitor_data_buffer,(uint16_t)monitor_state[monitor_num].config_h.entry_size);
 
 #endif		
 
@@ -662,7 +714,7 @@ void monitor_reader(uint8_t monitor_num)
 
 	char* fname = monitor_getfilename_to_read(monitor_num);
 	
-	if(fname == NULL) return;
+	if(*fname == '\0') return;
 	
 	memset(monitor_char_buffer,0x00,sizeof(monitor_char_buffer));
 	entry.values = monitor_char_buffer;

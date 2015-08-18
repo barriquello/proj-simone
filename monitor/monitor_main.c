@@ -434,7 +434,7 @@ static void config_check_erro(void)
 	if(config_check.bit.gprs_apn_ok == 0)
 	{
 		print_erro(monitor_error_msg[0]);
-		print_erro("gprs server \n\r.");		
+		print_erro("gprs server\n\r.");		
 	}
 	if (erro)
 	{
