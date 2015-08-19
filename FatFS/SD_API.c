@@ -7,10 +7,10 @@
 #include "string.h"
 #include "terminal_io.h"
 
-#define SD_PRINT 0
+#define SD_PRINT 1
 
 #if SD_PRINT
-#define PRINT(a,...) if(a) { printf_lib(__VA_ARGS__)};
+#define PRINT(a,...) if(a) { printf_lib(__VA_ARGS__);}
 #else
 #define PRINT(a,...)
 #endif
@@ -210,7 +210,7 @@ void ListFiles(INT8U *pname1)
         sd_command = SD_FILE_LISTING;
 
         // list files
-        PRINT((verbose == VERBOSE_ON), "\n\r");
+        PRINT(TRUE, "\n\r");
       	if (*pname1 == 0)
       	{
       	  ptr = ".";
@@ -253,9 +253,9 @@ void ListFiles(INT8U *pname1)
   				  Finfo.fname[0] = 0;
             
             #if _USE_LFN
-  				PRINT((verbose == VERBOSE_ON),"  %s\n\r", Lfname);					
+  				PRINT(TRUE,"  %s\n\r", Lfname);					
             #else
-  				PRINT((verbose == VERBOSE_ON), "\n\r");
+  				PRINT(TRUE, "\n\r");
             #endif
   				}
 				}
@@ -272,12 +272,12 @@ void ListFiles(INT8U *pname1)
       }
       else
       {
-    	  PRINT((verbose == VERBOSE_ON), SD_API_CARD_BUSY);  
+    	  PRINT(TRUE, SD_API_CARD_BUSY);  
       }              
     }
     else
     {
-    	PRINT((verbose == VERBOSE_ON), SD_API_CARD_NOT_PRESENT);
+    	PRINT(TRUE, SD_API_CARD_NOT_PRESENT);
     }
 
     #if (SD_FAT_MUTEX_EN == 1)

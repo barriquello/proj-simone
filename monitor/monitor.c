@@ -14,11 +14,12 @@
 
 #ifdef _WIN32
 #include "http_client.h"
-#define DEBUG_MONITOR 1
 #endif
 
+#define DEBUG_MONITOR 1
+
 #if DEBUG_MONITOR
-#define PRINTF(...) printf(__VA_ARGS__);
+#define PRINTF(...) printf_lib(__VA_ARGS__);
 #else
 #define PRINTF(...)
 #endif
@@ -70,7 +71,7 @@ void print_erro(const char *format, ...)
 }
 
 
-void monitor_createentry(char* buffer, uint16_t *dados, uint16_t len)
+void monitor_createentry(char* buffer, uint16_t *dados, uint8_t len)
 {
 
 	uint16_t dado = 0;
@@ -80,7 +81,7 @@ void monitor_createentry(char* buffer, uint16_t *dados, uint16_t len)
 		int2hex(buffer,dado);
 		buffer+=4;
 		dados++;
-		len--;
+		len--; 
 	}while(len > 0);
 	
 	*buffer++='\r';
@@ -379,7 +380,7 @@ uint16_t monitor_writeentry(char* filename, char* entry)
 	{
 		if(monitor_openappend(filename,&fp))
 		{
-			monitor_seek_end(&fp);
+		   (void)monitor_seek_end(&fp);
 		   (void)monitor_write(entry,&fp);
 		   (void)monitor_close(&fp);
 
@@ -570,6 +571,7 @@ uint8_t monitor_init(uint8_t monitor_num)
 	  {
 		  print_erro_and_exit:
 		  print_erro("Log init erro: %d", monitor_num);
+		  PRINTF("Log init erro: %d", monitor_num);
 		  return !OK;
 	  }
 
@@ -689,7 +691,7 @@ void monitor_writer(uint8_t monitor_num)
 	}
 	
 	/* convert data to hex char */
-	monitor_createentry(monitor_char_buffer,(uint16_t*)monitor_data_buffer,(uint16_t)monitor_state[monitor_num].config_h.entry_size);
+	monitor_createentry(monitor_char_buffer,(uint16_t*)monitor_data_buffer,(uint8_t)(monitor_state[monitor_num].config_h.entry_size/2));
 
 #endif		
 
@@ -702,13 +704,15 @@ void monitor_writer(uint8_t monitor_num)
 	if(cnt == 0)
 	{
 		print_erro("Monitor %d: write failed\r\n", monitor_num);
-		return;
+		PRINTF("Monitor %d: write failed\r\n", monitor_num);
+	}else
+	{
+		PRINTF("Entry written %d\r\n", cnt);
 	}
 
 	/* change to parent dir */
 	monitor_chdir("..");
-
-	PRINTF("Entry written %d\r\n", cnt);
+	
 }
 
 void monitor_reader(uint8_t monitor_num)

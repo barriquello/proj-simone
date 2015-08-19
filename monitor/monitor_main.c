@@ -550,6 +550,8 @@ void main_monitor(void)
 	fflush(stdout);
 #endif	
 
+	DelayTask(2000);
+	
 	while(1)
 	{
 	

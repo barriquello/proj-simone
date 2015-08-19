@@ -243,7 +243,7 @@ uint8_t monitor_getheader(char* filename, monitor_header_t * h);
 uint8_t monitor_newheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size);
 uint8_t monitor_validateheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size);
 
-void monitor_createentry(char* string, uint16_t *dados, uint16_t len);
+void monitor_createentry(char* string, uint16_t *dados, uint8_t len);
 uint16_t monitor_writeentry(char* filename, char* entry);
 uint32_t monitor_readentry(uint8_t monitor_num, char* filename, monitor_entry_t* entry);
 
