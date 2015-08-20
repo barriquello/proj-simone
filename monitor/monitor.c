@@ -290,12 +290,12 @@ void monitor_settimestamp(uint8_t monitor_num, char* filename)
 	char new_filename[8+5]={"00000000.txt"};
 	uint8_t ret;
 
-	monitor_getheader(filename, &h);
+	if(!monitor_getheader(filename, &h)) return;
 
 	/* check if already synched */
 	if(h.h2.synched == 0)
 	{
-		time_elapsed_s = (h.h1.time_interv)*(h.count);
+		time_elapsed_s = (uint32_t)((h.h1.time_interv)*(h.count));
 		monitor_gettimestamp(&ts, time_elapsed_s);
 
 		#if 1
@@ -332,7 +332,7 @@ void monitor_settimestamp(uint8_t monitor_num, char* filename)
 			strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
 
 			PRINTF("\r\n %s will be renamed to %s \r\n", filename,new_filename);
-			ret = monitor_rename(filename, new_filename);
+			ret = (uint8_t)monitor_rename(filename, new_filename);
 
 			/* if rename failed, try other name */
 			while(!ret)
@@ -344,7 +344,7 @@ void monitor_settimestamp(uint8_t monitor_num, char* filename)
 				strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
 
 				PRINTF("\r\n %s will be renamed to %s \r\n", filename,new_filename);
-				ret = monitor_rename(filename, new_filename);
+				ret = (uint8_t)monitor_rename(filename, new_filename);
 
 			}
 
@@ -370,9 +370,9 @@ void monitor_settimestamp(uint8_t monitor_num, char* filename)
 
 extern volatile uint8_t monitor_is_connected;
 
-uint16_t monitor_writeentry(char* filename, char* entry)
+uint16_t monitor_writeentry(char* filename, char* entry, uint8_t monitor_num)
 {
-	uint16_t ret;
+
 	LOG_FILETYPE fp;
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 
@@ -396,7 +396,7 @@ uint16_t monitor_writeentry(char* filename, char* entry)
 	/* if file is not synched, try to synch */
 	if(monitor_is_connected == 1 && h.h2.synched == 0)
 	{
-		monitor_sync(filename);
+		monitor_sync(monitor_num, filename);
 	}
 
 	return h.count;
@@ -530,9 +530,9 @@ uint32_t monitor_readentry(uint8_t monitor_num, char* filename, monitor_entry_t*
 	return 0;
 }
 
-void monitor_sync(char*monitor_fn)
+void monitor_sync(uint8_t monitor_num, char*monitor_fn)
 {
-	monitor_settimestamp(0, (char*)monitor_fn); // sincronizar
+	monitor_settimestamp(monitor_num, (char*)monitor_fn); // sincronizar
 }
 
 #if _WIN32
@@ -561,9 +561,9 @@ uint8_t monitor_init(uint8_t monitor_num)
 	    while (monitor_readdir(dir,d))
 	    {
 #if _WIN32
-	    	PRINTF("%s\n", dir->d_name);
+	    	PRINTF("%s\r\n", dir->d_name);
 #else
-	    	PRINTF("%s\n", (LOG_DIRINFO*)(&dir)->fname);
+	    	PRINTF("%s\r\n", (LOG_DIRINFO*)(&dir)->fname);
 #endif
 	    }
 	    monitor_closedir(d);
@@ -699,11 +699,11 @@ void monitor_writer(uint8_t monitor_num)
 	monitor_chdir(monitor_state[monitor_num].monitor_dir_name);
 	
 	/* write data (hex char) to file  */
-	cnt = monitor_writeentry(monitor_getfilename_to_write(monitor_num),monitor_char_buffer);
+	cnt = monitor_writeentry(monitor_getfilename_to_write(monitor_num),monitor_char_buffer, monitor_num);
 	
 	if(cnt == 0)
 	{
-		print_erro("Monitor %d: write failed\r\n", monitor_num);
+		print_erro("Monitor %d: write failed\r\n", (uint8_t)monitor_num);
 		PRINTF("Monitor %d: write failed\r\n", monitor_num);
 	}else
 	{

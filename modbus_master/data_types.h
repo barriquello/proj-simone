@@ -37,17 +37,6 @@ typedef double                  float64_t;
 #define NULL 					((void*)0L)
 #endif
 
-/******************************************************************************/
-/*                               Macros                                       */
-/******************************************************************************/
-#define BIT_SET(slovo, bit)     ((slovo) |= (1 << (bit)))
-#define BIT_CLEAR(slovo, bit)   ((slovo) &= ~( 1 << (bit)))
-#define BIT_TEST(slovo, bit)    ((slovo) & ( 1 << (bit)))
-#define BIT_TOG(slovo, bit)     ((slovo) ^= (bit))
-#define MAX(a, b)               (((a) > (b)) ? (a):(b))
-#define MIN(a, b)               (((a) < (b)) ? (a):(b))
-#define ARRAYSIZE(a)            (sizeof(a) / sizeof(a[0]))
-
 
 typedef union
 {

@@ -809,7 +809,7 @@ void term_cmd_m590(char *param)
 			break;
 		case '3': at_m590_send(NULL);
 			break;
-		case '4': at_m590_receive(NULL,NULL);
+		case '4': at_m590_receive(entradas,SIZEARRAY(entradas));
 			break;					
 		case '5': at_m590_close();
 			break;
@@ -830,33 +830,5 @@ void term_cmd_m590(char *param)
 
 CONST command_t m590_cmd = {
   "m590", term_cmd_m590, "Control M590 modem"
-};
-
-// D/A converter sin wave Command
-INT16S wave[32]={2048,2447,2831,3185,3495,3750,3939,4056,4095,4056,3939,3750,3495,3185,2831,2447,
-		2048,1649,1265,911,601,346,157,40,1,40,157,346,601,911,1265,1649};
-
-void cmd_sin2da(char *param)
-{
-  INT16U i = 0;
-  INT16U j = 0;
-  (void)*param;
-  while(1)
-  {
-	  DAConvert(wave[i]);
-      DelayTask(2);
-	  i++;
-	  if (i >= 32)
-	  {
-		  i = 0;
-		  j++;
-	  }
-	  if (j >= 8) break;
-  }    
-}
-
-CONST command_t sin2da_cmd = 
-{
-  "sin2da", cmd_sin2da, "Sin wave to DAC"
 };
 

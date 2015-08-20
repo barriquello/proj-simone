@@ -11,6 +11,7 @@
 #include "OS_types.h"
 #include "UART.h"
 #include "terminal_io.h"
+#include "stdint.h"
 
 // configuration 
 #define M590_BAUD 			9600
@@ -86,6 +87,7 @@ typedef enum
 typedef enum 
 {
 	M590_OK,
+	M590_ERR,
 	M590_STATE_ERR,
 	M590_APCONN_ERR,
 	M590_TCPCONN_ERR
@@ -110,17 +112,22 @@ typedef enum
 m590_ret_t at_m590_init(void);
 m590_ret_t at_m590_open(void);
 m590_ret_t at_m590_send(INT8U* dados);
-m590_ret_t at_m590_receive(CHAR8* buff, INT8U* len);
+m590_ret_t at_m590_receive(CHAR8* buff, INT8U len);
 m590_ret_t at_m590_close(void);
 m590_ret_t at_m590_server(void);
 m590_ret_t at_m590_dns(char* param);
 CHAR8 at_m590_getchar(void);
 
 
+uint8_t m590_init(void);
+uint8_t m590_open(void);
+uint8_t m590_close(void);
 
-INT8U m590_set_hostname(CHAR8 *host);
-INT8U m590_get_ip(void);
-INT8U m590_set_ip(CHAR8* ip);
+uint8_t m590_receive(uint8_t* buff, uint16_t* len);
+uint8_t m590_send(uint8_t * dados, uint16_t tam);
+uint8_t m590_set_ip(char* _ip);
+uint8_t m590_set_hostname(char *host);
+uint8_t m590_get_ip(void);
 
 
 #endif /* M590_AT_H_ */

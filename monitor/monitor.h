@@ -235,7 +235,7 @@ typedef union
 void test_logger(void);
 
 uint8_t monitor_init(uint8_t monitor_num);
-void monitor_sync(char*);
+void monitor_sync(uint8_t monitor_num,char*);
 
 void monitor_makeheader(char monitor_header[], monitor_header_t * h);
 void monitor_setheader(char* filename, monitor_header_t * h);
@@ -244,7 +244,7 @@ uint8_t monitor_newheader(char* filename, uint8_t monitor_id, uint16_t interval,
 uint8_t monitor_validateheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size);
 
 void monitor_createentry(char* string, uint16_t *dados, uint8_t len);
-uint16_t monitor_writeentry(char* filename, char* entry);
+uint16_t monitor_writeentry(char* filename, char* entry, uint8_t monitor_num);
 uint32_t monitor_readentry(uint8_t monitor_num, char* filename, monitor_entry_t* entry);
 
 void monitor_gettimestamp(struct tm * ts, uint32_t time_elapsed_s);

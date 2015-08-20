@@ -45,3 +45,16 @@ void byte2hex(char *ret, uint8_t c);
 void int2hex(char *ret, uint16_t c);
 uint8_t hex2byte(char c1, char c2);
 uint16_t byte2int(uint8_t c1, uint8_t c2);
+
+
+
+/******************************************************************************/
+/*                               Macros                                       */
+/******************************************************************************/
+#define BIT_SET(slovo, bit)     ((slovo) |= (1 << (bit)))
+#define BIT_CLEAR(slovo, bit)   ((slovo) &= ~( 1 << (bit)))
+#define BIT_TEST(slovo, bit)    ((slovo) & ( 1 << (bit)))
+#define BIT_TOG(slovo, bit)     ((slovo) ^= (bit))
+#define MAX(a, b)               (((a) > (b)) ? (a):(b))
+#define MIN(a, b)               (((a) < (b)) ? (a):(b))
+#define SIZEARRAY(a)            (sizeof(a) / sizeof(a[0]))

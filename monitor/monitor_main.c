@@ -182,9 +182,9 @@ static char getchar_timeout(int timeout)
 static struct pt monitor_input_pt;
 mon_timer_t input_timer;
 
-volatile uint8_t monitor_running = 1;
-volatile uint8_t monitor_uploading = 1;
-volatile uint8_t monitor_is_connected = 0;
+volatile uint8_t monitor_running = 0;
+volatile uint8_t monitor_uploading = 0;
+volatile uint8_t monitor_is_connected = 1;
 
 static char set_input = 0;
 

@@ -40,13 +40,14 @@ static char server_reply[1024];
 static char* hostname = SERVER_NAME;
 uint16_t recv_size;
 
-uint8_t simon_init(input _in, output _out, set_host sethost)
+uint8_t simon_init(input _in, output _out, set_host sethost, set_ip setip)
 {
 	in = _in;
 	out = _out;		
 	simon_set_apikey(API_KEY);		/* set a default key */
 	simon_set_hostname(SERVER_NAME); /* set a default server */
-	sethost(hostname); 
+	sethost(hostname);
+	setip("54.173.137.93"); /* set a default ip */
 	return OK;
 }
 
