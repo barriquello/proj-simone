@@ -79,6 +79,16 @@
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/minINI</locationURI>
 		</link>
 		<link>
+			<name>modbus_master</name>
+			<type>2</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/modbus_master</locationURI>
+		</link>
+		<link>
+			<name>modbus_slaves</name>
+			<type>2</type>
+			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/modbus_slaves</locationURI>
+		</link>
+		<link>
 			<name>monitor</name>
 			<type>2</type>
 			<locationURI>$%7BPARENT-1-PROJECT_LOC%7D/monitor</locationURI>

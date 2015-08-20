@@ -117,6 +117,7 @@ uint8_t get_server_confirmation(char* server_reply)
 }
 
 #include "time_lib.h"
+
 void get_server_time(char* server_reply, struct tm *ts)
 {
 	

@@ -43,6 +43,7 @@
 #define LOG_FILEPOS                   fpos_t
 #define monitor_tell(file,pos)            ((*(pos) = ftell(*(file))) != (-1L)) //(fgetpos(*(file), (pos)) == 0)
 #define monitor_seek(file,pos)            (fseek(*(file), *(pos), SEEK_SET) == 0) // (fsetpos(*(file), (pos)) == 0)
+#define monitor_seek_end(file)            (fseek(*(file), 0, SEEK_END) == 0) // (fsetpos(*(file), (pos)) == 0)
 
 #define LOG_DIRTYPE                   DIR*
 #define LOG_DIRINFO 				  struct dirent *

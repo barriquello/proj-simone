@@ -5,15 +5,20 @@
  *      Author: Universidade Federal
  */
 
-
+#ifndef _WIN32
+#include "BRTOS.h"
+#include "AppConfig.h"
 #include "modbus.h"
+#else
+#define CONST const
+#endif
+
+
 #include "modbus_slaves.h"
 #include "modbus_slave_null.h" /* NULL device */
 #include "time_lib.h"
 
-#include "AppConfig.h"
-
-static CONST INT16U usRegInputBuf[NULL_REGLIST_INPUT_NREGS] = 
+static CONST uint16_t usRegInputBuf[NULL_REGLIST_INPUT_NREGS] =
 { 		
 	0xaaaa,0xbbbb,0xcccc,0xdddd,0xeeee,0xffff,0x0001
 };
@@ -28,7 +33,9 @@ uint8_t slave_null_read_data(uint8_t* buf, uint8_t max_len);
 
 uint8_t slave_null_read_data(uint8_t* buf, uint8_t max_len)
 {
+#if 0
 			OSTime timestamp;
+#endif
 			uint8_t nregs = 0;
 			
 			
@@ -45,9 +52,12 @@ uint8_t slave_null_read_data(uint8_t* buf, uint8_t max_len)
 				NULL_IRList.Regs[nregs] = random_get();
 			}
 #endif
+
+#if 0
 			/* get and set timestamp of reading and device id */			
 			GetCalendarTime(&timestamp);	
 			SetTimeStamp(MODBUS_NULL, (INT8U*)NULL_IRList.Regs, &timestamp);
+#endif
 			
 			/* limit number of registers to the max. available */
 			if(max_len > sizeof(modbus_null_input_register_list)) 

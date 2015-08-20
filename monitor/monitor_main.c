@@ -548,10 +548,11 @@ void main_monitor(void)
 	
 #ifdef _WIN32	
 	fflush(stdout);
+#else
+	DelayTask(2000);
 #endif	
 
-	DelayTask(2000);
-	
+
 	while(1)
 	{
 	
@@ -614,3 +615,9 @@ void main_monitor(void)
 
 }
 
+#ifdef _WIN32
+void sleep_forever(void)
+{
+	exit(0);
+}
+#endif

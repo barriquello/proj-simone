@@ -46,7 +46,10 @@ CONST uint8_t _ytab[2][12] = {
   {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };
 
+#ifndef _WIN32
 uint8_t _daylight = 0;              // Non-zero if daylight savings time is used
+#endif
+
 long _dstbias = 0;                  // Offset for Daylight Saving Time
 long _timezone = 0;                 // Difference in seconds between GMT and local time
 

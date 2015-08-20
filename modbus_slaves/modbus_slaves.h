@@ -8,6 +8,8 @@
 #ifndef MODBUS_SLAVES_H_
 #define MODBUS_SLAVES_H_
 
+#include "stdint.h"
+
 #define NUM_MODBUS_SLAVES (3) 
 typedef enum
 {
@@ -15,6 +17,15 @@ typedef enum
 	MS_PM210 = 1,
 	MS_TS = 2	
 }slave_num_t;
+
+#ifdef _WIN32
+typedef enum {
+	MODBUS_NULL = 0,
+	MODBUS_PM210 = 1,
+	MODBUS_TS = 2,
+	MODBUS_NONE
+}eMBSlaves;
+#endif
 
 typedef uint8_t (*data_reader)(uint8_t* buf, uint8_t max_len);
 

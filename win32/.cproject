@@ -38,6 +38,8 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../libs&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../simon-api&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/src&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../modbus_slaves&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../modbus_master&quot;"/>
 								</option>
 								<inputType id="cdt.managedbuild.tool.gnu.c.compiler.input.1443954505" superClass="cdt.managedbuild.tool.gnu.c.compiler.input"/>
 							</tool>
@@ -54,8 +56,10 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="printf_lib.c|time_lib.c|debug_stack.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="libs"/>
+						<entry excluding="printf_lib.c|debug_stack.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="libs"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="minINI"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="modbus_master"/>
+						<entry excluding="port.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="modbus_slaves"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="monitor"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="simon-api"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="src"/>

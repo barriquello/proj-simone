@@ -8,6 +8,8 @@
 #ifndef MODBUS_SLAVE_NULL_H_
 #define MODBUS_SLAVE_NULL_H_
 
+#include "stdint.h"
+
 #define NULL_REGLIST_OFFSET_NREGS 2
 #define NULL_REGLIST_INPUT_NREGS  8
 #define NULL_REGLIST_INPUT_START  1000
@@ -17,21 +19,21 @@ typedef union
 {
 	struct
 	{
-		INT8U Device_id;	/* device id */
-		INT8U Hora;			/* timestamp */
-		INT8U Minuto;		/* timestamp */
-		INT8U Segundo;		/* timestamp */
-		INT16U REG0;
-		INT16U REG1;
-		INT16U REG2;
-		INT16U REG3;
-		INT16U REG4;
-		INT16U REG5;
-		INT16U REG6;
-		INT16U REG7;
+		uint8_t Device_id;	/* device id */
+		uint8_t Hora;			/* timestamp */
+		uint8_t Minuto;		/* timestamp */
+		uint8_t Segundo;		/* timestamp */
+		uint16_t REG0;
+		uint16_t REG1;
+		uint16_t REG2;
+		uint16_t REG3;
+		uint16_t REG4;
+		uint16_t REG5;
+		uint16_t REG6;
+		uint16_t REG7;
 	}Reg;	
-	INT16U Regs[NULL_REGLIST_INPUT_NREGS+NULL_REGLIST_OFFSET_NREGS]; 
-	INT8U  Regs8[NULL_REGLIST_INPUT_NREGS*2+NULL_REGLIST_OFFSET_NREGS];
+	uint16_t Regs[NULL_REGLIST_INPUT_NREGS+NULL_REGLIST_OFFSET_NREGS];
+	uint8_t  Regs8[NULL_REGLIST_INPUT_NREGS*2+NULL_REGLIST_OFFSET_NREGS];
 }modbus_null_input_register_list;
 
 

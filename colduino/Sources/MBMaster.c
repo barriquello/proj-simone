@@ -1,6 +1,9 @@
+#ifndef _WIN32
 #include "BRTOS.h"
 #include "drivers.h"
 #include "tasks.h"
+#endif
+
 #include "AppConfig.h"
 #include "modbus.h" /* master lib */
 

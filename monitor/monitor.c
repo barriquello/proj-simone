@@ -10,16 +10,23 @@
 #include "assert.h"
 #include "simon-api.h"
 #include "printf_lib.h"
-#include "AppConfig.h"
+
 
 #ifdef _WIN32
+#include "stdio.h"
 #include "http_client.h"
+#else
+#include "AppConfig.h"
 #endif
 
 #define DEBUG_MONITOR 1
 
 #if DEBUG_MONITOR
+#ifndef _WIN32
 #define PRINTF(...) printf_lib(__VA_ARGS__);
+#else
+#define PRINTF(...) printf(__VA_ARGS__);
+#endif
 #else
 #define PRINTF(...)
 #endif
@@ -31,6 +38,8 @@ extern monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 #define LOG_MAX_DATA_BUF_SIZE  (LOG_MAX_ENTRY_SIZE/2)
 uint16_t monitor_data_buffer[LOG_MAX_ENTRY_SIZE];
 char monitor_char_buffer[LOG_MAX_ENTRY_SIZE];
+
+#define CONST const
 
 #include "modbus_slaves.h"
 extern CONST modbus_slave_t slave_NULL;
