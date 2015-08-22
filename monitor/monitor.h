@@ -196,8 +196,11 @@ typedef struct timer
 	clock_t start;
 	clock_t interval; 
 }mon_timer_t;
-static clock_t  timer_expired(mon_timer_t *t);
-static void timer_set(mon_timer_t *t, int usecs);
+
+#if 0
+clock_t  timer_expired(mon_timer_t *t);
+void timer_set(mon_timer_t *t, int usecs);
+#endif
 
 typedef struct pt pt_t;
 

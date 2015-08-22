@@ -22,6 +22,9 @@
 #define OK 		(1)
 #endif
 
+#define MODEM_OK  (0)
+#define MODEM_ERR (1)
+
 #define MAX_HOSTNAME_LEN	 (32+1)
 #define MAX_APIKEY_LEN	 	 (32+1)
 
@@ -30,7 +33,15 @@ typedef uint8_t (*output)(uint8_t *, uint16_t);
 typedef uint8_t (*set_host)(char *);
 typedef uint8_t (*set_ip)(char *);
 
-uint8_t simon_init(input _in, output _out, set_host sethost, set_ip setip);
+typedef struct
+{
+	input receive;
+	output send;
+	set_host sethost;
+	set_ip   setip;
+}modem_driver_t;
+
+uint8_t simon_init(const modem_driver_t* modem);
 uint8_t simon_get_time(struct tm * t);
 uint8_t simon_send_data(uint8_t *buf, uint16_t len);
 char* simon_get_apikey(void);
@@ -39,12 +50,6 @@ void simon_set_apikey(const char*);
 void simon_set_hostname(const char*);
 
 
-typedef struct 
-{	
-	input receive;
-	output send;
-	set_host sethost;
-	set_ip   setip;	
-}modem_driver_t;
+
 
 #endif /* SIMON_API_H_ */

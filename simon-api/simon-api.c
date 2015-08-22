@@ -10,6 +10,7 @@
 #include "printf_lib.h"
 #include "stdlib.h"
 #include "string.h"
+#include "utils.h"
 
 #define STDIO
 #ifdef STDIO
@@ -37,23 +38,25 @@ char simon_apikey[MAX_APIKEY_LEN];
 
 static char message[1024];
 static char server_reply[1024];
-static char* hostname = SERVER_NAME;
+static char* hostname = simon_hostname;
 uint16_t recv_size;
 
-uint8_t simon_init(input _in, output _out, set_host sethost, set_ip setip)
+uint8_t simon_init(const modem_driver_t* modem)
 {
-	in = _in;
-	out = _out;		
+	if(modem == NULL) return MODEM_ERR;
+	in = modem->receive;
+	out = modem->send;
 	simon_set_apikey(API_KEY);		/* set a default key */
 	simon_set_hostname(SERVER_NAME); /* set a default server */
-	sethost(hostname);
-	setip("54.173.137.93"); /* set a default ip */
-	return OK;
+	modem->sethost(hostname);
+	modem->setip("54.173.137.93"); /* set a default ip */
+	return MODEM_OK;
 }
 
 uint8_t simon_get_time(struct tm * t)
 {
-	char* get_time_request = "GET /time/local&apikey=%s";
+	//char* get_time_request = "GET /time/local&apikey=%s";
+	char* get_time_request = "GET /";
 	
 	SNPRINTF(message, 1024,
 		     "%s HTTP/1.1\r\n"
@@ -62,15 +65,16 @@ uint8_t simon_get_time(struct tm * t)
 	
 	if(out == NULL || in == NULL)
 	{
-		return !OK;
+		return MODEM_ERR;
 	}
-	if(out(message , (uint16_t)strlen(message)) != 0)
+	if(out((uint8_t*)message , (uint16_t)strlen(message)) != MODEM_OK)
 	{
-		return !OK;
+		return MODEM_ERR;
 	}
-	if(in(server_reply , (uint16_t)&recv_size) != 0)
+	recv_size = SIZEARRAY(server_reply);
+	if(in((uint8_t*)server_reply, (uint16_t*) &recv_size) != MODEM_OK)
 	{
-		return !OK;
+		return MODEM_ERR;
 	}
 	
 	/* Add a NULL terminating character to make it a proper string */
@@ -78,14 +82,14 @@ uint8_t simon_get_time(struct tm * t)
 	
 	/* set time */
 	get_server_time(server_reply, t);	
-	return OK;	
+	return MODEM_OK;
 }
 
 uint8_t simon_send_data(uint8_t *buf, uint16_t len)
 {
 	char* send_monitor = "GET /monitor/set.json?monitorid=%d&data=%s&apikey=%s";
 	
-	SNPRINTF(server_reply, 1024, send_monitor, buf[0], &buf[1], API_KEY);
+	SNPRINTF(server_reply, 1024, send_monitor, buf[0], &buf[1], (char*)simon_apikey);
 	
 	/// Form request
 	SNPRINTF(message, 1024,
@@ -95,15 +99,15 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len)
 	
 	if(out == NULL || in == NULL)
 	{
-		return !OK;
+		return MODEM_ERR;
 	}
-	if(out(message, (uint16_t)strlen(message)) != 0)
+	if(out((uint8_t*)message, (uint16_t)strlen(message)) != MODEM_OK)
 	{
-		return !OK;
+		return MODEM_ERR;
 	}
-	if(in(server_reply , (uint16_t*) &recv_size) != 0)
+	if(in((uint8_t*)server_reply, (uint16_t*) &recv_size) != MODEM_OK)
 	{
-		return !OK;
+		return MODEM_ERR;
 	}
 	server_reply[recv_size] = '\0';
 	
@@ -113,7 +117,7 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len)
 uint8_t get_server_confirmation(char* server_reply)
 {
 	/* search server confirmation: HTTP 200 OK */
-	return OK;
+	return MODEM_OK;
 }
 
 #include "time_lib.h"

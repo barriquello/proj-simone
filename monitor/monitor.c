@@ -560,7 +560,7 @@ uint8_t monitor_init(uint8_t monitor_num)
 
 	  strcpy(monitor_state[monitor_num].monitor_name_writing, LOG_FILENAME_START);
 
-	  if (!monitor_stat(monitor_state[monitor_num].monitor_dir_name, &fnfo))
+	  if (monitor_stat(monitor_state[monitor_num].monitor_dir_name, &fnfo))
 	  {
 		  monitor_mkdir(monitor_state[monitor_num].monitor_dir_name);
 	  }

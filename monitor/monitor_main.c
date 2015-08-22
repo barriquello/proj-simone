@@ -143,6 +143,32 @@ CONST char monitor_error_msg[2][24] =
 #include "utils.h"
 #endif
 
+#ifdef _WIN32
+
+static clock_t clock_time(void)
+{ return (clock_t)GetTickCount(); }
+
+#else /* _WIN32 */
+
+static clock_t clock = 0;
+static clock_t clock_time(void)
+{
+  return clock;
+}
+
+void BRTOS_TimerHook(void)
+{
+	clock++;
+}
+#endif /* _WIN32 */
+
+static clock_t timer_expired(mon_timer_t *t)
+{ return (clock_t)(clock_time() - t->start) >= (clock_t)t->interval; }
+
+static void timer_set(mon_timer_t *t, int interval)
+{ t->interval = interval; t->start = clock_time(); }
+/*---------------------------------------------------------------------------*/
+
 /*---------------------------------------------------------------------------*/
 void sleep_forever(void);
 
@@ -182,7 +208,7 @@ static char getchar_timeout(int timeout)
 static struct pt monitor_input_pt;
 mon_timer_t input_timer;
 
-volatile uint8_t monitor_running = 0;
+volatile uint8_t monitor_running = 1;
 volatile uint8_t monitor_uploading = 0;
 volatile uint8_t monitor_is_connected = 1;
 
@@ -237,32 +263,6 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
   PT_END(pt);
 }
 
-#ifdef _WIN32
-
-static clock_t clock_time(void)
-{ return (clock_t)GetTickCount(); }
-
-#else /* _WIN32 */
-	
-static clock_t clock = 0;
-static clock_t clock_time(void)
-{
-  return clock;
-}
-
-void BRTOS_TimerHook(void)
-{
-	clock++;
-}
-#endif /* _WIN32 */
-
-static clock_t timer_expired(mon_timer_t *t)
-{ return (clock_t)(clock_time() - t->start) >= (clock_t)t->interval; }
-
-static void timer_set(mon_timer_t *t, int interval)
-{ t->interval = interval; t->start = clock_time(); }
-/*---------------------------------------------------------------------------*/
-
 #include <string.h> /* memcpy, memset */
 #ifdef _WIN32
 #include <stdio.h> /* SNPRINTF */
@@ -310,7 +310,7 @@ uint8_t build_data_vector(char* ptr_data, uint8_t *data, uint8_t len)
 #endif
 
 
-//#define strtoul(a,b,c) StringToInteger(a)
+#define StringToInteger(value) strtoul(value,NULL,0);
 
 static int callback_inifile(const char *section, const char *key, const char *value, const void *userdata)
 {
@@ -445,9 +445,10 @@ static void config_check_erro(void)
 #ifdef _WIN32
 void main_monitor(void);
 
-void main(void)
+int main(void)
 {
 	main_monitor();
+	return 0;
 }
 #endif
 
@@ -466,13 +467,23 @@ void main_monitor(void)
 	uint8_t status = 0;
 #endif	
 	  
+#if _WIN32
+	extern const modem_driver_t win_http;
+	if(simon_init(&win_http) != MODEM_OK)
+	{
+		printf ("Simon init error\r\n");
+	}
+#else
+
+#endif
+
 #if _WIN32	
 	PT_INIT(&monitor_input_pt);
 	PRINTF("help:\r\nq-quit\r\np-stop logger\r\nc-continue logger\r\ns-synch\r\nu-start upload\r\nv-stop upload\r\n");
 	ftime(&start);
-	
+
 	struct tm t;
-	http_get_time(&t);
+	simon_get_time(&t);
 	printf ("Current local time and date: %s", asctime(&t));
 	fflush(stdout);
 #endif
@@ -494,6 +505,8 @@ void main_monitor(void)
 	config_check.byte = 0;
 	ini_browse(callback_inifile, NULL, config_inifile);
 	config_check_erro();
+
+
 
 	/* init monitors */
 	monitores_em_uso = 0;
