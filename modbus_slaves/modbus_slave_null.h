@@ -10,7 +10,7 @@
 
 #include "stdint.h"
 
-#define NULL_REGLIST_OFFSET_NREGS 2
+#define NULL_REGLIST_OFFSET_NREGS 0
 #define NULL_REGLIST_INPUT_NREGS  8
 #define NULL_REGLIST_INPUT_START  1000
 #define NULL_SLAVE_ADDRESS  	  (0x00)
@@ -19,10 +19,6 @@ typedef union
 {
 	struct
 	{
-		uint8_t Device_id;	/* device id */
-		uint8_t Hora;			/* timestamp */
-		uint8_t Minuto;		/* timestamp */
-		uint8_t Segundo;		/* timestamp */
 		uint16_t REG0;
 		uint16_t REG1;
 		uint16_t REG2;

@@ -134,12 +134,12 @@ void monitor_makeheader(char monitor_header[], monitor_header_t * h)
 
 char monitor_header[LOG_HEADER_LEN+2];
 
-void monitor_setheader(char* filename, monitor_header_t * h)
+void monitor_setheader(const char* filename, monitor_header_t * h)
 {
    LOG_FILETYPE fp;  
 
-#if _WIN32
-   if(monitor_openwrite(filename,&fp))
+#if 1
+   if(monitor_openread(filename,&fp))
    {
 	   monitor_makeheader(monitor_header,h);
 	   (void)monitor_write(monitor_header,&fp);
@@ -157,13 +157,14 @@ void monitor_setheader(char* filename, monitor_header_t * h)
 
 }
 
-uint8_t monitor_getheader(char* filename, monitor_header_t * h)
+uint8_t monitor_getheader(const char* filename, monitor_header_t * h)
 {
 
 	   LOG_FILETYPE fp;
 	   int idx = 0;
 	   char hex1,hex2;
 	   uint8_t b1,b2;
+	   uint8_t ok = 0;
 
 #define NEXT_2(res)	do{hex1 = monitor_header[idx++]; hex2 = monitor_header[idx++];} while(0); (res) = hex2byte(hex1,hex2);
 #define NEXT_4(res) do{hex1 = monitor_header[idx++]; hex2 = monitor_header[idx++]; b1 = hex2byte(hex1,hex2); hex1 = monitor_header[idx++];hex2 = monitor_header[idx++]; b2 = hex2byte(hex1,hex2);}while(0); (res) = byte2int(b1,b2);
@@ -176,22 +177,22 @@ uint8_t monitor_getheader(char* filename, monitor_header_t * h)
 	   /* process first header line */
 	   if(!monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
 	   {
-		   return 0;
+		   goto exit_read_error;
 	   }
 	   
-	   if(monitor_header[idx++] != 'V') return 0;
+	   if(monitor_header[idx++] != 'V') goto exit_read_error;
 	   {
 		   NEXT_2(h->h1.version);
 	   }
-	   if(monitor_header[idx++]  != 'M') return 0;
+	   if(monitor_header[idx++]  != 'M') goto exit_read_error;
 	   {
 		   NEXT_2(h->h1.mon_id);
 	   }
-	   if(monitor_header[idx++] != 'B') return 0;
+	   if(monitor_header[idx++] != 'B') goto exit_read_error;
 	   {
 		   NEXT_4(h->h1.entry_size);
 	   }
-	   if(monitor_header[idx++] != 'I') return 0;
+	   if(monitor_header[idx++] != 'I') goto exit_read_error;
 	   {
 		   NEXT_4(h->h1.time_interv);
 	   }
@@ -200,10 +201,10 @@ uint8_t monitor_getheader(char* filename, monitor_header_t * h)
 	   /* process second header line */
 	   if(!monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
 	   {
-		   return 0;
+		   goto exit_read_error;
 	   }			   
 	   idx = 0;
-	   if(monitor_header[idx++] != 'T') return 0;
+	   if(monitor_header[idx++] != 'T') goto exit_read_error;
 	   {
 		   NEXT_4(h->h2.year);
 		   NEXT_2(h->h2.mon);
@@ -218,10 +219,10 @@ uint8_t monitor_getheader(char* filename, monitor_header_t * h)
 	   /* process third header line */
 	   if(!monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
 	   {
-		   return 0;
+		   goto exit_read_error;
 	   }
 	   idx = 0;
-	   if(monitor_header[idx++] != 'P') return 0;
+	   if(monitor_header[idx++] != 'P') goto exit_read_error;
 	   {
 		   NEXT_4(h->last_idx);
 	   }
@@ -230,21 +231,25 @@ uint8_t monitor_getheader(char* filename, monitor_header_t * h)
 	   /* process fourth header line */
 	   if(!monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
 	   {
-		   return 0;
+		   goto exit_read_error;
 	   }
 	   idx = 0;
-	   if(monitor_header[idx++] != 'C') return 0;
+	   if(monitor_header[idx++] != 'C') goto exit_read_error;
 	   {
 		   NEXT_4(h->count);
 	   }
 	   assert (idx == 5);
 
+	   ok = 1; /* succes */
+
+	   exit_read_error:
 	   (void)monitor_close(&fp);
 	   
-	   return 1;
+	   return  ok;
+
 }
 
-uint8_t monitor_newheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size)
+uint8_t monitor_newheader(const char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size)
 {
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 	h.h1.mon_id = monitor_id;
@@ -254,7 +259,7 @@ uint8_t monitor_newheader(char* filename, uint8_t monitor_id, uint16_t interval,
 	return monitor_getheader(filename, &h);
 }
 
-uint8_t monitor_validateheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size)
+uint8_t monitor_validateheader(const char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size)
 {
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 	if(monitor_getheader(filename, &h))
@@ -309,7 +314,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 	char new_filename[8+5]={"00000000.txt"};
 	uint8_t ret;
 
-	if(!monitor_getheader(filename, &h)) return;
+	if(!monitor_getheader((const char*)filename, &h)) return;
 
 	/* check if already synched */
 	if(h.h2.synched == 0)
@@ -336,25 +341,25 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 
 			h.h2.synched = 1;
 
-#if 0
+#if 1
+#if _WIN32
+			fflush(stdout);
+#endif
 			do
 			{
 				char timestamp[20];
 				strftime(timestamp,20,"T%Y%m%d%H%M%SS\r\n",&ts);
-#if _WIN32
-				fflush(stdout);
-#endif
 				PRINTF(timestamp);
 			}while(0);
 #endif
 
-			monitor_setheader(filename, &h);
+			monitor_setheader((const char*)filename, &h);
 
 			/* rename file */
 			strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
 
 			PRINTF("\r\n %s will be renamed to %s \r\n", filename,new_filename);
-			ret = monitor_rename(filename, new_filename);
+			ret = monitor_rename(filename, (const char*)new_filename);
 
 			/* if rename failed, try other name */
 			while(!ret)
@@ -364,6 +369,8 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 				time_now +=3600;
 				ts = *localtime(&(time_t){time_now});
 				strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
+
+				monitor_setheader((const char*)filename, &h);
 
 				PRINTF("\r\n %s will be renamed to %s \r\n", filename,new_filename);
 				ret = monitor_rename(filename, new_filename);
@@ -472,14 +479,15 @@ uint8_t monitor_entry_send(monitor_entry_t* entry, uint8_t len)
 	if(cnt > 0)
 	{
 #ifdef _WIN32			
-		http_send_data(data_vector,cnt);
+		//http_send_data(data_vector,cnt);
+		simon_send_data((uint8_t*)data_vector,cnt, 0,entry->ts);
 #endif			
 	}
 
 	return 1;
 }
 
-uint32_t monitor_readentry(uint8_t monitor_num, char* filename, monitor_entry_t* entry)
+uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_entry_t* entry)
 {
 	uint16_t entry_size;
 	LOG_FILETYPE fp;
@@ -488,11 +496,11 @@ uint32_t monitor_readentry(uint8_t monitor_num, char* filename, monitor_entry_t*
 
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 
-	monitor_getheader(filename, &h);
+	if(!monitor_getheader(filename, &h)) return (MAX_NUM_OF_ENTRIES); /* header format error */
 
 	if (h.h2.synched == 0) return (MAX_NUM_OF_ENTRIES); /* file not synched */
 
-	entry_size = (h.h1.entry_size) + 2; // inclui \r\n
+	entry_size = (h.h1.entry_size)*2 + 2; // x2 pois cada byte está com 2 char, +2 pois inclui \r\n
 
 	if(h.last_idx < h.count)
 	{
@@ -549,7 +557,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, char* filename, monitor_entry_t*
 			}
 		}
 	}
-	return 0;
+	return (MAX_NUM_OF_ENTRIES);
 }
 
 void monitor_sync(uint8_t monitor_num, const char* monitor_fn)
@@ -754,7 +762,7 @@ void monitor_reader(uint8_t monitor_num)
 	if(*fname == '\0') return;
 	
 	memset(monitor_char_buffer,0x00,sizeof(monitor_char_buffer));
-	entry.values = monitor_char_buffer;
+	entry.values = (uint8_t*)monitor_char_buffer;
 
 	/* change to log dir */
 	monitor_chdir(monitor_state[monitor_num].monitor_dir_name);

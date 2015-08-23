@@ -209,7 +209,7 @@ static struct pt monitor_input_pt;
 mon_timer_t input_timer;
 
 volatile uint8_t monitor_running = 1;
-volatile uint8_t monitor_uploading = 0;
+volatile uint8_t monitor_uploading = 1;
 volatile uint8_t monitor_is_connected = 1;
 
 static char set_input = 0;
@@ -514,8 +514,6 @@ void main_monitor(void)
 	config_check.byte = 0;
 	ini_browse(callback_inifile, NULL, config_inifile);
 	config_check_erro();
-
-
 
 	/* init monitors */
 	monitores_em_uso = 0;

@@ -86,11 +86,11 @@ uint8_t simon_get_time(struct tm * t)
 	return MODEM_OK;
 }
 
-uint8_t simon_send_data(uint8_t *buf, uint16_t len)
+uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 {
-	char* send_monitor = "GET /monitor/set.json?monitorid=%d&data=%s&apikey=%s";
+	char* send_monitor = "GET /monitor/set.json?monitorid=%d&time=%d&data=%s&apikey=%s";
 	
-	SNPRINTF(server_reply, 1024, send_monitor, buf[0], &buf[1], (char*)simon_apikey);
+	SNPRINTF(server_reply, 1024, send_monitor, mon_id, time, buf, (char*)simon_apikey);
 	
 	/// Form request
 	SNPRINTF(message, 1024,
@@ -106,6 +106,8 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len)
 	{
 		return MODEM_ERR;
 	}
+
+	recv_size = SIZEARRAY(server_reply);
 	if(in((uint8_t*)server_reply, (uint16_t*) &recv_size) != MODEM_OK)
 	{
 		return MODEM_ERR;
