@@ -138,12 +138,22 @@ void monitor_setheader(char* filename, monitor_header_t * h)
 {
    LOG_FILETYPE fp;  
 
-   if(monitor_openappend(filename,&fp))
+#if _WIN32
+   if(monitor_openwrite(filename,&fp))
    {
 	   monitor_makeheader(monitor_header,h);
 	   (void)monitor_write(monitor_header,&fp);
 	   (void)monitor_close(&fp);
    }
+#else
+   if(monitor_openappend(filename,&fp))
+   {
+	   monitor_makeheader(monitor_header,h);
+	   monitor_seek_begin(&fp);
+	   (void)monitor_write(monitor_header,&fp);
+	   (void)monitor_close(&fp);
+   }
+#endif
 
 }
 
@@ -291,7 +301,7 @@ void monitor_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 }
 
 #include "string.h"
-void monitor_settimestamp(uint8_t monitor_num, char* filename)
+void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 {
 	uint32_t time_elapsed_s = 0;
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
@@ -326,11 +336,14 @@ void monitor_settimestamp(uint8_t monitor_num, char* filename)
 
 			h.h2.synched = 1;
 
-#if 1
+#if 0
 			do
 			{
 				char timestamp[20];
 				strftime(timestamp,20,"T%Y%m%d%H%M%SS\r\n",&ts);
+#if _WIN32
+				fflush(stdout);
+#endif
 				PRINTF(timestamp);
 			}while(0);
 #endif
@@ -341,7 +354,7 @@ void monitor_settimestamp(uint8_t monitor_num, char* filename)
 			strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
 
 			PRINTF("\r\n %s will be renamed to %s \r\n", filename,new_filename);
-			ret = (uint8_t)monitor_rename(filename, new_filename);
+			ret = monitor_rename(filename, new_filename);
 
 			/* if rename failed, try other name */
 			while(!ret)
@@ -353,7 +366,7 @@ void monitor_settimestamp(uint8_t monitor_num, char* filename)
 				strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
 
 				PRINTF("\r\n %s will be renamed to %s \r\n", filename,new_filename);
-				ret = (uint8_t)monitor_rename(filename, new_filename);
+				ret = monitor_rename(filename, new_filename);
 
 			}
 
@@ -379,7 +392,7 @@ void monitor_settimestamp(uint8_t monitor_num, char* filename)
 
 extern volatile uint8_t monitor_is_connected;
 
-uint16_t monitor_writeentry(char* filename, char* entry, uint8_t monitor_num)
+uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_num)
 {
 
 	LOG_FILETYPE fp;
@@ -539,9 +552,9 @@ uint32_t monitor_readentry(uint8_t monitor_num, char* filename, monitor_entry_t*
 	return 0;
 }
 
-void monitor_sync(uint8_t monitor_num, char*monitor_fn)
+void monitor_sync(uint8_t monitor_num, const char* monitor_fn)
 {
-	monitor_settimestamp(monitor_num, (char*)monitor_fn); // sincronizar
+	monitor_settimestamp(monitor_num, monitor_fn); // sincronizar
 }
 
 #if _WIN32
@@ -671,6 +684,7 @@ char* monitor_getfilename_to_read(uint8_t monitor_num)
 void monitor_writer(uint8_t monitor_num)
 {	
 	uint16_t cnt = 0;
+	extern const char* monitor_error_msg[];
 	
 #if MONITOR_TESTS
 	uint16_t vetor_dados[3]={0x1111,0x2222,0x3333};	
@@ -688,14 +702,16 @@ void monitor_writer(uint8_t monitor_num)
 	/* check buffer size */
 	if(monitor_state[monitor_num].config_h.entry_size > LOG_MAX_DATA_BUF_SIZE)
 	{
-		print_erro("Monitor %d: buffer too small \r\n", monitor_num);
+		print_erro(monitor_error_msg[1], monitor_num);
+		print_erro("buffer too small \r\n");
 		return;
 	}
 	
 	/* read data */
 	if(monitor_state[monitor_num].read_data((uint8_t*)monitor_data_buffer,(uint8_t)monitor_state[monitor_num].config_h.entry_size) == 0)
 	{
-		print_erro("Monitor %d: read failed\r\n", monitor_num);
+		print_erro(monitor_error_msg[1], monitor_num);
+		print_erro("read failed\r\n");
 		return;
 	}
 	
@@ -712,8 +728,11 @@ void monitor_writer(uint8_t monitor_num)
 	
 	if(cnt == 0)
 	{
-		print_erro("Monitor %d: write failed\r\n", (uint8_t)monitor_num);
-		PRINTF("Monitor %d: write failed\r\n", monitor_num);
+		print_erro(monitor_error_msg[1],(uint8_t) monitor_num);
+		print_erro("write failed\r\n");
+
+		PRINTF(monitor_error_msg[1],(uint8_t) monitor_num);
+		PRINTF("write failed\r\n");
 	}else
 	{
 		PRINTF("Entry written %d\r\n", cnt);

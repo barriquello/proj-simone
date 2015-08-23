@@ -26,6 +26,7 @@
 #define MODEM_ERR (1)
 
 #define MAX_HOSTNAME_LEN	 (32+1)
+#define MAX_HOSTIP_LEN	 	 (15+1)
 #define MAX_APIKEY_LEN	 	 (32+1)
 
 typedef uint8_t (*input)(uint8_t *, uint16_t*);
@@ -48,6 +49,7 @@ char* simon_get_apikey(void);
 char* simon_get_hostname(void);
 void simon_set_apikey(const char*);
 void simon_set_hostname(const char*);
+void simon_set_hostip(const char*);
 
 
 

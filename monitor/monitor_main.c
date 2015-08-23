@@ -124,10 +124,10 @@ monitor_config_ok_t config_check;
 #define CONST const
 #endif
 
-CONST char monitor_error_msg[2][24] = 
+const char* monitor_error_msg[] =
 {
-	"Config erro: faltando  ",
-	"Monitor erro: %d       "	
+	"\r\nConfig erro: faltando ",
+	"\r\nMonitor erro: %d "
 };
 /*---------------------------------------------------------------------------*/
 /*
@@ -341,13 +341,17 @@ static int callback_inifile(const char *section, const char *key, const char *va
 
 		if(strcmp(key,"simon_server") == 0)
 		{
-			//strncpy(simon_hostname, value, sizearray(simon_hostname));
 			simon_set_hostname(value);
 			config_check.bit.server_ok = 1;
 		}
+
+		if(strcmp(key,"simon_ip") == 0)
+		{
+			simon_set_hostip(value);
+			config_check.bit.ip_ok = 1;
+		}
 		if(strcmp(key,"api_key") == 0)
 		{
-			//strncpy(apikey, value, sizearray(apikey));			
 			simon_set_apikey(value);
 			config_check.bit.key_ok = 1;
 		}
@@ -424,6 +428,11 @@ static void config_check_erro(void)
 		print_erro(monitor_error_msg[0]);
 		print_erro("simon server \n\r.");
 		erro++;
+	}
+	if(config_check.bit.ip_ok == 0)
+	{
+		print_erro(monitor_error_msg[0]);
+		print_erro("simon ip \n\r.");
 	}
 	if(config_check.bit.key_ok == 0)
 	{

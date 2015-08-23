@@ -44,6 +44,7 @@
 #define monitor_tell(file,pos)            ((*(pos) = ftell(*(file))) != (-1L)) //(fgetpos(*(file), (pos)) == 0)
 #define monitor_seek(file,pos)            (fseek(*(file), *(pos), SEEK_SET) == 0) // (fsetpos(*(file), (pos)) == 0)
 #define monitor_seek_end(file)            (fseek(*(file), 0, SEEK_END) == 0) // (fsetpos(*(file), (pos)) == 0)
+#define monitor_seek_begin(file)          (fseek(*(file), 0, SEEK_SET) == 0) // (fsetpos(*(file), (pos)) == 0)
 
 #define LOG_DIRTYPE                   DIR*
 #define LOG_DIRINFO 				  struct dirent *
@@ -228,18 +229,18 @@ typedef union
 	struct{
 		uint8_t num_mon_ok	:1;	/* num. de monitores ok */
 		uint8_t server_ok	:1;	/* server ok */
+		uint8_t ip_ok	    :1;	/* server ip ok */
 		uint8_t	key_ok		:1;	/* Api Key ok */
 		uint8_t	gprs_apn_ok :1;	/* GPRS access point ok */
 		uint8_t	gprs_user_ok:1 ;/* GPRS user ok */
 		uint8_t	gprs_pwd_ok :1 ;/* GPRS password ok */
-		uint8_t unused3:1 ; /* Unused */
 	}bit;
 }monitor_config_ok_t;
 
 void test_logger(void);
 
 uint8_t monitor_init(uint8_t monitor_num);
-void monitor_sync(uint8_t monitor_num,char*);
+void monitor_sync(uint8_t monitor_num, const char*);
 
 void monitor_makeheader(char monitor_header[], monitor_header_t * h);
 void monitor_setheader(char* filename, monitor_header_t * h);
@@ -248,11 +249,11 @@ uint8_t monitor_newheader(char* filename, uint8_t monitor_id, uint16_t interval,
 uint8_t monitor_validateheader(char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size);
 
 void monitor_createentry(char* string, uint16_t *dados, uint8_t len);
-uint16_t monitor_writeentry(char* filename, char* entry, uint8_t monitor_num);
+uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_num);
 uint32_t monitor_readentry(uint8_t monitor_num, char* filename, monitor_entry_t* entry);
 
 void monitor_gettimestamp(struct tm * ts, uint32_t time_elapsed_s);
-void monitor_settimestamp(uint8_t monitor_num, char* filename);
+void monitor_settimestamp(uint8_t monitor_num, const char* filename);
 
 char* monitor_getfilename_to_write(uint8_t monitor_num);
 char* monitor_getfilename_to_read(uint8_t monitor_num);

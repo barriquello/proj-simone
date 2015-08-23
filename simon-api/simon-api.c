@@ -34,6 +34,7 @@ static output out = NULL;
 #endif
 
 char simon_hostname[MAX_HOSTNAME_LEN];
+char simon_hostip[MAX_HOSTIP_LEN];
 char simon_apikey[MAX_APIKEY_LEN];
 
 static char message[1024];
@@ -197,4 +198,14 @@ void simon_set_hostname(const char* hostname)
 		strncpy(simon_hostname,hostname,MAX_HOSTNAME_LEN-1);
 	}
 }
+
+void simon_set_hostip(const char* ip)
+{
+	if(ip != NULL)
+	{
+		strncpy(simon_hostip,ip,MAX_HOSTIP_LEN-1);
+	}
+}
+
+
 
