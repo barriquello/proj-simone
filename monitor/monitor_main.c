@@ -483,7 +483,11 @@ void main_monitor(void)
 		printf ("Simon init error\r\n");
 	}
 #else
-
+	extern const modem_driver_t m590_driver;
+	if(simon_init(&m590_driver) != MODEM_OK)
+	{
+		printf ("Simon init error\r\n");
+	}
 #endif
 
 #if _WIN32	
