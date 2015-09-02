@@ -464,10 +464,18 @@ int main(void)
 #include "modbus_slaves.h"
 extern CONST modbus_slave_t * modbus_slaves_all[];
 
+#include "simon-api.h"
+
 void main_monitor(void)
 {
 
 	uint8_t monitor_num = 0;
+#define TESTES 0	
+#if TESTES		
+	struct tm ts;
+	char server_reply[]="Date: Wed, 02 Sep 2015 19:01:30 GMT";
+	get_server_time(server_reply, &ts);
+#endif
 	
 #ifdef _WIN32
 	struct timeb start, end;
@@ -483,10 +491,11 @@ void main_monitor(void)
 		printf ("Simon init error\r\n");
 	}
 #else
+	/* modem gprs driver */
 	extern const modem_driver_t m590_driver;
 	if(simon_init(&m590_driver) != MODEM_OK)
 	{
-		printf ("Simon init error\r\n");
+		dprintf ("Simon init error\r\n");
 	}
 #endif
 

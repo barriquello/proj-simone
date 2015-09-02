@@ -59,7 +59,15 @@ void getchar_terminal(char *c)
 
 void putchar_terminal(char c)
 {
-    while(c != (char)putch(c)){};
+	INT8U retries = 3;
+    while(c != (char)putch(c))
+    {
+    	DelayTask(100);
+    	if(--retries == 0)
+    	{
+    		return;
+    	}
+    }
 }
 
 /*****************************************************************************
@@ -82,7 +90,7 @@ void printf_terminal(char *s)
 #if 0	  
       while(*s != (char)putch(*s)){};
 #else
-	  putchar_usb(*s);
+      putchar_terminal(*s);
 #endif		
       s++;
   }

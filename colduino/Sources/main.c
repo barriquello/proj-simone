@@ -48,8 +48,7 @@ const unsigned char boot:0x040A = 0x00;   //zero out checksum to bypass boot loa
  * \return      None
  *****************************************************************************/
 void main(void)
-{
-
+{	
 	main_app();
 	
 	for (;;)

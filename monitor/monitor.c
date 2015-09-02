@@ -138,8 +138,9 @@ void monitor_setheader(const char* filename, monitor_header_t * h)
 {
    LOG_FILETYPE fp;  
 
-#if 1
-   if(monitor_openread(filename,&fp))
+#ifndef _WIN32
+   //if(monitor_openread(filename,&fp))
+   if(monitor_openappend(filename,&fp))
    {
 	   monitor_makeheader(monitor_header,h);
 	   (void)monitor_write(monitor_header,&fp);
@@ -164,14 +165,14 @@ uint8_t monitor_getheader(const char* filename, monitor_header_t * h)
 	   int idx = 0;
 	   char hex1,hex2;
 	   uint8_t b1,b2;
-	   uint8_t ok = 0;
+	   uint8_t ok = FALSE;
 
 #define NEXT_2(res)	do{hex1 = monitor_header[idx++]; hex2 = monitor_header[idx++];} while(0); (res) = hex2byte(hex1,hex2);
 #define NEXT_4(res) do{hex1 = monitor_header[idx++]; hex2 = monitor_header[idx++]; b1 = hex2byte(hex1,hex2); hex1 = monitor_header[idx++];hex2 = monitor_header[idx++]; b2 = hex2byte(hex1,hex2);}while(0); (res) = byte2int(b1,b2);
 	   	   
 	   if(!monitor_openread(filename,&fp))
 	   {
-		   return 0;
+		   return FALSE;
 	   }
 
 	   /* process first header line */
@@ -240,7 +241,7 @@ uint8_t monitor_getheader(const char* filename, monitor_header_t * h)
 	   }
 	   assert (idx == 5);
 
-	   ok = 1; /* succes */
+	   ok = TRUE; /* succes */
 
 	   exit_read_error:
 	   (void)monitor_close(&fp);
@@ -285,7 +286,7 @@ uint8_t monitor_validateheader(const char* filename, uint8_t monitor_id, uint16_
 #include "time.h"
 #endif
 
-void monitor_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
+uint8_t monitor_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 {
 
 	/* GET time/local */
@@ -295,7 +296,10 @@ void monitor_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 #if SERVER_TIME
 	struct tm t;
 	//http_get_time(&t);
-	simon_get_time(&t);
+	if(simon_get_time(&t) == MODEM_ERR)
+	{
+		return MODEM_ERR;
+	}
 	time_now = mktime(&t);
 #else
 	time_now = time(NULL);
@@ -303,6 +307,8 @@ void monitor_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 
 	time_now = time_now - time_elapsed_s;
 	(*timestamp) = *localtime(&(time_t){time_now});
+	
+	return MODEM_OK;
 }
 
 #include "string.h"
@@ -320,28 +326,22 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 	if(h.h2.synched == 0)
 	{
 		time_elapsed_s = (uint32_t)((h.h1.time_interv)*(h.count));
-		monitor_gettimestamp(&ts, time_elapsed_s);
+		
+		if(monitor_gettimestamp(&ts, time_elapsed_s) == MODEM_ERR)
+		{
+			return;
+		}
 
-		#if 1
-			h.h2.year = (uint16_t)(ts.tm_year + 1900);
-			h.h2.mon = (uint8_t)(ts.tm_mon + 1);
-			h.h2.mday = (uint8_t)ts.tm_mday;
-			h.h2.hour = (uint8_t)ts.tm_hour;
-			h.h2.min = (uint8_t)ts.tm_min;
-			h.h2.sec = (uint8_t)ts.tm_sec;
-		#else
-			h.h2.year = (uint16_t)2015;
-			h.h2.mon = (uint8_t)04;
-			h.h2.mday = (uint8_t)21;
-			h.h2.hour = (uint8_t)18;
-			h.h2.min = (uint8_t)10;
-			h.h2.sec = (uint8_t)33;
-			PRINTF("\r\n%d%d%d%d%d%d\r\n", h.h2.year,h.h2.mon,h.h2.mday,h.h2.hour,h.h2.min,h.h2.sec);
-		#endif
 
-			h.h2.synched = 1;
+		h.h2.year = (uint16_t)(ts.tm_year + 1900);
+		h.h2.mon = (uint8_t)(ts.tm_mon + 1);
+		h.h2.mday = (uint8_t)ts.tm_mday;
+		h.h2.hour = (uint8_t)ts.tm_hour;
+		h.h2.min = (uint8_t)ts.tm_min;
+		h.h2.sec = (uint8_t)ts.tm_sec;
+		h.h2.synched = 1;
 
-#if 1
+#if 0
 #if _WIN32
 			fflush(stdout);
 #endif
@@ -422,11 +422,23 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 		}
 	}
 
-	/* if file is not synched, try to synch */
-	if(monitor_is_connected == 1 && h.h2.synched == 0)
+	if(simon_check_connection() == TRUE)
 	{
-		monitor_sync(monitor_num, filename);
+		monitor_is_connected = 1;
+	}else
+	{
+		monitor_is_connected = 0;
 	}
+	
+	if(monitor_is_connected == 1)	 
+	{
+		/* if file is not synched, try to synch */
+		if(h.h2.synched == 0)
+		{
+			monitor_sync(monitor_num, filename);
+		}
+	}
+	
 
 	return h.count;
 
@@ -467,7 +479,6 @@ uint8_t monitor_entry_send(monitor_entry_t* entry, uint8_t len)
 	uint16_t cnt = 0;
 	cnt = build_entry_to_send(data_vector,entry->values,len);
 
-
 	PRINTF("\r\n");
 	PRINTF(data_vector);
 	PRINTF("\r\n");
@@ -478,13 +489,10 @@ uint8_t monitor_entry_send(monitor_entry_t* entry, uint8_t len)
 
 	if(cnt > 0)
 	{
-#ifdef _WIN32			
-		//http_send_data(data_vector,cnt);
 		simon_send_data((uint8_t*)data_vector,cnt, 0,entry->ts);
-#endif			
 	}
 
-	return 1;
+	return TRUE;
 }
 
 uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_entry_t* entry)

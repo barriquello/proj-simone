@@ -270,13 +270,18 @@ void uart1_TxDisableISR(void)
 	SCI1C2_TIE = 1;
 }
 
-void putchar_uart1(byte caracter)
+INT8U putchar_uart1(INT8U caracter)
 {
 	
 	SCI1D = caracter; /* Armazena o caracter a ser transmitido no registrador de transmissão */
 	SCI1C2_TCIE = 1;
 
-	(void) OSSemPend(SerialTX1, TX_TIMEOUT);
+	if(OSSemPend(SerialTX1, TX_TIMEOUT) == TIMEOUT)
+	{
+		return caracter++;
+	}
+	
+	return caracter;
 }
 
 void printf_uart1(CHAR8 *string)
@@ -389,7 +394,6 @@ interrupt void uart2_tx(void)
 	OS_ENABLE_NESTING();
 #endif  
 
-	//pxMBFrameCBTransmitterEmpty();
 
 	(void) OSSemPost(SerialTX2);
 
@@ -437,13 +441,18 @@ void uart2_TxDisableISR(void)
 }
 
 
-void putchar_uart2(byte caracter)
+INT8U putchar_uart2(INT8U caracter)
 {
 
 	SCI2D = caracter; /* Armazena o caracter a ser transmitido no registrador de transmissão */
 	SCI2C2_TCIE = 1;
 	
-	(void) OSSemPend(SerialTX2, TX_TIMEOUT);	
+	if(OSSemPend(SerialTX2, TX_TIMEOUT) == TIMEOUT)
+	{
+		return caracter++;
+	}
+	
+	return caracter;
 }
 
 void printf_uart2(CHAR8 *string)
@@ -458,8 +467,7 @@ void printf_uart2(CHAR8 *string)
 #else
 		putchar_uart2(*string);
 #endif		
-		string++;		
-		string++;
+		string++;	
 	}
 }
 

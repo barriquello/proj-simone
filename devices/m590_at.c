@@ -96,6 +96,7 @@ INT8U is_m590_ok(void)
 	INT8U ok = FALSE;
 	m590_acquire();	
 		m590_print(m590_init_cmd[AT]);
+		DelayTask(50);
 		m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer));	
 		if(strstr(gReceiveBuffer, "OK"))
 		{
@@ -646,7 +647,7 @@ m590_ret_t at_m590_server(void)
 uint8_t m590_set_hostname(char *host)
 {
 	hostname = host;
-	return TRUE;
+	return MODEM_OK;
 }
 
 char* m590_get_hostname(void)
@@ -658,7 +659,7 @@ uint8_t m590_host_ip(void)
 {
 	if(hostname == NULL)
 	{
-		return FALSE;
+		return MODEM_ERR;
 	}
 	
 	m590_acquire();	
@@ -678,10 +679,10 @@ uint8_t m590_set_ip(char* _ip)
 {
 	if(hostname == NULL || _ip == NULL)
 	{
-		return FALSE;
+		return MODEM_ERR;
 	}
 	strcpy(ip,_ip);	
-	return TRUE;
+	return MODEM_OK;
 }
 
 uint8_t m590_send(uint8_t * dados, uint16_t tam)
@@ -692,42 +693,53 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 	
 	if(!is_m590_ok_retry(5))
 	{		
-		return FALSE; 
+		return MODEM_ERR; 
 	}
 	
-	if(m590_state == M590_CLOSE)
+	while(retries < 3)
 	{
-		if(!m590_init())
+		++retries;
+		if(m590_state == M590_CLOSE)
 		{
-			return FALSE; 
-		}
-	}	
+			if(!m590_init())
+			{
+				return MODEM_ERR; 
+			}
+		}	
 	
-	if(m590_state == M590_INIT)
-	{
-		if(!m590_open())
+		if(m590_state == M590_INIT)
 		{
-			m590_state = M590_CLOSE;
-			return FALSE; // error
+			if(!m590_open())
+			{
+				m590_state = M590_CLOSE;
+				return MODEM_ERR; // error
+			}
 		}
+	
+		DelayTask(500);
+		
+		/* sending */	
+		m590_acquire();
+			
+		ip[15] ='\0';
+	
+		if(CreateSingleTCPLink(0,ip,"80") == TRUE)		
+		{
+			if(dados != NULL)
+			{
+				*(dados+tam) = '\0'; // null terminate
+				result_ok = TCPIP_SendData(dados, tam);
+				break;
+			}
+		}else
+		{
+			m590_close();	
+		}
+		
+		m590_release();	
 	}
 	
-	/* sending */	
-	m590_acquire();
-		
-	ip[15] ='\0';
-	if(CreateSingleTCPLink(0,ip,"80") == TRUE)		
-	{
-		if(dados != NULL)
-		{
-			*(dados+tam) = '\0'; // null terminate
-			result_ok = TCPIP_SendData(dados, tam);
-		}
-	}
-		
-	m590_release();		
-		
-	return result_ok;	
+	return (result_ok==TRUE?MODEM_OK:MODEM_ERR);	
 	
 }
 
@@ -735,25 +747,38 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 uint8_t m590_receive(uint8_t* buff, uint16_t* len)
 {
 
-	uint8_t size =(uint8_t) MIN(*len,SIZEARRAY(gReceiveBuffer));
+	uint8_t ret = MODEM_ERR;
+	uint16_t size =(uint16_t) MIN(*len,SIZEARRAY(gReceiveBuffer));
+	
+	*len = 0;
 
 	if(size)
 	{
 		m590_acquire();	
 		
-			memcpy(buff,gReceiveBuffer,size);
-			if(size < SIZEARRAY(gReceiveBuffer))
-			{
-				memcpy(gReceiveBuffer,&gReceiveBuffer[size],SIZEARRAY(gReceiveBuffer)-size);				
-			}
+		    if(gReceiveBuffer[0] !='\0')
+		    {		
+		    	ret = MODEM_OK;
+				memcpy(buff,gReceiveBuffer,size);
+				if(size < SIZEARRAY(gReceiveBuffer))
+				{
+					memcpy(gReceiveBuffer,&gReceiveBuffer[size],SIZEARRAY(gReceiveBuffer)-size);				
+				}
 			
-			m590_get_reply(&gReceiveBuffer[SIZEARRAY(gReceiveBuffer)-size],size);
-			
+				m590_get_reply(&gReceiveBuffer[SIZEARRAY(gReceiveBuffer)-size],size);
+				* len = size;
+		    }
+		    
 		m590_release();	
 	}
 	
-	
-	return (uint8_t)size;
+	return (uint8_t)ret;
+}
+
+
+uint8_t m590_check_connection(void)
+{
+	is_m590_ok_retry(5);
 }
 
 const modem_driver_t m590_driver  =
@@ -761,7 +786,8 @@ const modem_driver_t m590_driver  =
 		m590_receive,
 		m590_send,
 		m590_set_hostname,
-		m590_set_ip		
+		m590_set_ip,
+		m590_check_connection
 };
 
 

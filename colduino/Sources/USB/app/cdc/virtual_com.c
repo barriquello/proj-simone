@@ -166,10 +166,11 @@ void cdc_process(void)
     uint_8 		  sem_status = 0;
 	uint_8 size = g_send_size;
 	
+	g_send_size = 0;
+	
     /*check whether enumeration is complete or not */
      if((start_app==TRUE) && (start_transactions==TRUE))
      {	
-		g_send_size = 0;
 		
 		UserEnterCritical();
 		is_message_sent = 1;
@@ -190,13 +191,16 @@ void cdc_process(void)
             /* Send Data Error Handling Code goes here */
         	status = 0;
         }		
-     }else
+     }
+#if 0     
+     else
      {
     	  while(GetStart_transactions() == FALSE)
     	  {
     		  DelayTask(100);
     	  }
      }
+#endif     
 }
 
 unsigned char GetStart_transactions(void)
@@ -255,7 +259,10 @@ unsigned char cdc_putch(char c)
 *****************************************************************************/
 void putchar_usb(char c)
 {
-    while(c != (char)cdc_putch(c)){};
+    while(c != (char)cdc_putch(c))
+    {
+    	
+    }
 }
 
 /*****************************************************************************

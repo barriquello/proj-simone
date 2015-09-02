@@ -21,14 +21,19 @@
 #include "stdint.h"
 #endif
 
-void get_server_time(char* server_reply, struct tm *ts);
+uint8_t get_server_time(char* server_reply, struct tm *ts);
 uint8_t get_server_confirmation(char* server_reply);
 
 static input in = NULL;
 static output out = NULL;
 
+#define DEBUG_SIMON 1
 #if DEBUG_SIMON
+#ifndef _WIN32
+#define PRINTF(...) printf_lib(__VA_ARGS__);
+#else
 #define PRINTF(...) printf(__VA_ARGS__);
+#endif
 #else
 #define PRINTF(...)
 #endif
@@ -42,9 +47,12 @@ static char server_reply[1024];
 static char* hostname = simon_hostname;
 uint16_t recv_size;
 
-uint8_t simon_init(const modem_driver_t* modem)
+modem_driver_t* modem = NULL;
+
+uint8_t simon_init(const modem_driver_t* _modem)
 {
-	if(modem == NULL) return MODEM_ERR;
+	if(_modem == NULL) return MODEM_ERR;
+	modem = (modem_driver_t*)_modem;
 	in = modem->receive;
 	out = modem->send;
 	simon_set_apikey(API_KEY);		/* set a default key */
@@ -52,6 +60,22 @@ uint8_t simon_init(const modem_driver_t* modem)
 	modem->sethost(hostname);
 	modem->setip("54.173.137.93"); /* set a default ip */
 	return MODEM_OK;
+}
+
+uint8_t simon_check_connection(void)
+{
+	uint8_t retries = 5;
+	while(retries > 0)
+	{
+		if(modem->is_connected())
+		{
+			return TRUE;
+		}
+		DelayTask(100);
+		retries--;
+	}
+	
+	return FALSE;
 }
 
 uint8_t simon_get_time(struct tm * t)
@@ -64,6 +88,8 @@ uint8_t simon_get_time(struct tm * t)
 		     "Host: %s\r\n"
 		     "\r\n\r\n", get_time_request, hostname);
 	
+	PRINTF(message);
+	
 	if(out == NULL || in == NULL)
 	{
 		return MODEM_ERR;
@@ -72,17 +98,25 @@ uint8_t simon_get_time(struct tm * t)
 	{
 		return MODEM_ERR;
 	}
-	recv_size = SIZEARRAY(server_reply);
-	if(in((uint8_t*)server_reply, (uint16_t*) &recv_size) != MODEM_OK)
+	
+	do
 	{
-		return MODEM_ERR;
-	}
+		recv_size = SIZEARRAY(server_reply);
+		if(in((uint8_t*)server_reply, (uint16_t*) &recv_size) != MODEM_OK)
+		{
+			return MODEM_ERR;
+		}
+		
+		/* Add a NULL terminating character to make it a proper string */
+		server_reply[recv_size] = '\0';
 	
-	/* Add a NULL terminating character to make it a proper string */
-	server_reply[recv_size] = '\0';
+		/* set time */
+		if(get_server_time(server_reply, t) == TRUE)
+		{
+			return MODEM_OK;
+		}
+	}while(recv_size);
 	
-	/* set time */
-	get_server_time(server_reply, t);	
 	return MODEM_OK;
 }
 
@@ -97,6 +131,13 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 		     "%s HTTP/1.1\r\n"
 		     "Host: %s\r\n"
 		     "\r\n\r\n", server_reply, hostname);
+
+	PRINTF(message);
+
+#define SIMON_SKIP_SEND 0
+#if SIMON_SKIP_SEND
+	return MODEM_OK;
+#endif
 	
 	if(out == NULL || in == NULL)
 	{
@@ -120,12 +161,21 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 uint8_t get_server_confirmation(char* server_reply)
 {
 	/* search server confirmation: HTTP 200 OK */
-	return MODEM_OK;
+	char *ret;
+	ret = strstr(server_reply, "HTTP/1.1 200 OK");	
+	if(ret == NULL)
+	{
+		return MODEM_ERR;
+	}
+	else
+	{
+		return MODEM_OK;
+	}	
 }
 
 #include "time_lib.h"
 
-void get_server_time(char* server_reply, struct tm *ts)
+uint8_t get_server_time(char* server_reply, struct tm *ts)
 {
 	
 	char *ret;
@@ -133,9 +183,13 @@ void get_server_time(char* server_reply, struct tm *ts)
 	int k = 0;
 	char mon[4];
 	struct tm t;
+	char delim[2] = " ";
 	
-	ret = strstr(server_reply, "Date:");	
-	token = strtok(ret, " ");	
+	ret = strstr(server_reply, "Date:");
+	
+	if(ret == NULL) return FALSE; 
+	
+	token = strtok(ret,(const char*) delim);	
 
 	for (k=0; k<6;k++)
 	{
@@ -169,8 +223,10 @@ void get_server_time(char* server_reply, struct tm *ts)
 		token = strtok(NULL, " ");
 	}
 
-	if (mktime(&t) < 0) {;}
+	if (mktime(&t) < 0) {return FALSE; }
+	
 	(*ts) = t;	
+	return TRUE; 
 }
 
 char* simon_get_apikey(void)

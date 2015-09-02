@@ -130,6 +130,7 @@ char* m590_get_ip(void);
 uint8_t m590_set_hostname(char *host);
 char* m590_get_hostname(void);
 uint8_t m590_host_ip(void);
+uint8_t m590_check_connection(void);
 
 
 #endif /* M590_AT_H_ */
