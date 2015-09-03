@@ -33,7 +33,7 @@
 #include "data_types.h"
 #include "mbcrc.h"
 
-#include "string.h"
+#include <string.h>
 
 typedef enum {
 	MODBUS_NULL = 0,

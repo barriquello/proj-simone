@@ -5,6 +5,7 @@
  *      Author: UFSM
  */
 
+#include "AppConfig.h"
 #include "m590_at.h"
 #include "BRTOS.h"
 #include "printf_lib.h"
@@ -211,8 +212,7 @@ INT8U TCPIP_SendData(INT8U *dados, INT8U tam)
 	INT8U  c;
 	INT8U  length, len;	
 	INT8U *send;
-	
-	//length = (INT8U) strlen(dados);
+
 	length = (INT8U) tam;
 	
     while(1)
@@ -228,7 +228,7 @@ INT8U TCPIP_SendData(INT8U *dados, INT8U tam)
 			send = dados;			
 			SNPRINTF(gReceiveBuffer,sizeof(gReceiveBuffer)-1, "at+tcpsend=0,%d\r",len);
 			m590_print(gReceiveBuffer);			
-			DelayTask(10);
+			DelayTask(10); /* espera 10 ms */
 			
 			timeout = 0;
 			
@@ -276,7 +276,7 @@ INT8U TCPIP_SendData(INT8U *dados, INT8U tam)
 								return TRUE;
 							}
 							DelayTask(100);
-						}while(++timeout < 1000);
+						}while(++timeout < 20); /* espera ate 2 segundos */
 						
 						return TRUE;
 						
@@ -297,7 +297,7 @@ INT8U TCPIP_SendData(INT8U *dados, INT8U tam)
 					}
 				}
 			}
-			
+			/* tempo do espera do modem para enviar dados (>) */
 			if(++timeout > 50)
 			{
 				goto retry;
@@ -691,6 +691,20 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 	uint8_t retries = 0;
 	uint8_t result_ok = FALSE;
 	
+	if(dados == NULL) return MODEM_ERR;	
+	*(dados+tam) = '\0'; // null terminate
+	ip[15] ='\0';
+	
+	/** testar isso */
+	if(m590_state = M590_OPEN)
+	{
+		/* sending */	
+		m590_acquire();					
+		result_ok = TCPIP_SendData(dados, tam);				
+		m590_release();			
+		if(result_ok == TRUE) return MODEM_OK;
+	}
+	
 	if(!is_m590_ok_retry(5))
 	{		
 		return MODEM_ERR; 
@@ -719,19 +733,14 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 		DelayTask(500);
 		
 		/* sending */	
-		m590_acquire();
-			
-		ip[15] ='\0';
-	
+		m590_acquire();		
+		
 		if(CreateSingleTCPLink(0,ip,"80") == TRUE)		
-		{
-			if(dados != NULL)
-			{
-				*(dados+tam) = '\0'; // null terminate
-				result_ok = TCPIP_SendData(dados, tam);
-				break;
-			}
-		}else
+		{						
+			result_ok = TCPIP_SendData(dados, tam);
+			break;
+		}		
+		else
 		{
 			m590_close();	
 		}

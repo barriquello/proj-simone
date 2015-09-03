@@ -11,6 +11,8 @@
 #ifndef __MODBUS_H
 #define __MODBUS_H
 
+
+#include "AppConfig.h"
 #include "data_types.h"
 #include "modbus_def.h"
 
@@ -80,7 +82,7 @@ sint32_t Modbus_GetData(uint8_t slave, uint8_t func, uint8_t *data_ptr, uint16_t
 
 uint8_t Modbus_init(void);
 
-#ifndef _WIN32
+#if PLATAFORMA == COLDUINO
 #include "port.h"
 void Modbus_SlaveSelect(eMBSlaves slave_option);
 #endif

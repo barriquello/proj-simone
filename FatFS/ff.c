@@ -600,7 +600,7 @@ int chk_chr (const char* str, int chr) {
 	return *str;
 }
 
-#include "string.h"
+#include <string.h>
 #define mem_cpy		memcpy
 #define mem_set		memset
 #define mem_cmp		memcmp

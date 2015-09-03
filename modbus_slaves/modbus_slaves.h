@@ -18,7 +18,7 @@ typedef enum
 	MS_TS = 2	
 }slave_num_t;
 
-#ifdef _WIN32
+#if (PLATAFORMA == ARDUINO || PLATAFORMA == WIN32)
 typedef enum {
 	MODBUS_NULL = 0,
 	MODBUS_PM210 = 1,

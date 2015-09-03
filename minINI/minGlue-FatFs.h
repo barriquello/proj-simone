@@ -9,7 +9,7 @@
  *  its own terms.)
  */
 
-#if (defined MINGLUE && MINGLUE == MINGLUE_FATFS)
+#if (MINGLUE == MINGLUE_FATFS)
 #define INI_BUFFERSIZE  256       /* maximum line length, maximum path length */
 
 /* You must set _USE_STRFUNC to 1 or 2 in the include file ff.h (or tff.h)

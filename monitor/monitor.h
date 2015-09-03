@@ -120,7 +120,7 @@ void	print_erro(const char *format, ...);
 #define FILENAME_MAX_LENGTH  13
 #define LOG_FILENAME_START   "99123123.txt"
 #define LOG_METAFILE   		 "metafile.txt"
-#define MAX_NUM_OF_ENTRIES   ((uint32_t)(-1))
+#define MAX_NUM_OF_ENTRIES   (84600) // equivalente a 30 dias
 #define MAX_NUM_OF_MONITORES 3
 #define NUM_OF_FIELDS        6
 

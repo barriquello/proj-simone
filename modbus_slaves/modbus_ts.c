@@ -105,7 +105,7 @@ Command Description
 
 
 /* ----------------------- Modbus includes ----------------------------------*/
-#ifndef _WIN32
+#if COLDUINO
 #pragma warn_unusedarg off
 #include "mb.h"
 #include "mbport.h"
@@ -177,7 +177,7 @@ CONST modbus_slave_t slave_TS =
 
 
 /* ----------------------- Start implementation -----------------------------*/
-#ifndef _WIN32
+#if COLDUINO
 
 eMBErrorCode
 eMBRegInputCB_TS( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs )

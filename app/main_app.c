@@ -21,10 +21,11 @@
  * THE SOFTWARE.
 
 */
+#include "AppConfig.h"
 #include "BRTOS.h"
 #include "drivers.h"
 #include "tasks.h"
-#include "AppConfig.h"
+
 
 #ifdef __cplusplus
 extern "C"
@@ -56,7 +57,9 @@ void main_app(void)
 	BRTOS_Init();
 	
 	/* Init LED onboard */
+#if PLATAFORMA==COLDUINO	
 	led_onboard_init();	
+#endif	
 
 	/* Install task for keeping system clock, date and time */
 	if (InstallTask(&System_Time, "System Time", 256+64, 31, NULL) != OK)
@@ -166,7 +169,7 @@ void main_app(void)
 }
 
 /* function to handle any system error */
-#ifndef _WIN32
+#if PLATAFORMA==COLDUINO
 #include "led_onboard.h"
 #endif
 
@@ -175,7 +178,7 @@ void sleep_forever(void)
 
 	while(1)
 	{
-		#ifndef _WIN32
+		#if PLATAFORMA==COLDUINO
 			/* sleep forever */
 			led_onboard_on();
 			DelayTask(500); 
@@ -187,7 +190,7 @@ void sleep_forever(void)
 
 
 /* function to handle printf/scanf */
-#ifndef _WIN32
+#if PLATAFORMA==COLDUINO
 
 #include "terminal.h"
 

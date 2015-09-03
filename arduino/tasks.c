@@ -1,33 +1,111 @@
+/* The License
+ * 
+ * Copyright (c) 2015 Universidade Federal de Santa Maria
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+
+*/
+
+#include "AppConfig.h"
 #include "BRTOS.h"
 #include "drivers.h"
 #include "tasks.h"
 
-extern BRTOS_Sem    *SemTeste;
-extern BRTOS_Queue  *Serial;
+#if PLATAFORMA == COLDUINO
+#include "printf_lib.h"
+#include "terminal.h"
+#include "terminal_commands.h"
+#endif
 
+#if PLATAFORMA==COLDUINO
+#include "virtual_com.h"
+#include "led_onboard.h"
+#endif
+
+#if PLATAFORMA==ARDUINO
+#define __RESET_WATCHDOG()	wdt_reset()
+#endif
+
+
+/* Task to keep system date and time */
 void System_Time(void)
 {
-   // task setup
-   INT8U i = 0;
-   OSResetTime();   
-  
-   /* task main loop */
-   for (;;)
-   {
-      #if (WATCHDOG == 1)
-        wdt_reset();
-      #endif
-      (void)DelayTask(10);
-      i++;
-      if (i >= 100)
-      {
-        OSUpdateUptime();
-        i = 0;
-      }
-   }
+
+	/* task setup */
+	INT16U milis = 0;
+	INT16U segundos = 0;
+	
+	OSResetTime();
+
+	/* LED onboard ON */
+	led_onboard_on();
+	
+	#if RTC_PRESENTE
+		while(Init_Calendar() == FALSE)
+		{
+			DelayTask(10);
+			#if (WATCHDOG == 1)
+				__RESET_WATCHDOG();
+			#endif			
+		}
+	#endif	
+	
+	/* LED onboard OFF */
+	led_onboard_off();
+
+	/* task main loop */
+	for (;;)
+	{
+		#if (WATCHDOG == 1)
+			__RESET_WATCHDOG();
+		#endif     
+
+		DelayTask(10);	/* delay 10ms */
+		milis += 10;
+		
+		if (milis >= 1000) /* 1000ms ? */
+		{
+			milis = 0;
+			
+			/* update time and calendar */
+			OSUpdateUptime();
+			OSUpdateCalendar();
+			
+			segundos++;
+			if (segundos == 3600)
+			{
+				segundos = 0;
+				
+				#if RTC_PRESENTE				
+					Resync_calendar();  /* resync with RTC every 3600s = 60min = 1h */
+				#endif				
+				
+			}
+		}
+		
+		/* FatFS Timer Handler  */	
+		disk_timerproc();       
+	}
+
 }
 
-
+#if 0
 
 void Task_2(void)
 {
@@ -61,10 +139,13 @@ void Task_3(void)
 	  (void)OSSemPend(SemTeste,0);
    }
 }
+#endif
 
 #include "OSInfo.h"
 
 char BufferTextDebug[128];
+extern BRTOS_Sem    *SemTeste;
+extern BRTOS_Queue  *Serial;
 
 void Task_Serial(void)
 {

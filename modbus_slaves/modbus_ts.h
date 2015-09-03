@@ -195,7 +195,7 @@ typedef union
 	uint8_t Regs[46];
 }modbus_ts_holding_register_list;
 
-#ifndef _WIN32
+#if COLDUINO  
 #include "mb.h"
 eMBErrorCode eMBRegInputCB_TS( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs );
 eMBErrorCode eMBRegHoldingCB_TS( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode );

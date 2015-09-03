@@ -32,6 +32,14 @@
 #define UART_RXBUFSIZE     (64)
 /* port to UART number and pins */
 #define UART_NUMBER		   		(1)
+
+/* Deve ser portado para Arduino!!! */
+
+#if ARDUINO
+#define uart1_RxEnableISR()
+#define uart1_RxDisableISR()
+#endif
+
 #define UART_ISR_RX_ENABLE()	uart1_RxEnableISR()
 #define UART_ISR_RX_DISABLE()	uart1_RxDisableISR()
 

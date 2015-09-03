@@ -11,26 +11,26 @@
 #include <tchar.h>
 
 #else			/* Embedded platform */
-
+#include "stdint.h"
 /* This type MUST be 8 bit */
-typedef unsigned char	BYTE;
+typedef uint8_t			BYTE;
 typedef char			CHAR;
 typedef unsigned char	UCHAR;
 
 /* These types MUST be 16 bit */
-typedef short			SHORT;
-typedef unsigned short	USHORT;
-typedef unsigned short	WORD;
-typedef unsigned short	WCHAR;
+typedef int16_t			SHORT;
+typedef uint16_t		USHORT;
+typedef uint16_t		WORD;
+typedef uint16_t		WCHAR;
 
 /* These types MUST be 16 bit or 32 bit */
 typedef int				INT;
 typedef unsigned int	UINT;
 
 /* These types MUST be 32 bit */
-typedef long			LONG;
-typedef unsigned long	DWORD;
-typedef unsigned long	ULONG;
+typedef int32_t			LONG;
+typedef uint32_t		DWORD;
+typedef uint32_t		ULONG;
 
 #endif
 

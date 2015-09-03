@@ -112,7 +112,7 @@ register 7001. If the value for register 7001 is 12345, then the 0x03 data would
  * */
 
 /* ----------------------- Modbus includes ----------------------------------*/
-#ifndef _WIN32
+#if PLATAFORMA == COLDUINO  
 #pragma warn_unusedarg off
 #include "mb.h"
 #include "mbport.h"
@@ -206,7 +206,7 @@ CONST modbus_slave_t slave_PM210 =
 		
 
 /* ----------------------- Start implementation -----------------------------*/
-#ifndef _WIN32
+#if PLATAFORMA == COLDUINO  
 
 eMBErrorCode
 eMBRegInputCB_PM210( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs )

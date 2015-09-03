@@ -3,10 +3,10 @@
 /* (C)ChaN, 2014                                                          */
 /*------------------------------------------------------------------------*/
 
-
+#include "AppConfig.h"
 #include "ff.h"
 #include "SD_API.h"
-#include "AppConfig.h"
+
 
 
 #if _FS_REENTRANT
@@ -39,6 +39,9 @@ int ff_cre_syncobj (	/* !=0:Function succeeded, ==0:Could not create due to any 
 //	ret = (int)(*sobj != NULL);
 
 	
+#ifndef SDCARD_MUTEX_PRIORITY
+#define SDCARD_MUTEX_PRIORITY 15
+#endif
 
 	*sobj = SDCard_ResourceInit(SDCARD_MUTEX_PRIORITY);	/* BRTOS */
 	ret = (int)(*sobj != NULL);

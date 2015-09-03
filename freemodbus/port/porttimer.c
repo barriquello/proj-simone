@@ -26,12 +26,21 @@
 /* ----------------------- Modbus includes ----------------------------------*/
 #include "mb.h"
 #include "mbport.h"
-#include "timer2.h"
+
 
 /* port Modbus Timer */
+#if COLDUINO
+#include "timer2.h"
+#else
+#define Timer2Setup(...)
+#define Timer2Start(...)
+#define Timer2Stop(...)
+#define TimerOverflowCallback_fn  void
+#endif
 #define MB_TIMER_INIT	Timer2Setup
 #define MB_TIMER_START	Timer2Start
 #define MB_TIMER_STOP	Timer2Stop
+
 
 /* ----------------------- static functions ---------------------------------*/
 static void prvvTIMERExpiredISR(void);

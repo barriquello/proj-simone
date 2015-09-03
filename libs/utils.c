@@ -1,4 +1,6 @@
 
+#include "AppConfig.h"
+
 #ifndef _WIN32
 #include "BRTOS.h"
 #endif
@@ -52,6 +54,7 @@ void IntToString(int n, char s[])
 }
 #endif
 
+#if COLDUINO
 char *ltoa(long N, char *str, int base)
 {
 	  #define BUFSIZE (sizeof(long) * 8 + 1)
@@ -88,6 +91,7 @@ char *ltoa(long N, char *str, int base)
       memcpy(head, ++tail, i);
       return str;
 }
+#endif
 
 uint32_t LWordSwap(uint32_t u32DataSwap)
 {

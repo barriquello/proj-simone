@@ -6,14 +6,26 @@
  *
  **/
 
+#include "AppConfig.h"
 #include "hardware.h"
 #include "uart.h"
 #include "rs485.h"
 
+#define RS485_BUFSIZE		16
+#define RS485_TX 			1
+#define RS485_RX 			0
+
+#if PLATAFORMA == COLDUINO
 #pragma warn_implicitconv off
+#define RS485_TXRX_PIN 		PTFD_PTFD2
+#define RS485_TXRX_PINDIR 	PTFDD_PTFDD2
+#else
+#define RS485_TXRX_PIN 		
+#define RS485_TXRX_PINDIR 	
+#endif
 
-#define RS485_BUFSIZE	16
 
+#if PLATAFORMA == COLDUINO
 #if UART_RS485 == UART1
 #define RS485_PUTCHAR(x) 	putchar_uart1(x)
 #define RS485_PRINTF(x)		printf_uart1(x)
@@ -32,10 +44,6 @@ extern BRTOS_Queue 			*Serial2;
 #define RS485_QUEUE 		Serial2	
 #endif
 
-#define RS485_TX 			1
-#define RS485_RX 			0
-#define RS485_TXRX_PIN 		PTFD_PTFD2
-#define RS485_TXRX_PINDIR 	PTFDD_PTFDD2
 
 void rs485_init(INT16U baudrate, INT8U mutex, INT8U priority)
 {
@@ -50,7 +58,7 @@ void rs485_init(INT16U baudrate, INT8U mutex, INT8U priority)
 #endif	
 }
 
-void rs485_putchar(byte caracter)
+void rs485_putchar(uint8_t caracter)
 {
 	RS485_TXRX_PIN = RS485_TX;
 	RS485_RX_DISABLE();
@@ -90,3 +98,5 @@ INT8U rs485_rx(CHAR8* caracter, INT16U timeout)
 	RS485_TXRX_PIN = RS485_RX;
 	return (ret != TIMEOUT)? 1:0;
 }
+
+#endif

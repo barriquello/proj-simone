@@ -15,6 +15,12 @@
 #define PRINT(a,...)
 #endif
 
+#if COLDUINO
+#define nop()		asm{NOP}		
+#elif ARDUINO	
+#define nop()		asm("NOP");
+#endif	
+
 #pragma warn_implicitconv off
 
 
@@ -68,20 +74,18 @@ INT8U SDCard_Init(INT8U verbose)
 { 
   FRESULT f_res;
   
+#if SD_CARD_PORT
   _SD_AUSENT = _IN;
   SD_AUSENT_PULLUP = 1;  
+
   
   #ifdef SOCKWP
   _SD_WP = _IN;
   SD_WP_PULLUP = 1;   
   #endif
+#endif  
   
-  asm
-  {
-   NOP 
-   NOP
-   NOP
-  }
+  nop();nop();nop();
   
   if (GetCardInit())
   {

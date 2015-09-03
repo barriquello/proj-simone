@@ -85,22 +85,32 @@ T20150101073300S ->
 
  */
 
+#include "AppConfig.h"
 #include <stdlib.h>
-#include <time.h>
 #include <string.h>
+
+#if PLATAFORMA == ARDUINO
+//#include "time_lib.h"
+#else
+#include <time.h>
+#endif
+
+
 
 #ifdef _WIN32
 #include <stdio.h>
 #include "http_client.h"
 #else
-#include "SD_API.h"
-#include "AppConfig.h"
+//#include "SD_API.h"
 #endif
 
+#if PLATAFORMA == COLDUINO
 #include "printf_lib.h"
+#include "minIni.h"
+#endif
+
 
 #include "assert.h"
-#include "minIni.h"
 #include "monitor.h"
 #include "simon-api.h"
 

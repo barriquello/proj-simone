@@ -489,17 +489,21 @@ uint8_t monitor_entry_send(monitor_entry_t* entry, uint8_t len)
 
 	if(cnt > 0)
 	{
-		simon_send_data((uint8_t*)data_vector,cnt, 0,entry->ts);
+		/* corrigir monitor id */
+		if(simon_send_data((uint8_t*)data_vector,cnt, 0,entry->ts) == MODEM_OK)
+		{
+			return TRUE;
+		}
 	}
 
-	return TRUE;
+	return FALSE;
 }
 
 uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_entry_t* entry)
 {
 	uint16_t entry_size;
 	LOG_FILETYPE fp;
-	LOG_FILEPOS  pos = LOG_HEADER_LEN;
+	LOG_FILEPOS  pos;
 	struct tm ts;
 
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
@@ -510,6 +514,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 
 	entry_size = (h.h1.entry_size)*2 + 2; // x2 pois cada byte está com 2 char, +2 pois inclui \r\n
 
+	/* se o arquivo terminou !!! */
 	if(h.last_idx < h.count)
 	{
 		ts.tm_year = h.h2.year - 1900;
@@ -531,7 +536,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 		/* le a proxima entrada */
 		if(monitor_openread(filename,&fp))
 		{
-			pos = pos + (h.last_idx)*entry_size;
+			pos = LOG_HEADER_LEN + (h.last_idx)*entry_size;
 
 			if(monitor_seek(&fp,&pos))
 			{
@@ -539,7 +544,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   (void)monitor_close(&fp);
 
 			   /* try to send */
-			   if(monitor_entry_send(entry,entry_size-2) == 1) // ignore \r\n
+			   if(monitor_entry_send(entry,entry_size-2) == TRUE) // ignore \r\n
 			   {
 				   /* if ok */
 				   h.last_idx++; // incrementa indice da última entrada lida
@@ -553,10 +558,11 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 	else
 	{
 		// if(h.last_idx == h.count)
-		/* log is not writing in the same reading file ? */
+		/* monitor is not writing in the same reading file ? */
 		if(strcmp(monitor_state[monitor_num].monitor_name_reading, monitor_state[monitor_num].monitor_name_writing) != 0)
 		{
 			strcpy(monitor_state[monitor_num].monitor_name_reading,monitor_state[monitor_num].monitor_name_writing);
+			
 			/* update meta file */
 			if(monitor_openwrite(LOG_METAFILE,&fp))
 			{

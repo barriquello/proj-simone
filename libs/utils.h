@@ -26,7 +26,7 @@ int strcmp (char s1[] , char s2[]);
 void Print4Digits(unsigned short int number, unsigned char align, char *buff);
 void Print3Digits(unsigned short int number, unsigned char align, char *buff);
 void Print2Digits(unsigned char number, unsigned char align, char *buff);
-void PrintDecimal(signed short int val, char *buff);
+void PrintDecimal(int16_t val, char *buff);
 
 #ifndef _WIN32
 void PrintDateTime(OSDateTime *dt, char *buff);

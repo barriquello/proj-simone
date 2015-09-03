@@ -5,7 +5,9 @@
 #include "uart.h"
 #include "terminal_io.h"
 
+#if PLATAFORMA==COLDUINO
 #pragma warn_implicitconv off
+#endif
 
 #ifdef _WIN32
 #define DEBUG_STACK_PRINT 1
@@ -241,6 +243,7 @@ void Reason_of_Reset(INT8U Comm)
   INT8U reason = 0;
   CHAR8  string[5];
   
+#if COLDUINO
   reason = SRS;
   switch(reason)
   {
@@ -279,6 +282,7 @@ void Reason_of_Reset(INT8U Comm)
       DPRINTF(Comm, string);
       break;
   }
+#endif  
 }
 
 

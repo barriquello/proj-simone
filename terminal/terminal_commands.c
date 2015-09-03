@@ -25,16 +25,18 @@
  */
 #include "BRTOS.h"
 #include "AppConfig.h"
+#include "drivers.h"
 #include "terminal.h"
 #include "terminal_commands.h"
 #include "terminal_io.h"
-#include "virtual_com.h"
-#include "UART.h"
 #include "utils.h"
 #include "debug_stack.h"
 #include "tasks.h"
-#include "da.h"
 #include "string.h"
+
+#if COLDUINO
+#include "virtual_com.h"
+#endif
 
 INT8U entradas[CONSOLE_BUFFER_SIZE]; //vetor para a entrada de dados
 
@@ -43,7 +45,9 @@ void term_cmd_ver(char *param)
 {
   (void)*param;
   printf_terminal("\n\r");
+#if COLDUINO  
   printf_terminal((CHAR8*)version);
+#endif  
   printf_terminal("\n\r");
 }
 
@@ -106,6 +110,7 @@ CONST command_t temp_cmd = {
 void term_cmd_setget_time(char *param){
 	
 	OS_RTC datetime; /* dd/mm/yyyy hh:mm:ss */
+	char string[5];
 	
 	if(*param != NULL) // set
 	{				
@@ -233,8 +238,7 @@ time_format_error:
 	}
 	
 print_date:
-	char string[5];
-			
+				
 	/* print current Date & Time */
 	printf_terminal("\n\r");
 	
@@ -712,10 +716,12 @@ void echo_post(const INT8U * dados, INT8U len)
 {
 	while(len>0)
 	{
+#if COLDUINO		
 		if (OSQueuePost(USB, *dados) == BUFFER_UNDERRUN)
 		{ 
 		  OSCleanQueue(USB); // Problema: Estouro de buffer
 		}   
+#endif		
 		len--;
 	}
 }

@@ -5,9 +5,13 @@
  *      Author: Universidade Federal
  */
 
+#include "AppConfig.h"
 #include "terminal_io.h"
 #include "uart.h"
+
+#if PLATAFORMA == COLDUINO
 #include "virtual_com.h"
+#endif
 
 static term_input input = NULL;
 static term_output output = NULL;
@@ -58,7 +62,9 @@ void printSer(INT8U SerialPort, CHAR8 *string)
 	    #endif	  
 	    break;
 	  case USE_USB:
+		#if (ENABLE_USB)
 	    printf_usb(string);
+		#endif
 	    break;	    	    
 	  default:
 	    break;
@@ -81,7 +87,9 @@ void putcharSer(INT8U SerialPort, CHAR8 caracter)
 	    #endif	  
 	    break;
 	  case USE_USB:
+		#if (ENABLE_USB)
 	    putchar_usb(caracter);
+		#endif
 	    break;	    	    
 	  default:
 	    break;

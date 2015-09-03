@@ -2,9 +2,18 @@
  * *  Created on: 12/05/2011
  *      Author: gustavo
  ***************************************************************************/
+#include "AppConfig.h"
+
+#if COLDUINO
 #include "types.h"
-#include "terminal.h"
 #include "virtual_com.h"
+#else
+#define printf_usb(x)	
+#endif
+
+#include "BRTOS.h"
+#include "terminal.h"
+
 
 #ifdef __cplusplus
 extern "C" {
@@ -42,9 +51,9 @@ static const command_t term_help_cmd = {
 
 static char			SilentMode = 0; 
 static char 		term_cmd_line[256];
-static uint_8 		term_cmd_line_ndx;
+static uint8_t 		term_cmd_line_ndx;
 
-static uint_8 		term_n_cmd;
+static uint8_t 		term_n_cmd;
 static command_t 	*term_cmds[MAX_CMDS];
 
 static unsigned char (*putch)(char);
@@ -53,7 +62,9 @@ static unsigned char (*putch)(char);
 void getchar_terminal(char *c)
 {    
 	INT8U data;
+#if COLDUINO	
 	(void)OSQueuePend(USB, &data, 0);
+#endif	
 	*c=(char)data;
 }
 

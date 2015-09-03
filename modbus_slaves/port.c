@@ -5,7 +5,12 @@
  *      Author: Carlos
  */
 
+#include "modbus_slaves.h"
+static eMBSlaves Slave_Selected = MODBUS_NONE;
 
+#define MODBUS_NUM_SLAVES  (3)
+
+#if COLDUINO
 #pragma warn_unusedarg off
 
 /* ----------------------- Modbus includes ----------------------------------*/
@@ -15,15 +20,12 @@
 #include "modbus_ts.h"
 #include "modbus_pm210.h"
 
-#if 1
 typedef eMBErrorCode (*peMBRegInputCB)( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs );
 typedef eMBErrorCode (*peMBRegHoldingCB)( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode );
 typedef eMBErrorCode (*peMBRegCoilsCB)( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNCoils, eMBRegisterMode eMode );
 typedef eMBErrorCode (*peMBRegDiscreteCB)( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete );
-#endif
 
 
-#if 1
 eMBErrorCode eMBRegInputCB_def ( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs );
 eMBErrorCode eMBRegHoldingCB_def ( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode );
 eMBErrorCode eMBRegCoilsCB_def ( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNCoils, eMBRegisterMode eMode );
@@ -38,10 +40,7 @@ eMBErrorCode eMBRegInputCB_TS ( UCHAR * pucRegBuffer, USHORT usAddress, USHORT u
 eMBErrorCode eMBRegHoldingCB_TS ( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode );
 eMBErrorCode eMBRegCoilsCB_TS ( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNCoils, eMBRegisterMode eMode );
 eMBErrorCode eMBRegDiscreteCB_TS ( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete );
-#endif
 
-static eMBSlaves Slave_Selected = MODBUS_NONE;
-#define MODBUS_NUM_SLAVES  (3)
 
 CONST peMBRegInputCB _eMBRegInputCB[MODBUS_NUM_SLAVES] = 
 {
@@ -63,6 +62,7 @@ CONST peMBRegDiscreteCB _eMBRegDiscreteCB[MODBUS_NUM_SLAVES] =
 		eMBRegDiscreteCB_PM210, eMBRegDiscreteCB_TS, eMBRegDiscreteCB_def
 };
 
+#endif
 
 void ModbusSetSlave(eMBSlaves slave_option)
 {
@@ -72,7 +72,7 @@ void ModbusSetSlave(eMBSlaves slave_option)
 	}	
 }
 
-#if 1
+#if COLDUINO
 eMBErrorCode eMBRegCoilsCB_def(UCHAR * pucRegBuffer, USHORT usAddress,
 		USHORT usNCoils, eMBRegisterMode eMode)
 {
@@ -98,7 +98,7 @@ eMBErrorCode eMBRegHoldingCB_def(UCHAR * pucRegBuffer, USHORT usAddress,
 }
 #endif
 
-#if 1
+#if COLDUINO
 
 eMBErrorCode eMBRegInputCB ( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs )
 {

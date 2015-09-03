@@ -18,7 +18,7 @@
 #define OS_CPU_TYPE 	INT8U
 
 /// Define if nesting interrupt is active
-#define NESTING_INT 1
+#define NESTING_INT 0
 
 /// Define if its necessary to save status register / interrupt info
 #define OS_SR_SAVE_VAR

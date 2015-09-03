@@ -18,20 +18,21 @@
 #define DAYSPERNYEAR   365
 #define DAYSPERWEEK    7
 
+#include "AppConfig.h"
 
 #ifndef _WIN32
 #include "BRTOS.h"
-#endif
-
-#include <time.h>
-
-#ifndef _WIN32
 #include "stdint.h"
 typedef uint32_t time_t;
 uint8_t SetTimeStamp (uint8_t device_id, uint8_t *data_ptr, OSTime *timestamp);
+
+#if PLATAFORMA == COLDUINO
+#include <time.h>
+#endif
 #endif
 
-#if 0
+#if PLATAFORMA == ARDUINO
+
 #ifndef _TM_DEFINED
 #define _TM_DEFINED
 
@@ -51,7 +52,7 @@ struct tm {
 
 #endif
 
-
+#if 0
 struct tm
 {	
 	int tm_sec; /* Segundos, 0-59*/
@@ -64,6 +65,8 @@ struct tm
 	int tm_yday; /* dias a partir de 1 de janeiro 1-365 */
 	int tm_isdst; /* Indicador de horário de verão */
 };
+#endif
+
 #endif
 
 extern long _timezone;

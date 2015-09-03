@@ -81,40 +81,53 @@
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <ToolchainSettings>
       <AvrGcc>
-        <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
-        <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
-        <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
-        <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
-        <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
-        <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
-        <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
-        <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
-        <avrgcc.compiler.symbols.DefSymbols>
-          <ListValues>
-            <Value>DEBUG</Value>
-          </ListValues>
-        </avrgcc.compiler.symbols.DefSymbols>
-        <avrgcc.compiler.directories.IncludePaths>
-          <ListValues>
-            <Value>../../../brtos/includes</Value>
-            <Value>../../../hal/Atmel_Studio_6_ATMEGA</Value>
-            <Value>../../drivers</Value>
-            <Value>../../includes</Value>
-            <Value>../includes</Value>
-          </ListValues>
-        </avrgcc.compiler.directories.IncludePaths>
-        <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
-        <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
-        <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
-        <avrgcc.compiler.optimization.DebugLevel>Default (-g2)</avrgcc.compiler.optimization.DebugLevel>
-        <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
-        <avrgcc.linker.libraries.Libraries>
-          <ListValues>
-            <Value>libm</Value>
-          </ListValues>
-        </avrgcc.linker.libraries.Libraries>
-        <avrgcc.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcc.assembler.debugging.DebugLevel>
-      </AvrGcc>
+  <avrgcc.common.optimization.RelaxBranches>True</avrgcc.common.optimization.RelaxBranches>
+  <avrgcc.common.outputfiles.hex>True</avrgcc.common.outputfiles.hex>
+  <avrgcc.common.outputfiles.lss>True</avrgcc.common.outputfiles.lss>
+  <avrgcc.common.outputfiles.eep>True</avrgcc.common.outputfiles.eep>
+  <avrgcc.common.outputfiles.srec>True</avrgcc.common.outputfiles.srec>
+  <avrgcc.common.outputfiles.usersignatures>False</avrgcc.common.outputfiles.usersignatures>
+  <avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>True</avrgcc.compiler.general.ChangeDefaultCharTypeUnsigned>
+  <avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>True</avrgcc.compiler.general.ChangeDefaultBitFieldUnsigned>
+  <avrgcc.compiler.symbols.DefSymbols>
+    <ListValues>
+      <Value>DEBUG</Value>
+    </ListValues>
+  </avrgcc.compiler.symbols.DefSymbols>
+  <avrgcc.compiler.directories.IncludePaths>
+    <ListValues>
+      <Value>../../../brtos/includes</Value>
+      <Value>../../../hal/Atmel_Studio_6_ATMEGA</Value>
+      <Value>../../../libs</Value>
+      <Value>../../drivers</Value>
+      <Value>../../includes</Value>
+      <Value>../includes</Value>
+      <Value>../../../devices</Value>
+      <Value>../../../FatFS</Value>
+      <Value>../../../terminal</Value>
+      <Value>../../../minINI</Value>
+      <Value>../../../modbus_master</Value>
+      <Value>../../../modbus_slaves</Value>
+      <Value>../../../monitor</Value>
+      <Value>../../../monitor/pt</Value>
+      <Value>../../../simon-api</Value>
+      <Value>../../../freemodbus/modbus/include</Value>
+      <Value>../../../freemodbus/port</Value>
+      <Value>../../../freemodbus/modbus/rtu</Value>
+    </ListValues>
+  </avrgcc.compiler.directories.IncludePaths>
+  <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
+  <avrgcc.compiler.optimization.PackStructureMembers>True</avrgcc.compiler.optimization.PackStructureMembers>
+  <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
+  <avrgcc.compiler.optimization.DebugLevel>Default (-g2)</avrgcc.compiler.optimization.DebugLevel>
+  <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
+  <avrgcc.linker.libraries.Libraries>
+    <ListValues>
+      <Value>libm</Value>
+    </ListValues>
+  </avrgcc.linker.libraries.Libraries>
+  <avrgcc.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcc.assembler.debugging.DebugLevel>
+</AvrGcc>
     </ToolchainSettings>
   </PropertyGroup>
   <ItemGroup>
@@ -174,6 +187,154 @@
       <SubType>compile</SubType>
       <Link>brtos\timers.c</Link>
     </Compile>
+    <Compile Include="..\..\devices\rs485.c">
+      <SubType>compile</SubType>
+      <Link>devices\rs485.c</Link>
+    </Compile>
+    <Compile Include="..\..\devices\rs485.h">
+      <SubType>compile</SubType>
+      <Link>devices\rs485.h</Link>
+    </Compile>
+    <Compile Include="..\..\devices\SD.c">
+      <SubType>compile</SubType>
+      <Link>devices\SD.c</Link>
+    </Compile>
+    <Compile Include="..\..\devices\SD.h">
+      <SubType>compile</SubType>
+      <Link>devices\SD.h</Link>
+    </Compile>
+    <Compile Include="..\..\devices\terminal_io.c">
+      <SubType>compile</SubType>
+      <Link>devices\terminal_io.c</Link>
+    </Compile>
+    <Compile Include="..\..\devices\terminal_io.h">
+      <SubType>compile</SubType>
+      <Link>devices\terminal_io.h</Link>
+    </Compile>
+    <Compile Include="..\..\FatFS\diskio.h">
+      <SubType>compile</SubType>
+      <Link>FatFs\diskio.h</Link>
+    </Compile>
+    <Compile Include="..\..\FatFS\ff.c">
+      <SubType>compile</SubType>
+      <Link>FatFs\ff.c</Link>
+    </Compile>
+    <Compile Include="..\..\FatFS\ff.h">
+      <SubType>compile</SubType>
+      <Link>FatFs\ff.h</Link>
+    </Compile>
+    <Compile Include="..\..\FatFS\ffconf.h">
+      <SubType>compile</SubType>
+      <Link>FatFs\ffconf.h</Link>
+    </Compile>
+    <Compile Include="..\..\FatFS\integer.h">
+      <SubType>compile</SubType>
+      <Link>FatFs\integer.h</Link>
+    </Compile>
+    <Compile Include="..\..\FatFS\option\syscall.c">
+      <SubType>compile</SubType>
+      <Link>FatFs\option\syscall.c</Link>
+    </Compile>
+    <Compile Include="..\..\FatFS\SD_API.c">
+      <SubType>compile</SubType>
+      <Link>FatFs\SD_API.c</Link>
+    </Compile>
+    <Compile Include="..\..\FatFS\SD_API.h">
+      <SubType>compile</SubType>
+      <Link>FatFs\SD_API.h</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\functions\mbfunccoils.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\functions\mbfunccoils.c</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\functions\mbfuncdiag.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\functions\mbfuncdiag.c</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\functions\mbfuncdisc.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\functions\mbfuncdisc.c</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\functions\mbfuncholding.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\functions\mbfuncholding.c</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\functions\mbfuncinput.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\functions\mbfuncinput.c</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\functions\mbfuncother.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\functions\mbfuncother.c</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\functions\mbutils.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\functions\mbutils.c</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\include\mb.h">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\include\mb.h</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\include\mbconfig.h">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\include\mbconfig.h</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\include\mbframe.h">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\include\mbframe.h</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\include\mbfunc.h">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\include\mbfunc.h</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\include\mbport.h">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\include\mbport.h</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\include\mbproto.h">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\include\mbproto.h</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\include\mbutils.h">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\include\mbutils.h</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\mb.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\mb.c</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\rtu\mbcrc.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\rtu\mbcrc.c</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\rtu\mbcrc.h">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\rtu\mbcrc.h</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\rtu\mbrtu.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\rtu\mbrtu.c</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\modbus\rtu\mbrtu.h">
+      <SubType>compile</SubType>
+      <Link>freemodbus\modbus\rtu\mbrtu.h</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\port\port.h">
+      <SubType>compile</SubType>
+      <Link>freemodbus\port\port.h</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\port\portevent.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\port\portevent.c</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\port\portserial.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\port\portserial.c</Link>
+    </Compile>
+    <Compile Include="..\..\freemodbus\port\porttimer.c">
+      <SubType>compile</SubType>
+      <Link>freemodbus\port\porttimer.c</Link>
+    </Compile>
     <Compile Include="..\..\hal\Atmel_Studio_6_ATMEGA\HAL.c">
       <SubType>compile</SubType>
       <Link>brtos\hal\HAL.c</Link>
@@ -181,6 +342,194 @@
     <Compile Include="..\..\hal\Atmel_Studio_6_ATMEGA\HAL.h">
       <SubType>compile</SubType>
       <Link>brtos\hal\HAL.h</Link>
+    </Compile>
+    <Compile Include="..\..\libs\assert.c">
+      <SubType>compile</SubType>
+      <Link>libs\assert.c</Link>
+    </Compile>
+    <Compile Include="..\..\libs\assert.h">
+      <SubType>compile</SubType>
+      <Link>libs\assert.h</Link>
+    </Compile>
+    <Compile Include="..\..\libs\debug_stack.c">
+      <SubType>compile</SubType>
+      <Link>libs\debug_stack.c</Link>
+    </Compile>
+    <Compile Include="..\..\libs\debug_stack.h">
+      <SubType>compile</SubType>
+      <Link>libs\debug_stack.h</Link>
+    </Compile>
+    <Compile Include="..\..\libs\printf_lib.c">
+      <SubType>compile</SubType>
+      <Link>libs\printf_lib.c</Link>
+    </Compile>
+    <Compile Include="..\..\libs\printf_lib.h">
+      <SubType>compile</SubType>
+      <Link>libs\printf_lib.h</Link>
+    </Compile>
+    <Compile Include="..\..\libs\random_lib.c">
+      <SubType>compile</SubType>
+      <Link>libs\random_lib.c</Link>
+    </Compile>
+    <Compile Include="..\..\libs\random_lib.h">
+      <SubType>compile</SubType>
+      <Link>libs\random_lib.h</Link>
+    </Compile>
+    <Compile Include="..\..\libs\strtok.c">
+      <SubType>compile</SubType>
+      <Link>libs\strtok.c</Link>
+    </Compile>
+    <Compile Include="..\..\libs\time_lib.c">
+      <SubType>compile</SubType>
+      <Link>libs\time_lib.c</Link>
+    </Compile>
+    <Compile Include="..\..\libs\time_lib.h">
+      <SubType>compile</SubType>
+      <Link>libs\time_lib.h</Link>
+    </Compile>
+    <Compile Include="..\..\libs\utils.c">
+      <SubType>compile</SubType>
+      <Link>libs\utils.c</Link>
+    </Compile>
+    <Compile Include="..\..\libs\utils.h">
+      <SubType>compile</SubType>
+      <Link>libs\utils.h</Link>
+    </Compile>
+    <Compile Include="..\..\libs\utils_tests.c">
+      <SubType>compile</SubType>
+      <Link>libs\utils_tests.c</Link>
+    </Compile>
+    <Compile Include="..\..\minINI\minGlue-FatFs.h">
+      <SubType>compile</SubType>
+      <Link>minINI\minGlue-FatFs.h</Link>
+    </Compile>
+    <Compile Include="..\..\minINI\minGlue.h">
+      <SubType>compile</SubType>
+      <Link>minINI\minGlue.h</Link>
+    </Compile>
+    <Compile Include="..\..\minINI\minIni.c">
+      <SubType>compile</SubType>
+      <Link>minINI\minIni.c</Link>
+    </Compile>
+    <Compile Include="..\..\minINI\minIni.h">
+      <SubType>compile</SubType>
+      <Link>minINI\minIni.h</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_master\crc16.c">
+      <SubType>compile</SubType>
+      <Link>modbus_master\crc16.c</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_master\crc16.h">
+      <SubType>compile</SubType>
+      <Link>modbus_master\crc16.h</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_master\data_types.h">
+      <SubType>compile</SubType>
+      <Link>modbus_master\data_types.h</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_master\modbus.c">
+      <SubType>compile</SubType>
+      <Link>modbus_master\modbus.c</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_master\modbus.h">
+      <SubType>compile</SubType>
+      <Link>modbus_master\modbus.h</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_master\modbus_def.h">
+      <SubType>compile</SubType>
+      <Link>modbus_master\modbus_def.h</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_slaves\modbus_pm210.c">
+      <SubType>compile</SubType>
+      <Link>modbus_slaves\modbus_pm210.c</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_slaves\modbus_pm210.h">
+      <SubType>compile</SubType>
+      <Link>modbus_slaves\modbus_pm210.h</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_slaves\modbus_slaves.h">
+      <SubType>compile</SubType>
+      <Link>modbus_slaves\modbus_slaves.h</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_slaves\modbus_slave_null.c">
+      <SubType>compile</SubType>
+      <Link>modbus_slaves\modbus_slave_null.c</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_slaves\modbus_slave_null.h">
+      <SubType>compile</SubType>
+      <Link>modbus_slaves\modbus_slave_null.h</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_slaves\modbus_ts.c">
+      <SubType>compile</SubType>
+      <Link>modbus_slaves\modbus_ts.c</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_slaves\modbus_ts.h">
+      <SubType>compile</SubType>
+      <Link>modbus_slaves\modbus_ts.h</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_slaves\port.c">
+      <SubType>compile</SubType>
+      <Link>modbus_slaves\port.c</Link>
+    </Compile>
+    <Compile Include="..\..\monitor\monitor.c">
+      <SubType>compile</SubType>
+      <Link>monitor\monitor.c</Link>
+    </Compile>
+    <Compile Include="..\..\monitor\monitor.h">
+      <SubType>compile</SubType>
+      <Link>monitor\monitor.h</Link>
+    </Compile>
+    <Compile Include="..\..\monitor\monitor_main.c">
+      <SubType>compile</SubType>
+      <Link>monitor\monitor_main.c</Link>
+    </Compile>
+    <Compile Include="..\..\monitor\monitor_tests.c">
+      <SubType>compile</SubType>
+      <Link>monitor\monitor_tests.c</Link>
+    </Compile>
+    <Compile Include="..\..\monitor\pt\lc-addrlabels.h">
+      <SubType>compile</SubType>
+      <Link>monitor\pt\lc-addrlabels.h</Link>
+    </Compile>
+    <Compile Include="..\..\monitor\pt\lc-switch.h">
+      <SubType>compile</SubType>
+      <Link>monitor\pt\lc-switch.h</Link>
+    </Compile>
+    <Compile Include="..\..\monitor\pt\lc.h">
+      <SubType>compile</SubType>
+      <Link>monitor\pt\lc.h</Link>
+    </Compile>
+    <Compile Include="..\..\monitor\pt\pt-sem.h">
+      <SubType>compile</SubType>
+      <Link>monitor\pt\pt-sem.h</Link>
+    </Compile>
+    <Compile Include="..\..\monitor\pt\pt.h">
+      <SubType>compile</SubType>
+      <Link>monitor\pt\pt.h</Link>
+    </Compile>
+    <Compile Include="..\..\simon-api\simon-api.c">
+      <SubType>compile</SubType>
+      <Link>simon-api\simon-api.c</Link>
+    </Compile>
+    <Compile Include="..\..\simon-api\simon-api.h">
+      <SubType>compile</SubType>
+      <Link>simon-api\simon-api.h</Link>
+    </Compile>
+    <Compile Include="..\..\terminal\terminal.c">
+      <SubType>compile</SubType>
+      <Link>terminal\terminal.c</Link>
+    </Compile>
+    <Compile Include="..\..\terminal\terminal.h">
+      <SubType>compile</SubType>
+      <Link>terminal\terminal.h</Link>
+    </Compile>
+    <Compile Include="..\..\terminal\terminal_commands.c">
+      <SubType>compile</SubType>
+      <Link>terminal\terminal_commands.c</Link>
+    </Compile>
+    <Compile Include="..\..\terminal\terminal_commands.h">
+      <SubType>compile</SubType>
+      <Link>terminal\terminal_commands.h</Link>
     </Compile>
     <Compile Include="..\debug_info.c">
       <SubType>compile</SubType>
@@ -194,13 +543,21 @@
       <SubType>compile</SubType>
       <Link>drivers\mcu_driver.h</Link>
     </Compile>
-    <Compile Include="..\drivers\serial.c">
+    <Compile Include="..\drivers\spi.c">
       <SubType>compile</SubType>
-      <Link>drivers\serial.c</Link>
+      <Link>drivers\spi.c</Link>
     </Compile>
-    <Compile Include="..\drivers\serial.h">
+    <Compile Include="..\drivers\spi.h">
       <SubType>compile</SubType>
-      <Link>drivers\serial.h</Link>
+      <Link>drivers\spi.h</Link>
+    </Compile>
+    <Compile Include="..\drivers\uart.c">
+      <SubType>compile</SubType>
+      <Link>drivers\uart.c</Link>
+    </Compile>
+    <Compile Include="..\drivers\uart.h">
+      <SubType>compile</SubType>
+      <Link>drivers\uart.h</Link>
     </Compile>
     <Compile Include="..\includes\debug_info.h">
       <SubType>compile</SubType>
@@ -238,8 +595,25 @@
     <Folder Include="brtos\hal\" />
     <Folder Include="brtos\includes\" />
     <Folder Include="drivers\" />
+    <Folder Include="FatFs\option" />
+    <Folder Include="freemodbus\modbus" />
+    <Folder Include="freemodbus\modbus\functions" />
+    <Folder Include="freemodbus\modbus\include" />
+    <Folder Include="freemodbus\modbus\rtu" />
+    <Folder Include="freemodbus\port" />
     <Folder Include="includes\" />
     <Folder Include="app" />
+    <Folder Include="monitor" />
+    <Folder Include="monitor\pt" />
+    <Folder Include="libs" />
+    <Folder Include="minINI" />
+    <Folder Include="FatFs" />
+    <Folder Include="devices" />
+    <Folder Include="freemodbus" />
+    <Folder Include="modbus_master" />
+    <Folder Include="modbus_slaves" />
+    <Folder Include="simon-api" />
+    <Folder Include="terminal" />
   </ItemGroup>
   <Import Project="$(AVRSTUDIO_EXE_PATH)\\Vs\\Compiler.targets" />
 </Project>

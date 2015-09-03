@@ -9,7 +9,7 @@
 ///////////////////////////////////////////////////////////////
 
 // Define if simulation or DEBUG
-#define DEBUG 1
+//#define DEBUG 0
 
 /// Define if verbose info is available
 #define VERBOSE 0
@@ -27,7 +27,7 @@
 #define NUMBER_OF_PRIORITIES 16
 
 /// Define if OS Trace is active
-#define OSTRACE 1
+#define OSTRACE 0
 
 #if (OSTRACE == 1)  
   #include "debug_info.h"

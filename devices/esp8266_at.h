@@ -8,12 +8,22 @@
 #ifndef ESP8266_AT_H_
 #define ESP8266_AT_H_
 
+#include "AppConfig.h"
 #include "OS_types.h"
 #include "UART.h"
+
+#if COLDUINO
 #include "virtual_com.h"
+#endif
 #include "terminal_io.h"
 
-// configuration 
+// configuration
+#if COLDUINO
+#define ESP_ENABLE 1
+#else
+#define ESP_ENABLE 0
+#endif
+
 #define ESP_BAUD 9600
 #define ESP_UART 2
 #define ESP_TCP_PORT		80
@@ -28,6 +38,8 @@
 
 #define ESP_UART_BUFSIZE	64
 #define ESP_UART_TIMEOUT	2000
+
+#if ESP_ENABLE
 
 /* define esp uart functions*/
 #if ESP_UART == 1 
@@ -74,7 +86,7 @@
 #else
 	#error "UART port is not specified"
 #endif
-
+#endif
 
 typedef enum 
 {

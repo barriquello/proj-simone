@@ -29,9 +29,15 @@
 #define __SD__
 
 /* Includes */
+#include "AppConfig.h"
 #include "OS_types.h"
 #include "diskio.h"
+
+#if COLDUINO
 #include "types.h"
+#else
+#include "stdint.h"
+#endif
 //#include "usb_msc.h"
 
 
@@ -44,7 +50,7 @@
 #define   _OUT       1
 #define   _IN        0
 
-/* Stardar Definitions */
+/* Standard Definitions */
 #ifdef  SD_BLOCK_512
     #define SD_BLOCK_SIZE   (0x00000200)
     #define SD_BLOCK_SHIFT  (9)
@@ -54,16 +60,19 @@
 /* TypeDefs */
 typedef union
 {
-	uint_8  bytes[4];
-	uint_32 lword;		
+	uint8_t  bytes[4];
+	uint32_t lword;		
 }T32_8;
 
 typedef union
 {
-	uint_8  u8[2];
-	uint_16 u16;		
+	uint8_t  u8[2];
+	uint16_t u16;		
 }T16_8;
 
+
+#if COLDUINO
+#define SD_CARD_PORT	1
 /* SD card Inserted detection Pin */
 #define SD_CS    PTAD_PTAD0      /* Slave Select 1 */
 #define _SD_CS   PTADD_PTADD0
@@ -72,14 +81,55 @@ typedef union
 #define _SD_AUSENT       PTBDD_PTBDD7
 #define SD_AUSENT_PULLUP PTBPE_PTBPE7
 
-#define SD_PRESENT 		(!SD_AUSENT)
-
-#define SD_WP			  PTBD_PTBD6			
+#define SD_WP			  PTBD_PTBD6
 #define _SD_WP			  PTBDD_PTBDD6
 #define SD_WP_PULLUP	  PTBPE_PTBPE6
 
+#define	FCLK_SLOW()	  SCGC2  |= SCGC2_SPI1_MASK;        /* Enables spi1 clock */			\
+(void)SPI1S;                      /* Read the status register */		\
+(void)SPI1D;                      /* Read the device register */		\
+SPI1BR = 0x10; 					/* 196 Khz with 24 MHz busclock */ 	\
+SPI1C2 = 0x00;                                      					\
+SPI1C1 = SPI1C1_SPE_MASK | SPI1C1_MSTR_MASK
+
+#define	FCLK_FAST()	  SPI1BR = 0x00
+
+#else
+
+/* SD card Inserted detection Pin */
+#define SD_CS        dummy  /* Slave Select 1 */
+#define _SD_CS		  
+
+#define SD_AUSENT       1 
+#define _SD_AUSENT       
+#define SD_AUSENT_PULLUP  
+
+#define SD_WP			  
+#define _SD_WP			  
+#define SD_WP_PULLUP	  
+
+#define	FCLK_SLOW()	 
+#define	FCLK_FAST()	  
+
+#endif
+
+#define SD_PRESENT 		(!SD_AUSENT)
+
 #define ENABLE    0
 #define DISABLE   1
+
+/* Port Controls  (Platform dependent) */
+#if SD_CARD_PORT
+#define CS_LOW()	SD_CS = 0			/* MMC CS = L */
+#define	CS_HIGH()	SD_CS = 1			/* MMC CS = H */
+#define SOCKWP	    SD_WP	            /* Write protected. yes:true, no:false, default:false */
+#define SOCKINS		(!SD_AUSENT)	        /* Card detected.   yes:true, no:false, default:true */
+#else
+#define CS_LOW()				/* MMC CS = L */
+#define	CS_HIGH()				/* MMC CS = H */
+//#define SOCKWP	    	        /* Write protected. yes:true, no:false, default:false */
+#define SOCKINS			      0  /* Card detected.   yes:true, no:false, default:true */
+#endif
 
 /* Error Codes */
 enum
@@ -96,21 +146,6 @@ enum
 	MOUNT_SD_FAILS
 };
 
-
-/* Port Controls  (Platform dependent) */
-#define CS_LOW()	SD_CS = 0			/* MMC CS = L */
-#define	CS_HIGH()	SD_CS = 1			/* MMC CS = H */
-#define SOCKWP	    SD_WP	            /* Write protected. yes:true, no:false, default:false */
-#define SOCKINS		(!SD_AUSENT)	        /* Card detected.   yes:true, no:false, default:true */
-
-#define	FCLK_SLOW()	  SCGC2  |= SCGC2_SPI1_MASK;        /* Enables spi1 clock */			\
-					  (void)SPI1S;                      /* Read the status register */		\
-					  (void)SPI1D;                      /* Read the device register */		\
-					  SPI1BR = 0x10; 					/* 196 Khz with 24 MHz busclock */ 	\
-                      SPI1C2 = 0x00;                                      					\
-                      SPI1C1 = SPI1C1_SPE_MASK | SPI1C1_MSTR_MASK
-                      
-#define	FCLK_FAST()	  SPI1BR = 0x00
 
 /* Static Definitions */
 /******************************* SD Card Standard Commands **********************************/

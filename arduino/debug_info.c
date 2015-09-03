@@ -1,5 +1,11 @@
 #include "BRTOS.h"
-#include "serial.h"
+#include "AppConfig.h"
+#include "drivers.h"
+
+#if ARDUINO
+#define Serial_Envia_Frase(x)		print_uart0(x)
+#define Serial_Envia_Caracter(x)	putchar_uart0(x)
+#endif
 
 void Transmite_Uptime(void);
 void Transmite_RAM_Ocupada(void);

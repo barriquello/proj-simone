@@ -1,39 +1,19 @@
-/******************************************************************************
-*                                                  
-*  (c) copyright Freescale Semiconductor 2008
-*  ALL RIGHTS RESERVED
-*
-*  File Name:   SD.c
-*                                                                          
-*  Description: SD Card using SPI Driver 
-*                                                                                     
-*  Assembler:   Codewarrior for HC(S)08 V6.1
-*                                            
-*  Version:     1.0                                                         
-*                                                                                                                                                         
-*  Author:      Jose Ruiz (SSE Americas)
-*                                                                                       
-*  Location:    Guadalajara,Mexico                                              
-*                                                                                                                  
-*                                                  
-* UPDATED HISTORY:
-*
-* REV   YYYY.MM.DD  AUTHOR            DESCRIPTION OF CHANGE
-* ---   ----------  ------            --------------------- 
-* 1.0   2008.02.18  Jose Ruiz         Initial version
-* 1.1   2010.09.14  Gustavo Denardin  SD_Write_Block timer fixes (#001)
-* 
-******************************************************************************/
-
-#pragma warn_implicitconv off
 
 /* Includes */
 #include "SD.h"
 #include "BRTOS.h"
 #include "drivers.h"
 
+#if PLATAFORMA == COLDUINO
+#pragma warn_implicitconv off
+#else
+uint8_t dummy;
+#endif
+
+
+
 static volatile DSTATUS   Stat             = STA_NOINIT;	/* Disk status */
-static volatile Timer                      = 0;           /* Read/Write timer */
+static volatile int Timer                      = 0;           /* Read/Write timer */
 #ifdef USE_OS
   static volatile INT16U    Timer1;	                      /* 100Hz decrement timer */
   static volatile INT8U     Timer2;
@@ -170,8 +150,10 @@ void power_on (void)
   // Wait power up stabilization
   DelayTask(500);    
   
+#if SD_CARD_PORT  
   SD_CS = 1;
   _SD_CS= 1;   
+#endif  
 }
 
 
@@ -756,6 +738,8 @@ void SetFatTimer(INT32U time)
 }
 
 
+#if PLATAFORMA == COLDUINO
+
 // Used for MSD class
 #include "user_config.h"
 #if (USB_CLASS_TYPE == BRTOS_USB_MSD)
@@ -924,5 +908,6 @@ void SD_Card_Info(uint_32_ptr max_blocks_ptr, uint_32_ptr block_size_ptr)
     *max_blocks_ptr = u32MaxBlocks.lword;
     *block_size_ptr = (uint_32)u16BlockSize.u16;
 }
+#endif
 
 #endif

@@ -2,7 +2,7 @@
 #include "BRTOSConfig.h"
 #include "BRTOS.h"
 #include "tasks.h"
-#include "serial.h"
+#include "drivers.h"
 
 // Declara uma estrutura de fila
 OS_QUEUE SerialPortBuffer;
@@ -51,8 +51,9 @@ int main_demo(void)
 	  
   // Initialize BRTOS
   BRTOS_Init();
-  Serial_Init(MYBAUD);
+  uart_init(MYBAUD);
 
+#if 0
   if (OSQueueCreate(&SerialPortBuffer,32,&Serial) != ALLOC_EVENT_OK)
   {
     // Oh Oh
@@ -97,6 +98,7 @@ int main_demo(void)
     // Não deveria entrar aqui !!!
     while(1){};
   };
+#endif  
 
 
   // Start Task Scheduler

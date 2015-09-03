@@ -14,6 +14,12 @@
 #include "stdint.h"
 
 // configuration 
+#if COLDUINO 
+#define M590_ENABLE 1
+#else
+#define M590_ENABLE 0
+#endif
+
 #define M590_BAUD 			9600
 #define M590_UART 			1
 #define M590_TCP_SERVER_NAME "emon-gpsnetcms.rhcloud.com"
@@ -29,6 +35,8 @@
 
 #define M590_UART_BUFSIZE	256
 #define M590_UART_TIMEOUT	10
+
+#if M590_ENABLE
 
 /* define esp uart functions*/
 #if M590_UART == 1 
@@ -75,7 +83,7 @@
 #else
 	#error "UART port is not specified"
 #endif
-
+#endif
 
 typedef enum 
 {
