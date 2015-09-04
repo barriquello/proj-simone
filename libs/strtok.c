@@ -44,7 +44,7 @@
 #include <stddef.h>
 #include <string.h>
 
-char *
+static char *
 strtok_r(char *s, const char *delim, char **last)
 {
     char *spanp;

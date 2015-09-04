@@ -43,6 +43,7 @@ int ff_cre_syncobj (	/* !=0:Function succeeded, ==0:Could not create due to any 
 #define SDCARD_MUTEX_PRIORITY 15
 #endif
 
+	(void) vol;
 	*sobj = SDCard_ResourceInit(SDCARD_MUTEX_PRIORITY);	/* BRTOS */
 	ret = (int)(*sobj != NULL);
 	
@@ -65,6 +66,7 @@ int ff_del_syncobj (	/* !=0:Function succeeded, ==0:Could not delete due to any 
 {
 	int ret = 0;
 
+	(void)sobj;
 
 // ret = CloseHandle(sobj);	/* Win32 */
 

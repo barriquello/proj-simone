@@ -5,6 +5,8 @@
 #include "uart.h"
 #include "terminal_io.h"
 
+#include "AppConfig.h"
+
 #if PLATAFORMA==COLDUINO
 #pragma warn_implicitconv off
 #endif
@@ -17,8 +19,9 @@
 #define DPRINTF(a,...) printSer(a,__VA_ARGS__);
 #define DPUTCHAR(a,b)  putcharSer(a,b);
 #else
-#define DPRINTF(a,...)
-#define DPUTCHAR(a,b)	
+#define UNUSED(a)		(void)(a)
+#define DPRINTF(a,...)	UNUSED(a);
+#define DPUTCHAR(a,b)	UNUSED(a);UNUSED(b);
 #endif
 
 
@@ -236,7 +239,6 @@ void Transmite_CPU_Load(INT8U Comm)
     DPRINTF(Comm, "\n\r");
 }
 #endif
-
 
 void Reason_of_Reset(INT8U Comm)
 {  

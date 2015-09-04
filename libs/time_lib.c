@@ -53,7 +53,8 @@ uint8_t _daylight = 0;              // Non-zero if daylight savings time is used
 long _dstbias = 0;                  // Offset for Daylight Saving Time
 long _timezone = 0;                 // Difference in seconds between GMT and local time
 
-struct tm *gmtime_r(const time_t *timer, struct tm *tmbuf) {
+static struct tm *gmtime_r(const time_t *timer, struct tm *tmbuf) 
+{
   time_t time = *timer;
   uint32_t dayclock, dayno;
   int year = EPOCH_YR;
@@ -61,29 +62,30 @@ struct tm *gmtime_r(const time_t *timer, struct tm *tmbuf) {
   dayclock = (uint32_t) time % SECS_DAY;
   dayno = (uint32_t) time / SECS_DAY;
 
-  tmbuf->tm_sec = dayclock % 60;
-  tmbuf->tm_min = (dayclock % 3600) / 60;
-  tmbuf->tm_hour = dayclock / 3600;
-  tmbuf->tm_wday = (dayno + 4) % 7; // Day 0 was a thursday
+  tmbuf->tm_sec = (int)(dayclock % 60);
+  tmbuf->tm_min = (int)(dayclock % 3600) / 60;
+  tmbuf->tm_hour = (int)(dayclock / 3600);
+  tmbuf->tm_wday = (int)((dayno + 4) % 7); // Day 0 was a thursday
   while (dayno >= (uint32_t) YEARSIZE(year)) {
     dayno -= YEARSIZE(year);
     year++;
   }
   tmbuf->tm_year = year - YEAR0;
-  tmbuf->tm_yday = dayno;
+  tmbuf->tm_yday = (int)dayno;
   tmbuf->tm_mon = 0;
   while (dayno >= (uint32_t) _ytab[LEAPYEAR(year)][tmbuf->tm_mon]) {
     dayno -= _ytab[LEAPYEAR(year)][tmbuf->tm_mon];
     tmbuf->tm_mon++;
   }
-  tmbuf->tm_mday = dayno + 1;
+  tmbuf->tm_mday = (int)(dayno + 1);
   tmbuf->tm_isdst = 0;
   //tmbuf->tm_gmtoff = 0;
   //tmbuf->tm_zone = "UTC";
   return tmbuf;
 }
 
-struct tm *localtime_r(const time_t *timer, struct tm *tmbuf) {
+static struct tm *localtime_r(const time_t *timer, struct tm *tmbuf) 
+{
   time_t t;
 
   t = *timer - _timezone;
@@ -91,7 +93,8 @@ struct tm *localtime_r(const time_t *timer, struct tm *tmbuf) {
 }
 
 #ifndef KERNEL
-struct tm *gmtime(const time_t *timer) {
+struct tm *gmtime(const time_t *timer) 
+{
   return gmtime_r(timer, &tmbuf);
 }
 
@@ -263,7 +266,7 @@ size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *t)
   p = _fmt(((format == NULL) ? "%c" : format), t, s, s + maxsize);
   if (p == s + maxsize) return 0;
   *p = '\0';
-  return p - s;
+  return (size_t)(p - s);
 }
 
 static char *_fmt(const char *format, const struct tm *t, char *pt, const char *ptlim) {

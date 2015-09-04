@@ -24,7 +24,7 @@ uint8_t CheckPPP(void);
 uint8_t CreatePPP(void);
 uint8_t CreateTCPLink(char *linkStr);
 uint8_t CreateSingleTCPLink(unsigned char iLinkNum,char *strServerIP,char *strPort);
-uint8_t TCPIP_SendData(uint8_t * dados, uint8_t tam);
+uint8_t TCPIP_SendData(uint8_t * dados, uint16_t tam);
 uint8_t is_m590_ok(void);
 uint8_t is_m590_ok_retry(uint8_t retries);
 
@@ -206,14 +206,14 @@ INT8U CreateTCPLink(char *linkStr)
 /****************************************************************************************
 * TCP IP Send Data
 *****************************************************************************************/
-INT8U TCPIP_SendData(INT8U *dados, INT8U tam)
+uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 {
 	int timeout=0;
-	INT8U  c;
-	INT8U  length, len;	
-	INT8U *send;
+	uint8_t  c;
+	uint16_t  length, len;	
+	uint8_t *send;
 
-	length = (INT8U) tam;
+	length = (uint16_t) tam;
 	
     while(1)
 	{
@@ -313,7 +313,7 @@ INT8U TCPIP_SendData(INT8U *dados, INT8U tam)
 /****************************************************************************************
 * Create Single TCP Link
 *****************************************************************************************/
-INT8U CreateSingleTCPLink(unsigned char iLinkNum,char *strServerIP,char *strPort)
+uint8_t CreateSingleTCPLink(uint8_t iLinkNum,char *strServerIP,char *strPort)
 {
 	memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
 	SNPRINTF(gReceiveBuffer,sizeof(gReceiveBuffer)-1,"AT+TCPSETUP=%d,%s,%s\r",iLinkNum,strServerIP,strPort);
@@ -456,7 +456,7 @@ m590_ret_t at_m590_open(void)
 	}		
 }
 
-#define M590_TESTE 1
+#define M590_TESTE 0
 #if M590_TESTE		
 #define CONST const
 CONST char M590_SEND_STRING[] = "GET /input/post.json?json={p:3}&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n";
@@ -467,7 +467,9 @@ m590_ret_t at_m590_send(INT8U* dados)
 {
 	INT8U result_ok=FALSE;
 	
-#if 0	
+	if(dados == NULL) return M590_ERR;
+	
+#if 1	
 	if(m590_state != M590_OPEN)
 	{
 		return M590_STATE_ERR;
@@ -477,19 +479,16 @@ m590_ret_t at_m590_send(INT8U* dados)
 	
 	/* sending */	
 	m590_acquire();
-	
-	//if(CreateTCPLink("AT+TCPSETUP=0,54.173.137.93,80\r\n") == TRUE)
+		
 	if(CreateSingleTCPLink(0,"54.173.137.93","80") == TRUE)		
 	{
-		result_ok = TRUE;
+	
 		
 #if M590_TESTE						
-		TCPIP_SendData(M590_SEND_STRING);		
-#else	
-		if(dados != NULL)
-		{
-			TCPIP_SendData(dados);
-		}
+		result_ok = TCPIP_SendData(M590_SEND_STRING);		
+#else				
+		result_ok = TCPIP_SendData(dados,(uint8_t)strlen(dados));
+	
 #endif
 	}
 	else
@@ -696,7 +695,7 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 	ip[15] ='\0';
 	
 	/** testar isso */
-	if(m590_state = M590_OPEN)
+	if(m590_state == M590_OPEN)
 	{
 		/* sending */	
 		m590_acquire();					

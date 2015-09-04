@@ -10,7 +10,7 @@
 #include "assert.h"
 #include "utils.h"
 
-void test_hextoint(void)
+static void test_hextoint(void)
 {
 	uint16_t r;
 	r = hex2byte('A','B');
@@ -23,7 +23,7 @@ void test_hextoint(void)
 	assert(r==0xAB19);
 }
 
-void test_inttohex(void)
+static void test_inttohex(void)
 {
 
 	char ret[4];
@@ -46,7 +46,7 @@ void test_inttohex(void)
 	assert((ret[0] == 'A') && (ret[1]== '0') && (ret[2] == '9') && (ret[3]== 'E'));
 }
 
-void test_u8tobcd(void)
+static void test_u8tobcd(void)
 {
 	char ret[4];
 

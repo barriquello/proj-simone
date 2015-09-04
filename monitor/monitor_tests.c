@@ -15,7 +15,7 @@
 
 extern monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 
-void test_openlog(uint8_t logger)
+static void test_openlog(uint8_t logger)
 {
 
    LOG_FILETYPE fp;
@@ -38,12 +38,12 @@ void test_openlog(uint8_t logger)
 
 }
 
-void test_writelogts(uint8_t logger)
+static void test_writelogts(uint8_t logger)
 {
 
 	LOG_FILETYPE fp;
 	char timestamp[20];
-	uint16_t ret;
+	int ret;
 
 #if _WIN32	
     struct tm ts = *localtime(&(time_t){time(NULL)});
@@ -63,7 +63,7 @@ void test_writelogts(uint8_t logger)
 }
 
 
-void test_createentry(void)
+static void test_createentry(void)
 {
 
 	uint16_t vetor_dados[3]={0x1111,0x2222,0x3333};
@@ -77,7 +77,7 @@ void test_createentry(void)
 
 }
 
-void test_setheader(uint8_t logger)
+static void test_setheader(uint8_t logger)
 {
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 	h.h1.version = 0;
@@ -87,7 +87,7 @@ void test_setheader(uint8_t logger)
 	monitor_setheader(monitor_getfilename_to_write(logger), &h);
 }
 
-void test_getheader(uint8_t logger)
+static void test_getheader(uint8_t logger)
 {
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 	monitor_getheader(monitor_getfilename_to_write(logger), &h);

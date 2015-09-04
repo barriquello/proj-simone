@@ -5,10 +5,8 @@
  *      Author: Carlos
  */
 
+#include "AppConfig.h"
 #include "modbus_slaves.h"
-static eMBSlaves Slave_Selected = MODBUS_NONE;
-
-#define MODBUS_NUM_SLAVES  (3)
 
 #if COLDUINO
 #pragma warn_unusedarg off
@@ -19,6 +17,9 @@ static eMBSlaves Slave_Selected = MODBUS_NONE;
 
 #include "modbus_ts.h"
 #include "modbus_pm210.h"
+
+static eMBSlaves Slave_Selected = MODBUS_NONE;
+
 
 typedef eMBErrorCode (*peMBRegInputCB)( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs );
 typedef eMBErrorCode (*peMBRegHoldingCB)( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode );

@@ -15,8 +15,13 @@
 #include "time_lib.h"
 #include "stdint.h"
 
+#ifndef API_KEY
 #define API_KEY  "90a004390f3530d0ba10199ac2b1ac3d"
+#endif
+
+#ifndef SERVER_NAME
 #define SERVER_NAME "emon-gpsnetcms.rhcloud.com"
+#endif
 
 #ifndef OK
 #define OK 		(1)

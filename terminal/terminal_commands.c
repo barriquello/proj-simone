@@ -712,7 +712,7 @@ CONST command_t echo_stdout_cmd = {
 };
 
 
-void echo_post(const INT8U * dados, INT8U len)
+static void echo_post(const INT8U * dados, INT8U len)
 {
 	while(len>0)
 	{

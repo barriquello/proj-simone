@@ -124,10 +124,12 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 {
 	char* send_monitor = "GET /monitor/set.json?monitorid=%d&time=%d&data=%s&apikey=%s";
 	
-	SNPRINTF(server_reply, 1024, send_monitor, mon_id, time, buf, (char*)simon_apikey);
+	if(len > SIZEARRAY(message)) return MODEM_ERR;
+	
+	SNPRINTF(server_reply, SIZEARRAY(message), send_monitor, mon_id, time, buf, (char*)simon_apikey);
 	
 	/// Form request
-	SNPRINTF(message, 1024,
+	SNPRINTF(message, SIZEARRAY(message),
 		     "%s HTTP/1.1\r\n"
 		     "Host: %s\r\n"
 		     "\r\n\r\n", server_reply, hostname);

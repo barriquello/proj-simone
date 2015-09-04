@@ -322,12 +322,12 @@ uint8_t build_data_vector(char* ptr_data, uint8_t *data, uint8_t len)
 
 #define StringToInteger(value) strtoul(value,NULL,0);
 
+static int mon_cnt = 0;
+static int field_cnt = 0;
+
 static int callback_inifile(const char *section, const char *key, const char *value, const void *userdata)
 {
-  
-    static int mon_cnt = 0;
-    static int field_cnt = 0;
-    
+     
     (void)userdata;
 
     /* configura monitores */
@@ -371,13 +371,8 @@ static int callback_inifile(const char *section, const char *key, const char *va
 	{
   	    if(mon_cnt >= num_monitores)
   	    {
-  	    	return 0;
+  	    	return FALSE;
   	    }
-
-  		if(field_cnt == 0)
-  		{
-  			monitor_state[mon_cnt].state = IN_USE;
-  		}
 
 		/* configura monitores */
 		if(strcmp(key,"id") == 0)
@@ -415,12 +410,13 @@ static int callback_inifile(const char *section, const char *key, const char *va
 		if(field_cnt == NUM_OF_FIELDS)
 		{
 			field_cnt = 0;
+			monitor_state[mon_cnt].state = IN_USE;
 			++mon_cnt;
 		}
-		return 1;
+		return TRUE;
 
 	}
-  	return 1;
+  	return TRUE;
 }
 
 static void config_check_erro(void)
@@ -480,6 +476,7 @@ void main_monitor(void)
 {
 
 	uint8_t monitor_num = 0;
+	
 #define TESTES 0	
 #if TESTES		
 	struct tm ts;
@@ -538,12 +535,16 @@ void main_monitor(void)
 	ini_browse(callback_inifile, NULL, config_inifile);
 	config_check_erro();
 
+	print_debug("\r\nConfig OK\r\n");
+	
+	DelayTask(5000);	
+
 	/* init monitors */
 	monitores_em_uso = 0;
 	for (monitor_num = 0; monitor_num < num_monitores; monitor_num++)
 	{		
 		if(	monitor_state[monitor_num].state == UNUSED
-			|| monitor_init(monitor_num) != OK)
+			|| monitor_init(monitor_num) != TRUE)
 		{
 			print_erro(monitor_error_msg[1], monitor_num);
 			sleep_forever();
@@ -552,7 +553,7 @@ void main_monitor(void)
 		/* monitor MODBUS? */
 		if(monitor_state[monitor_num].tipo == 'M')
 		{			
-			if(monitor_state[monitor_num].codigo < NUM_MODBUS_SLAVES)
+			if(monitor_state[monitor_num].codigo < MODBUS_NUM_SLAVES)
 			{
 				if(modbus_slaves_all[monitor_state[monitor_num].codigo] == NULL) goto modbus_slave_erro;
 				if(modbus_slaves_all[monitor_state[monitor_num].codigo]->slave_reader == NULL) goto modbus_slave_erro;			
@@ -584,6 +585,7 @@ void main_monitor(void)
 		
 		monitor_state[monitor_num].state = IN_USE;
 		monitores_em_uso++;
+		
 		/* Inicializa as threads deste monitor */
 		PT_INIT(&monitor_state[monitor_num].read_pt);
 		PT_INIT(&monitor_state[monitor_num].write_pt);
@@ -592,7 +594,7 @@ void main_monitor(void)
 #ifdef _WIN32	
 	fflush(stdout);
 #else
-	DelayTask(2000);
+	DelayTask(5000);
 #endif	
 
 

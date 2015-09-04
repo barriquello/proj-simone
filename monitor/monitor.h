@@ -77,8 +77,7 @@
 #define monitor_openappend(filename,file) (f_open((file), (filename), FA_WRITE) == FR_OK)
 #define monitor_close(file)               (f_close(file) == FR_OK)
 #define monitor_read(buffer,size,file)    f_gets((buffer), (size),(file))
-//#define monitor_write(buffer,file)        ((f_lseek((file),f_size((file))) == FR_OK) && f_puts((buffer), (file)))
-#define monitor_write(buffer,file)        f_puts((buffer), (file))
+#define monitor_write(buffer,file)        (f_puts((buffer), (file)) != EOF)
 #define monitor_remove(filename)          (f_unlink(filename) == FR_OK)
 
 #define LOG_FILEPOS                   	  DWORD
@@ -103,7 +102,7 @@ static int monitor_rename(TCHAR *source, const TCHAR *dest)
 #define monitor_closedir(dir)			  f_closedir(&(dir))
 #define monitor_readdir(dirinfo,dir)  	  (f_readdir(&(dir), &(dirinfo)) == FR_OK)
 #define monitor_chdir(dirname)			  f_chdir(dirname)
-#define monitor_mkdir(dirname)			  f_mkdir(dirname)
+#define monitor_mkdir(dirname)			  (f_mkdir(dirname) == FR_OK)
 
 #endif
 
@@ -113,20 +112,17 @@ static int monitor_rename(TCHAR *source, const TCHAR *dest)
 #define NULL  (void*)0
 #endif
 
-void	print_erro(const char *format, ...);
+void print_erro(const char *format, ...);
+void print_debug(const char *format, ...);
 
 #define LOG_HEADER_LEN		 50
 #define LOG_MAX_ENTRY_SIZE   256
 #define FILENAME_MAX_LENGTH  13
 #define LOG_FILENAME_START   "99123123.txt"
 #define LOG_METAFILE   		 "metafile.txt"
-#define MAX_NUM_OF_ENTRIES   (84600) // equivalente a 30 dias
+#define MAX_NUM_OF_ENTRIES   (56400) // equivalente a 20 dias, max. 16 bits
 #define MAX_NUM_OF_MONITORES 3
 #define NUM_OF_FIELDS        6
-
-//#define LOG_DIR_NAME 		 "./logs"
-//#define TIME_INTERVAL 		 5
-//#define ENTRY_SIZE_B  		 12
 
 /* type verification code */
 static union
@@ -243,7 +239,7 @@ uint8_t monitor_init(uint8_t monitor_num);
 void monitor_sync(uint8_t monitor_num, const char*);
 
 void monitor_makeheader(char monitor_header[], monitor_header_t * h);
-void monitor_setheader(const char* filename, monitor_header_t * h);
+uint8_t monitor_setheader(const char* filename, monitor_header_t * h);
 uint8_t monitor_getheader(const char* filename, monitor_header_t * h);
 uint8_t monitor_newheader(const char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size);
 uint8_t monitor_validateheader(const char* filename, uint8_t monitor_id, uint16_t interval, uint16_t entry_size);

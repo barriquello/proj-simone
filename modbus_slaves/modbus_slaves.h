@@ -10,7 +10,7 @@
 
 #include "stdint.h"
 
-#define NUM_MODBUS_SLAVES (3) 
+#define MODBUS_NUM_SLAVES (3) 
 typedef enum
 {
 	MS_NULL = 0,
@@ -27,13 +27,13 @@ typedef enum {
 }eMBSlaves;
 #endif
 
-typedef uint8_t (*data_reader)(uint8_t* buf, uint8_t max_len);
+typedef uint8_t (*_reader)(uint8_t* buf, uint8_t max_len);
 
 typedef struct
 {
 	slave_num_t num;
 	char* nome;
-	data_reader slave_reader;
+	_reader slave_reader;
 }modbus_slave_t;
 
 #endif /* MODBUS_SLAVES_H_ */

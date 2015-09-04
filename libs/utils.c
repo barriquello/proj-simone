@@ -364,7 +364,10 @@ void PrintDecimal(int16_t val, char *buff)
 	SNPRINTF(buff,5,"%d",val);
 }
 
+#ifndef UNUSED
 #define UNUSED(x)		(void)(x);
+#endif
+
 void Print2Digits(uint8_t number, uint8_t align, char *buff)
 {
 	UNUSED(align);

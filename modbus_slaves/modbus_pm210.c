@@ -208,6 +208,14 @@ CONST modbus_slave_t slave_PM210 =
 /* ----------------------- Start implementation -----------------------------*/
 #if PLATAFORMA == COLDUINO  
 
+/* ----------------------------------------------------------------------------------------------------------*/
+/* prototypes */
+eMBErrorCode eMBRegInputCB_PM210( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs );
+eMBErrorCode eMBRegHoldingCB_PM210( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode );
+eMBErrorCode eMBRegCoilsCB_PM210( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNCoils, eMBRegisterMode eMode );
+eMBErrorCode eMBRegDiscreteCB_PM210( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete );
+/* ----------------------------------------------------------------------------------------------------------*/
+
 eMBErrorCode
 eMBRegInputCB_PM210( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs )
 {

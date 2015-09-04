@@ -77,6 +77,7 @@ extern const char *_months_abbrev[];
 
 time_t mktime(struct tm *tmbuf);
 struct tm *localtime(const time_t *timer);
+struct tm *gmtime(const time_t *timer);
 size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *t);
 
 #ifndef _WIN32

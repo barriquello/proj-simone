@@ -46,7 +46,7 @@ extern CONST modbus_slave_t slave_NULL;
 extern CONST modbus_slave_t slave_PM210;
 extern CONST modbus_slave_t slave_TS;
 
-CONST modbus_slave_t * modbus_slaves_all[NUM_MODBUS_SLAVES] =
+CONST modbus_slave_t * modbus_slaves_all[MODBUS_NUM_SLAVES] =
 {
 		&slave_NULL,
 		&slave_PM210,
@@ -77,6 +77,31 @@ void print_erro(const char *format, ...)
   (void)monitor_seek_end(&stderr_f);
   (void)monitor_write(monitor_char_buffer,&stderr_f);
   (void)monitor_close(&stderr_f);
+}
+
+LOG_FILETYPE debug_f;
+
+#define debug_file		"debug.txt"
+/*-----------------------------------------------------------------------------------*/
+void print_debug(const char *format, ...)
+{
+
+  va_list argptr;
+  va_start(argptr, format);
+  VSPRINTF(monitor_char_buffer, format, argptr);  
+  va_end(argptr);
+
+  if(!monitor_openappend(debug_file,&debug_f))
+  {
+	  if(!monitor_openwrite(debug_file,&debug_f))
+	  {
+		  return;
+	  }
+  }
+  /* log error */
+  (void)monitor_seek_end(&debug_f);
+  (void)monitor_write(monitor_char_buffer,&debug_f);
+  (void)monitor_close(&debug_f);
 }
 
 
@@ -134,18 +159,18 @@ void monitor_makeheader(char monitor_header[], monitor_header_t * h)
 
 char monitor_header[LOG_HEADER_LEN+2];
 
-void monitor_setheader(const char* filename, monitor_header_t * h)
+uint8_t monitor_setheader(const char* filename, monitor_header_t * h)
 {
    LOG_FILETYPE fp;  
 
 #ifndef _WIN32
-   //if(monitor_openread(filename,&fp))
    if(monitor_openappend(filename,&fp))
    {
 	   monitor_makeheader(monitor_header,h);
 	   (void)monitor_write(monitor_header,&fp);
 	   (void)monitor_close(&fp);
-   }
+	   return TRUE;
+   }   
 #else
    if(monitor_openappend(filename,&fp))
    {
@@ -153,8 +178,11 @@ void monitor_setheader(const char* filename, monitor_header_t * h)
 	   monitor_seek_begin(&fp);
 	   (void)monitor_write(monitor_header,&fp);
 	   (void)monitor_close(&fp);
+	   return TRUE;
    }
 #endif
+   
+   return FALSE;
 
 }
 
@@ -256,7 +284,10 @@ uint8_t monitor_newheader(const char* filename, uint8_t monitor_id, uint16_t int
 	h.h1.mon_id = monitor_id;
 	h.h1.time_interv = interval;
 	h.h1.entry_size = entry_size;
-	monitor_setheader(filename, &h);
+	if(monitor_setheader(filename, &h) == FALSE)
+	{
+		return FALSE;
+	}
 	return monitor_getheader(filename, &h);
 }
 
@@ -269,14 +300,14 @@ uint8_t monitor_validateheader(const char* filename, uint8_t monitor_id, uint16_
 			h.h1.time_interv == interval &&
 			h.h1.entry_size == entry_size)
 		{
-			return 1;
+			return TRUE;
 		}
 		else
 		{
-			return 0;
+			return FALSE;
 		}
 	}	
-	return 0;
+	return FALSE;
 }
 
 #ifndef _WIN32
@@ -318,7 +349,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 	struct tm ts;
 	char new_filename[8+5]={"00000000.txt"};
-	uint8_t ret;
+	int ret;
 
 	if(!monitor_getheader((const char*)filename, &h)) return;
 
@@ -331,7 +362,6 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 		{
 			return;
 		}
-
 
 		h.h2.year = (uint16_t)(ts.tm_year + 1900);
 		h.h2.mon = (uint8_t)(ts.tm_mon + 1);
@@ -359,7 +389,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 			strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
 
 			PRINTF("\r\n %s will be renamed to %s \r\n", filename,new_filename);
-			ret = monitor_rename(filename, (const char*)new_filename);
+			ret = monitor_rename((char*)filename, (const char*)new_filename);
 
 			/* if rename failed, try other name */
 			while(!ret)
@@ -373,7 +403,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 				monitor_setheader((const char*)filename, &h);
 
 				PRINTF("\r\n %s will be renamed to %s \r\n", filename,new_filename);
-				ret = monitor_rename(filename, new_filename);
+				ret = monitor_rename((char*)filename, (const char*)new_filename);
 
 			}
 
@@ -403,8 +433,8 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 {
 
 	LOG_FILETYPE fp;
-	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
-
+	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};	
+	
 	if(monitor_getheader(filename, &h))
 	{
 		if(monitor_openappend(filename,&fp))
@@ -415,39 +445,31 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 
 		   h.count++; // incrementa contador de entradas
 		   monitor_setheader(filename, &h);
-
 		}else
 		{
-			h.count = 0;
+			return 0;
 		}
-	}
-
-	if(simon_check_connection() == TRUE)
-	{
-		monitor_is_connected = 1;
-	}else
-	{
-		monitor_is_connected = 0;
-	}
-	
-	if(monitor_is_connected == 1)	 
-	{
+		
+		
 		/* if file is not synched, try to synch */
 		if(h.h2.synched == 0)
 		{
-			monitor_sync(monitor_num, filename);
+			if(monitor_is_connected == 1)	 
+			{
+				monitor_sync(monitor_num, filename);
+			}
 		}
-	}
 	
+	}
 
 	return h.count;
 
 }
 
-uint16_t build_entry_to_send(char* ptr_data, uint8_t *data, uint8_t len)
+static uint16_t build_entry_to_send(char* ptr_data, uint8_t *data, uint16_t len)
 {
-	uint16_t offset = 0;
-	uint16_t max_len = 4*len;
+	int offset = 0;
+	uint16_t max_len = len<<2;
 	char hex1,hex2;
 	uint8_t val;
 	uint16_t cnt = 0;
@@ -473,7 +495,7 @@ uint16_t build_entry_to_send(char* ptr_data, uint8_t *data, uint8_t len)
 
 char data_vector[256*4];
 
-uint8_t monitor_entry_send(monitor_entry_t* entry, uint8_t len)
+static int monitor_entry_send(uint8_t mon_id, monitor_entry_t* entry, uint16_t len)
 {
 	
 	uint16_t cnt = 0;
@@ -490,7 +512,7 @@ uint8_t monitor_entry_send(monitor_entry_t* entry, uint8_t len)
 	if(cnt > 0)
 	{
 		/* corrigir monitor id */
-		if(simon_send_data((uint8_t*)data_vector,cnt, 0,entry->ts) == MODEM_OK)
+		if(simon_send_data((uint8_t*)data_vector,cnt,mon_id,entry->ts) == MODEM_OK)
 		{
 			return TRUE;
 		}
@@ -536,7 +558,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 		/* le a proxima entrada */
 		if(monitor_openread(filename,&fp))
 		{
-			pos = LOG_HEADER_LEN + (h.last_idx)*entry_size;
+			pos = LOG_HEADER_LEN + (uint32_t)((h.last_idx)*entry_size);
 
 			if(monitor_seek(&fp,&pos))
 			{
@@ -544,7 +566,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   (void)monitor_close(&fp);
 
 			   /* try to send */
-			   if(monitor_entry_send(entry,entry_size-2) == TRUE) // ignore \r\n
+			   if(monitor_entry_send(monitor_num,entry,entry_size-2) == TRUE) // ignore \r\n
 			   {
 				   /* if ok */
 				   h.last_idx++; // incrementa indice da última entrada lida
@@ -595,13 +617,17 @@ uint8_t monitor_init(uint8_t monitor_num)
 
 	  strcpy(monitor_state[monitor_num].monitor_name_writing, LOG_FILENAME_START);
 
-	  if (monitor_stat(monitor_state[monitor_num].monitor_dir_name, &fnfo))
+	  if (!monitor_stat(monitor_state[monitor_num].monitor_dir_name, &fnfo))
 	  {
-		  monitor_mkdir(monitor_state[monitor_num].monitor_dir_name);
+		  if(!monitor_mkdir(monitor_state[monitor_num].monitor_dir_name))
+		  {
+			  return FALSE;
+		  }
 	  }
 
 	  if (monitor_opendir(monitor_state[monitor_num].monitor_dir_name, d))
 	  {
+#if 1		  
 	    while (monitor_readdir(dir,d))
 	    {
 #if _WIN32
@@ -610,13 +636,15 @@ uint8_t monitor_init(uint8_t monitor_num)
 	    	PRINTF("%s\r\n", (LOG_DIRINFO*)(&dir)->fname);
 #endif
 	    }
+#endif
+	    
 	    monitor_closedir(d);
 	  }else
 	  {
 		  print_erro_and_exit:
 		  print_erro("Log init erro: %d", monitor_num);
 		  PRINTF("Log init erro: %d", monitor_num);
-		  return !OK;
+		  return FALSE;
 	  }
 
 	 /* change to log dir */
@@ -633,20 +661,21 @@ uint8_t monitor_init(uint8_t monitor_num)
 		   goto print_erro_and_exit;
 	   }
 	 }
+	 
 	 /* validate header */
-	 if(!monitor_validateheader(monitor_state[monitor_num].monitor_name_writing,
+	 if(monitor_validateheader(monitor_state[monitor_num].monitor_name_writing,
 			   monitor_state[monitor_num].config_h.mon_id,
 			   monitor_state[monitor_num].config_h.time_interv,
-			   monitor_state[monitor_num].config_h.entry_size))
+			   monitor_state[monitor_num].config_h.entry_size) == FALSE)
 	 {
 		 make_new_header:
 		 if(monitor_newheader(monitor_state[monitor_num].monitor_name_writing,
 		 				   monitor_state[monitor_num].config_h.mon_id,
 		 				   monitor_state[monitor_num].config_h.time_interv,
-		 				   monitor_state[monitor_num].config_h.entry_size) == 0)
+		 				   monitor_state[monitor_num].config_h.entry_size) == FALSE)
 		   {
 			 goto print_erro_and_exit;
-		   }		 
+		   }		   
 	 }
 	 (void)monitor_close(&fp);
 
@@ -690,7 +719,7 @@ uint8_t monitor_init(uint8_t monitor_num)
 
 	 /* change to parent dir */
 	 monitor_chdir("..");
-	 return OK;
+	 return TRUE;
 }
 
 char* monitor_getfilename_to_write(uint8_t monitor_num)
@@ -707,6 +736,17 @@ void monitor_writer(uint8_t monitor_num)
 {	
 	uint16_t cnt = 0;
 	extern const char* monitor_error_msg[];
+	
+	static uint32_t missing_entries = 0;
+	
+	/* check modem connection */
+	if(simon_check_connection() == TRUE)
+	{
+		monitor_is_connected = 1;
+	}else
+	{
+		monitor_is_connected = 0;
+	}
 	
 #if MONITOR_TESTS
 	uint16_t vetor_dados[3]={0x1111,0x2222,0x3333};	
@@ -750,14 +790,18 @@ void monitor_writer(uint8_t monitor_num)
 	
 	if(cnt == 0)
 	{
-		print_erro(monitor_error_msg[1],(uint8_t) monitor_num);
+		missing_entries++; /* count missing entries */
+		
+		print_erro(monitor_error_msg[1], (uint8_t) monitor_num);
 		print_erro("write failed\r\n");
 
 		PRINTF(monitor_error_msg[1],(uint8_t) monitor_num);
 		PRINTF("write failed\r\n");
+		
+		PRINTF("\r\nMissed entries %d\r\n", missing_entries);
 	}else
 	{
-		PRINTF("Entry written %d\r\n", cnt);
+		PRINTF("\r\nEntry written %d\r\n", cnt);
 	}
 
 	/* change to parent dir */
