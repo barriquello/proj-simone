@@ -25,6 +25,11 @@
 #endif
 
 #define USB_DEVICE_ENABLED	  1
+
+#if USB_DEVICE_ENABLED == 1
+#define ENABLE_USB 			  1
+#endif
+
 #define TESTE_MODBUS    	  0
 #define TESTE_MODBUS_SLAVE    0
 #define TESTE_MODBUS_MASTER   0

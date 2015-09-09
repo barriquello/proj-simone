@@ -30,7 +30,7 @@ static uint8_t ModbusMasterRxData(uint8_t * _pData, uint16_t timeout)
 #if MB_RS485	
 	return rs485_rx(_pData, timeout);
 #else
-	return (OSQueuePend(qModbusMaster_In,_pData, timeout) != TIMEOUT);	
+	return (uint8_t)(OSQueuePend(qModbusMaster_In,_pData, timeout) != TIMEOUT);	
 #endif
 }
 

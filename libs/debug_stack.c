@@ -19,9 +19,11 @@
 #define DPRINTF(a,...) printSer(a,__VA_ARGS__);
 #define DPUTCHAR(a,b)  putcharSer(a,b);
 #else
-#define UNUSED(a)		(void)(a)
-#define DPRINTF(a,...)	UNUSED(a);
-#define DPUTCHAR(a,b)	UNUSED(a);UNUSED(b);
+#ifndef UNUSED
+#define UNUSED(a)		(void)((a))
+#endif
+#define DPRINTF(a,...)	UNUSED((a));
+#define DPUTCHAR(a,b)	UNUSED((a));UNUSED((b));
 #endif
 
 

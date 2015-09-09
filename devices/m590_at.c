@@ -52,7 +52,8 @@ typedef enum
 	XISP,
 	XIIC1,
 	XIIC,
-	IPSTAT
+	IPSTAT,
+	CLK
 }m590_enum_cmd;
 
 #define CONST const
@@ -63,7 +64,8 @@ CONST char *m590_init_cmd[]=
 		"AT+XISP=0\r\n",
 		"AT+XIIC=1\r\n",
 		"AT+XIIC?\r\n",
-		"AT+IPSTATUS=0\r"
+		"AT+IPSTATUS=0\r",
+		"AT+CCLK?\r\n"
 };
 
 static void at_m590_print_reply(void)
@@ -561,6 +563,7 @@ uint8_t m590_close(void)
 	return TRUE;
 }
 
+
 m590_ret_t at_m590_close(void)
 {
 
@@ -640,6 +643,25 @@ m590_ret_t at_m590_server(void)
 	m590_print("AT+CLOSELISTEN\r\n");
 	
 	m590_release();		
+	return M590_OK;
+}
+
+uint8_t m590_get_time(void)
+{
+	IS_M590_OK();
+	
+	m590_acquire();	
+		m590_print(m590_init_cmd[CLK]);	
+		GET_REPLY_PRINT();
+	m590_release();		
+	
+	return TRUE;
+}
+
+m590_ret_t at_m590_time(void)
+{
+	m590_get_time();
+	
 	return M590_OK;
 }
 

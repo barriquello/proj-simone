@@ -124,6 +124,7 @@ m590_ret_t at_m590_receive(CHAR8* buff, INT8U len);
 m590_ret_t at_m590_close(void);
 m590_ret_t at_m590_server(void);
 m590_ret_t at_m590_dns(char* param);
+m590_ret_t at_m590_time(void);
 
 
 CHAR8 m590_getchar(void);
@@ -131,6 +132,7 @@ uint8_t m590_init(void);
 uint8_t m590_open(void);
 uint8_t m590_close(void);
 
+uint8_t m590_get_time(void);
 uint8_t m590_receive(uint8_t* buff, uint16_t* len);
 uint8_t m590_send(uint8_t * dados, uint16_t tam);
 uint8_t m590_set_ip(char* _ip);

@@ -795,13 +795,15 @@ CONST command_t esp_cmd = {
 
 CONST char cmd_m590_help[] = {
 		"\r\n usage:\r\n"
-		"1 - init \r\n"
-		"2 - open \r\n"
-		"3 - send \r\n"
-		"4 - receive \r\n"
-		"5 - close \r\n"
-		"6 - init, open, send \r\n"
-		"7 - server \r\n"
+		"i - init \r\n"
+		"o - open \r\n"
+		"s - send \r\n"
+		"r - receive \r\n"
+		"c - close \r\n"
+		"a - init, open, send \r\n"
+		"e - server \r\n"
+		"d - dns \r\n"
+		"t - time \r\n"
 };
 
 void term_cmd_m590(char *param)
@@ -809,24 +811,26 @@ void term_cmd_m590(char *param)
 	printf_terminal("\r\n");
 	switch (param[0])
 	{
-		case '1': at_m590_init();
+		case 'i': at_m590_init();
 			break;
-		case '2': at_m590_open();
+		case 'o': at_m590_open();
 			break;
-		case '3': at_m590_send(NULL);
+		case 's': at_m590_send(NULL);
 			break;
-		case '4': at_m590_receive(entradas,SIZEARRAY(entradas));
+		case 'r': at_m590_receive(entradas,SIZEARRAY(entradas));
 			break;					
-		case '5': at_m590_close();
+		case 'c': at_m590_close();
 			break;
-		case '6':
+		case 'a':
 			at_m590_init();
 			at_m590_open();
 			at_m590_send(NULL);
 			break;	
-		case '7': at_m590_server();
+		case 'e': at_m590_server();
 			break;			
-		case '8': at_m590_dns(param);
+		case 'd': at_m590_dns(param);
+			break;	
+		case 't': at_m590_time();
 			break;	
 		default:
 			printf_terminal((char*)cmd_m590_help);
