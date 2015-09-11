@@ -95,4 +95,8 @@ extern CONST command_t esp_cmd;
 void term_cmd_m590(char *param);
 extern CONST command_t m590_cmd;
 
+// Modbus master
+void term_cmd_modbus(char *param);
+extern CONST command_t modbus_cmd;
+
 #endif /* _TERMINAL_COMMANDS_H_ */

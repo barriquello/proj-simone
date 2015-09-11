@@ -166,6 +166,8 @@ void Terminal_Task(void)
 	(void) terminal_add_cmd((command_t*) &echo_stdout_cmd);
 	//(void) terminal_add_cmd((command_t*) &esp_cmd);
 	(void) terminal_add_cmd((command_t*) &m590_cmd);	
+	(void) terminal_add_cmd((command_t*) &modbus_cmd);
+	
 
 	while (1)
 	{

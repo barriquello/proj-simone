@@ -842,3 +842,49 @@ CONST command_t m590_cmd = {
   "m590", term_cmd_m590, "Control M590 modem"
 };
 
+static uint8_t slave_addr = 1;
+static uint16_t start_addr = 0;
+static uint8_t num_regs = 1;
+static uint8_t func = 3;
+
+#include "stdio.h"
+void term_cmd_modbus(char *param)
+{	
+
+	uint32_t input;
+	printf_terminal("\r\n");
+	switch (param[0])
+	{
+		case 'a': 
+				if(sscanf(&param[2], "%x", &input) == 1)
+				{
+					slave_addr = (uint8_t)input;
+				}
+				break;
+		case 's': 
+			    if(sscanf(&param[2], "%d", &input) == 1)
+				{
+			    	start_addr = (uint8_t)input;
+				}
+				break;
+		case 'n': 
+				if(sscanf(&param[2], "%d", &input) == 1)
+				{
+					start_addr = (uint8_t)input;
+				}
+				break;
+		case 'h': func = 3; /* read holding regs */
+			break;	
+		case 'i': func = 4; /* read input regs */
+			break;
+		case 'p': //modbus_print_reply();
+			break;
+		default:
+			
+	}
+	param[0] = 0;
+}
+
+CONST command_t modbus_cmd = {
+  "modbus", term_cmd_modbus, "Modbus master"
+};

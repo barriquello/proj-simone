@@ -4,6 +4,8 @@
 
 #include "BRTOS.h"
 
+#ifndef UART_H
+#define UART_H
 
 // Enable/disable UARTs        
 
@@ -41,6 +43,13 @@
 #define CONF_UART1_PINS     UART1_PTD6_PTD7
 #define CONF_UART2_PINS		UART2_PTF1_PTF2
 
+typedef enum
+{
+	NONE,
+	EVEN,
+	ODD,
+}uart_parity_t;
+
 /*! \fn void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U UartPins,
  INT8U mutex, INT8U priority)
  
@@ -52,6 +61,15 @@
  \param UartPins Pinos da UART
  \param mutex Mutex para UART
  \param priority Prioridade da UART
+ 
+ 
+ \fn void uart_set(INT8U uart, INT16U baudrate, uart_parity_t parity)
+ 
+ \brief Configura UART
+ 
+ \param uart UART1 ou UART2
+ \param baudrate Taxa de transmissao
+ \param parity paridade; nenhuma, par ou impar
  
  \fn void putchar_uart1(byte caracter)
  \brief  Armazena o caracter a ser transmitido no registrador de transmissao
@@ -75,6 +93,7 @@
  */
 
 void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8U priority);
+INT8U uart_set(INT8U uart, INT16U baudrate, uart_parity_t parity);
 
 void SerialReset(INT8U Comm);
 
@@ -113,6 +132,8 @@ void uart2_RxEnableISR(void);
 void uart2_RxDisableISR(void);
 void uart2_TxEnableISR(void);
 void uart2_TxDisableISR(void);
+
+#endif
 
 #endif
 

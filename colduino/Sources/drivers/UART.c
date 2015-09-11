@@ -30,12 +30,147 @@ OS_QUEUE SerialPortBuffer2;
 BRTOS_Queue *Serial2;
 #endif
 
-INT16U uart_get_baudrate_regval(INT16U baudrate);
-
-INT16U uart_get_baudrate_regval(INT16U baudrate)
+static INT16U uart_get_baudrate_regval(INT16U baudrate)
 {
 	return (INT16U)(configCPU_CLOCK_HZ/baudrate/16);	
 }
+
+
+static void uart1_set_baudrate(INT16U baudrate)
+{
+	// 0x270 = 2400  bauds at 24Mhz     // 0x138 = 4800  bauds at 24Mhz
+	// 0x9C  = 9600  bauds at 24Mhz     // 0x4E  = 19200 bauds at 24Mhz
+	// 0x20  = 38400 bauds at 24Mhz     // 0x16  = 57600 bauds at 24Mhz
+	SCI1BD = uart_get_baudrate_regval(baudrate);
+}
+
+static void uart2_set_baudrate(INT16U baudrate)
+{
+	// 0x270 = 2400  bauds at 24Mhz     // 0x138 = 4800  bauds at 24Mhz
+	// 0x9C  = 9600  bauds at 24Mhz     // 0x4E  = 19200 bauds at 24Mhz
+	// 0x20  = 38400 bauds at 24Mhz     // 0x16  = 57600 bauds at 24Mhz
+	SCI2BD = uart_get_baudrate_regval(baudrate);
+}
+
+static void uart1_set_parity(uart_parity_t parity)
+{
+	switch(parity)
+	{
+		case NONE:
+			/* SCI1C1 : LOOPS=0,SCISWAI=0,RSRC=0,M=0,WAKE=0,ILT=0,PE=0,PT=0 */
+			SCI1C1 = 0x00;
+			break;
+		case EVEN:
+			/* SCI1C1 : LOOPS=0,SCISWAI=0,RSRC=0,M=1,WAKE=0,ILT=0,PE=1,PT=0 */
+			SCI1C1 = 0x12; /* Configure the SCI even parity */
+			break;		
+		case ODD:
+			/* SCI1C1 : LOOPS=0,SCISWAI=0,RSRC=0,M=1,WAKE=0,ILT=0,PE=1,PT=1 */
+			SCI1C1 = 0x13; /* Configure the SCI odd parity */
+			break;	
+		default:
+			/* SCI1C1 : LOOPS=0,SCISWAI=0,RSRC=0,M=0,WAKE=0,ILT=0,PE=0,PT=0 */
+			SCI1C1 = 0x00;
+			break;			
+	}	
+	
+}
+
+static void uart2_set_parity(uart_parity_t parity)
+{
+	switch(parity)
+	{
+		case NONE:
+			/* SCI2C1 : LOOPS=0,SCISWAI=0,RSRC=0,M=0,WAKE=0,ILT=0,PE=0,PT=0 */
+			SCI2C1 = 0x00;
+			break;
+		case EVEN:
+			/* SCI2C1 : LOOPS=0,SCISWAI=0,RSRC=0,M=1,WAKE=0,ILT=0,PE=1,PT=0 */
+			SCI2C1 = 0x12; /* Configure the SCI even parity */
+			break;		
+		case ODD:
+			/* SCI2C1 : LOOPS=0,SCISWAI=0,RSRC=0,M=1,WAKE=0,ILT=0,PE=1,PT=1 */
+			SCI2C1 = 0x13; /* Configure the SCI odd parity */
+			break;	
+		default:
+			/* SCI1C1 : LOOPS=0,SCISWAI=0,RSRC=0,M=0,WAKE=0,ILT=0,PE=0,PT=0 */
+			SCI1C1 = 0x00;
+			break;			
+	}	
+	
+}
+
+static INT8U uart1_set(INT16U baudrate, uart_parity_t parity)
+{
+		
+	/* SCI1C2: TIE=0,TCIE=0,RIE=0,ILIE=0,TE=0,RE=0,RWU=0,SBK=0 */
+	SCI1C2 = 0x00; /* Disable all interrupts */		
+	/* SCI1C3: R8=0,T8=0,TXDIR=0,TXINV=0,ORIE=0,NEIE=0,FEIE=0,PEIE=0 */	
+	SCI1C3 = 0x00; /* Disable error interrupts */
+	/* SCI1S2: ??=0,??=0,??=0,??=0,??=0,BRK13=0,??=0,RAF=0 */
+	SCI1S2 = 0x00;
+
+	uart1_set_parity(parity);	
+	uart1_set_baudrate(baudrate);			
+
+	/* SCI1C3: ORIE=1,NEIE=1,FEIE=1,PEIE=1 */
+	SCI1C3 = 0x00; /* Enable error interrupts */ 
+	SCI1C2 = 0x2C; /*  Enable transmitter, Enable receiver, Enable receiver interrupt */							
+
+	(void) SCI1S1; /* Limpa SCI1S1 */
+	(void) SCI1S2; /* Limpa SCI1S2 */
+	(void) SCI1C3; /* Limpa SCI1C3 */
+	
+	return TRUE;
+	
+}
+
+static INT8U uart2_set(INT16U baudrate, uart_parity_t parity)
+{
+		
+	/* SCI2C2: TIE=0,TCIE=0,RIE=0,ILIE=0,TE=0,RE=0,RWU=0,SBK=0 */
+	SCI2C2 = 0x00; /* Disable all interrupts */		
+	/* SCI2C3: R8=0,T8=0,TXDIR=0,TXINV=0,ORIE=0,NEIE=0,FEIE=0,PEIE=0 */	
+	SCI2C3 = 0x00; /* Disable error interrupts */
+	/* SCI2S2: ??=0,??=0,??=0,??=0,??=0,BRK13=0,??=0,RAF=0 */
+	SCI2S2 = 0x00;
+
+	uart2_set_parity(parity);	
+	uart2_set_baudrate(baudrate);			
+
+	/* SCI2C3: ORIE=1,NEIE=1,FEIE=1,PEIE=1 */
+	SCI2C3 = 0x00; /* Enable error interrupts */ 
+	SCI2C2 = 0x2C; /*  Enable transmitter, Enable receiver, Enable receiver interrupt */							
+
+	(void) SCI2S1; /* Limpa SCI2S1 */
+	(void) SCI2S2; /* Limpa SCI2S2 */
+	(void) SCI2C3; /* Limpa SCI2C3 */
+	
+	return TRUE;
+	
+}
+
+
+INT8U uart_set(INT8U uart, INT16U baudrate, uart_parity_t parity)
+{
+	
+	if(uart==1)
+	{
+		if(SerialResource1->OSEventOwner != currentTask) return FALSE;
+		return uart1_set(baudrate,parity);
+	}
+	
+	if(uart==2)
+	{
+		if(SerialResource2->OSEventOwner != currentTask) return FALSE;
+		return uart2_set(baudrate,parity);
+	}
+	
+	return FALSE;
+	
+}
+
+
 
 void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8U priority)
 {
@@ -76,33 +211,11 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 			}
 			
 			SCGC1 |= SCGC1_SCI1_MASK; /* Enables sci1 clock */
-			//SCI1C1 = 0x12; /* Configure the SCI */
-			SCI1C1 = 0x00; /* Configure the SCI */
-			/* SCI1C3: R8=0,T8=0,TXDIR=0,TXINV=0,ORIE=0,NEIE=0,FEIE=0,PEIE=0 */
-			SCI1C3 = 0x00; /* Disable error interrupts */
-			/* SCI1S2: ??=0,??=0,??=0,??=0,??=0,BRK13=0,??=0,RAF=0 */
-			SCI1S2 = 0x00;
-			/* SCI1C2: TIE=0,TCIE=0,RIE=0,ILIE=0,TE=0,RE=0,RWU=0,SBK=0 */
-			SCI1C2 = 0x00; /* Disable all interrupts */
+			
+			/* set baudrate and parity type */
+			uart1_set(baudrate,NONE);
 
-			// 0x270 = 2400  bauds at 24Mhz     // 0x138 = 4800  bauds at 24Mhz
-			// 0x9C  = 9600  bauds at 24Mhz     // 0x4E  = 19200 bauds at 24Mhz
-			// 0x20  = 38400 bauds at 24Mhz     // 0x16  = 57600 bauds at 24Mhz
-			SCI1BD = uart_get_baudrate_regval(baudrate);
-
-			/* SCI1C3: ORIE=1,NEIE=1,FEIE=1,PEIE=1 */
-			//SCI1C3 |= 0x0F; /* Enable error interrupts */
-			SCI1C3 = 0x00; /* Enable error interrupts */
-			//SCI1C2 |= ( SCI1C2_TE_MASK | SCI1C2_RE_MASK | SCI1C2_RIE_MASK); /*  Enable transmitter, Enable receiver, Enable receiver interrupt */
-			SCI1C2 = 0x2C;
-
-			(void) SCI1S1; /* Leitura do registrador SCI1S1 para analisar o estado da transmissão */
-			(void) SCI1S2; /* Leitura do registrador SCI1S1 para analisar o estado da transmissão */
-			(void) SCI1C3; /* Leitura do registrador SCI1C3 para limpar o bit de paridade */
-
-			// Cria um mutex com contador = 1, informando que o recurso está disponível
-			// após a inicialização
-			// Prioridade máxima a acessar o recurso = priority
+			/* Cria um mutex com contador = 1, e prioridade máxima a acessar o recurso = priority */
 		
 			if (mutex == TRUE)
 			{
@@ -142,31 +255,11 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 			}
 			
 			SCGC1 |= SCGC1_SCI2_MASK; /* Enables sci2 clock */
-			SCI2C1 = 0x00; /* Configure the SCI */
-			/* SCI1C3: R8=0,T8=0,TXDIR=0,TXINV=0,ORIE=0,NEIE=0,FEIE=0,PEIE=0 */
-			SCI2C3 = 0x00; /* Disable error interrupts */
-			/* SCI1S2: ??=0,??=0,??=0,??=0,??=0,BRK13=0,??=0,RAF=0 */
-			SCI2S2 = 0x00;
-			/* SCI1C2: TIE=0,TCIE=0,RIE=0,ILIE=0,TE=0,RE=0,RWU=0,SBK=0 */
-			SCI2C2 = 0x00; /* Disable all interrupts */
+			
+			/* set baudrate and parity type */
+			uart1_set(baudrate,NONE);
 
-			// 0x270 = 2400  bauds at 24Mhz     // 0x138 = 4800  bauds at 24Mhz
-			// 0x9C  = 9600  bauds at 24Mhz     // 0x4E  = 19200 bauds at 24Mhz
-			// 0x20  = 38400 bauds at 24Mhz     // 0x16  = 57600 bauds at 24Mhz			
-			SCI2BD = uart_get_baudrate_regval(baudrate);
-
-			/* SCI1C3: ORIE=1,NEIE=1,FEIE=1,PEIE=1 */
-			SCI2C3 |= 0x0F; /* Enable error interrupts */
-			//SCI1C2 |= ( SCI1C2_TE_MASK | SCI1C2_RE_MASK | SCI1C2_RIE_MASK); /*  Enable transmitter, Enable receiver, Enable receiver interrupt */
-			SCI2C2 = 0x2C;
-
-			(void) SCI2S1; /* Leitura do registrador SCI1S1 para analisar o estado da transmissão */
-			(void) SCI2S2; /* Leitura do registrador SCI1S1 para analisar o estado da transmissão */
-			(void) SCI2C3; /* Leitura do registrador SCI1C3 para limpar o bit de paridade */
-
-			// Cria um mutex com contador = 1, informando que o recurso está disponível
-			// após a inicialização
-			// Prioridade máxima a acessar o recurso = priority
+			/* Cria um mutex com contador = 1, e prioridade máxima a acessar o recurso = priority */
 			if (mutex == TRUE)
 			{
 				if (OSMutexCreate(&SerialResource2, priority) != ALLOC_EVENT_OK)
