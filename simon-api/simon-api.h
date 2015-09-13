@@ -23,8 +23,12 @@
 #define SERVER_NAME "emon-gpsnetcms.rhcloud.com"
 #endif
 
-#ifndef OK
-#define OK 		(1)
+#ifndef FALSE
+#define FALSE 0
+#endif
+
+#ifndef TRUE
+#define TRUE  1
 #endif
 
 #define MODEM_OK  (0)
@@ -38,7 +42,7 @@ typedef uint8_t (*input)(uint8_t *, uint16_t*);
 typedef uint8_t (*output)(uint8_t *, uint16_t);
 typedef uint8_t (*set_host)(char *);
 typedef uint8_t (*set_ip)(char *);
-typedef uint8_t (*connect)(void);
+typedef uint8_t (*get_connect)(void);
 
 typedef struct
 {
@@ -46,7 +50,7 @@ typedef struct
 	output send;
 	set_host sethost;
 	set_ip   setip;
-	connect  is_connected;
+	get_connect  is_connected;
 }modem_driver_t;
 
 uint8_t simon_init(const modem_driver_t* modem);

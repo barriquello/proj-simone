@@ -21,6 +21,8 @@
 #include "stdint.h"
 #endif
 
+#include "time_lib.h"
+
 uint8_t get_server_time(char* server_reply, struct tm *ts);
 uint8_t get_server_confirmation(char* server_reply);
 
@@ -71,7 +73,9 @@ uint8_t simon_check_connection(void)
 		{
 			return TRUE;
 		}
+#if COLDUINO || ARDUINO
 		DelayTask(100);
+#endif
 		retries--;
 	}
 	
@@ -174,8 +178,6 @@ uint8_t get_server_confirmation(char* server_reply)
 		return MODEM_OK;
 	}	
 }
-
-#include "time_lib.h"
 
 uint8_t get_server_time(char* server_reply, struct tm *ts)
 {

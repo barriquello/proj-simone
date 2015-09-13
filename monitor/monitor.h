@@ -49,12 +49,12 @@
 #define LOG_DIRTYPE                   DIR*
 #define LOG_DIRINFO 				  struct dirent *
 #define LOG_FILEINFO 				  struct stat
-#define monitor_stat(filename, fileinfo)  (stat((filename), (fileinfo)) == -1)
+#define monitor_stat(filename, fileinfo)  (stat((filename), (fileinfo)) == 0)
 #define monitor_opendir(dirname,dir)	  (((dir) = opendir(dirname)) != NULL)
 #define monitor_closedir(dir)			  closedir(dir)
 #define monitor_readdir(dirinfo,dir)  	  (((dirinfo) = readdir(dir)) != NULL)
 #define monitor_chdir(dirname)			  chdir(dirname)
-#define monitor_mkdir(dirname)			  _mkdir(dirname)
+#define monitor_mkdir(dirname)			  (_mkdir(dirname) == 0)
 #endif
 
 #if _WIN32

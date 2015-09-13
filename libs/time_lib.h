@@ -20,18 +20,22 @@
 
 #include "AppConfig.h"
 
+#if WIN32
+#include <time.h>
+#endif
+
 #ifndef _WIN32
 #include "BRTOS.h"
 #include "stdint.h"
 typedef uint32_t time_t;
 uint8_t SetTimeStamp (uint8_t device_id, uint8_t *data_ptr, OSTime *timestamp);
 
-#if PLATAFORMA == COLDUINO
+#if COLDUINO
 #include <time.h>
 #endif
 #endif
 
-#if PLATAFORMA == ARDUINO
+#if ARDUINO
 
 #ifndef _TM_DEFINED
 #define _TM_DEFINED

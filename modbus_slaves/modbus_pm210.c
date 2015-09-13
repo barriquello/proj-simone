@@ -112,7 +112,7 @@ register 7001. If the value for register 7001 is 12345, then the 0x03 data would
  * */
 
 /* ----------------------- Modbus includes ----------------------------------*/
-#if PLATAFORMA == COLDUINO  
+#if COLDUINO
 #pragma warn_unusedarg off
 #include "mb.h"
 #include "mbport.h"
@@ -123,6 +123,7 @@ register 7001. If the value for register 7001 is 12345, then the 0x03 data would
 CONST char PM210_ID_string[] = "PM210 Power Meter";
 CONST uint16_t SIZEOF_ID_STRING = sizeof(PM210_ID_string);
 
+#if 0
 static CONST uint16_t usRegInputBuf1[PM210_REGLIST1_INPUT_NREGS] =
 { 		
 	0xaaaa,0xbbbb,0xcccc,0xdddd,0xeeee,0xffff,
@@ -139,6 +140,7 @@ static CONST uint16_t usRegInputBuf2[PM210_REGLIST2_INPUT_NREGS] =
 	0xaa,0xbb,0xcc,0xdd,0xee,0xff,0x55, 
 	0xaa,0xbb,0xcc,0xdd,0xee,0xff,0x55,
 };
+#endif
 
 
 #include "modbus.h"
@@ -152,6 +154,11 @@ static modbus_pm210_input_register_list1  PM210_IRList1;
 static modbus_pm210_input_register_list2  PM210_IRList2;
 static modbus_pm210_holding_register_list PM210_HRList;
 
+#define MODBUS_SLAVE_PM210_SIMULATION 	1
+#if MODBUS_SLAVE_PM210_SIMULATION
+#include "random_lib.h"
+#endif
+
 uint8_t pm210_read_data(uint8_t* buf, uint8_t max_len);
 
 uint8_t pm210_read_data(uint8_t* buf, uint8_t max_len)
@@ -159,8 +166,11 @@ uint8_t pm210_read_data(uint8_t* buf, uint8_t max_len)
 
 #if 0
 			OSTime timestamp;
-
+#else
+			uint8_t nregs = 0;
+#endif
 			
+#if 0
 			#if PM200_PRESENTE==0
 				ModbusSetSlave(MODBUS_PM210);	/* Leitura dos dados de teste */
 			#endif
@@ -180,8 +190,22 @@ uint8_t pm210_read_data(uint8_t* buf, uint8_t max_len)
 			/* Get and set timestamp of reading */
 			GetCalendarTime(&timestamp);
 			SetTimeStamp(MODBUS_PM210, (uint8_t*)PM210_IRList2.Regs, &timestamp);
+#else
+			/* return random data */
+			for(nregs = PM210_REG_OFFSET; nregs < (PM210_REGLIST1_INPUT_NREGS+PM210_REG_OFFSET);nregs++)
+			{
+				PM210_IRList1.Regs[nregs] = random_get();
+			}
+
+			/* return random data */
+			for(nregs = PM210_REG_OFFSET; nregs < (PM210_REGLIST2_INPUT_NREGS+PM210_REG_OFFSET);nregs++)
+			{
+				PM210_IRList2.Regs[nregs] = random_get();
+			}
+
 #endif
 			
+#if 0
 			if((sizeof(PM210_IRList1.Regs) + sizeof(PM210_IRList2.Regs)) < max_len)
 			{
 				memcpy(buf,PM210_IRList1.Regs,sizeof(PM210_IRList1.Regs));
@@ -192,6 +216,21 @@ uint8_t pm210_read_data(uint8_t* buf, uint8_t max_len)
 			{
 				return 0;
 			}
+#endif
+
+			/* limit number of registers to the max. available */
+			if(max_len > (sizeof(modbus_pm210_input_register_list1) + sizeof(modbus_pm210_input_register_list2)))
+			{
+				max_len = (sizeof(modbus_pm210_input_register_list1) + sizeof(modbus_pm210_input_register_list2));
+			}
+
+			memcpy(buf,PM210_IRList1.Regs,max_len);
+
+			if(max_len - sizeof(modbus_pm210_input_register_list1) > 0)
+			{
+				memcpy(buf + sizeof(PM210_IRList1.Regs),PM210_IRList2.Regs, max_len - sizeof(modbus_pm210_input_register_list1));
+			}
+			return (max_len);
 			
 }
 
@@ -206,7 +245,7 @@ CONST modbus_slave_t slave_PM210 =
 		
 
 /* ----------------------- Start implementation -----------------------------*/
-#if PLATAFORMA == COLDUINO  
+#if COLDUINO
 
 /* ----------------------------------------------------------------------------------------------------------*/
 /* prototypes */

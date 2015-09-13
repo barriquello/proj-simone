@@ -449,11 +449,16 @@ uint8_t http_set_ip(char * _ip)
 	return MODEM_OK;
 }
 
+uint8_t http_check_connect(void)
+{
+	return TRUE;
+}
 
 const modem_driver_t win_http =
 {
 		http_receive,
 		http_send,
 		http_set_hostname,
-		http_set_ip
+		http_set_ip,
+		http_check_connect
 };

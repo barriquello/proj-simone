@@ -104,12 +104,11 @@ T20150101073300S ->
 //#include "SD_API.h"
 #endif
 
-#if PLATAFORMA == COLDUINO
+#if COLDUINO
 #include "printf_lib.h"
-#include "minIni.h"
 #endif
 
-
+#include "minIni.h"
 #include "assert.h"
 #include "monitor.h"
 #include "simon-api.h"
@@ -537,7 +536,9 @@ void main_monitor(void)
 
 	print_debug("\r\nConfig OK\r\n");
 	
+#if COLDUINO || ARDUINO
 	DelayTask(5000);	
+#endif
 
 	/* init monitors */
 	monitores_em_uso = 0;

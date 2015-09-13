@@ -172,10 +172,10 @@ uint8_t monitor_setheader(const char* filename, monitor_header_t * h)
 	   return TRUE;
    }   
 #else
-   if(monitor_openappend(filename,&fp))
+   if(monitor_openread(filename,&fp))
    {
 	   monitor_makeheader(monitor_header,h);
-	   monitor_seek_begin(&fp);
+	   //monitor_seek_begin(&fp);
 	   (void)monitor_write(monitor_header,&fp);
 	   (void)monitor_close(&fp);
 	   return TRUE;
@@ -617,9 +617,9 @@ uint8_t monitor_init(uint8_t monitor_num)
 
 	  strcpy(monitor_state[monitor_num].monitor_name_writing, LOG_FILENAME_START);
 
-	  if (!monitor_stat(monitor_state[monitor_num].monitor_dir_name, &fnfo))
+	  if (!(monitor_stat(monitor_state[monitor_num].monitor_dir_name, &fnfo)))
 	  {
-		  if(!monitor_mkdir(monitor_state[monitor_num].monitor_dir_name))
+		  if(!(monitor_mkdir(monitor_state[monitor_num].monitor_dir_name)))
 		  {
 			  return FALSE;
 		  }
@@ -651,7 +651,7 @@ uint8_t monitor_init(uint8_t monitor_num)
 	 monitor_chdir(monitor_state[monitor_num].monitor_dir_name);
 
      /* try open log or create it now */
-	 if(!monitor_openappend(monitor_state[monitor_num].monitor_name_writing,&fp))
+	 if(!(monitor_openappend(monitor_state[monitor_num].monitor_name_writing,&fp)))
 	 {
 	   if(monitor_openwrite(monitor_state[monitor_num].monitor_name_writing,&fp))
 	   {

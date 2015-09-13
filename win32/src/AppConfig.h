@@ -34,10 +34,12 @@
 
 #define DATALOGGER_DELAY_TIME (3000)
 
-#define COLDUINO 	1
-#define ARDUINO 	2
 
-#ifdef WIN32
+
+#ifdef _WIN32
+#ifndef WIN32
+#define WIN32 1
+#endif
 #define PLATAFORMA  WIN32
 #endif
 

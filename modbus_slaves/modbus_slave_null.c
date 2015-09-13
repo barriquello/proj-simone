@@ -17,11 +17,14 @@
 #include "modbus_slaves.h"
 #include "modbus_slave_null.h" /* NULL device */
 #include "time_lib.h"
+#include "string.h"
 
+#if 0
 static CONST uint16_t usRegInputBuf[NULL_REGLIST_INPUT_NREGS] =
 { 		
 	0xaaaa,0xbbbb,0xcccc,0xdddd,0xeeee,0xffff,0x0001
 };
+#endif
 
 static modbus_null_input_register_list NULL_IRList;
 
