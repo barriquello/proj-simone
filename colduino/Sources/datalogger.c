@@ -96,6 +96,7 @@ void Tarefa_datalogger(void)
 	OSDateTime DateTime;
 	OSTime timestamp;	
 	time_t unix_ts;
+	uint8_t resp_len = 0;
 	
 	char LogFileName[15];
 
@@ -167,7 +168,7 @@ void Tarefa_datalogger(void)
 			/* Detecta equipamentos de medição e faz a leitura dos dados */	
 				
 			/* PM210 input registers */		
-			Modbus_GetData(PM210_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (INT8U*)&PM210_IRList1.Regs[PM210_REG_OFFSET], 
+			Modbus_GetData(PM210_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (INT8U*)&PM210_IRList1.Regs[PM210_REG_OFFSET],
 					PM210_REGLIST1_INPUT_START, PM210_REGLIST1_INPUT_NREGS);	
 			
 			/* Get and set timestamp of reading */			
@@ -175,7 +176,7 @@ void Tarefa_datalogger(void)
 			//	unix_ts = ConvertDateTimeToUnixTime(&timestamp);	
 			SetTimeStamp(MODBUS_PM210, (INT8U*)PM210_IRList1.Regs, &timestamp);
 			
-			Modbus_GetData(PM210_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (INT8U*)&PM210_IRList2.Regs[PM210_REG_OFFSET], 
+			Modbus_GetData(PM210_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (INT8U*)&PM210_IRList2.Regs[PM210_REG_OFFSET],
 								PM210_REGLIST2_INPUT_START, PM210_REGLIST2_INPUT_NREGS);
 			
 			/* Get and set timestamp of reading */

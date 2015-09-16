@@ -21,7 +21,7 @@
 #endif
 
 #define M590_BAUD 			9600
-#define M590_UART 			1
+#define M590_UART 			2
 #define M590_TCP_SERVER_NAME "emon-gpsnetcms.rhcloud.com"
 #define M590_TCP_SERVER_IP 	"54.160.189.224"
 #define M590_TCP_PORT		80

@@ -23,7 +23,7 @@ void terminal_set_output (term_output _output);
 void terminal_input (CHAR8 *c);
 void terminal_output (CHAR8 c);
 
-void printSer(INT8U SerialPort, CHAR8 *string);
+void printSer(INT8U SerialPort, const CHAR8 *string);
 void putcharSer(INT8U SerialPort, CHAR8 caracter);
 
 #endif /* TERMINAL_IO_H_ */

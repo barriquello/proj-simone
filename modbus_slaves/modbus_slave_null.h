@@ -10,23 +10,23 @@
 
 #include "stdint.h"
 
-#define NULL_REGLIST_OFFSET_NREGS 0
-#define NULL_REGLIST_INPUT_NREGS  8
-#define NULL_REGLIST_INPUT_START  1000
+#define NULL_REGLIST_OFFSET_NREGS 2
+#define NULL_REGLIST_INPUT_NREGS  4
+#define NULL_REGLIST_INPUT_START  0
 #define NULL_SLAVE_ADDRESS  	  (0x00)
 
 typedef union 
 {
 	struct
 	{
-		uint16_t REG0;
-		uint16_t REG1;
-		uint16_t REG2;
-		uint16_t REG3;
-		uint16_t REG4;
-		uint16_t REG5;
-		uint16_t REG6;
-		uint16_t REG7;
+		uint8_t Device_id;	/* device id */
+		uint8_t Hora;		/* timestamp */
+		uint8_t Minuto;		/* timestamp */
+		uint8_t Segundo;	/* timestamp */
+		uint16_t Core_Temp;
+		uint16_t Pressure_Valve;
+		uint16_t Oil_Level;
+		uint16_t Alarm;
 	}Reg;	
 	uint16_t Regs[NULL_REGLIST_INPUT_NREGS+NULL_REGLIST_OFFSET_NREGS];
 	uint8_t  Regs8[NULL_REGLIST_INPUT_NREGS*2+NULL_REGLIST_OFFSET_NREGS];

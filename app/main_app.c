@@ -25,6 +25,7 @@
 #include "BRTOS.h"
 #include "drivers.h"
 #include "tasks.h"
+#include "modbus.h"
 
 
 #ifdef __cplusplus
@@ -54,11 +55,11 @@ void main_app(void)
 	System_Init();
 
 	/* Init BRTOS system */
-	BRTOS_Init();
+	BRTOS_Init();	
 	
-	/* Init LED onboard */
-#if PLATAFORMA==COLDUINO	
-	led_onboard_init();	
+#if COLDUINO	
+	led_onboard_init();	 /* Init LED onboard */
+	Modbus_init(); 		 /* Init Modbus */
 #endif	
 
 	/* Install task for keeping system clock, date and time */

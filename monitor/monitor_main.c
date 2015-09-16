@@ -160,9 +160,17 @@ static clock_t clock_time(void)
 #else /* _WIN32 */
 
 static clock_t clock = 0;
+
 static clock_t clock_time(void)
 {
-  return clock;
+  clock_t local;
+  
+  OS_SR_SAVE_VAR;
+  
+  OSEnterCritical();
+  	  local = clock;
+  OSExitCritical();
+  return local;
 }
 
 void BRTOS_TimerHook(void)
@@ -380,11 +388,6 @@ static int callback_inifile(const char *section, const char *key, const char *va
 			++field_cnt;
 		}
 
-		if(strcmp(key,"tipo") == 0)
-		{
-			monitor_state[mon_cnt].tipo = (char) *value;
-			++field_cnt;
-		}
 		if(strcmp(key,"codigo") == 0)
 		{
 			monitor_state[mon_cnt].codigo =  (uint8_t)StringToInteger((char*)value); //strtoul(value,NULL,0);
@@ -552,37 +555,19 @@ void main_monitor(void)
 		}
 		
 		/* monitor MODBUS? */
-		if(monitor_state[monitor_num].tipo == 'M')
-		{			
-			if(monitor_state[monitor_num].codigo < MODBUS_NUM_SLAVES)
-			{
-				if(modbus_slaves_all[monitor_state[monitor_num].codigo] == NULL) goto modbus_slave_erro;
-				if(modbus_slaves_all[monitor_state[monitor_num].codigo]->slave_reader == NULL) goto modbus_slave_erro;			
-				monitor_state[monitor_num].read_data = modbus_slaves_all[monitor_state[monitor_num].codigo]->slave_reader;
-				
-			}else
-			{
-				modbus_slave_erro:				
-				print_erro(monitor_error_msg[1], monitor_num);
-				print_erro("modbus slave não suportado \r\n");
-				sleep_forever();
-			}
-		}
-		else 
-			/* monitor Digital ou Analógico? */
-		if(monitor_state[monitor_num].tipo == 'A')
+	
+		if(monitor_state[monitor_num].codigo < MODBUS_NUM_SLAVES)
 		{
-			analog_input_erro:
-			print_erro(monitor_error_msg[1], monitor_num);
-			print_erro("entrada digital ou analógica não suportada \r\n");
-			sleep_forever();	
-		}
-		else
+			if(modbus_slaves_all[monitor_state[monitor_num].codigo] == NULL) goto modbus_slave_erro;
+			if(modbus_slaves_all[monitor_state[monitor_num].codigo]->slave_reader == NULL) goto modbus_slave_erro;			
+			monitor_state[monitor_num].read_data = modbus_slaves_all[monitor_state[monitor_num].codigo]->slave_reader;			
+		}else
 		{
+			modbus_slave_erro:				
 			print_erro(monitor_error_msg[1], monitor_num);
-			print_erro("tipo não suportado\r\n");
+			print_erro("modbus slave não suportado \r\n");
 			sleep_forever();
-		}			
+		}		
 		
 		monitor_state[monitor_num].state = IN_USE;
 		monitores_em_uso++;
@@ -601,9 +586,7 @@ void main_monitor(void)
 
 	while(1)
 	{
-	
-		char c;
-		
+
 		for (monitor_num = 0; monitor_num < monitores_em_uso; monitor_num++)
 		{
 			monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
@@ -614,6 +597,9 @@ void main_monitor(void)
 		monitor_set_input(&monitor_input_pt);
 #endif		
 
+#if 0
+		char c;
+		
 		c=getchar_timeout(1);
 		
 		if(c == 0 && set_input != 0)
@@ -636,6 +622,7 @@ void main_monitor(void)
 			case 'v': monitor_uploading = 0; // parar upload
 				break;
 		}
+#endif		
 		
 		#ifndef _WIN32
 			DelayTask(1000); // executa a cada 1s

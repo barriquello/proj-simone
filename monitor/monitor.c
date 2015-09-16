@@ -45,12 +45,14 @@ char monitor_char_buffer[LOG_MAX_ENTRY_SIZE];
 extern CONST modbus_slave_t slave_NULL;
 extern CONST modbus_slave_t slave_PM210;
 extern CONST modbus_slave_t slave_TS;
+extern CONST modbus_slave_t slave_T500;
 
 CONST modbus_slave_t * modbus_slaves_all[MODBUS_NUM_SLAVES] =
 {
 		&slave_NULL,
 		&slave_PM210,
 		&slave_TS,	
+		&slave_T500,
 };
 
 LOG_FILETYPE stderr_f;
@@ -801,7 +803,8 @@ void monitor_writer(uint8_t monitor_num)
 		PRINTF("\r\nMissed entries %d\r\n", missing_entries);
 	}else
 	{
-		PRINTF("\r\nEntry written %d\r\n", cnt);
+		PRINTF("Mon %d, Entry %d: ", monitor_num, cnt);
+		PRINTF("%s\r\n", monitor_char_buffer);
 	}
 
 	/* change to parent dir */

@@ -257,7 +257,7 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 			SCGC1 |= SCGC1_SCI2_MASK; /* Enables sci2 clock */
 			
 			/* set baudrate and parity type */
-			uart1_set(baudrate,NONE);
+			uart2_set(baudrate,NONE);
 
 			/* Cria um mutex com contador = 1, e prioridade máxima a acessar o recurso = priority */
 			if (mutex == TRUE)

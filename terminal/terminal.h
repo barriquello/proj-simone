@@ -20,6 +20,8 @@ typedef void (cmd_func)(char *params);
 #define INROM 	1
 #endif
 
+#define DEL 0x7F
+
 
 typedef struct {
 #if INROM

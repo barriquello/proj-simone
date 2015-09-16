@@ -753,13 +753,7 @@ sint32_t Modbus_process_answ(uint8_t *ptr_data, uint16_t num_regs) {
           //Modbus_change_order_bytes(s_answ->pAnsw, s_answ->answLen);          
           
           // copy 16-bit regs values
-          for (idx = 0; idx < num_regs; idx++)
-          {
-        	  ptr_data[idx] = *(s_answ->pAnsw);
-        	  s_answ->pAnsw++;
-        	  ptr_data[idx] = *(s_answ->pAnsw);
-        	  s_answ->pAnsw++;
-          }
+          memcpy(ptr_data,s_answ->pAnsw,s_answ->answLen);
         break;
 
         //----------------------------------------------------------------------

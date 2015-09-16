@@ -11,11 +11,11 @@
 #include "uart.h"
 #include "rs485.h"
 
-#define RS485_BUFSIZE		16
+#define RS485_BUFSIZE		(16+6)
 #define RS485_TX 			1
 #define RS485_RX 			0
 
-#if PLATAFORMA == COLDUINO
+#if COLDUINO
 #pragma warn_implicitconv off
 #define RS485_TXRX_PIN 		PTFD_PTFD2
 #define RS485_TXRX_PINDIR 	PTFDD_PTFDD2
@@ -25,7 +25,7 @@
 #endif
 
 
-#if PLATAFORMA == COLDUINO
+#if COLDUINO
 #if UART_RS485 == UART1
 #define RS485_PUTCHAR(x) 	putchar_uart1(x)
 #define RS485_PRINTF(x)		printf_uart1(x)
@@ -76,18 +76,19 @@ void rs485_print(CHAR8 *string)
 	RS485_TXRX_PIN = RS485_RX;
 }
 
-void rs485_tx(INT8U *data, INT16U len)
+void rs485_tx(const INT8U *data, const INT16U _len)
 {
 	RS485_TXRX_PIN = RS485_TX;
 	RS485_RX_DISABLE();
+	INT16U len = _len;
 	while(len > 0)
 	{
 		RS485_PUTCHAR((*data));
 		data++;		
 		len--;
 	}
-	RS485_RX_ENABLE();
 	RS485_TXRX_PIN = RS485_RX;
+	RS485_RX_ENABLE();	
 }
 
 INT8U rs485_rx(CHAR8* caracter, INT16U timeout)
@@ -95,8 +96,13 @@ INT8U rs485_rx(CHAR8* caracter, INT16U timeout)
 	INT8U ret;
 	RS485_TXRX_PIN = RS485_RX;
 	ret = OSQueuePend(RS485_QUEUE, caracter, timeout);
-	RS485_TXRX_PIN = RS485_RX;
-	return (ret != TIMEOUT)? 1:0;
+	//RS485_TXRX_PIN = RS485_RX;
+	return (ret != TIMEOUT) ? TRUE:FALSE;
+}
+
+void rs485_rx_flush(void)
+{
+	OSCleanQueue(RS485_QUEUE);
 }
 
 #endif

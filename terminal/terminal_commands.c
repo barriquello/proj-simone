@@ -1,22 +1,3 @@
-/****************************************************************************************
-* 
-*   FILE        :    terminal_commands.c
-*   DATE CREATED:    
-*   DESCRIPTION	:    
-*
-*   Author		:     
-*  	Location	:    
-*   Purpose		:
-*   Copyright	:    
-*                                                  
-* UPDATED HISTORY:
-*
-* REV   YYYY.MM.DD  AUTHOR          	DESCRIPTION OF CHANGE
-* ---   ----------  ------          	--------------------- 
-* 1.0   2011.05.12  Gustavo Denardin	Initial version
-*
-****************************************************************************************/
-
 /*
  * terminal_commands.c
  *
@@ -842,16 +823,23 @@ CONST command_t m590_cmd = {
   "m590", term_cmd_m590, "Control M590 modem"
 };
 
-static uint8_t slave_addr = 1;
 static uint16_t start_addr = 0;
+static uint8_t slave_addr = 1;
 static uint8_t num_regs = 1;
 static uint8_t func = 3;
 
+static uint16_t modbus_buf[16];
+
+#include "modbus.h"
+#include "printf_lib.h"
 #include "stdio.h"
+
 void term_cmd_modbus(char *param)
 {	
 
 	uint32_t input;
+	uint8_t k = 0;
+	
 	printf_terminal("\r\n");
 	switch (param[0])
 	{
@@ -864,20 +852,33 @@ void term_cmd_modbus(char *param)
 		case 's': 
 			    if(sscanf(&param[2], "%d", &input) == 1)
 				{
-			    	start_addr = (uint8_t)input;
+			    	start_addr = (uint16_t)input;
 				}
 				break;
 		case 'n': 
 				if(sscanf(&param[2], "%d", &input) == 1)
 				{
-					start_addr = (uint8_t)input;
+					num_regs = (uint8_t)input;
 				}
 				break;
 		case 'h': func = 3; /* read holding regs */
 			break;	
 		case 'i': func = 4; /* read input regs */
 			break;
-		case 'p': //modbus_print_reply();
+		case 'p': 		
+			memset(modbus_buf,0x00,SIZEARRAY(modbus_buf));
+			if(Modbus_GetData(slave_addr, func, (uint8_t*)modbus_buf, start_addr, num_regs) == MODBUS_OK)
+			{
+				for(k=0;k<num_regs;k++)
+				{
+					printf_lib("%02X-",modbus_buf[k]);
+				}
+				putchar_terminal(DEL);
+				
+			}else
+			{
+				printf_terminal("Modbus erro\r\n");
+			}
 			break;
 		default:
 			

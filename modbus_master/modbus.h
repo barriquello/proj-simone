@@ -78,7 +78,7 @@ sint32_t Modbus_receive(const uint8_t _byte);
 
 sint32_t Modbus_process_answ(uint8_t *ptr_data, uint16_t num_regs);
 
-sint32_t Modbus_GetData(uint8_t slave, uint8_t func, uint8_t *data_ptr, uint16_t start_address, uint8_t num_regs);
+sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_address, INT8U num_regs);
 
 uint8_t Modbus_init(void);
 

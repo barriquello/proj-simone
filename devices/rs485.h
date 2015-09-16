@@ -5,8 +5,8 @@
 #include "BRTOS.h"
 #include "uart.h"
 
-#define UART1 	1
-#define UART2 	2
+#define UART1 		1
+#define UART2 		2
 #define UART_RS485   UART1
 
 /*! \fn void rs485_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8U priority)
@@ -34,6 +34,7 @@ void rs485_release(void);
 void rs485_putchar(INT8U caracter);
 void rs485_print(CHAR8 *string);
 INT8U rs485_rx(CHAR8* caracter, INT16U timeout);
-void rs485_tx(INT8U *data, INT16U len);
+void rs485_tx(const INT8U *data, const INT16U len);
+void rs485_rx_flush(void);
 
 

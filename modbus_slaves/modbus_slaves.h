@@ -10,12 +10,13 @@
 
 #include "stdint.h"
 
-#define MODBUS_NUM_SLAVES (3) 
+#define MODBUS_NUM_SLAVES (4) 
 typedef enum
 {
 	MS_NULL = 0,
 	MS_PM210 = 1,
-	MS_TS = 2	
+	MS_TS = 2,
+	MS_T500 = 3
 }slave_num_t;
 
 #if (PLATAFORMA == ARDUINO || PLATAFORMA == WIN32)
@@ -23,6 +24,7 @@ typedef enum {
 	MODBUS_NULL = 0,
 	MODBUS_PM210 = 1,
 	MODBUS_TS = 2,
+	MODBUS_T500 = 3,
 	MODBUS_NONE
 }eMBSlaves;
 #endif

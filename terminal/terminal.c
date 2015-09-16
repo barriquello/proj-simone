@@ -376,7 +376,7 @@ void terminal_process(void)
     		break;
     	case '\r':
     		break;
-    	case 0x7F: //DEL
+    	case DEL:
     		if (term_cmd_line_ndx)
 			{
 			  while(c!=(char)(*putch)(c)){};
@@ -393,7 +393,7 @@ void terminal_process(void)
 	  {
 		  if(c !='\n' && c!='\r')
 		  {
-			  if(c != 0x7F || term_cmd_line_ndx) //DEL
+			  if(c != DEL || term_cmd_line_ndx)
 			  {
 				  while(c!=(char)(*putch)(c)){};
 			  }			  
@@ -447,7 +447,7 @@ void terminal_process(void)
 #endif      
       else
       {
-          if (c == 0x7F)
+          if (c == DEL)
           {    	  
               if (term_cmd_line_ndx)
               {

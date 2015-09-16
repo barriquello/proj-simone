@@ -30,25 +30,19 @@ static modbus_null_input_register_list NULL_IRList;
 
 uint8_t slave_null_read_data(uint8_t* buf, uint8_t max_len);
 
-#if !MODBUS_SLAVE_SIMULATION	
+#define MODBUS_NULL_SLAVE_SIMULATION	1
+#if MODBUS_NULL_SLAVE_SIMULATION	
 #include "random_lib.h"
 #endif
 
 uint8_t slave_null_read_data(uint8_t* buf, uint8_t max_len)
 {
-#if 0
-			OSTime timestamp;
-#endif
-			uint8_t nregs = 0;
-			
-			
-#if MODBUS_SLAVE_SIMULATION			
-			ModbusSetSlave(MODBUS_NULL);	/* Leitura dos dados de teste */
-			
-			/* Detecta equipamentos de medição e faz a leitura dos dados */					
-			Modbus_GetData(NULL_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (INT8U*)&NULL_IRList.Regs[NULL_REGLIST_OFFSET_NREGS], 
-					NULL_REGLIST_INPUT_START, NULL_REGLIST_INPUT_NREGS);	
+								
+#if MODBUS_NULL_SLAVE_SIMULATION == 0	
+			/* Detecta equipamentos de medição e faz a leitura dos dados */	
+
 #else	
+			uint8_t nregs = 0;
 			/* return random data */	
 			for(nregs = NULL_REGLIST_OFFSET_NREGS; nregs < (NULL_REGLIST_INPUT_NREGS+NULL_REGLIST_OFFSET_NREGS);nregs++)
 			{				

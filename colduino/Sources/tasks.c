@@ -111,9 +111,8 @@ void Mass_Storage_Device_Task(void)
 
 #if (USB_CLASS_TYPE == BRTOS_USB_CDC)
 
-#define TERM1_PINS   UART1_PTA1_PTA2
-//#define TERM2_PINS   UART2_PTE5_PTE6
-#define TERM2_PINS   UART2_PTF1_PTF2
+//#define TERM1_PINS   CONF_UART1_PINS
+//#define TERM2_PINS   CONF_UART2_PINS
 
 /* Task to process terminal commands */
 void Terminal_Task(void)
@@ -153,7 +152,7 @@ void Terminal_Task(void)
 	//(void) terminal_add_cmd((command_t*) &setget_time_cmd);
 	(void) terminal_add_cmd((command_t*) &cat_cmd);
 	(void) terminal_add_cmd((command_t*) &ls_cmd);
-	(void) terminal_add_cmd((command_t*) &cd_cmd);
+	//(void) terminal_add_cmd((command_t*) &cd_cmd);
 	//(void) terminal_add_cmd((command_t*) &mount_cmd);
 	(void) terminal_add_cmd((command_t*) &sr_cmd);
 	(void) terminal_add_cmd((command_t*) &rm_cmd);
@@ -165,7 +164,7 @@ void Terminal_Task(void)
 	(void) terminal_add_cmd((command_t*) &echo_cmd);
 	(void) terminal_add_cmd((command_t*) &echo_stdout_cmd);
 	//(void) terminal_add_cmd((command_t*) &esp_cmd);
-	(void) terminal_add_cmd((command_t*) &m590_cmd);	
+	//(void) terminal_add_cmd((command_t*) &m590_cmd);	
 	(void) terminal_add_cmd((command_t*) &modbus_cmd);
 	
 
@@ -371,7 +370,7 @@ void Tarefa_RS485(void)
 
 	CHAR8 c;
 	
-	rs485_init(9600,FALSE,0);
+	rs485_init(19200,FALSE,0);
 	for(;;)
 	{
 		if(rs485_rx(&c,10))
@@ -399,11 +398,11 @@ void Tarefa_termometro(void)
 
 		/* Mede temperatura do core */
 		UserEnterCritical();
-		digital_temp = ADConvert(TEMP_SENSOR_CH);
+			digital_temp = ADConvert(TEMP_SENSOR_CH);
 		UserExitCritical();
 
 		UserEnterCritical();
-		bandgap = ADConvert(BANDGAP_CH);
+			bandgap = ADConvert(BANDGAP_CH);
 		UserExitCritical();
 
 		digital_temp = (1170 * digital_temp) / bandgap;
@@ -418,7 +417,7 @@ void Tarefa_termometro(void)
 		}
 
 		UserEnterCritical();
-		CoreTemp = temperature;
+			CoreTemp = temperature;
 		UserExitCritical();
 		//////////////////////////////////////////////////////////////         
 	}

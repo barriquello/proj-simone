@@ -9,11 +9,13 @@
 
 static uint8_t ModbusMaster_state;
 
-#define MB_RS485 0
+#define MB_RS485 1
 
 #if MB_RS485
 #include "rs485.h"
-#define MODBUSMASTER_PUTCHAR(x) putchar_rs485(x)
+#define RS485_BAUDRATE			19200
+#define MODBUSMASTER_PUTCHAR(x) rs485_putchar(x)
+#define RS485_TIMEOUT_RX		10
 #else
 #include "mb.h"
 #include "mbport.h"
@@ -39,7 +41,7 @@ static void ModbusMasterTxData(const uint8_t * const _pData, const uint32_t _dat
 {
 	 
 #if MB_RS485	
-	rs485_tx(_pData,_dataLen);	 
+	rs485_tx(_pData,(uint16_t)_dataLen);	 
 #else
 	uint8_t k; 
 	 for(k=0; k<_dataLen; k++) {
@@ -48,15 +50,19 @@ static void ModbusMasterTxData(const uint8_t * const _pData, const uint32_t _dat
 #endif
 }
 
+static void ModbusMasterRxFlush(void)
+{
+	rs485_rx_flush();
+}
+
 #define QUERY_BUFSIZE 	(8)
 #define ANSWER_BUFSIZE (36*2 + 8)
 
 uint8_t queryBuffer[QUERY_BUFSIZE];
 uint8_t answerBuffer[ANSWER_BUFSIZE];
 
+#include "modbus_slaves.h"
 #include "modbus_slave_null.h"
-#include "modbus_pm210.h"
-#include "modbus_ts.h"
 
 //==============================================================================
 // Task: Task_modbus_master_test()
@@ -77,7 +83,7 @@ void Task_modbus_master_test(void)
     while (1) 
     {
     	    	    	    	
-    	if (ModbusMaster_open(PM210_SLAVE_ADDRESS, FC_REPORT_SLAVE_ID, queryBuffer, &master_query) == MODBUS_OK)
+    	if (ModbusMaster_open(NULL_SLAVE_ADDRESS, FC_REPORT_SLAVE_ID, queryBuffer, &master_query) == MODBUS_OK)
     	{
     	
     		// set Master receive buffer 
@@ -108,7 +114,7 @@ void Task_modbus_master_test(void)
 					ModbusMasterTxData(master_query.pQuery, master_query.queryLen);												
 								
 					/* wait 1 sec for the response */
-					if(ModbusMasterRxData(&ucByteRx,1000))
+					if(ModbusMasterRxData(&ucByteRx,RS485_TIMEOUT_RX))
 					{
 						do
 						{							
@@ -122,7 +128,7 @@ void Task_modbus_master_test(void)
 								break;
 							}
 		                    
-						}while(ModbusMasterRxData(&ucByteRx,10));
+						}while(ModbusMasterRxData(&ucByteRx,RS485_TIMEOUT_RX));
 					}
 				}
 			}
@@ -144,7 +150,7 @@ uint8_t Modbus_init(void)
 {
 
 #if MB_RS485 
-	rs485_init(9600,FALSE,0);	
+	rs485_init(RS485_BAUDRATE,FALSE,0);	
 #else	
 	if(qModbusMaster_In != NULL && qModbusMaster_In->OSEventAllocated == TRUE) return TRUE;
 		
@@ -192,9 +198,11 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 	
 	// Send query
 	ModbusMasterTxData(master_query.pQuery, master_query.queryLen);	
-	    	
+	   
 	/* wait 1 sec for the response */
-	if(ModbusMasterRxData(&ucByteRx,1000))
+	DelayTask(1000);	
+	
+	if(ModbusMasterRxData(&ucByteRx,RS485_TIMEOUT_RX))
 	{
 		do
 		{							
@@ -211,11 +219,12 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 				goto success_exit;				
 			}
 			
-		}while(ModbusMasterRxData(&ucByteRx,10));		
+		}while(ModbusMasterRxData(&ucByteRx,RS485_TIMEOUT_RX));		
 	}
 	
 	error_exit:	
 		ModbusMaster_close();
+		ModbusMasterRxFlush();
 		return MODBUS_ERROR;
 		
 	success_exit:
