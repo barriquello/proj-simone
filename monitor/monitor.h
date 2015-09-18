@@ -216,6 +216,8 @@ typedef struct
 	pt_t write_pt;
 	uint8_t codigo;
 	data_reader read_data;
+	uint32_t time_to_send;
+	uint32_t avg_time_to_send;
 }monitor_state_t;
 
 typedef union
@@ -256,5 +258,7 @@ char* monitor_getfilename_to_read(uint8_t monitor_num);
 void main_monitor(void);
 void monitor_reader(uint8_t monitor_num);
 void monitor_writer(uint8_t monitor_num);
+
+clock_t clock_time(void);
 
 #endif /* LOGGER_H_ */

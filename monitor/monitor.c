@@ -84,6 +84,7 @@ void print_erro(const char *format, ...)
 LOG_FILETYPE debug_f;
 
 #define debug_file		"debug.txt"
+
 /*-----------------------------------------------------------------------------------*/
 void print_debug(const char *format, ...)
 {
@@ -188,6 +189,8 @@ uint8_t monitor_setheader(const char* filename, monitor_header_t * h)
 
 }
 
+#define ASSERT(x)	//assert
+
 uint8_t monitor_getheader(const char* filename, monitor_header_t * h)
 {
 
@@ -227,7 +230,7 @@ uint8_t monitor_getheader(const char* filename, monitor_header_t * h)
 	   {
 		   NEXT_4(h->h1.time_interv);
 	   }
-	   assert (idx == 16);
+	   ASSERT (idx == 16);
 
 	   /* process second header line */
 	   if(!monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
@@ -245,7 +248,7 @@ uint8_t monitor_getheader(const char* filename, monitor_header_t * h)
 		   NEXT_2(h->h2.sec);
 		   h->h2.synched = hex2val(monitor_header[idx++]);
 	   }
-	   assert (idx == 16);
+	   ASSERT (idx == 16);
 	
 	   /* process third header line */
 	   if(!monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
@@ -257,7 +260,7 @@ uint8_t monitor_getheader(const char* filename, monitor_header_t * h)
 	   {
 		   NEXT_4(h->last_idx);
 	   }
-	   assert (idx == 5);
+	   ASSERT (idx == 5);
 
 	   /* process fourth header line */
 	   if(!monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
@@ -269,7 +272,7 @@ uint8_t monitor_getheader(const char* filename, monitor_header_t * h)
 	   {
 		   NEXT_4(h->count);
 	   }
-	   assert (idx == 5);
+	   ASSERT (idx == 5);
 
 	   ok = TRUE; /* succes */
 
@@ -586,12 +589,35 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   (void)monitor_close(&fp);
 
 			   /* try to send */
+			   clock_t  time_init = clock_time();
+			   
+			   uint32_t  send_ok = 0;
+			   
+			   if(h.last_idx == 0)
+			   {
+				   monitor_state[monitor_num].time_to_send = 0;
+				   monitor_state[monitor_num].avg_time_to_send = 0;
+			   }
+			   
 			   if(monitor_entry_send(monitor_num,entry,entry_size-2) == TRUE) // ignore \r\n
 			   {
 				   /* if ok */
 				   h.last_idx++; // incrementa indice da última entrada lida
-				   monitor_setheader(filename, &h);
+				   monitor_setheader(filename, &h);	
+				   send_ok = 1;
 			   }
+			   
+			   monitor_state[monitor_num].time_to_send += (uint32_t)(clock_time()-time_init);
+			   
+			   if(send_ok == 1)
+			   {
+				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
+				   monitor_state[monitor_num].time_to_send = 0;
+				   
+				   PRINTF("Time: %d - %d\r\n",
+						   monitor_state[monitor_num].time_to_send,
+						   monitor_state[monitor_num].avg_time_to_send);
+			   }			   
 
 			   return h.last_idx;
 			}

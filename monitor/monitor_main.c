@@ -161,7 +161,7 @@ static clock_t clock_time(void)
 
 static clock_t clock = 0;
 
-static clock_t clock_time(void)
+clock_t clock_time(void)
 {
   clock_t local;
   
@@ -597,6 +597,9 @@ void main_monitor(void)
 		/* Inicializa as threads deste monitor */
 		PT_INIT(&monitor_state[monitor_num].read_pt);
 		PT_INIT(&monitor_state[monitor_num].write_pt);
+				
+		monitor_state[monitor_num].time_to_send = 0;
+		monitor_state[monitor_num].avg_time_to_send = 0;
 	}
 	
 #ifdef _WIN32	
