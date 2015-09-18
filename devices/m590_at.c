@@ -37,10 +37,12 @@ static INT8U gReceiveBuffer[256];
 
 #if DEBUG_PRINT
 #define PRINT(...) 		printSer(USE_USB,__VA_ARGS__);
-#define PRINT_BUF(...)  printSer(USE_USB,__VA_ARGS__);
+#define PRINT_BUF(...)  //printSer(USE_USB,__VA_ARGS__);
+#define PRINT_REPLY(...)  printSer(USE_USB,__VA_ARGS__);
 #else
 #define PRINT(...)
 #define PRINT_BUF(...)
+#define PRINT_REPLY(...)  
 #endif
 
 #define UNUSED(x)   (void)x;
@@ -167,8 +169,7 @@ INT8U CreatePPP(void)
 	{  	
 		m590_print(m590_init_cmd[XIIC1]);
 		wait_m590_get_reply(200);   // wait 200ms
-		PRINT_BUF(gReceiveBuffer);
-		
+				
 		if(strstr((char *)gReceiveBuffer,(char *)"OK"))
 		{
 			break;
@@ -389,6 +390,7 @@ uint8_t CheckPPP(void)
 	{   	
 		m590_print(m590_init_cmd[XIIC]);  	
 		wait_m590_get_reply(500);	// 500ms	
+		PRINT_REPLY(gReceiveBuffer);
 		
 		if(strstr((char *)gReceiveBuffer,"+XIIC:    1"))
 		{
@@ -738,6 +740,7 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 		{
 			if(!m590_init())
 			{
+				m590_state = M590_CLOSE;
 				return MODEM_ERR; 
 			}
 		}	
@@ -746,8 +749,7 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 		{
 			if(!m590_open())
 			{
-				m590_state = M590_CLOSE;
-				return MODEM_ERR; // error
+				continue;
 			}
 		}
 	
@@ -763,11 +765,14 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 		}		
 		else
 		{
-			m590_close();	
+			m590_close();
+			m590_state = M590_INIT;
 		}
 		
-		m590_release();	
+		m590_release();			
 	}
+	
+	if(retries == 3) m590_state = M590_CLOSE;
 	
 	return (result_ok==TRUE?MODEM_OK:MODEM_ERR);	
 	

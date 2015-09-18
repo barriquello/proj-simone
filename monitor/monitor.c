@@ -524,9 +524,11 @@ static int monitor_entry_send(uint8_t mon_id, monitor_entry_t* entry, uint16_t l
 	uint16_t cnt = 0;
 	cnt = build_entry_to_send(data_vector,entry->values,len);
 
+#if 0	
 	PRINTF("\r\n");
 	PRINTF(data_vector);
 	PRINTF("\r\n");
+#endif	
 	
 #ifdef _WIN32	
 	fflush(stdout);
@@ -612,11 +614,20 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   if(send_ok == 1)
 			   {
 				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
-				   monitor_state[monitor_num].time_to_send = 0;
+				  
 				   
-				   PRINTF("Time: %d - %d\r\n",
+				   PRINTF("Mon %d, entry: %d of %d, delay: %d - avg: %d", 
+						   monitor_num,
+						   h.last_idx, h.count,
 						   monitor_state[monitor_num].time_to_send,
 						   monitor_state[monitor_num].avg_time_to_send);
+				   
+					char timestamp[20];
+					ts = *localtime(&(time_t){unix_time});
+					strftime(timestamp,20," @T%Y%m%d%H%M%SS\r\n",&ts);
+					PRINTF(timestamp);
+				   
+				   monitor_state[monitor_num].time_to_send = 0;
 			   }			   
 
 			   return h.last_idx;
@@ -874,11 +885,13 @@ void monitor_reader(uint8_t monitor_num)
 
 	if((nread = monitor_readentry(monitor_num, fname, &entry)) != 0)
 	{
+#if 0		
 		if( nread < MAX_NUM_OF_ENTRIES)
-		{
+		{			
 			PRINTF((char*)entry.values);
 			PRINTF(ltoa((long)entry.ts,buffer,10));
 		}
+#endif		
 	}
 
 	/* change to parent dir */

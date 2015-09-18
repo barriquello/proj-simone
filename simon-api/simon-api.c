@@ -88,13 +88,15 @@ uint8_t simon_check_connection(void)
 
 uint8_t simon_get_time(struct tm * t)
 {
-	//char* get_time_request = "GET /time/local&apikey=%s";
-	char* get_time_request = "GET /";
+	char* get_time_request = "GET /time/local&apikey=%s";
+	//char* get_time_request = "GET /";
 	
-	SNPRINTF(message, 1024,
+	SNPRINTF(server_reply, SIZEARRAY(message), get_time_request, (char*)simon_apikey);
+	
+	SNPRINTF(message, SIZEARRAY(message),
 		     "%s HTTP/1.1\r\n"
 		     "Host: %s\r\n"
-		     "\r\n\r\n", get_time_request, hostname);
+		     "\r\n\r\n", server_reply, hostname);
 	
 	PRINTF(message);
 	
@@ -142,7 +144,9 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 		     "Host: %s\r\n"
 		     "\r\n\r\n", server_reply, hostname);
 
+#if 0	
 	PRINTF(message);
+#endif	
 
 #define SIMON_SKIP_SEND 0
 #if SIMON_SKIP_SEND
