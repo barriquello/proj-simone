@@ -111,8 +111,8 @@ void Mass_Storage_Device_Task(void)
 
 #if (USB_CLASS_TYPE == BRTOS_USB_CDC)
 
-//#define TERM1_PINS   CONF_UART1_PINS
-//#define TERM2_PINS   CONF_UART2_PINS
+#define TERM_UART1   0
+#define TERM_UART2   0
 
 /* Task to process terminal commands */
 void Terminal_Task(void)
@@ -124,7 +124,7 @@ void Terminal_Task(void)
 	terminal_init(cdc_putch);
 	
 	/* Init the UART 1 */
-#if ENABLE_UART1
+#if ENABLE_UART1 && TERM_UART1
 	#define UART1_BUFSIZE	256
 	#if UART1_MUTEX	
 		uart_init(1,9600,UART1_BUFSIZE,TRUE,UART1_MUTEX_PRIO);
@@ -134,7 +134,7 @@ void Terminal_Task(void)
 #endif		
 	
 	/* Init the UART 2 */
-#if ENABLE_UART2
+#if ENABLE_UART2 && TERM_UART2
 	#define UART2_BUFSIZE	256
 	#if UART2_MUTEX		
 		uart_init(2,9600,UART2_BUFSIZE,TRUE,UART2_MUTEX_PRIO);
@@ -165,7 +165,7 @@ void Terminal_Task(void)
 	(void) terminal_add_cmd((command_t*) &echo_stdout_cmd);
 	//(void) terminal_add_cmd((command_t*) &esp_cmd);
 	//(void) terminal_add_cmd((command_t*) &m590_cmd);	
-	(void) terminal_add_cmd((command_t*) &modbus_cmd);
+	//(void) terminal_add_cmd((command_t*) &modbus_cmd);
 	
 
 	while (1)

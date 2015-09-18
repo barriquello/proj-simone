@@ -122,15 +122,6 @@ Command Description
 CONST char TS_ID_string[] = "TS";
 CONST uint16_t SIZEOF_TS_ID_STRING = sizeof(TS_ID_string);
 		
-static CONST uint8_t usRegInputBuf[TS_REG_INPUT_NREGS] =
-{
-		0x11,0xaa,0xbb,0xcc,0xdd,0xee,0xff,0x66, 
-		0x22,0xaa,0xbb,0xcc,0xdd,0xee,0xff,0x77,		
-};
-
-static CONST uint8_t usRegHoldingBuf[TS_REG_INPUT_NREGS];
-
-
 /* static IR and HR list for TS device */
 static modbus_ts_input_register_list  	  TS_IRList;
 static modbus_ts_holding_register_list    TS_HRList;
@@ -174,81 +165,3 @@ CONST modbus_slave_t slave_TS =
 		"TS",
 		ts_read_data,
 };
-
-
-/* ----------------------- Start implementation -----------------------------*/
-#if COLDUINO
-
-eMBErrorCode
-eMBRegInputCB_TS( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs )
-{
-    eMBErrorCode    eStatus = MB_ENOERR;
-     
-    uint8_t  iRegIndex;
-
-    if( ( usAddress >= TS_REG_INPUT_START )
-        && ( usAddress + usNRegs <= TS_REG_INPUT_START + TS_REG_INPUT_NREGS ) )
-    {
-        iRegIndex = ( uint8_t )( usAddress - TS_REG_INPUT_START );
-        while( usNRegs > 0 )
-        {
-        	*pucRegBuffer++ = ( uint8_t )( usRegInputBuf[iRegIndex]);
-			iRegIndex++;
-			*pucRegBuffer++ = ( uint8_t )( usRegInputBuf[iRegIndex]);
-			iRegIndex++;
-            usNRegs--;
-            usNRegs--;
-        }
-    }
-    else
-    {
-        eStatus = MB_ENOREG;
-    }
-
-
-    return eStatus;
-}
-
-eMBErrorCode
-eMBRegHoldingCB_TS( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode )
-{
-    eMBErrorCode    eStatus = MB_ENOERR;
-     
-    uint8_t  iRegIndex;
-
-    if( ( usAddress >= TS_REG_HOLDING_START )
-        && ( usAddress + usNRegs <= TS_REG_HOLDING_START + TS_REG_HOLDING_NREGS ) )
-    {
-        iRegIndex = ( uint8_t )( usAddress - TS_REG_HOLDING_START );
-        while( usNRegs > 0 )
-        {
-            *pucRegBuffer++ = ( uint8_t )( usRegHoldingBuf[iRegIndex]);
-            iRegIndex++;
-            *pucRegBuffer++ = ( uint8_t )( usRegHoldingBuf[iRegIndex]);
-            iRegIndex++;
-            usNRegs--;
-            usNRegs--;
-        }
-    }
-    else
-    {
-        eStatus = MB_ENOREG;
-    } 
-
-    return eStatus;
-}
-
-
-eMBErrorCode
-eMBRegCoilsCB_TS( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNCoils, eMBRegisterMode eMode )
-{
-    return MB_ENOREG;
-}
-
-eMBErrorCode
-eMBRegDiscreteCB_TS( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete )
-{
-    return MB_ENOREG;
-}
-
-#endif

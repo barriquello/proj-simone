@@ -38,6 +38,7 @@
 #define MAX_HOSTIP_LEN	 	 (15+1)
 #define MAX_APIKEY_LEN	 	 (32+1)
 
+typedef uint8_t (*initialize)(void);
 typedef uint8_t (*input)(uint8_t *, uint16_t*);
 typedef uint8_t (*output)(uint8_t *, uint16_t);
 typedef uint8_t (*set_host)(char *);
@@ -46,6 +47,7 @@ typedef uint8_t (*get_connect)(void);
 
 typedef struct
 {
+	initialize init;
 	input receive;
 	output send;
 	set_host sethost;

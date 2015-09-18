@@ -55,6 +55,10 @@ uint8_t simon_init(const modem_driver_t* _modem)
 {
 	if(_modem == NULL) return MODEM_ERR;
 	modem = (modem_driver_t*)_modem;
+	if(modem->init() == FALSE)
+	{
+		PRINTF("modem not ok");
+	}
 	in = modem->receive;
 	out = modem->send;
 	simon_set_apikey(API_KEY);		/* set a default key */

@@ -184,6 +184,9 @@ static clock_t timer_expired(mon_timer_t *t)
 
 static void timer_set(mon_timer_t *t, int interval)
 { t->interval = interval; t->start = clock_time(); }
+
+static uint16_t timer_elapsed(mon_timer_t *t)
+{ return (uint16_t)(clock_time() - t->start - (clock_t)t->interval);}
 /*---------------------------------------------------------------------------*/
 
 /*---------------------------------------------------------------------------*/
@@ -257,10 +260,20 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 {
 
   PT_BEGIN(pt);
+  uint32_t time_elapsed = 0;
+  timer_set(&monitor_state[_monitor].write_timer, monitor_state[_monitor].config_h.time_interv*1000);
   while(1)
-  {
-		timer_set(&monitor_state[_monitor].write_timer, monitor_state[_monitor].config_h.time_interv*1000);
+  {		
 		PT_WAIT_UNTIL(pt, monitor_running && timer_expired(&monitor_state[_monitor].write_timer));
+		time_elapsed = (uint16_t)timer_elapsed(&monitor_state[_monitor].write_timer);		
+		// wait only the remaining time
+		if(time_elapsed < monitor_state[_monitor].config_h.time_interv*1000)
+		{
+			timer_set(&monitor_state[_monitor].write_timer, (uint16_t)(monitor_state[_monitor].config_h.time_interv*1000 - time_elapsed));
+		}else
+		{
+			timer_set(&monitor_state[_monitor].write_timer, monitor_state[_monitor].config_h.time_interv*1000/10);
+		}
 		monitor_writer(_monitor);
   }
   PT_END(pt);
@@ -270,11 +283,22 @@ static
 PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 {
 
+#define TIMER_READER_MS  1000	
   PT_BEGIN(pt);
+  uint16_t time_elapsed = 0;
+  timer_set(&monitor_state[_monitor].read_timer, TIMER_READER_MS);
   while(1)
-  {
-		timer_set(&monitor_state[_monitor].read_timer, 1000);
-		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(&monitor_state[_monitor].read_timer));
+  {		
+		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(&monitor_state[_monitor].read_timer));		
+		time_elapsed = (uint16_t)timer_elapsed(&monitor_state[_monitor].read_timer);
+		if(time_elapsed < TIMER_READER_MS)
+		{
+			// wait only the remaining time
+			timer_set(&monitor_state[_monitor].read_timer, (uint16_t)(TIMER_READER_MS - time_elapsed));
+		}else
+		{
+			timer_set(&monitor_state[_monitor].read_timer, TIMER_READER_MS/10);
+		}
 		monitor_reader(_monitor);
   }
   PT_END(pt);
@@ -372,6 +396,11 @@ static int callback_inifile(const char *section, const char *key, const char *va
 			simon_set_apikey(value);
 			config_check.bit.key_ok = 1;
 		}
+		if(strcmp(key,"gprs_apn") == 0)
+		{
+			//simon_set_apikey(value);
+			config_check.bit.gprs_apn_ok = 1;
+		}
     }
 
   	if(strcmp(section,"Monitor") == 0)
@@ -380,17 +409,11 @@ static int callback_inifile(const char *section, const char *key, const char *va
   	    {
   	    	return FALSE;
   	    }
-
 		/* configura monitores */
-		if(strcmp(key,"id") == 0)
-		{
-			monitor_state[mon_cnt].config_h.mon_id = (uint8_t)StringToInteger(value); //strtoul(value,NULL,0);
-			++field_cnt;
-		}
-
 		if(strcmp(key,"codigo") == 0)
 		{
 			monitor_state[mon_cnt].codigo =  (uint8_t)StringToInteger((char*)value); //strtoul(value,NULL,0);
+			monitor_state[mon_cnt].config_h.mon_id = monitor_state[mon_cnt].codigo;
 			++field_cnt;
 		}
 		if(strcmp(key,"nome") == 0)
@@ -537,7 +560,7 @@ void main_monitor(void)
 	ini_browse(callback_inifile, NULL, config_inifile);
 	config_check_erro();
 
-	print_debug("\r\nConfig OK\r\n");
+	print_debug("Config OK\r\n");
 	
 #if COLDUINO || ARDUINO
 	DelayTask(5000);	
@@ -547,7 +570,7 @@ void main_monitor(void)
 	monitores_em_uso = 0;
 	for (monitor_num = 0; monitor_num < num_monitores; monitor_num++)
 	{		
-		if(	monitor_state[monitor_num].state == UNUSED
+		if(monitor_state[monitor_num].state != IN_USE			
 			|| monitor_init(monitor_num) != TRUE)
 		{
 			print_erro(monitor_error_msg[1], monitor_num);
@@ -569,7 +592,6 @@ void main_monitor(void)
 			sleep_forever();
 		}		
 		
-		monitor_state[monitor_num].state = IN_USE;
 		monitores_em_uso++;
 		
 		/* Inicializa as threads deste monitor */

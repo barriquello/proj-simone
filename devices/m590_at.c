@@ -285,12 +285,12 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 					}
 					else if( strstr((char *)gReceiveBuffer,"+TCPSEND:Error"))
 					{
-						PRINT("\r\nsend error\r\n");
+						PRINT("send error\r\n");
 						return FALSE;
 					}
 					else if( strstr((char *)gReceiveBuffer,"+TCPSEND:Buffer not enough"))
 					{
-						PRINT("\r\nsend error: Buffer not enough \r\n");
+						PRINT("send buffer error\r\n");
 						return FALSE;
 					}else
 					{
@@ -307,7 +307,7 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 		}
 		
 		out:
-			PRINT("\r\nsend error, tcp connection failed \r\n");
+			PRINT("tcp conn failed\r\n");
 			return FALSE;
 	}
 }
@@ -450,7 +450,7 @@ m590_ret_t at_m590_open(void)
 	PRINT("Open \r\n");		
 	if(m590_open())
 	{
-		PRINT("PPP established!\r\n");
+		PRINT("PPP ok!\r\n");
 		return M590_OK;
 	}else
 	{
@@ -495,7 +495,7 @@ m590_ret_t at_m590_send(INT8U* dados)
 	}
 	else
 	{
-		PRINT("TCP connection fail\r\n");
+		PRINT("TCP conn fail\r\n");
 	}	
 	
 	m590_release();
@@ -813,6 +813,7 @@ uint8_t m590_check_connection(void)
 
 const modem_driver_t m590_driver  =
 {
+		m590_init,
 		m590_receive,
 		m590_send,
 		m590_set_hostname,

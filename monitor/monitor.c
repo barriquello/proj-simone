@@ -207,7 +207,7 @@ uint8_t monitor_getheader(const char* filename, monitor_header_t * h)
 
 	   /* process first header line */
 	   if(!monitor_read(monitor_header,LOG_HEADER_LEN,&fp))
-	   {
+	   {		   		  
 		   goto exit_read_error;
 	   }
 	   
@@ -437,6 +437,7 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 	LOG_FILETYPE fp;
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};	
 	
+	try_write_again:
 	if(monitor_getheader(filename, &h))
 	{
 		if(monitor_openappend(filename,&fp))
@@ -449,7 +450,7 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 		   monitor_setheader(filename, &h);
 		}else
 		{
-			return 0;
+			return 0; // tratar este erro!!!
 		}
 		
 		
@@ -462,6 +463,23 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 			}
 		}
 	
+	}else
+	{
+		 // cria novo arquivo e header
+		 if(monitor_openwrite(monitor_state[monitor_num].monitor_name_writing,&fp))
+		 {
+			 if(monitor_newheader(monitor_state[monitor_num].monitor_name_writing,
+									   monitor_state[monitor_num].config_h.mon_id,
+									   monitor_state[monitor_num].config_h.time_interv,
+									   monitor_state[monitor_num].config_h.entry_size) == TRUE)
+			 {
+				 
+				 goto try_write_again;
+			 }		
+		 }
+		 
+		 print_debug("Erro: new header", monitor_num);
+		
 	}
 
 	return h.count;

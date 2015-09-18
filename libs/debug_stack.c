@@ -6,14 +6,17 @@
 #include "terminal_io.h"
 
 #include "AppConfig.h"
+#include "printf_lib.h"
 
 #if PLATAFORMA==COLDUINO
 #pragma warn_implicitconv off
+#define DEBUG_STACK_PRINT 1
 #endif
 
 #ifdef _WIN32
 #define DEBUG_STACK_PRINT 1
 #endif
+
 
 #if DEBUG_STACK_PRINT
 #define DPRINTF(a,...) printSer(a,__VA_ARGS__);
@@ -31,80 +34,30 @@ void Transmite_Uptime(INT8U Comm)
 {
    OSTime Uptime;
    OSDate UpDate;
-   CHAR8  string[6];
+   CHAR8  string[32];
    
    UserEnterCritical();
-   Uptime = OSUptime();
-   UpDate = OSUpDate();
+   	   Uptime = OSUptime();
+   	   UpDate = OSUpDate();
    UserExitCritical();
    
-   DPRINTF(Comm, "UPTIME: ");
-
-   // Só funciona até 255 dias
-   if(UpDate.RTC_Day > 0)
-   {    
-      Print3Digits(UpDate.RTC_Day, NO_ALIGN, string);
-      DPRINTF(Comm, string);
-      DPRINTF(Comm, "d ");
-   }
-   
-   Print2Digits(Uptime.RTC_Hour, NO_ALIGN, string);
-   DPRINTF(Comm, string);
-   DPRINTF(Comm, "h ");
-   
-   Print2Digits(Uptime.RTC_Minute, NO_ALIGN, string);
-   DPRINTF(Comm, string);
-   DPRINTF(Comm, "m ");
-
-   Print2Digits(Uptime.RTC_Second, NO_ALIGN, string);
-   DPRINTF(Comm, string);
-   DPRINTF(Comm, "s\n\r");
+   SNPRINTF(string,SIZEARRAY(string),"UPTIME: %d d %d h %d m %d s\n\r",
+		   UpDate.RTC_Day,Uptime.RTC_Hour,Uptime.RTC_Minute,Uptime.RTC_Second);   
+   DPRINTF(Comm,string);
 }
-
-
 
 
 void Transmite_RAM_Ocupada(INT8U Comm)
 {
     INT16U SPAddress = 0;
-    CHAR8  string[7];
-    INT8U  i = 0;
-   
-    DPRINTF(Comm, "MEMORY: ");
+    CHAR8  string[32]; 
     
     UserEnterCritical();
-    SPAddress = iStackAddress * sizeof(OS_CPU_TYPE);
-    UserExitCritical();
+    	SPAddress = iStackAddress * sizeof(OS_CPU_TYPE);
+    UserExitCritical();    
     
-    PrintDecimal(SPAddress, string);
-    i = 0;
-    while(string[i] == ' ')
-    {
-    	i++;
-    	if (i > 6)
-		{
-    		i = 6;
-    		break;	
-		}
-    };
-    DPRINTF(Comm, &string[i]);
-
-    DPRINTF(Comm, " of ");
-       
-    PrintDecimal(HEAP_SIZE, string);
-    i = 0;
-    while(string[i] == ' ')
-    {
-    	i++;
-    	if (i > 6)
-		{
-    		i = 6;
-    		break;	
-		}
-    };     
-    DPRINTF(Comm, &string[i]);
-    
-    DPRINTF(Comm, "\n\r");
+    SNPRINTF(string,SIZEARRAY(string),"MEMORY: %d of %d\n\r",SPAddress,HEAP_SIZE);
+    DPRINTF(Comm, string);
 }
 
 
@@ -215,7 +168,7 @@ void Transmite_CPU_Load(INT8U Comm)
     INT8U cent,dez;    
    
     UserEnterCritical();
-    percent = LastOSDuty;
+    	percent = LastOSDuty;
     UserExitCritical();   
    
     DPRINTF(Comm, "CPU LOAD: ");
@@ -249,30 +202,32 @@ void Reason_of_Reset(INT8U Comm)
   
 #if COLDUINO
   reason = SRS;
+  DPRINTF(Comm, "Reset caused by ");
   switch(reason)
   {
+  
     case 0b00000000:
-      DPRINTF(Comm, "Reset caused by BDM");
+      DPRINTF(Comm, "BDM");
       break;
       
     case 0b00000010:
-      DPRINTF(Comm, "Reset caused by low voltage");
+      DPRINTF(Comm, "low voltage");
       break;      
       
     case 0b00001000:
-      DPRINTF(Comm, "Reset caused by illegal address");
+      DPRINTF(Comm, "illegal address");
       break;
       
     case 0b00010000:
-      DPRINTF(Comm, "Reset caused by illegal opcode");
+      DPRINTF(Comm, "illegal opcode");
       break;
       
     case 0b00100000:
-      DPRINTF(Comm, "Reset caused by watchdog");
+      DPRINTF(Comm, "watchdog");
       break;
       
     case 0b01000000:
-      DPRINTF(Comm, "Reset caused by reset pin");
+      DPRINTF(Comm, "reset pin");
       break;
       
     case 0b10000010:
@@ -281,7 +236,7 @@ void Reason_of_Reset(INT8U Comm)
       break;
       
     default:
-      DPRINTF(Comm, "Unknown reason - Code: ");
+      DPRINTF(Comm, "unknown reason - Code: ");
       Print3Digits(reason, NO_ALIGN, string);
       DPRINTF(Comm, string);
       break;
