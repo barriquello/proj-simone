@@ -26,6 +26,7 @@
 #include "drivers.h"
 #include "tasks.h"
 #include "modbus.h"
+#include "modbus_slave_null.h"
 
 
 #ifdef __cplusplus
@@ -60,6 +61,7 @@ void main_app(void)
 #if COLDUINO	
 	led_onboard_init();	 /* Init LED onboard */
 	Modbus_init(); 		 /* Init Modbus */
+	Modus_slave_null_init(); /* Init Modbus Slave Null */
 #endif	
 
 	/* Install task for keeping system clock, date and time */
@@ -74,20 +76,6 @@ void main_app(void)
 		sleep_forever();
 	};
 #endif	
-
-#if 0
-	if (InstallTask(&Tarefa_termometro, "Tarefa de Termometro", 256, 19, NULL) != OK)
-	{
-		while (1){};
-	};
-#endif
-	
-#if 0
-	if (InstallTask(&Tarefa_GPRS, "Tarefa do modem GPRS", 256, 28, NULL) != OK)
-	{
-		while (1){};
-	};
-#endif
 	
 #if TESTE_RS485
 	if (InstallTask(&Tarefa_RS485, "Tarefa de teste RS485", 256, 5, NULL) != OK)
@@ -96,13 +84,6 @@ void main_app(void)
 	};
 #endif
 
-#if 0
-	if (InstallTask(&Tarefa_datalogger, "Datalogger", (384 + 256), 20, NULL) != OK)
-	{
-		while (1){};
-	};
-#endif	
-	
 #if TESTE_MODBUS
 
 	if (InstallTask(&Task_modbus_slave, "MB slave", 256, 23, NULL) != OK)

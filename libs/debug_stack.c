@@ -1,3 +1,26 @@
+/* The License
+ * 
+ * Copyright (c) 2015 Universidade Federal de Santa Maria
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+
+*/
 #include "BRTOS.h"
 #include "debug_stack.h"
 #include "utils.h"
@@ -60,13 +83,13 @@ void Transmite_RAM_Ocupada(INT8U Comm)
     DPRINTF(Comm, string);
 }
 
-
+#include "stdlib.h" 
 void Transmite_Task_Stacks(INT8U Comm)
 {
     INT16U VirtualStack = 0;
     INT8U  j = 0;
     INT8U  k = 0;
-    CHAR8  string[5];
+    CHAR8  string[32];
     INT32U *x = 0;
     INT32U *i = 0; 
     INT32U *p = 0; 
@@ -75,11 +98,9 @@ void Transmite_Task_Stacks(INT8U Comm)
           
     for (j=1;j<=NumberOfInstalledTasks;j++)
     {  
-      DPUTCHAR(Comm, '[');
-      DPUTCHAR(Comm, j+'0');
-      DPRINTF(Comm, "] ");
-      DPRINTF(Comm, (char*)ContextTask[j].TaskName);
-      DPRINTF(Comm, ": ");
+      
+     SNPRINTF(string,SIZEARRAY(string),"[%d] %s:",j,(char*)ContextTask[j].TaskName);
+     DPRINTF(Comm, string);
       
       UserEnterCritical();
       i = (INT32U*)ContextTask[j].StackPoint;
@@ -92,106 +113,48 @@ void Transmite_Task_Stacks(INT8U Comm)
       }
       UserExitCritical();  
       
-      p = x;
+      p = x;      
+      while(*p++ == 0 && p<i){}         
       
-      while(*p == 0)
-      {
-    	p++;  
-    	if(p>=i) break;
-      }
-      
-      
-#include "stdlib.h"
-      
-      UserEnterCritical();
-      //VirtualStack = ContextTask[j].StackInit - (INT32U)i;
-      VirtualStack = ContextTask[j].StackInit - (INT32U) p;
-      UserExitCritical();
-      
-      Print4Digits(VirtualStack, NO_ALIGN, string);
+      SNPRINTF(string,SIZEARRAY(string),"%d of %d\r\n ",ContextTask[j].StackInit - (INT32U) p,ContextTask[j].StackInit - (INT32U) x);      
       DPRINTF(Comm, string);
-      
-      DPRINTF(Comm,  " of ");
-
-      VirtualStack = (ContextTask[j].StackInit - (INT32U) x);
-      
-      Print4Digits(VirtualStack, NO_ALIGN, string);
-      DPRINTF(Comm, string);
-      
-      DPRINTF(Comm, "\n\r");
-    }
+    } 
     
-    DPUTCHAR(Comm, '[');
-    DPUTCHAR(Comm, j+'0');
-    DPRINTF(Comm, "] ");
-    DPRINTF(Comm, "Idle Task: ");
-    
-    UserEnterCritical();
-    i = (INT32U*)ContextTask[NUMBER_OF_TASKS+1].StackPoint;
-    x = (INT32U*)ContextTask[j-1].StackInit;     
-    UserExitCritical();  
-    
-    p = x;
-         
-	 while(*p == 0)
-	 {
-		p++;  
-		if(p>=i) break;
-	 }
-
-    UserEnterCritical();
-    //VirtualStack = ContextTask[NUMBER_OF_TASKS+1].StackInit - ((INT32U)i + (INT32U)4);
-    VirtualStack = ContextTask[NUMBER_OF_TASKS+1].StackInit - (INT32U) p;
-    UserExitCritical();
-      
-    Print4Digits(VirtualStack, NO_ALIGN, string);
+    SNPRINTF(string,SIZEARRAY(string),"[%d] Idle Task: ",j);
     DPRINTF(Comm, string);
     
-    DPRINTF(Comm,  " of ");
+    UserEnterCritical();
+    	i = (INT32U*)ContextTask[NUMBER_OF_TASKS+1].StackPoint;
+    	x = (INT32U*)ContextTask[j-1].StackInit;     
+    UserExitCritical();  
+         
+    p = x;      
+    while(*p++ == 0 && p<i){} 
 
-    VirtualStack = (ContextTask[NUMBER_OF_TASKS+1].StackInit - (INT32U) x);
-    
-    Print4Digits(VirtualStack, NO_ALIGN, string);
-    DPRINTF(Comm, string);   
-    
-    DPRINTF(Comm, "\n\r");
+    j = NUMBER_OF_TASKS+1;
+    SNPRINTF(string,SIZEARRAY(string),"%d of %d\r\n ",ContextTask[j].StackInit - (INT32U) p,ContextTask[j].StackInit - (INT32U) x);      
+    DPRINTF(Comm, string);
 }
-
-
 
 
 #if (COMPUTES_CPU_LOAD == 1)
 void Transmite_CPU_Load(INT8U Comm)
 {
     INT32U percent = 0;
-    INT8U caracter = 0;
-    INT8U cent,dez;    
+    CHAR8  string[20]; 
    
     UserEnterCritical();
     	percent = LastOSDuty;
-    UserExitCritical();   
-   
-    DPRINTF(Comm, "CPU LOAD: ");
+    UserExitCritical(); 
     
-    if (percent >= 1000)
+    if (percent > 1000)
     {
-      DPRINTF(Comm, "100 %");    
-    }
-    else
-    {
-        cent = (percent/100);
-        caracter = cent + 48;
-        if(caracter != 48)
-          DPUTCHAR(Comm, caracter);
-        dez = ((percent - cent*100)/10);
-        caracter = dez + 48;
-        DPUTCHAR(Comm, caracter);
-        DPUTCHAR(Comm, '.');
-        caracter = (percent%10) + 48;
-        DPUTCHAR(Comm, caracter);
-        DPUTCHAR(Comm, '%');
-    }
-    DPRINTF(Comm, "\n\r");
+    	percent = 1000; 
+    }    
+    
+    SNPRINTF(string,SIZEARRAY(string),"CPU LOAD: %d.%d\n\r",percent/10,percent%10);
+    DPRINTF(Comm, string);
+
 }
 #endif
 
@@ -232,7 +195,7 @@ void Reason_of_Reset(INT8U Comm)
       
     case 0b10000010:
     case 0b10000000:
-      DPRINTF(Comm, "Power-on Reset (Cold reset)");
+      DPRINTF(Comm, "POR (Cold reset)");
       break;
       
     default:

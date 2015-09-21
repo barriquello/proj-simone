@@ -1,3 +1,26 @@
+/* The License
+ * 
+ * Copyright (c) 2015 Universidade Federal de Santa Maria
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+
+*/
 /*
  ============================================================================
  \file   monitor_main.c
@@ -182,7 +205,7 @@ void BRTOS_TimerHook(void)
 static clock_t timer_expired(mon_timer_t *t)
 { return (clock_t)(clock_time() - t->start) >= (clock_t)t->interval; }
 
-static void timer_set(mon_timer_t *t, int interval)
+static void timer_set(mon_timer_t *t, uint32_t interval)
 { t->interval = interval; t->start = clock_time(); }
 
 static uint16_t timer_elapsed(mon_timer_t *t)
@@ -259,22 +282,32 @@ static
 PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 {
 
-  PT_BEGIN(pt);
   uint32_t time_elapsed = 0;
-  timer_set(&monitor_state[_monitor].write_timer, monitor_state[_monitor].config_h.time_interv*1000);
+  uint32_t period = (uint32_t)monitor_state[_monitor].config_h.time_interv*1000;
+  mon_timer_t* timer = &monitor_state[_monitor].write_timer;
+	  
+  PT_BEGIN(pt);
+  
+  time_elapsed = (uint32_t)(clock_time()%period);  
+  timer_set(timer, (uint32_t)(period - time_elapsed));
+  
   while(1)
   {		
-		PT_WAIT_UNTIL(pt, monitor_running && timer_expired(&monitor_state[_monitor].write_timer));
-		time_elapsed = (uint16_t)timer_elapsed(&monitor_state[_monitor].write_timer);		
+		PT_WAIT_UNTIL(pt, monitor_running && timer_expired(timer));
+		
+		time_elapsed = (uint16_t)timer_elapsed(timer);	
+		
 		// wait only the remaining time
-		if(time_elapsed < monitor_state[_monitor].config_h.time_interv*1000)
+		if(time_elapsed < period)
 		{
-			timer_set(&monitor_state[_monitor].write_timer, (uint16_t)(monitor_state[_monitor].config_h.time_interv*1000 - time_elapsed));
+			timer_set(timer, (uint32_t)(period - time_elapsed));
 		}else
 		{
-			timer_set(&monitor_state[_monitor].write_timer, monitor_state[_monitor].config_h.time_interv*1000/10);
+			timer_set(timer, (uint32_t)period/10);
 		}
+		PRINTF("Mon %d writer start @%d\r\n", _monitor, clock_time());
 		monitor_writer(_monitor);
+		PRINTF("Mon %d writer end @%d\r\n", _monitor, clock_time());
   }
   PT_END(pt);
 }
@@ -284,22 +317,29 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 {
 
 #define TIMER_READER_MS  1000	
+	
+  mon_timer_t* timer = &monitor_state[_monitor].read_timer;
+  
   PT_BEGIN(pt);
+  
   uint16_t time_elapsed = 0;
-  timer_set(&monitor_state[_monitor].read_timer, TIMER_READER_MS);
+  
+  timer_set(timer, TIMER_READER_MS);
   while(1)
   {		
-		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(&monitor_state[_monitor].read_timer));		
-		time_elapsed = (uint16_t)timer_elapsed(&monitor_state[_monitor].read_timer);
+		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));		
+		time_elapsed = (uint16_t)timer_elapsed(timer);
 		if(time_elapsed < TIMER_READER_MS)
 		{
 			// wait only the remaining time
-			timer_set(&monitor_state[_monitor].read_timer, (uint16_t)(TIMER_READER_MS - time_elapsed));
+			timer_set(timer, (uint16_t)(TIMER_READER_MS - time_elapsed));
 		}else
 		{
-			timer_set(&monitor_state[_monitor].read_timer, TIMER_READER_MS/10);
+			timer_set(timer, TIMER_READER_MS/10);
 		}
+		PRINTF("Mon %d reader start @%d\r\n", _monitor, clock_time());
 		monitor_reader(_monitor);
+		PRINTF("Mon %d reader end @%d\r\n", _monitor, clock_time());
   }
   PT_END(pt);
 }
@@ -650,7 +690,7 @@ void main_monitor(void)
 #endif		
 		
 		#ifndef _WIN32
-			DelayTask(1000); // executa a cada 1s
+			DelayTask(100); // executa a cada 100ms
 		#endif
 		
 	}

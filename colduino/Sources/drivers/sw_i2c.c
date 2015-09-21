@@ -1,46 +1,36 @@
-/*************************************/
-/* Antonio  Alvarez                  */
-/* March-2004                        */
-/* i2c.c                             */
-/* I2c bus acces from MSP430f149 in  */
-/* the Olmex EasyWeb" Board          */
-/* Functions defined in this file:   */
-/*    i2cInit ()                     */
-/*    i2cStart()                     */
-/*    i2cStop ()                     */
-/*    i2cRead ()                     */
-/*    i2cWrite()                     */
-/* Functions internal to this file   */
-/*    SetLowSDA ()                   */
-/*    SetLowSCL ()                   */
-/*    SetHighSDA()                   */
-/*    SetHighSCL()                   */
-/*************************************/
+/* The License
+ * 
+ * Copyright (c) 2015 Universidade Federal de Santa Maria
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+
+*/
 
 #include "derivative.h"
 #include "sw_i2c.h"
 
-#define SDA         PTFD_PTFD4_MASK  // Bit uno  Datos:  Serial Data Line      ; usar ptf4
-#define SCL         PTFD_PTFD3_MASK  // Bit dos  Reloj: Serial Clock Line     	; usar ptf3
+#define SDA         PTFD_PTFD4_MASK  // SDA
+#define SCL         PTFD_PTFD3_MASK  // SCL
 #define PORTAI2C    PTFD
 #define PORTAI2CDIR PTFDD
-//#define PORTAI2CSEL 
 #define PORTAI2CIN  PTFD
 
-/******************************************************************************/
-/*                                                                            */
-/* Acceso al Puerto                                                           */
-/*     PxSEL   Indica el modo del puerto                                      */
-/*           0  como I/O                                                      */
-/*           1  como la otra funcionalidad                                    */
-/*     PxDIR   Indica la direccion                                            */
-/*           0  como Entrada                                                  */
-/*           1  como salida                                                   */
-/*     PxOUT   Indica el valor de salida                                      */
-/*           0  salida baja                                                   */
-/*           1  salida alta                                                   */
-/*     PxIN    Indica el valor de entrada                                     */
-/******************************************************************************/
 
 /*************************/
 static void delay_i2c(unsigned int time_end)
@@ -61,12 +51,12 @@ static void delay_i2c(unsigned int time_end)
 static void SetLowSDA()
 {
 	PORTAI2C &= ~SDA;		
-	PORTAI2CDIR |= SDA;           // SDA Salida
+	PORTAI2CDIR |= SDA;           // SDA out
 	DELAY_I2C();
 }
 static void SetHighSDA()
 {
-	PORTAI2CDIR &= ~SDA;         //SDA Entrada
+	PORTAI2CDIR &= ~SDA;         //SDA in
 	DELAY_I2C();
 }
 
@@ -80,30 +70,24 @@ static void SetHighSCL()
 	PORTAI2C |= SCL;
 	DELAY_I2C();
 }
-/*************************/
-/* Inicializar las lineas*/
-/* y el bus              */
-/*************************/
 
 void sw_i2c_init(void)
 {
 
 #ifdef   PORTAI2CSEL 
 	PORTAI2CSEL &= ~SDA;
-	PORTAI2CSEL &= ~SCL; // Funcion I/O para SDA Y SCL
+	PORTAI2CSEL &= ~SCL; 
 #endif
 
-	PORTAI2C &= ~SCL;   // Salida a cero
-	PORTAI2C &= ~SDA;   // SDA  Open Colector
+	PORTAI2C &= ~SCL;   
+	PORTAI2C &= ~SDA;   
 
-	PORTAI2CDIR |= SCL;    // SCL COMO SALIDA
-	PORTAI2CDIR &= ~SDA;    // SDA COMO ENTRADA
+	PORTAI2CDIR |= SCL;    // SCL output
+	PORTAI2CDIR &= ~SDA;    // SDA input
 
 	SetHighSCL();
-	SetLowSDA(); // visto en el analizador logico como un pulso de
-	SetHighSDA(); // 5 a 3.56 microsegundos aprox .
-
-	// Ambas lineas quedan en alto
+	SetLowSDA(); 
+	SetHighSDA(); 
 }
 
 /*************************/
@@ -125,12 +109,6 @@ void sw_i2c_start(void)
 
 	SetLowSCL();
 	SetHighSDA();
-
-	/* Visto en el analizador lógico como:
-	 *  SCL ------------------_________________ 
-	 *  SDA -----____________________---------
-	 *          0           2.7      5.5    microsegundos
-	 */
 }
 /*************************/
 /* Stop  Transfer        */
@@ -164,7 +142,7 @@ unsigned char sw_i2c_write(char i2c_data)
 	{
 		SetLowSCL(); // so pode mudar linha SDA com clk em nivel baixo
 
-		if (i2c_data & 0x80)          // Primero el bit mas significativo
+		if (i2c_data & 0x80)
 			SetHighSDA();
 		else
 			SetLowSDA();
@@ -181,7 +159,7 @@ unsigned char sw_i2c_write(char i2c_data)
 	
 	if (PORTAI2CIN & SDA)
 	{
-			retorno = NO_I2C_ACK;      // el slave no ha bajado la linea
+			retorno = NO_I2C_ACK;
 	}else
 	{
 			retorno = OK_I2C_ACK;

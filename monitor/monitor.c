@@ -1,3 +1,26 @@
+/* The License
+ * 
+ * Copyright (c) 2015 Universidade Federal de Santa Maria
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+
+*/
 /*
  * monitor.c
  *
@@ -622,9 +645,9 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 						   monitor_state[monitor_num].time_to_send,
 						   monitor_state[monitor_num].avg_time_to_send);
 				   
-					char timestamp[20];
+					char timestamp[32];
 					ts = *localtime(&(time_t){unix_time});
-					strftime(timestamp,20," @T%Y%m%d%H%M%SS\r\n",&ts);
+					strftime(timestamp,SIZEARRAY(timestamp)," @%Y|%m|%d %H:%M:%S\r\n",&ts);
 					PRINTF(timestamp);
 				   
 				   monitor_state[monitor_num].time_to_send = 0;
@@ -858,7 +881,7 @@ void monitor_writer(uint8_t monitor_num)
 		PRINTF("\r\nMissed entries %d\r\n", missing_entries);
 	}else
 	{
-		PRINTF("Mon %d, Entry %d: ", monitor_num, cnt);
+		PRINTF("\r\nMon %d, Entry %d: ", monitor_num, cnt);
 		PRINTF("%s\r\n", monitor_char_buffer);
 	}
 

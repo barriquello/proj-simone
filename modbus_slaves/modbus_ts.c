@@ -1,3 +1,27 @@
+
+/* The License
+ * 
+ * Copyright (c) 2015 Universidade Federal de Santa Maria
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+
+*/
 /* 
  * 
  * Brief: MODBUS Slave Treetech TS
@@ -116,6 +140,7 @@ Command Description
 #include "modbus_ts.h" /* TS device */
 #include "string.h"
 #include "time_lib.h"
+#include "utils.h"
 
 /* ----------------------- CONSTants ------------------------------------------*/
 
@@ -126,36 +151,47 @@ CONST uint16_t SIZEOF_TS_ID_STRING = sizeof(TS_ID_string);
 static modbus_ts_input_register_list  	  TS_IRList;
 static modbus_ts_holding_register_list    TS_HRList;
 
+#define MODBUS_SLAVE_TS_SIMULATION 	1
+#if MODBUS_SLAVE_TS_SIMULATION
+#include "random_lib.h"
+#endif
+
 uint8_t ts_read_data(uint8_t* buf, uint8_t max_len);
 
 uint8_t ts_read_data(uint8_t* buf, uint8_t max_len)
 {
-#if 0
-			OSTime timestamp;
 	
-			#if TS_PRESENTE==0
-				ModbusSetSlave(MODBUS_TS);	/* Leitura dos dados de teste */
-			#endif
+		uint8_t nregs = 0;	
+	
+		memset(TS_IRList.Regs16,0x00,SIZEARRAY(TS_IRList.Regs16));
+
+		for(nregs = 0; nregs < TS_REG_INPUT_NREGS;nregs++)
+		{
 			
-			/* Detecta equipamentos de medição e faz a leitura dos dados */					
-			/* TS input registers */	
-			Modbus_GetData(TS_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, &TS_IRList.Regs[TS_REG_OFFSET], 
-					TS_REG_INPUT_START, TS_REG_INPUT_NREGS); 
-			/* Get and set timestamp of reading */
-			GetCalendarTime(&timestamp);
-			SetTimeStamp(MODBUS_TS, TS_IRList.Regs, &timestamp);
-#endif
-			
-			
-			if(sizeof(TS_IRList.Regs) < max_len)
-			{
-				memcpy(buf,TS_IRList.Regs,sizeof(TS_IRList.Regs));
-				return (sizeof(TS_IRList.Regs));
-			}
-			else
-			{
-				return 0;
-			}
+	#if MODBUS_SLAVE_TS_SIMULATION			
+			/* return random data */
+			TS_IRList.Regs[nregs + TS_REG_OFFSET] = random_get();
+	#else				
+			Modbus_GetData(TS_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (uint8_t*)&TS_IRList.Regs[nregs + TS_REG_OFFSET],
+					T500_modbus_map_regs[nregs], 2);
+	#endif					
+		}
+
+
+		OSTime timestamp;	
+		/* Get and set timestamp of reading */
+		GetCalendarTime(&timestamp);
+		SetTimeStamp(MODBUS_TS, TS_IRList.Regs, &timestamp);
+		
+		if(sizeof(TS_IRList.Regs) < max_len)
+		{
+			memcpy(buf,TS_IRList.Regs,sizeof(TS_IRList.Regs));
+			return (sizeof(TS_IRList.Regs));
+		}
+		else
+		{
+			return 0;
+		}
 			
 }
 

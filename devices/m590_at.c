@@ -1,3 +1,26 @@
+/* The License
+ * 
+ * Copyright (c) 2015 Universidade Federal de Santa Maria
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+
+*/
 /*
  * m590_at.c
  *
@@ -211,31 +234,29 @@ INT8U CreateTCPLink(char *linkStr)
 *****************************************************************************************/
 uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 {
-	int timeout=0;
+	uint16_t timeout=0;
+	uint16_t retries=0;
+	
 	uint8_t  c;
 	uint16_t  length, len;	
 	uint8_t *send;
 
-	length = (uint16_t) tam;
+	length = (uint16_t) tam;		
+	m590_print(m590_init_cmd[IPSTAT]);
+	wait_m590_get_reply(100); // wait 100ms;
+	PRINT_BUF(gReceiveBuffer);
 	
-    while(1)
+	if( strstr((char *)gReceiveBuffer,"+IPSTATUS:0,CONNECT,TCP") )
 	{
+		len = length;
+		send = dados;			
+		SNPRINTF(gReceiveBuffer,sizeof(gReceiveBuffer)-1, "at+tcpsend=0,%d\r",len);
+		m590_print(gReceiveBuffer);			
+		DelayTask(10); /* espera 10 ms */	
 		
-		m590_print(m590_init_cmd[IPSTAT]);
-		wait_m590_get_reply(100); // wait 100ms;
-		PRINT_BUF(gReceiveBuffer);
+		retries = 3;
 		
-		if( strstr((char *)gReceiveBuffer,"+IPSTATUS:0,CONNECT,TCP") )
-		{
-			len = length;
-			send = dados;			
-			SNPRINTF(gReceiveBuffer,sizeof(gReceiveBuffer)-1, "at+tcpsend=0,%d\r",len);
-			m590_print(gReceiveBuffer);			
-			DelayTask(10); /* espera 10 ms */
-			
-			timeout = 0;
-			
-			retry:
+		do{						
 			while((c=m590_getchar()) != (CHAR8)-1)
 			{			
 				putcharSer(USE_USB,c);
@@ -261,8 +282,7 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 					{
 						PRINT("\r\nsend ok\r\n");
 						
-						m590_print(m590_init_cmd[IPSTAT]);
-				
+						m590_print(m590_init_cmd[IPSTAT]);				
 						timeout = 0;
 						do
 						{							
@@ -270,18 +290,12 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 							PRINT_BUF(gReceiveBuffer);							
 							if( strstr((char *)gReceiveBuffer,"+TCPRECV:0"))
 							{
-#if 0
-								do{
-									len = m590_get_reply();
-									PRINT_BUF(gReceiveBuffer);	
-								}while(len > 0);	
-#endif								
 								return TRUE;
 							}
 							DelayTask(100);
 						}while(++timeout < 20); /* espera ate 2 segundos */
 						
-						return TRUE;
+						return FALSE;
 						
 					}
 					else if( strstr((char *)gReceiveBuffer,"+TCPSEND:Error"))
@@ -300,17 +314,12 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 					}
 				}
 			}
-			/* tempo do espera do modem para enviar dados (>) */
-			if(++timeout > 50)
-			{
-				goto retry;
-			}
-		}
-		
-		out:
-			PRINT("tcp conn failed\r\n");
-			return FALSE;
+		}while(retries-- > 0);
 	}
+	
+	out:
+		PRINT("tcp conn failed\r\n");
+		return FALSE;
 }
 
 /****************************************************************************************
@@ -725,7 +734,13 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 		m590_acquire();					
 		result_ok = TCPIP_SendData(dados, tam);				
 		m590_release();			
-		if(result_ok == TRUE) return MODEM_OK;
+		if(result_ok == TRUE) 
+		{
+			return MODEM_OK;
+		}else
+		{
+			m590_state = M590_CLOSE;
+		}
 	}
 	
 	if(!is_m590_ok_retry(5))
