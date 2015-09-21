@@ -142,12 +142,14 @@ monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 monitor_config_ok_t config_check;
 
 
-#ifdef _WIN32
-#define DEBUG_MONITOR 1
-#endif
+#define DEBUG_MONITOR 0
 
 #if DEBUG_MONITOR
-#define PRINTF(...) printf(__VA_ARGS__);
+#ifdef _WIN32
+#define PRINTF(...) printf_(__VA_ARGS__);
+#else
+#define PRINTF(...) printf_lib(__VA_ARGS__);
+#endif
 #else
 #define PRINTF(...)
 #endif

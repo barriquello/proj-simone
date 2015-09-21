@@ -99,7 +99,7 @@ void Transmite_Task_Stacks(INT8U Comm)
     for (j=1;j<=NumberOfInstalledTasks;j++)
     {  
       
-     SNPRINTF(string,SIZEARRAY(string),"[%d] %s:",j,(char*)ContextTask[j].TaskName);
+     SNPRINTF(string,SIZEARRAY(string),"[%d] %s: ",j,(char*)ContextTask[j].TaskName);
      DPRINTF(Comm, string);
       
       UserEnterCritical();
@@ -132,7 +132,7 @@ void Transmite_Task_Stacks(INT8U Comm)
     while(*p++ == 0 && p<i){} 
 
     j = NUMBER_OF_TASKS+1;
-    SNPRINTF(string,SIZEARRAY(string),"%d of %d\r\n ",ContextTask[j].StackInit - (INT32U) p,ContextTask[j].StackInit - (INT32U) x);      
+    SNPRINTF(string,SIZEARRAY(string),"%d of %d\r\n",ContextTask[j].StackInit - (INT32U) p,ContextTask[j].StackInit - (INT32U) x);      
     DPRINTF(Comm, string);
 }
 
@@ -152,7 +152,7 @@ void Transmite_CPU_Load(INT8U Comm)
     	percent = 1000; 
     }    
     
-    SNPRINTF(string,SIZEARRAY(string),"CPU LOAD: %d.%d\n\r",percent/10,percent%10);
+    SNPRINTF(string,SIZEARRAY(string),"CPU LOAD: %d.%d%%\n\r",percent/10,percent%10);
     DPRINTF(Comm, string);
 
 }
