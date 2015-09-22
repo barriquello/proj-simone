@@ -146,7 +146,7 @@ monitor_config_ok_t config_check;
 
 #if DEBUG_MONITOR
 #ifdef _WIN32
-#define PRINTF(...) printf_(__VA_ARGS__);
+#define PRINTF(...) printf(__VA_ARGS__);
 #else
 #define PRINTF(...) printf_lib(__VA_ARGS__);
 #endif
@@ -307,9 +307,9 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 		{
 			timer_set(timer, (uint32_t)period/10);
 		}
-		PRINTF("Mon %d writer start @%d\r\n", _monitor, clock_time());
+		PRINTF("M %d W start @%d\r\n", _monitor, clock_time());
 		monitor_writer(_monitor);
-		PRINTF("Mon %d writer end @%d\r\n", _monitor, clock_time());
+		PRINTF("M %d W end @%d\r\n", _monitor, clock_time());
   }
   PT_END(pt);
 }
@@ -339,9 +339,9 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 		{
 			timer_set(timer, TIMER_READER_MS/10);
 		}
-		PRINTF("Mon %d reader start @%d\r\n", _monitor, clock_time());
+		PRINTF("M %d R start @%d\r\n", _monitor, clock_time());
 		monitor_reader(_monitor);
-		PRINTF("Mon %d reader end @%d\r\n", _monitor, clock_time());
+		PRINTF("M %d R end @%d\r\n", _monitor, clock_time());
   }
   PT_END(pt);
 }
@@ -415,7 +415,7 @@ static int callback_inifile(const char *section, const char *key, const char *va
 			if(num_monitores > MAX_NUM_OF_MONITORES)
 			{
 				print_erro(monitor_error_msg[0]);
-				PRINTF("num_monitores superior ao suportado\n\r.");
+				print_erro("num_monitores superior ao suportado\n\r.");
 			}else
 			{
 				config_check.bit.num_mon_ok=1;
@@ -562,14 +562,14 @@ void main_monitor(void)
 	extern const modem_driver_t win_http;
 	if(simon_init(&win_http) != MODEM_OK)
 	{
-		printf ("Simon init error\r\n");
+		print_erro ("Simon init error\r\n");
 	}
 #else
 	/* modem gprs driver */
 	extern const modem_driver_t m590_driver;
 	if(simon_init(&m590_driver) != MODEM_OK)
 	{
-		dprintf ("Simon init error\r\n");
+		print_erro ("Simon init error\r\n");
 	}
 #endif
 

@@ -32,7 +32,7 @@
 
 static uint8_t ModbusMaster_state;
 
-#define MB_RS485 1
+#define MB_RS485 0
 
 #if MB_RS485
 #include "rs485.h"
@@ -40,13 +40,11 @@ static uint8_t ModbusMaster_state;
 #define MODBUSMASTER_PUTCHAR(x) rs485_putchar(x)
 #define RS485_TIMEOUT_RX		10
 #else
-#include "mb.h"
-#include "mbport.h"
 // Declares a queue structure for the Modbus Master Input
 OS_QUEUE ModbusMaster_InBuffer;
 BRTOS_Queue *qModbusMaster_In;
-extern OS_QUEUE ModbusSlave_InBuffer;
-#define MODBUSMASTER_PUTCHAR(x) OSWQueue(&ModbusSlave_InBuffer,(x)); pxMBFrameCBByteReceived();
+#define MODBUSMASTER_PUTCHAR(x)
+#define RS485_TIMEOUT_RX		10
 #endif
 
 static uint8_t ModbusMasterRxData(uint8_t * _pData, uint16_t timeout) 
@@ -75,7 +73,9 @@ static void ModbusMasterTxData(const uint8_t * const _pData, const uint32_t _dat
 
 static void ModbusMasterRxFlush(void)
 {
-	rs485_rx_flush();
+	#if MB_RS485		
+		rs485_rx_flush();
+	#endif	
 }
 
 #define QUERY_BUFSIZE 	(8)
@@ -254,10 +254,5 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 		ModbusMaster_close();
 		return MODBUS_OK;
 	
-}
-
-void Modbus_SlaveSelect(eMBSlaves slave_option)
-{
-	ModbusSetSlave(slave_option);
 }
 

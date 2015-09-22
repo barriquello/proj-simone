@@ -529,9 +529,17 @@ __declspec(weak)   vectorTableEntryType vector_80 @Vtpm2ch0 = asm_exception_hand
 __declspec(weak)   vectorTableEntryType vector_81 @Vtpm2ch1 = asm_exception_handler;
 __declspec(weak)   vectorTableEntryType vector_82 @Vtpm2ch2 = asm_exception_handler;
 __declspec(weak)   vectorTableEntryType vector_83 @Vtpm2ch3 = asm_exception_handler;
+#if TIMER2_ENABLED
 __declspec(weak)   vectorTableEntryType vector_84 @Vtpm2ovf = Timer2Overflow;
+#else
+__declspec(weak)   vectorTableEntryType vector_84 @Vtpm2ovf = asm_exception_handler;
+#endif
 __declspec(weak)   vectorTableEntryType vector_85 @Viic = asm_exception_handler;
+#if COMPARATOR_ENABLED
 __declspec(weak)   vectorTableEntryType vector_86 @Vpracmp = Analog_comparator;
+#else
+__declspec(weak)   vectorTableEntryType vector_86 @Vpracmp = asm_exception_handler;
+#endif
 #if (ENABLE_UART1 == TRUE)
 __declspec(weak)   vectorTableEntryType vector_87 @Vsci1err = uart1_error;
 __declspec(weak)   vectorTableEntryType vector_88 @Vsci1rx = uart1_rx;

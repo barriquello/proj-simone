@@ -170,7 +170,7 @@ uint8_t ts_read_data(uint8_t* buf, uint8_t max_len)
 			
 	#if MODBUS_SLAVE_TS_SIMULATION			
 			/* return random data */
-			TS_IRList.Regs[nregs + TS_REG_OFFSET] = random_get();
+			TS_IRList.Regs16[nregs + TS_REG_OFFSET] = random_get();
 	#else				
 			Modbus_GetData(TS_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (uint8_t*)&TS_IRList.Regs[nregs + TS_REG_OFFSET],
 					T500_modbus_map_regs[nregs], 2);
@@ -181,12 +181,12 @@ uint8_t ts_read_data(uint8_t* buf, uint8_t max_len)
 		OSTime timestamp;	
 		/* Get and set timestamp of reading */
 		GetCalendarTime(&timestamp);
-		SetTimeStamp(MODBUS_TS, TS_IRList.Regs, &timestamp);
+		SetTimeStamp(MODBUS_TS, TS_IRList.Regs8, &timestamp);
 		
-		if(sizeof(TS_IRList.Regs) < max_len)
+		if(sizeof(TS_IRList.Regs8) < max_len)
 		{
-			memcpy(buf,TS_IRList.Regs,sizeof(TS_IRList.Regs));
-			return (sizeof(TS_IRList.Regs));
+			memcpy(buf,TS_IRList.Regs8,sizeof(TS_IRList.Regs8));
+			return (sizeof(TS_IRList.Regs8));
 		}
 		else
 		{

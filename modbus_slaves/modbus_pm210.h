@@ -88,8 +88,9 @@ typedef union
 		uint16_t Voltage_Phase_C_N; /* Volt, scale = reg 4106 */
 	} Reg;
 	
-	uint16_t Regs[36+2];
 	uint8_t  Regs8[36*2+2];
+	uint16_t Regs16[36+2];
+	uint32_t Regs32[36/2+2/2];
 	
 }modbus_pm210_input_register_list1;
 
@@ -123,9 +124,10 @@ typedef union
 		uint16_t Reset; /* Write 30078 to clear all Energy Accumulators. Write 21212 to reset Peak Demand values to Present Demand Values. Read always returns 0. */
 		uint16_t System_Type; /* 10, 11, 12, 30, 31, 32, 40, 42, 44 */
 		uint16_t Units; /* 0 = IEC, 1 = IEEE units */
-	}Reg;	
-	uint16_t Regs[24+2];
+	}Reg;		
 	uint8_t  Regs8[24*2+2];
+	uint16_t Regs16[24+2];
+	uint32_t Regs32[24/2+2/2];
 }modbus_pm210_input_register_list2;
 
 typedef union 
@@ -141,7 +143,9 @@ typedef union
 		uint8_t Baud_rate;	 /* 2400,4800,9600,19200 */
 		uint8_t Unused;	 /* */
 	} Reg;
-	uint8_t Regs[8];
+	uint8_t Regs8[8];
+	uint16_t Regs16[8/2];
+	uint32_t Regs32[8/4];
 }modbus_pm210_holding_register_list;
 
 

@@ -166,17 +166,11 @@ uint8_t pm210_read_data(uint8_t* buf, uint8_t max_len);
 
 uint8_t pm210_read_data(uint8_t* buf, uint8_t max_len)
 {
-
-#if 0
-			OSTime timestamp;
-#else
-			uint8_t nregs = 0;
-#endif
+		  uint8_t nregs = 0;
 			
-#if 0
-			#if PM200_PRESENTE==0
-				ModbusSetSlave(MODBUS_PM210);	/* Leitura dos dados de teste */
-			#endif
+#if PM200_PRESENTE
+			
+			OSTime timestamp;
 			
 			/* Detecta equipamentos de medição e faz a leitura dos dados */					
 			/* PM210 input registers */		
@@ -197,13 +191,13 @@ uint8_t pm210_read_data(uint8_t* buf, uint8_t max_len)
 			/* return random data */
 			for(nregs = PM210_REG_OFFSET; nregs < (PM210_REGLIST1_INPUT_NREGS+PM210_REG_OFFSET);nregs++)
 			{
-				PM210_IRList1.Regs[nregs] = random_get();
+				PM210_IRList1.Regs16[nregs] = random_get();
 			}
 
 			/* return random data */
 			for(nregs = PM210_REG_OFFSET; nregs < (PM210_REGLIST2_INPUT_NREGS+PM210_REG_OFFSET);nregs++)
 			{
-				PM210_IRList2.Regs[nregs] = random_get();
+				PM210_IRList2.Regs16[nregs] = random_get();
 			}
 
 #endif
@@ -227,11 +221,11 @@ uint8_t pm210_read_data(uint8_t* buf, uint8_t max_len)
 				max_len = (sizeof(modbus_pm210_input_register_list1) + sizeof(modbus_pm210_input_register_list2));
 			}
 
-			memcpy(buf,PM210_IRList1.Regs,max_len);
+			memcpy(buf,PM210_IRList1.Regs8,max_len);
 
 			if(max_len - sizeof(modbus_pm210_input_register_list1) > 0)
 			{
-				memcpy(buf + sizeof(PM210_IRList1.Regs),PM210_IRList2.Regs, max_len - sizeof(modbus_pm210_input_register_list1));
+				memcpy(buf + sizeof(PM210_IRList1.Regs8),PM210_IRList2.Regs8, max_len - sizeof(modbus_pm210_input_register_list1));
 			}
 			return (max_len);
 			

@@ -34,7 +34,7 @@
 #include "stdint.h"
 
 #define TS_REG_INPUT_START  1000
-#define TS_REG_INPUT_NREGS  16
+#define TS_REG_INPUT_NREGS  8
 
 #define TS_REG_HOLDING_START  0000
 #define TS_REG_HOLDING_NREGS  48
@@ -160,8 +160,9 @@ typedef union
 		Opcionais_t Opcionais;				/* bitmap */
 		Alarmes_t Reles;					/* bitmap */
 	}Reg;	
-	uint8_t Regs[16+4];
-	uint16_t Regs16[9+1];
+	uint8_t Regs8[16+4];
+	uint16_t Regs16[8+2];
+	uint32_t Regs32[4+1];
 }modbus_ts_input_register_list;
 
 
@@ -216,7 +217,9 @@ typedef union
 		uint8_t Modo_RF1;
 		uint8_t Modo_RF2;
 	}Reg;
-	uint8_t Regs[46];
+	uint8_t Regs8[46];
+	uint16_t Regs16[46/2];
+	uint32_t Regs32[46/4];
 }modbus_ts_holding_register_list;
 
 #if COLDUINO  

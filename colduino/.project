@@ -49,11 +49,6 @@
 			<locationURI>PARENT-1-PROJECT_LOC/devices</locationURI>
 		</link>
 		<link>
-			<name>freemodbus</name>
-			<type>2</type>
-			<locationURI>PARENT-1-PROJECT_LOC/freemodbus</locationURI>
-		</link>
-		<link>
 			<name>libs</name>
 			<type>2</type>
 			<locationURI>PARENT-1-PROJECT_LOC/libs</locationURI>

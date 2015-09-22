@@ -116,7 +116,7 @@ uint8_t t500_read_data(uint8_t* buf, uint8_t max_len)
 			
 			/* Get and set timestamp of reading */			
 			GetCalendarTime(&timestamp);	
-			SetTimeStamp(T500_SLAVE_ADDRESS, (uint8_t*)T500_IRList1.Regs, &timestamp);		
+			SetTimeStamp(T500_SLAVE_ADDRESS, (uint8_t*)T500_IRList1.Regs16, &timestamp);		
 
 			/* limit number of registers to the max. available */
 			if(max_len > sizeof(modbus_t500_input_register_list1)) 
@@ -124,7 +124,7 @@ uint8_t t500_read_data(uint8_t* buf, uint8_t max_len)
 				max_len = sizeof(modbus_t500_input_register_list1);
 			}
 			
-			memcpy(buf,T500_IRList1.Regs,max_len);						
+			memcpy(buf,T500_IRList1.Regs16,max_len);						
 			return (max_len);
 			
 }

@@ -48,6 +48,7 @@
 #endif
 
 #define USB_DEVICE_ENABLED	  1
+#define COMPARATOR_ENABLED	  0
 
 #if USB_DEVICE_ENABLED == 1
 #define ENABLE_USB 			  1

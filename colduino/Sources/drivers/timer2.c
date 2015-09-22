@@ -30,10 +30,8 @@
 
 #include "timer2.h"
 #include "BRTOS.h"
-#include "SD_API.h"
 
-#include "mbport.h"
-
+#if TIMER2_ENABLED
 
 static TimerOverflowCallback_fn TimerOverflowCallback;
 
@@ -86,9 +84,6 @@ void Timer2ChangeModule(unsigned short int module)
 	}
 }
 
-#if (SD_WAVE == 1)
-#include "sound_driver.h"
-#endif
 
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -119,10 +114,6 @@ interrupt void Timer2Overflow(void)
 	// Handler code for the tick
 	// ************************	
 	TimerOverflowCallback();
-	
-#if (SD_WAVE == 1)
-	OSSemPost(Audio);
-#endif
 
 	// ************************
 	// Interrupt Exit
@@ -135,3 +126,5 @@ interrupt void Timer2Overflow(void)
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
+
+#endif

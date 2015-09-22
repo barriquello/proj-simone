@@ -61,7 +61,7 @@ typedef union
 		uint32_t Frequency; /* Hz */		
 	} Reg;	
 	uint32_t Regs32[11+1];
-	uint16_t Regs[11*2+2];
+	uint16_t Regs16[11*2+2];
 	uint8_t  Regs8[11*4+4];	
 }modbus_t500_input_register_list1;
 

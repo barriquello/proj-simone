@@ -42,7 +42,42 @@
 								<option id="com.freescale.coldfire.toolchain.linker.base.generateLinkMap.1880777940" name="Generate Link Map" superClass="com.freescale.coldfire.toolchain.linker.base.generateLinkMap" value="true" valueType="boolean"/>
 								<option id="com.freescale.coldfire.toolchain.linker.base.input.lcf_file.2036669533" name="Link Command File (.lcf)" superClass="com.freescale.coldfire.toolchain.linker.base.input.lcf_file" value="${ProjDirPath}/Project_Settings/Linker_Files/Project.lcf" valueType="string"/>
 								<option id="com.freescale.coldfire.toolchain.linker.base.input.lpath.1259975909" name="Library Search Paths (-L+path)" superClass="com.freescale.coldfire.toolchain.linker.base.input.lpath" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/lib&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/lib&quot;"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/brtos/includes"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/FatFS"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/rtu"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/include"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/hal/CodeWarrior_CFV1"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/minINI"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/modbus_slaves"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/tcp"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/ascii"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/devices"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/port"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/modbus_master"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/libs"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/monitor"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/monitor/pt"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/simon-api"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/terminal"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Project_Headers"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/app/msd"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/drivers"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Project_Settings/Startup_Code"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/app/cdc"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/driver"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/driver/cfv1"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/common"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/class"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/hcs08_compatibility&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/EWL_C/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/EWL_C/include/sys&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/EWL_Runtime/Runtime_ColdFire/Source&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/derivatives/device/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/derivatives/device/asm_include&quot;"/>
 								</option>
 								<option id="com.freescale.coldfire.cdt.toolchain.option.linkorder.114547100" name="Link Order" superClass="com.freescale.coldfire.cdt.toolchain.option.linkorder" valueType="stringList">
 									<listOptionValue builtIn="false" value="Project_Settings/Startup_Code/startcf.c"/>
@@ -148,42 +183,42 @@
 							</tool>
 							<tool errorParsers="" id="com.freescale.coldfire.toolchain.compiler.debug.940251024" name="ColdFire Compiler" superClass="com.freescale.coldfire.toolchain.compiler.debug">
 								<option id="com.freescale.coldfire.toolchain.compiler.base.input.include.667542137" name="User Path (-i)" superClass="com.freescale.coldfire.toolchain.compiler.base.input.include" valueType="includePath">
-									<listOptionValue builtIn="false" value="../../brtos/includes"/>
-									<listOptionValue builtIn="false" value="../../FatFS"/>
-									<listOptionValue builtIn="false" value="../../freemodbus/modbus/rtu"/>
-									<listOptionValue builtIn="false" value="../../freemodbus/modbus/include"/>
-									<listOptionValue builtIn="false" value="../../hal/CodeWarrior_CFV1"/>
-									<listOptionValue builtIn="false" value="../../minINI"/>
-									<listOptionValue builtIn="false" value="../../modbus_slaves"/>
-									<listOptionValue builtIn="false" value="../../freemodbus/modbus/tcp"/>
-									<listOptionValue builtIn="false" value="../../freemodbus/modbus/ascii"/>
-									<listOptionValue builtIn="false" value="../../devices"/>
-									<listOptionValue builtIn="false" value="../../freemodbus/port"/>
-									<listOptionValue builtIn="false" value="../../modbus_master"/>
-									<listOptionValue builtIn="false" value="../../libs"/>
-									<listOptionValue builtIn="false" value="../../monitor"/>
-									<listOptionValue builtIn="false" value="../../monitor/pt"/>
-									<listOptionValue builtIn="false" value="../../simon-api"/>
-									<listOptionValue builtIn="false" value="../../terminal"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Headers&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/USB/app/msd&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/drivers&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Settings/Startup_Code&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/USB&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/USB/app/cdc&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources/USB/driver&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}\Sources\USB\driver\cfv1&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}\Sources\USB\common&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}\Sources\USB\class&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/hcs08_compatibility&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/lib&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_C/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_C/include/sys&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_Runtime/Runtime_ColdFire/Source&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/derivatives/device/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/derivatives/device/asm_include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/lib&quot;"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/brtos/includes"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/FatFS"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/rtu"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/include"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/hal/CodeWarrior_CFV1"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/minINI"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/modbus_slaves"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/tcp"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/ascii"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/devices"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/port"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/modbus_master"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/libs"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/monitor"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/monitor/pt"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/simon-api"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/terminal"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Project_Headers"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/app/msd"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/drivers"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Project_Settings/Startup_Code"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/app/cdc"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/driver"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/driver/cfv1"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/common"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/class"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/hcs08_compatibility&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/EWL_C/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/EWL_C/include/sys&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/EWL_Runtime/Runtime_ColdFire/Source&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/derivatives/device/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/derivatives/device/asm_include&quot;"/>
 								</option>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sdata.456667483" name="Use .sdata/.sbiss for (byte in integer between -1..32K)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sdata" value="0" valueType="string"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.input.include.system.1788546878" name="System Path (-I- -I)" superClass="com.freescale.coldfire.toolchain.compiler.base.input.include.system"/>
@@ -201,13 +236,42 @@
 							</tool>
 							<tool errorParsers="" id="com.freescale.coldfire.toolchain.assembler.debug.571171737" name="ColdFire Assembler" superClass="com.freescale.coldfire.toolchain.assembler.debug">
 								<option id="com.freescale.coldfire.toolchain.assembler.base.input.include.2068607591" name="User Path (-i)" superClass="com.freescale.coldfire.toolchain.assembler.base.input.include" valueType="includePath">
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/lib&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/hcs08_compatibility&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_C/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_C/include/sys&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/ewl/EWL_Runtime/Runtime_ColdFire/Source&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/derivatives/device/include&quot;"/>
-									<listOptionValue builtIn="false" value="&quot;${MCUToolsBaseDir}/ColdFire_Support/derivatives/device/asm_include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/lib&quot;"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/brtos/includes"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/FatFS"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/rtu"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/include"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/hal/CodeWarrior_CFV1"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/minINI"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/modbus_slaves"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/tcp"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/ascii"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/devices"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/port"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/modbus_master"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/libs"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/monitor"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/monitor/pt"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/simon-api"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/terminal"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Project_Headers"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/app/msd"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/drivers"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Project_Settings/Startup_Code"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/app/cdc"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/driver"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/driver/cfv1"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/common"/>
+									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/colduino/Sources/USB/class"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/hcs08_compatibility&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/EWL_C/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/EWL_C/include/sys&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/EWL_Runtime/Runtime_ColdFire/Source&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/derivatives/device/include&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/derivatives/device/asm_include&quot;"/>
 								</option>
 								<inputType id="com.freescale.coldfire.toolchain.assembler.base.input.1576255774" name="ColdFire Assembler Input" superClass="com.freescale.coldfire.toolchain.assembler.base.input"/>
 							</tool>
@@ -218,12 +282,11 @@
 						</toolChain>
 					</folderInfo>
 					<sourceEntries>
-						<entry excluding="EWL_C|terminal|simon-api|monitor|libs|modbus_master|devices|app|minINI|modbus_slaves|modbus_master_lib|FatFs|freemodbus|CodeWarrior_CFV1|Sources/colduino_gprs/FatFS/option/cc932.c|Sources/colduino_gprs/FatFS/bkp|Sources/colduino_gprs/FatFS/option/cc949.c|Sources/minINI/test.c|Sources/colduino_gprs/FatFS/option/cc950.c|Sources/colduino_gprs/libmodbus/modbus.c|Sources/minINI/minGlue-efsl.h|Sources/minINI/minIni.c|Sources/FatFS/option/cc936.c|Sources/colduino_gprs/libmodbus/tests/unit-test-master.c|Sources/minINI/minGlue-mdd.h|Sources/FatFS/option/cc932.c|hal|Sources/colduino_gprs/FatFS/option/ccsbcs.c|Sources/FatFS/option/cc949.c|Sources/colduino_gprs/FatFS/option/unicode.c|Sources/colduino_gprs/libmodbus/modbus-tcp-private.h|Sources/freemodbus/modbus|Sources/minINI/minGlue-stdio.h|core|Sources/minINI/minGlue.h|Sources/minINI/minGlue-ccs.h|xmacro|Sources/minINI/minIni.h|Sources/colduino_gprs/libmodbus/tests/unit-test-slave.c|Sources/FatFS/option/cc950.c|Sources/minINI/minGlue-ffs.h|Sources/minINI/minGlue-FatFs.h|Sources/FatFS/option/syscall.c|Sources/colduino_gprs/FatFS/option/syscall.c|lc|Sources/FatFS/option/unicode.c|Sources/FatFS/option/ccsbcs.c|Sources/colduino_gprs/FatFS/option/cc936.c|Sources/colduino_gprs/libmodbus/modbus-tcp.h|Sources/colduino_gprs/libmodbus/modbus-tcp.c|Sources/minINI/wxMinIni.h" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="Sources/colduino_gprs/FatFS/option/cc932.c|CodeWarrior_CFV1|Sources/colduino_gprs/FatFS/option/cc949.c|app|Sources/colduino_gprs/FatFS/option/cc950.c|Sources/colduino_gprs/libmodbus/modbus.c|Sources/minINI/minIni.c|Sources/colduino_gprs/libmodbus/tests/unit-test-master.c|Sources/colduino_gprs/FatFS/option/ccsbcs.c|monitor|Sources/FatFS/option/cc949.c|Sources/colduino_gprs/libmodbus/modbus-tcp-private.h|Sources/minINI/minGlue-stdio.h|core|Sources/minINI/minGlue-ccs.h|devices|xmacro|Sources/colduino_gprs/libmodbus/tests/unit-test-slave.c|Sources/FatFS/option/cc950.c|Sources/minINI/minGlue-ffs.h|Sources/FatFS/option/syscall.c|Sources/colduino_gprs/FatFS/option/syscall.c|Sources/FatFS/option/unicode.c|EWL_C|Sources/colduino_gprs/FatFS/option/cc936.c|Sources/minINI/wxMinIni.h|Sources/colduino_gprs/libmodbus/modbus-tcp.c|terminal|Sources/colduino_gprs/FatFS/bkp|modbus_master_lib|Sources/minINI/test.c|Sources/minINI/minGlue-efsl.h|Sources/FatFS/option/cc936.c|minINI|modbus_slaves|Sources/minINI/minGlue-mdd.h|Sources/FatFS/option/cc932.c|hal|Sources/colduino_gprs/FatFS/option/unicode.c|Sources/freemodbus/modbus|FatFs|freemodbus|Sources/minINI/minGlue.h|Sources/minINI/minIni.h|Sources/minINI/minGlue-FatFs.h|libs|lc|Sources/FatFS/option/ccsbcs.c|Sources/colduino_gprs/libmodbus/modbus-tcp.h|simon-api|modbus_master" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="CodeWarrior_CFV1"/>
-						<entry excluding="option/unicode.c|option/ccsbcs.c|option/cc950.c|option/cc949.c|option/cc936.c|option/cc932.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="FatFs"/>
+						<entry excluding="option/cc949.c|option/ccsbcs.c|option/cc950.c|option/cc936.c|option/unicode.c|option/cc932.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="FatFs"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="app"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="devices"/>
-						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="freemodbus"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="libs"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="minINI"/>
 						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="modbus_master"/>
