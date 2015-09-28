@@ -110,6 +110,7 @@
 
 typedef enum 
 {
+	M590_SETUP,
 	M590_INIT,
 	M590_OPEN,
 	M590_CLOSE

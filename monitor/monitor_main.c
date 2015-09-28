@@ -142,16 +142,19 @@ monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 monitor_config_ok_t config_check;
 
 
-#define DEBUG_MONITOR 0
+#define DEBUG_MONITOR 1
 
 #if DEBUG_MONITOR
 #ifdef _WIN32
 #define PRINTF(...) printf(__VA_ARGS__);
+#define DPRINTF(...) printf(__VA_ARGS__);
 #else
 #define PRINTF(...) printf_lib(__VA_ARGS__);
+#define DPRINTF(...) print_debug(__VA_ARGS__);
 #endif
 #else
 #define PRINTF(...)
+#define DPRINTF(...)
 #endif
 
 #ifndef CONST
@@ -280,10 +283,14 @@ PT_THREAD(monitor_set_input(struct pt *pt))
 }
 #endif
 
+#define MASK32  ((uint32_t)(-1))
+
 static
 PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 {
 
+  clock_t time_before, time_now;
+    
   uint32_t time_elapsed = 0;
   uint32_t period = (uint32_t)monitor_state[_monitor].config_h.time_interv*1000;
   mon_timer_t* timer = &monitor_state[_monitor].write_timer;
@@ -307,9 +314,14 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 		{
 			timer_set(timer, (uint32_t)period/10);
 		}
-		PRINTF("M %d W start @%d\r\n", _monitor, clock_time());
+		time_before = clock_time();
+		PRINTF("M %d W start @%d\r\n", _monitor, (uint32_t)(time_before & MASK32));
+		
 		monitor_writer(_monitor);
-		PRINTF("M %d W end @%d\r\n", _monitor, clock_time());
+		
+		time_now = clock_time();
+		time_elapsed = (uint32_t)(time_now-time_before);
+		PRINTF("M %d W end @%d, diff %d\r\n", _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
   }
   PT_END(pt);
 }
@@ -319,29 +331,27 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 {
 
 #define TIMER_READER_MS  1000	
-	
+
+  clock_t time_before, time_now;
   mon_timer_t* timer = &monitor_state[_monitor].read_timer;
+  uint32_t time_elapsed = 0;
   
-  PT_BEGIN(pt);
-  
-  uint16_t time_elapsed = 0;
-  
-  timer_set(timer, TIMER_READER_MS);
+  PT_BEGIN(pt);  
+
   while(1)
   {		
-		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));		
-		time_elapsed = (uint16_t)timer_elapsed(timer);
-		if(time_elapsed < TIMER_READER_MS)
-		{
-			// wait only the remaining time
-			timer_set(timer, (uint16_t)(TIMER_READER_MS - time_elapsed));
-		}else
-		{
-			timer_set(timer, TIMER_READER_MS/10);
-		}
-		PRINTF("M %d R start @%d\r\n", _monitor, clock_time());
+	  	timer_set(timer, TIMER_READER_MS);
+		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));
+		
+		time_before = clock_time();
+		PRINTF("M %d R start @%d\r\n", _monitor, (uint32_t)(time_before & MASK32));
+		
 		monitor_reader(_monitor);
-		PRINTF("M %d R end @%d\r\n", _monitor, clock_time());
+		
+		time_now = clock_time();
+		
+		time_elapsed = (uint32_t)(time_now-time_before);
+		PRINTF("M %d R end @%d, diff %d\r\n", _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
   }
   PT_END(pt);
 }
@@ -451,7 +461,14 @@ static int callback_inifile(const char *section, const char *key, const char *va
   	    {
   	    	return FALSE;
   	    }
-		/* configura monitores */
+
+  	   /* configura monitores */
+  	   if(strcmp(key,"slave") == 0)
+  	   {
+  	  			monitor_state[mon_cnt].slave_addr =  (uint8_t)StringToInteger((char*)value); //strtoul(value,NULL,0);
+  	  			++field_cnt;
+  	    }
+  	  		
 		if(strcmp(key,"codigo") == 0)
 		{
 			monitor_state[mon_cnt].codigo =  (uint8_t)StringToInteger((char*)value); //strtoul(value,NULL,0);
@@ -692,7 +709,7 @@ void main_monitor(void)
 #endif		
 		
 		#ifndef _WIN32
-			DelayTask(100); // executa a cada 100ms
+			DelayTask(1000); // executa a cada 1000ms
 		#endif
 		
 	}

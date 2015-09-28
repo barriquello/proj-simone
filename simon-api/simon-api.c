@@ -93,17 +93,10 @@ uint8_t simon_init(const modem_driver_t* _modem)
 
 uint8_t simon_check_connection(void)
 {
-	uint8_t retries = 5;
-	while(retries > 0)
+
+	if(modem->is_connected())
 	{
-		if(modem->is_connected())
-		{
-			return TRUE;
-		}
-#if COLDUINO || ARDUINO
-		DelayTask(100);
-#endif
-		retries--;
+		return TRUE;
 	}
 	
 	return FALSE;
@@ -113,6 +106,7 @@ uint8_t simon_get_time(struct tm * t)
 {
 	char* get_time_request = "GET /time/local&apikey=%s";
 	//char* get_time_request = "GET /";
+	uint8_t ret = MODEM_ERR;
 	
 	SNPRINTF(server_reply, SIZEARRAY(message), get_time_request, (char*)simon_apikey);
 	
@@ -121,7 +115,7 @@ uint8_t simon_get_time(struct tm * t)
 		     "Host: %s\r\n"
 		     "\r\n\r\n", server_reply, hostname);
 	
-	PRINTF(message);
+	//PRINTF(message);
 	
 	if(out == NULL || in == NULL)
 	{
@@ -137,16 +131,19 @@ uint8_t simon_get_time(struct tm * t)
 		recv_size = SIZEARRAY(server_reply);
 		if(in((uint8_t*)server_reply, (uint16_t*) &recv_size) != MODEM_OK)
 		{
-			return MODEM_ERR;
+			break;
 		}
 		
 		/* Add a NULL terminating character to make it a proper string */
-		server_reply[recv_size] = '\0';
+		server_reply[recv_size-1] = '\0';
 	
-		/* set time */
-		if(get_server_time(server_reply, t) == TRUE)
+		if(ret == MODEM_ERR)
 		{
-			return MODEM_OK;
+			/* set time */
+			if(get_server_time(server_reply, t) == TRUE)
+			{
+				ret = MODEM_OK;
+			}
 		}
 	}while(recv_size);
 	
@@ -156,6 +153,8 @@ uint8_t simon_get_time(struct tm * t)
 uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 {
 	char* send_monitor = "GET /monitor/set.json?monitorid=%d&time=%d&data=%s&apikey=%s";
+	
+	uint8_t ret = MODEM_ERR;
 	
 	if(len > SIZEARRAY(message)) return MODEM_ERR;
 	
@@ -180,19 +179,28 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 	{
 		return MODEM_ERR;
 	}
+	
 	if(out((uint8_t*)message, (uint16_t)strlen(message)) != MODEM_OK)
 	{
 		return MODEM_ERR;
 	}
 
-	recv_size = SIZEARRAY(server_reply);
-	if(in((uint8_t*)server_reply, (uint16_t*) &recv_size) != MODEM_OK)
+	do
 	{
-		return MODEM_ERR;
-	}
-	server_reply[recv_size] = '\0';
+		recv_size = SIZEARRAY(server_reply);
+		if(in((uint8_t*)server_reply, (uint16_t*) &recv_size) != MODEM_OK)
+		{
+			break;
+		}
+		server_reply[recv_size-1] = '\0';	
 	
-	return get_server_confirmation(server_reply);
+		if(ret == MODEM_ERR)
+		{
+			ret = get_server_confirmation(server_reply);
+		}
+	}while(recv_size);
+	
+	return ret;
 }
 
 uint8_t get_server_confirmation(char* server_reply)

@@ -86,7 +86,6 @@
 									<listOptionValue builtIn="false" value="FatFs/SD_API.c"/>
 									<listOptionValue builtIn="false" value="FatFs/ff.c"/>
 									<listOptionValue builtIn="false" value="Sources/MBMaster.c"/>
-									<listOptionValue builtIn="false" value="Sources/MBSlave.c"/>
 									<listOptionValue builtIn="false" value="Sources/USB/app/cdc/virtual_com.c"/>
 									<listOptionValue builtIn="false" value="Sources/USB/app/msd/disk.c"/>
 									<listOptionValue builtIn="false" value="Sources/USB/class/usb_cdc.c"/>
@@ -99,7 +98,6 @@
 									<listOptionValue builtIn="false" value="Sources/USB/driver/cfv1/usb_dci.c"/>
 									<listOptionValue builtIn="false" value="Sources/USB/driver/usb_driver.c"/>
 									<listOptionValue builtIn="false" value="Sources/USB/driver/usbevent.c"/>
-									<listOptionValue builtIn="false" value="Sources/datalogger.c"/>
 									<listOptionValue builtIn="false" value="Sources/drivers/ACM_keyboard.c"/>
 									<listOptionValue builtIn="false" value="Sources/drivers/AD.c"/>
 									<listOptionValue builtIn="false" value="Sources/drivers/AD_keyboard.c"/>
@@ -133,21 +131,6 @@
 									<listOptionValue builtIn="false" value="devices/m590_at.c"/>
 									<listOptionValue builtIn="false" value="devices/rs485.c"/>
 									<listOptionValue builtIn="false" value="devices/terminal_io.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/modbus/ascii/mbascii.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbfunccoils.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbfuncdiag.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbfuncdisc.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbfuncholding.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbfuncinput.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbfuncother.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/modbus/functions/mbutils.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/modbus/mb.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/modbus/rtu/mbcrc.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/modbus/rtu/mbrtu.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/modbus/tcp/mbtcp.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/port/portevent.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/port/portserial.c"/>
-									<listOptionValue builtIn="false" value="freemodbus/port/porttimer.c"/>
 									<listOptionValue builtIn="false" value="libs/assert.c"/>
 									<listOptionValue builtIn="false" value="libs/debug_stack.c"/>
 									<listOptionValue builtIn="false" value="libs/printf_lib.c"/>
@@ -161,7 +144,6 @@
 									<listOptionValue builtIn="false" value="modbus_master/modbus.c"/>
 									<listOptionValue builtIn="false" value="modbus_slaves/modbus_pm210.c"/>
 									<listOptionValue builtIn="false" value="modbus_slaves/modbus_ts.c"/>
-									<listOptionValue builtIn="false" value="modbus_slaves/port.c"/>
 									<listOptionValue builtIn="false" value="monitor/monitor.c"/>
 									<listOptionValue builtIn="false" value="monitor/monitor_main.c"/>
 									<listOptionValue builtIn="false" value="monitor/monitor_tests.c"/>
@@ -169,8 +151,10 @@
 									<listOptionValue builtIn="false" value="terminal/terminal.c"/>
 									<listOptionValue builtIn="false" value="terminal/terminal_commands.c"/>
 									<listOptionValue builtIn="false" value="FatFs/option/syscall.c"/>
-									<listOptionValue builtIn="false" value="devices/rtc_ds1307.c"/>
 									<listOptionValue builtIn="false" value="modbus_slaves/modbus_slave_null.c"/>
+									<listOptionValue builtIn="false" value="devices/RTC_DS1307.c"/>
+									<listOptionValue builtIn="false" value="libs/strtok.c"/>
+									<listOptionValue builtIn="false" value="modbus_slaves/modbus_t500.c"/>
 								</option>
 								<option id="com.freescale.coldfire.toolchain.linker.base.generateList.1355151461" name="Generate Listing File" superClass="com.freescale.coldfire.toolchain.linker.base.generateList" value="true" valueType="boolean"/>
 								<option id="com.freescale.coldfire.toolchain.linker.base.generateLinkMap.unusedObjs.1201179257" name="Generate Link Map - List Unused Objects" superClass="com.freescale.coldfire.toolchain.linker.base.generateLinkMap.unusedObjs" value="true" valueType="boolean"/>
@@ -181,7 +165,7 @@
 									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
 								</inputType>
 							</tool>
-							<tool errorParsers="" id="com.freescale.coldfire.toolchain.compiler.debug.940251024" name="ColdFire Compiler" superClass="com.freescale.coldfire.toolchain.compiler.debug">
+							<tool commandLinePattern="${COMMAND} ${FLAGS} ${OUTPUT_FLAG} ${OUTPUT_PREFIX}${OUTPUT} ${INPUTS}" errorParsers="" id="com.freescale.coldfire.toolchain.compiler.debug.940251024" name="ColdFire Compiler" superClass="com.freescale.coldfire.toolchain.compiler.debug">
 								<option id="com.freescale.coldfire.toolchain.compiler.base.input.include.667542137" name="User Path (-i)" superClass="com.freescale.coldfire.toolchain.compiler.base.input.include" valueType="includePath">
 									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/lib&quot;"/>
 									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/brtos/includes"/>
@@ -230,7 +214,7 @@
 								<option id="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sche.2012111504" name="Instruction Scheduling (-scheduling)" superClass="com.freescale.coldfire.toolchain.compiler.base.optionCategory.processor.sche" value="true" valueType="boolean"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.options.inlining.1696580601" name="Inlining" superClass="com.freescale.coldfire.toolchain.compiler.base.options.inlining" value="com.freescale.coldfire.toolchain.compiler.base.options.inline.off" valueType="enumerated"/>
 								<option id="com.freescale.coldfire.toolchain.compiler.base.debugging.nostdinc.1893855445" name="Do not use MWCIncludes variable (-nostdinc)" superClass="com.freescale.coldfire.toolchain.compiler.base.debugging.nostdinc" value="true" valueType="boolean"/>
-								<option id="com.freescale.coldfire.toolchain.compiler.base.debugging.c.1523212667" name="Compile Only, Do Not Link (-c)" superClass="com.freescale.coldfire.toolchain.compiler.base.debugging.c" value="false" valueType="boolean"/>
+								<option id="com.freescale.coldfire.toolchain.compiler.base.debugging.c.1523212667" name="Compile Only, Do Not Link (-c)" superClass="com.freescale.coldfire.toolchain.compiler.base.debugging.c" value="true" valueType="boolean"/>
 								<inputType id="com.freescale.coldfire.toolchain.compiler.base.input.1268974395" name="C Source File" superClass="com.freescale.coldfire.toolchain.compiler.base.input"/>
 								<inputType id="com.freescale.coldfire.toolchain.compiler.base.input.c++.2093161631" name="C++ Source File" superClass="com.freescale.coldfire.toolchain.compiler.base.input.c++"/>
 							</tool>
@@ -239,15 +223,10 @@
 									<listOptionValue builtIn="false" value="&quot;C:/Freescale/CW MCU v10.6/MCU/ColdFire_Support/ewl/lib&quot;"/>
 									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/brtos/includes"/>
 									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/FatFS"/>
-									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/rtu"/>
-									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/include"/>
 									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/hal/CodeWarrior_CFV1"/>
 									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/minINI"/>
 									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/modbus_slaves"/>
-									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/tcp"/>
-									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/modbus/ascii"/>
 									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/devices"/>
-									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/freemodbus/port"/>
 									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/modbus_master"/>
 									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/libs"/>
 									<listOptionValue builtIn="false" value="C:/DADOS_LOCAIS/GITHUB/proj-simone/monitor"/>

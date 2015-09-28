@@ -64,7 +64,7 @@ typedef struct {
 
 extern int terminal_add_cmd(command_t *cmd);
 extern int terminal_delete_cmd(command_t *cmd);
-extern void terminal_init(unsigned char (*putch_)(char));
+extern void terminal_init(void (*putch_)(char));
 extern void terminal_process(void);
 extern int term_skipp_space(char *cmd_line, int start);
 extern int term_find_word(char *cmd_line, int start);

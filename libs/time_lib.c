@@ -519,17 +519,3 @@ static char *_add(const char *str, char *pt, const char *ptlim) {
   return pt;
 }
 
-#ifndef _WIN32
-uint8_t SetTimeStamp (uint8_t device_id, uint8_t *data_ptr, OSTime *timestamp)
-{
-	
-	if(timestamp == NULL) return FALSE;
-	
-	data_ptr[0] = device_id;
-	data_ptr[1] = timestamp->RTC_Hour;
-	data_ptr[2] = timestamp->RTC_Minute;
-	data_ptr[3] = timestamp->RTC_Second;
-	
-	return TRUE;
-}
-#endif

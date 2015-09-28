@@ -89,34 +89,41 @@ const uint16_t T500_modbus_map_regs[] =
 		T500_Caract_Power_Factor,T500_Frequency
 };
 
-uint8_t t500_read_data(uint8_t* buf, uint8_t max_len);
+uint8_t t500_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 
-uint8_t t500_read_data(uint8_t* buf, uint8_t max_len)
+uint8_t t500_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 {
 		
 			uint8_t nregs = 0;	
+			uint8_t retries = T500_REGLIST1_INPUT_NREGS*2;
+			
 			/* Detecta equipamentos de medição e faz a leitura dos dados */					
 			/* T500 input registers */
 			memset(T500_IRList1.Regs32,0x00,SIZEARRAY(T500_IRList1.Regs32));
 			
-			for(nregs = 0; nregs < T500_REGLIST1_INPUT_NREGS;nregs++)
+			for(nregs = 0; nregs < T500_REGLIST1_INPUT_NREGS;)
 			{
 				
 #if MODBUS_SLAVE_T500_SIMULATION			
 				/* return random data */
-				T500_IRList1.Regs[nregs + T500_REG_OFFSET] = (random_get()<<16)+random_get();
+				T500_IRList1.Regs32[nregs + (T500_REG_OFFSET/2)] = (random_get()<<16)+random_get();
 #else				
-				Modbus_GetData(T500_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (uint8_t*)&T500_IRList1.Regs32[nregs + T500_REG_OFFSET],
-						T500_modbus_map_regs[nregs], 2);
+				if(Modbus_GetData(slave_addr, FC_READ_INPUT_REGISTERS, (uint8_t*)&T500_IRList1.Regs32[nregs + (T500_REG_OFFSET/2)],
+						T500_modbus_map_regs[nregs], 2) == MODBUS_OK)
+				{
+					nregs++;
+				}else
+				{
+					if(--retries == 0)
+					{
+						return 0;
+					}
+					
+				}								
 #endif					
 			}
 			
-			
-			OSTime timestamp;
-			
-			/* Get and set timestamp of reading */			
-			GetCalendarTime(&timestamp);	
-			SetTimeStamp(T500_SLAVE_ADDRESS, (uint8_t*)T500_IRList1.Regs16, &timestamp);		
+			SetModbusHeader(slave_addr, T500_IRList1.Regs8);		
 
 			/* limit number of registers to the max. available */
 			if(max_len > sizeof(modbus_t500_input_register_list1)) 
@@ -124,7 +131,7 @@ uint8_t t500_read_data(uint8_t* buf, uint8_t max_len)
 				max_len = sizeof(modbus_t500_input_register_list1);
 			}
 			
-			memcpy(buf,T500_IRList1.Regs16,max_len);						
+			memcpy(buf,T500_IRList1.Regs8,max_len);						
 			return (max_len);
 			
 }

@@ -32,7 +32,7 @@
 
 static uint8_t ModbusMaster_state;
 
-#define MB_RS485 0
+#define MB_RS485 1
 
 #if MB_RS485
 #include "rs485.h"
@@ -194,18 +194,18 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 	static __MB_QUERY_SEND cmd; 			// command = query  + answer
 	CHAR  ucByteRx;							// received byte	
 	
-	sint32_t err = MODBUS_OK;
+	sint32_t err = MODBUS_ERROR;
 	
 	// open Modbus Master
 	if (ModbusMaster_open(slave, func, queryBuffer, &master_query) == MODBUS_ERROR)
 	{
-		goto error_exit;
+		goto exit;
 	}
 	
 	// set Master receive buffer 
 	if(Modbus_prepare_receiver(&(cmd.answ), answerBuffer) == MODBUS_ERROR)
 	{
-		goto error_exit;
+		goto exit;
 	}
 	
 	// set query command 
@@ -216,14 +216,15 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 	err = Modbus_make_query(&(cmd.query));	
 	if (err < 0 || err >=  ANSWER_BUFSIZE)
 	{
-		goto error_exit;
+		err = MODBUS_ERROR;
+		goto exit;
 	}
 	
 	// Send query
 	ModbusMasterTxData(master_query.pQuery, master_query.queryLen);	
 	   
 	/* wait 1 sec for the response */
-	DelayTask(1000);	
+	DelayTask(10);	
 	
 	if(ModbusMasterRxData(&ucByteRx,RS485_TIMEOUT_RX))
 	{
@@ -231,28 +232,26 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 		{							
 			err = Modbus_receive(ucByteRx);
 			if (err < 0) {
-				goto error_exit;
+				err = MODBUS_ERROR;
+				goto exit;
 			}
 			else if (err == 0) {
 				err = Modbus_process_answ(data_ptr,num_regs);
-				if (err != MB_MASTER_ERR_OK)
+				if(err == MB_MASTER_ERR_OK)
 				{
-					goto error_exit;
+					err = MODBUS_OK;
+				}else
+				{
+					err = MODBUS_ERROR;
 				}
-				goto success_exit;				
-			}
-			
+				break;		
+			}			
 		}while(ModbusMasterRxData(&ucByteRx,RS485_TIMEOUT_RX));		
 	}
 	
-	error_exit:	
-		ModbusMaster_close();
-		ModbusMasterRxFlush();
-		return MODBUS_ERROR;
-		
-	success_exit:
-		ModbusMaster_close();
-		return MODBUS_OK;
-	
+	exit:
+	ModbusMaster_close();
+	ModbusMasterRxFlush();				
+	return err;
 }
 

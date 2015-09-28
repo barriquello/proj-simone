@@ -31,6 +31,7 @@
 #ifndef MODBUS_SLAVES_H_
 #define MODBUS_SLAVES_H_
 
+#include "BRTOS.h"
 #include "stdint.h"
 
 #define MODBUS_NUM_SLAVES (4) 
@@ -52,7 +53,7 @@ typedef enum {
 }eMBSlaves;
 #endif
 
-typedef uint8_t (*_reader)(uint8_t* buf, uint8_t max_len);
+typedef uint8_t (*_reader)(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 
 typedef struct
 {
@@ -60,5 +61,8 @@ typedef struct
 	char* nome;
 	_reader slave_reader;
 }modbus_slave_t;
+
+uint8_t SetModbusHeader (uint8_t device_id, uint8_t *data_ptr);
+uint8_t SetTimeStamp (uint8_t device_id, uint8_t *data_ptr, OSTime *timestamp);
 
 #endif /* MODBUS_SLAVES_H_ */

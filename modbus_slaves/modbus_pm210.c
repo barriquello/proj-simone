@@ -162,31 +162,27 @@ static modbus_pm210_holding_register_list PM210_HRList;
 #include "random_lib.h"
 #endif
 
-uint8_t pm210_read_data(uint8_t* buf, uint8_t max_len);
+uint8_t pm210_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 
-uint8_t pm210_read_data(uint8_t* buf, uint8_t max_len)
+uint8_t pm210_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 {
 		  uint8_t nregs = 0;
 			
 #if PM200_PRESENTE
 			
-			OSTime timestamp;
-			
 			/* Detecta equipamentos de medição e faz a leitura dos dados */					
 			/* PM210 input registers */		
-			Modbus_GetData(PM210_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (uint8_t*)&PM210_IRList1.Regs[PM210_REG_OFFSET],
+			Modbus_GetData(slave_addr, FC_READ_INPUT_REGISTERS, (uint8_t*)&PM210_IRList1.Regs[PM210_REG_OFFSET],
 					PM210_REGLIST1_INPUT_START, PM210_REGLIST1_INPUT_NREGS);	
 
 			/* Get and set timestamp of reading */			
-			GetCalendarTime(&timestamp);	
-			SetTimeStamp(MODBUS_PM210, (uint8_t*)PM210_IRList1.Regs, &timestamp);
+			SetModbusHeader(slave_addr, (uint8_t*)PM210_IRList1.Regs);
 			
-			Modbus_GetData(PM210_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (uint8_t*)&PM210_IRList2.Regs[PM210_REG_OFFSET],
+			Modbus_GetData(slave_addr, FC_READ_INPUT_REGISTERS, (uint8_t*)&PM210_IRList2.Regs[PM210_REG_OFFSET],
 								PM210_REGLIST2_INPUT_START, PM210_REGLIST2_INPUT_NREGS);
 			
 			/* Get and set timestamp of reading */
-			GetCalendarTime(&timestamp);
-			SetTimeStamp(MODBUS_PM210, (uint8_t*)PM210_IRList2.Regs, &timestamp);
+			SetModbusHeader(slave_addr, (uint8_t*)PM210_IRList2.Regs);
 #else
 			/* return random data */
 			for(nregs = PM210_REG_OFFSET; nregs < (PM210_REGLIST1_INPUT_NREGS+PM210_REG_OFFSET);nregs++)

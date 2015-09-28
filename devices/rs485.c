@@ -34,7 +34,7 @@
 #include "uart.h"
 #include "rs485.h"
 
-#define RS485_BUFSIZE		(16+6)
+#define RS485_BUFSIZE		(36)
 #define RS485_TX 			1
 #define RS485_RX 			0
 
@@ -111,13 +111,13 @@ void rs485_tx(const INT8U *data, const INT16U _len)
 		len--;
 	}
 	RS485_TXRX_PIN = RS485_RX;
-	RS485_RX_ENABLE();	
+	RS485_RX_ENABLE();
 }
 
 INT8U rs485_rx(CHAR8* caracter, INT16U timeout)
 {	
 	INT8U ret;
-	RS485_TXRX_PIN = RS485_RX;
+	//RS485_TXRX_PIN = RS485_RX;
 	ret = OSQueuePend(RS485_QUEUE, caracter, timeout);
 	//RS485_TXRX_PIN = RS485_RX;
 	return (ret != TIMEOUT) ? TRUE:FALSE;

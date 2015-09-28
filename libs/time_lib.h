@@ -28,7 +28,6 @@
 #include "BRTOS.h"
 #include "stdint.h"
 typedef uint32_t time_t;
-uint8_t SetTimeStamp (uint8_t device_id, uint8_t *data_ptr, OSTime *timestamp);
 
 #if COLDUINO
 #include <time.h>

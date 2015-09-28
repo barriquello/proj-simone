@@ -258,11 +258,12 @@ unsigned char cdc_putch(char c)
 *    --
 *****************************************************************************/
 void putchar_usb(char c)
-{
-    while(c != (char)cdc_putch(c))
-    {
-    	
-    }
+{    
+    if(GetStart_transactions() == FALSE) return;
+	while(c != (char)cdc_putch(c))
+	{
+		DelayTask(5);
+	}
 }
 
 /*****************************************************************************

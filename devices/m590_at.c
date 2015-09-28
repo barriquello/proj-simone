@@ -51,7 +51,7 @@ uint8_t TCPIP_SendData(uint8_t * dados, uint16_t tam);
 uint8_t is_m590_ok(void);
 uint8_t is_m590_ok_retry(uint8_t retries);
 
-static m590_state_t m590_state = M590_CLOSE;
+static m590_state_t m590_state = M590_SETUP;
 static char ip[16];
 static char *hostname = NULL;
 static INT8U gReceiveBuffer[256];
@@ -69,6 +69,15 @@ static INT8U gReceiveBuffer[256];
 #endif
 
 #define UNUSED(x)   (void)x;
+#define MAX_RETRIES  2
+
+#define DEBUG_PUTCHAR 1
+
+#if DEBUG_PUTCHAR
+#define DPUTCHAR(x)		putcharSer(USE_USB,x);
+#else
+#define DPUTCHAR(x)		
+#endif
 
 typedef enum
 {
@@ -78,7 +87,9 @@ typedef enum
 	XIIC1,
 	XIIC,
 	IPSTAT,
-	CLK
+	CLK,
+	CLOSE0,
+	CLOSE1,
 }m590_enum_cmd;
 
 #define CONST const
@@ -90,7 +101,9 @@ CONST char *m590_init_cmd[]=
 		"AT+XIIC=1\r\n",
 		"AT+XIIC?\r\n",
 		"AT+IPSTATUS=0\r",
-		"AT+CCLK?\r\n"
+		"AT+CCLK?\r\n",
+		"AT+TCPCLOSE=0\r\n",
+		"AT+TCPCLOSE=1\r\n"
 };
 
 static void at_m590_print_reply(void)
@@ -107,7 +120,8 @@ static INT8U m590_get_reply(INT8U *buf, INT16U max_len)
 	INT8U c;
 	INT8U len = 0;
 	memset(buf,0x00,max_len); // clear buffer
-	while((c=m590_getchar()) != (CHAR8)-1){
+	while((c=m590_getchar()) != (CHAR8)-1)
+	{
 		*buf = c;
 		buf++;
 		len++;
@@ -145,7 +159,7 @@ uint8_t is_m590_ok_retry(uint8_t retries)
 		{
 			return FALSE;
 		}
-		DelayTask(1000);
+		DelayTask(100);
 	}
 	return TRUE;
 }
@@ -168,9 +182,9 @@ static void wait_m590_get_reply(uint16_t time)
 
 static void m590_get_reply_print(void)
 {
-	wait_m590_get_reply(200);
+	wait_m590_get_reply(100);
 	PRINT_BUF(gReceiveBuffer); 
-	PRINT("\r\n");
+	//PRINT("\r\n");
 }
 
 
@@ -185,13 +199,13 @@ static void m590_get_reply_print(void)
 INT8U CreatePPP(void)
 {
     int timeout;  
-	timeout = 3;
+	timeout = MAX_RETRIES;
 	
 	m590_acquire();
 	do
 	{  	
 		m590_print(m590_init_cmd[XIIC1]);
-		wait_m590_get_reply(200);   // wait 200ms
+		wait_m590_get_reply(100);   // wait 100ms // era 200ms
 				
 		if(strstr((char *)gReceiveBuffer,(char *)"OK"))
 		{
@@ -213,21 +227,48 @@ INT8U CreatePPP(void)
 *****************************************************************************************/ 
 INT8U CreateTCPLink(char *linkStr)
 {
-    int timeout;	
-	
-	timeout = 0;
-
+    uint8_t retries = MAX_RETRIES;
+    
 	m590_print(linkStr);
 		
-	wait_m590_get_reply(1000); // wait 1000ms;
+	try_again:
+	
+	wait_m590_get_reply(500); // wait 100ms; // era 1s 
 	PRINT_BUF(gReceiveBuffer);	
 	
 	if( strstr((char *)gReceiveBuffer,"+TCPSETUP:0,OK"))
-	{
-		PRINT("TCP established!\r\n");
+	{		
+		PRINT("TCP ok!\r\n");
 		return TRUE;
 	}
+	if(--retries > 0) goto try_again;
 	return FALSE;
+}
+
+/****************************************************************************************
+* Create Single TCP Link
+*****************************************************************************************/
+uint8_t CreateSingleTCPLink(uint8_t iLinkNum,char *strServerIP,char *strPort)
+{
+	
+	if(iLinkNum == 0)
+	{
+		m590_print(m590_init_cmd[CLOSE0]);
+	}else
+	{
+		m590_print(m590_init_cmd[CLOSE1]);
+	}	
+	GET_REPLY_PRINT();
+	
+	memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));	
+	SNPRINTF(gReceiveBuffer,sizeof(gReceiveBuffer)-1,"AT+TCPSETUP=%d,%s,%s\r",iLinkNum,strServerIP,strPort);
+	
+	if(CreateTCPLink(gReceiveBuffer) == FALSE)  
+	{
+		PRINT("tcp create fail\r\n");		
+		return FALSE;
+	}
+	return TRUE;
 }
 /****************************************************************************************
 * TCP IP Send Data
@@ -246,7 +287,7 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 	wait_m590_get_reply(100); // wait 100ms;
 	PRINT_BUF(gReceiveBuffer);
 	
-	if( strstr((char *)gReceiveBuffer,"+IPSTATUS:0,CONNECT,TCP") )
+	if( strstr((char *)gReceiveBuffer,"+IPSTATUS:0,CONNECT") )
 	{
 		len = length;
 		send = dados;			
@@ -254,12 +295,12 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 		m590_print(gReceiveBuffer);			
 		DelayTask(10); /* espera 10 ms */	
 		
-		retries = 3;
+		retries = MAX_RETRIES;
 		
 		do{						
 			while((c=m590_getchar()) != (CHAR8)-1)
 			{			
-				putcharSer(USE_USB,c);
+				DPUTCHAR(c);
 				if(c == '>')
 				{					
 
@@ -269,7 +310,7 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 					{
 						c=*send;
 						m590_putchar(c);
-						putcharSer(USE_USB,c);
+						DPUTCHAR(c);
 						len--;
 						send++;
 					}	
@@ -290,6 +331,7 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 							PRINT_BUF(gReceiveBuffer);							
 							if( strstr((char *)gReceiveBuffer,"+TCPRECV:0"))
 							{
+								PRINT("reply ok\r\n");
 								return TRUE;
 							}
 							DelayTask(100);
@@ -305,7 +347,7 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 					}
 					else if( strstr((char *)gReceiveBuffer,"+TCPSEND:Buffer not enough"))
 					{
-						PRINT("send buffer error\r\n");
+						PRINT("buffer error\r\n");
 						return FALSE;
 					}else
 					{
@@ -322,39 +364,32 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 		return FALSE;
 }
 
-/****************************************************************************************
-* Create Single TCP Link
-*****************************************************************************************/
-uint8_t CreateSingleTCPLink(uint8_t iLinkNum,char *strServerIP,char *strPort)
-{
-	memset(gReceiveBuffer,0x00,sizeof(gReceiveBuffer));
-	SNPRINTF(gReceiveBuffer,sizeof(gReceiveBuffer)-1,"AT+TCPSETUP=%d,%s,%s\r",iLinkNum,strServerIP,strPort);
-	if(!CreateTCPLink(gReceiveBuffer))  
-	{
-		return FALSE;
-	}
-	return TRUE;
-}
 
 uint8_t m590_init(void)
 {
-	/* init M590_UART */
-	uart_init(M590_UART,M590_BAUD,M590_UART_BUFSIZE,M590_MUTEX,M590_MUTEX_PRIO);
 	
-	if(!is_m590_ok_retry(5))
+	if(m590_state == M590_SETUP)
+	{
+		/* init M590_UART */
+		uart_init(M590_UART,M590_BAUD,M590_UART_BUFSIZE,M590_MUTEX,M590_MUTEX_PRIO);
+		
+		/* setup */
+		m590_acquire();			
+			m590_print(m590_init_cmd[CREG]);
+			GET_REPLY_PRINT();	
+		m590_release();	
+	}
+	
+	if(!is_m590_ok_retry(2))
 	{
 		return FALSE;
 	}
-	
-	/* check init */
+
 	m590_acquire();	
-	
-	m590_print(m590_init_cmd[CREG]);
-	GET_REPLY_PRINT();		
-	
+
 	m590_print(m590_init_cmd[XISP]);
 	GET_REPLY_PRINT();
-
+	
 	m590_print(("AT+CGDCONT=1,\"IP\",\"" M590_APN "\"\r\n"));
 	GET_REPLY_PRINT();
 
@@ -364,8 +399,10 @@ uint8_t m590_init(void)
 	m590_print(m590_init_cmd[XIIC1]);
 	GET_REPLY_PRINT();
 	
+#if 0	
 	m590_print(m590_init_cmd[XIIC]);
 	GET_REPLY_PRINT();
+#endif	
 	
 	m590_release();	
 	
@@ -393,14 +430,14 @@ uint8_t CheckPPP(void)
 {
 	uint8_t value;
 		
-	value = 3;	
+	value = MAX_RETRIES;	
 	m590_acquire();	
 	do
 	{   	
 		m590_print(m590_init_cmd[XIIC]);  	
-		wait_m590_get_reply(500);	// 500ms	
+		wait_m590_get_reply(100);	// 100ms	// era 500ms
 		PRINT_REPLY(gReceiveBuffer);
-		
+
 		if(strstr((char *)gReceiveBuffer,"+XIIC:    1"))
 		{
 			m590_release();
@@ -418,9 +455,9 @@ uint8_t m590_open(void)
 	uint8_t result_ok=FALSE;
 	uint8_t timeout;
 	
-	timeout = 3;
+	timeout = MAX_RETRIES;
 	do{
-		uint8_t retries = 3;
+		uint8_t retries = MAX_RETRIES;
 		if(CheckPPP()==TRUE)
 		{
 			result_ok = TRUE;
@@ -430,7 +467,7 @@ uint8_t m590_open(void)
 		{			
 			if(--retries==0)
 			{
-				return 0;
+				return FALSE;
 			}
 		}
 	}while(--timeout>0);
@@ -563,10 +600,10 @@ m590_ret_t at_m590_receive(CHAR8* buff, INT8U len)
 uint8_t m590_close(void)
 {
 	m590_acquire();	
-		m590_print("AT+TCPCLOSE=0\r\n");	
+		m590_print(m590_init_cmd[CLOSE0]);	
 		GET_REPLY_PRINT();
-		m590_print("AT+TCPCLOSE=1\r\n");	
-		GET_REPLY_PRINT();
+		//m590_print("AT+TCPCLOSE=1\r\n");	
+		//GET_REPLY_PRINT();
 	m590_release();		
 	
 	m590_state = M590_CLOSE;
@@ -732,8 +769,9 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 	{
 		/* sending */	
 		m590_acquire();					
-		result_ok = TCPIP_SendData(dados, tam);				
-		m590_release();			
+			result_ok = TCPIP_SendData(dados, tam);				
+		m590_release();		
+		
 		if(result_ok == TRUE) 
 		{
 			return MODEM_OK;
@@ -743,32 +781,28 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 		}
 	}
 	
-	if(!is_m590_ok_retry(5))
-	{		
-		return MODEM_ERR; 
-	}
-	
-	while(retries < 3)
+	while(retries < MAX_RETRIES)
 	{
 		++retries;
 		if(m590_state == M590_CLOSE)
 		{
-			if(!m590_init())
+			if(m590_init() == FALSE)
 			{
 				m590_state = M590_CLOSE;
+				//PRINT("modem init fail\r\n");
 				return MODEM_ERR; 
 			}
 		}	
 	
 		if(m590_state == M590_INIT)
 		{
-			if(!m590_open())
+			if(m590_open() == FALSE)
 			{
 				continue;
 			}
 		}
 	
-		DelayTask(500);
+		//DelayTask(500);
 		
 		/* sending */	
 		m590_acquire();		
@@ -787,7 +821,7 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 		m590_release();			
 	}
 	
-	if(retries == 3) m590_state = M590_CLOSE;
+	if(retries == MAX_RETRIES) m590_state = M590_CLOSE;
 	
 	return (result_ok==TRUE?MODEM_OK:MODEM_ERR);	
 	
@@ -828,7 +862,7 @@ uint8_t m590_receive(uint8_t* buff, uint16_t* len)
 
 uint8_t m590_check_connection(void)
 {
-	is_m590_ok_retry(5);
+	is_m590_ok_retry(MAX_RETRIES);
 }
 
 const modem_driver_t m590_driver  =

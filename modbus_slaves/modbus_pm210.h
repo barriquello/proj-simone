@@ -40,16 +40,20 @@
 #define PM210_REGLIST_HOLDING_NREGS  8
 
 #define PM210_SLAVE_ADDRESS  	(0xAA)
-#define PM210_REG_OFFSET		(2)
+#define PM210_REG_OFFSET		(4)
 
 typedef union
 {	
 	struct
 	{
-		uint8_t Device_id;	/* device id */
+		uint8_t Device_id;		/* device id */
+		uint8_t Entradas;		/* entradas locais */
+		uint8_t Ano;			/* timestamp */
+		uint8_t Mes;			/* timestamp */
+		uint8_t Dia;			/* timestamp */
 		uint8_t Hora;			/* timestamp */
-		uint8_t Minuto;		/* timestamp */
-		uint8_t Segundo;		/* timestamp */
+		uint8_t Minuto;			/* timestamp */
+		uint8_t Segundo;		/* timestamp */	
 		uint16_t Real_Energy_Consumption_H; /* kWh, scale = reg 4108 */
 		uint16_t Real_Energy_Consumption_L; /* kWh, scale = reg 4108 */
 		uint16_t Apparent_Energy_Consumption_H; /* kVAh, scale = reg 4108 */
@@ -88,9 +92,9 @@ typedef union
 		uint16_t Voltage_Phase_C_N; /* Volt, scale = reg 4106 */
 	} Reg;
 	
-	uint8_t  Regs8[36*2+2];
-	uint16_t Regs16[36+2];
-	uint32_t Regs32[36/2+2/2];
+	uint8_t  Regs8[36*2+8];
+	uint16_t Regs16[36+4];
+	uint32_t Regs32[36/2+2];
 	
 }modbus_pm210_input_register_list1;
 
@@ -99,10 +103,14 @@ typedef union
 {
 	struct
 	{
-		uint8_t Device_id;	/* device id */
+		uint8_t Device_id;		/* device id */
+		uint8_t Entradas;		/* entradas locais */
+		uint8_t Ano;			/* timestamp */
+		uint8_t Mes;			/* timestamp */
+		uint8_t Dia;			/* timestamp */
 		uint8_t Hora;			/* timestamp */
-		uint8_t Minuto;		/* timestamp */
-		uint8_t Segundo;		/* timestamp */
+		uint8_t Minuto;			/* timestamp */
+		uint8_t Segundo;		/* timestamp */	
 		uint16_t Scale_Factor_I;  /* –4 = 0.0001, –3 = 0.001, –2 = 0.01, –1 = 0.1, 0 = 1.0, 1 = 10.0, 2 = 100.0, 3 = 1000.0, 4 = 10000.0 */
 		uint16_t Scale_Factor_V;  /* –4 = 0.0001, –3 = 0.001, –2 = 0.01, –1 = 0.1, 0 = 1.0, 1 = 10.0, 2 = 100.0, 3 = 1000.0, 4 = 10000.0 */
 		uint16_t Scale_Factor_W;  /* –4 = 0.0001, –3 = 0.001, –2 = 0.01, –1 = 0.1, 0 = 1.0, 1 = 10.0, 2 = 100.0, 3 = 1000.0, 4 = 10000.0 */
@@ -125,9 +133,9 @@ typedef union
 		uint16_t System_Type; /* 10, 11, 12, 30, 31, 32, 40, 42, 44 */
 		uint16_t Units; /* 0 = IEC, 1 = IEEE units */
 	}Reg;		
-	uint8_t  Regs8[24*2+2];
-	uint16_t Regs16[24+2];
-	uint32_t Regs32[24/2+2/2];
+	uint8_t  Regs8[24*2+8];
+	uint16_t Regs16[24+4];
+	uint32_t Regs32[24/2+2];
 }modbus_pm210_input_register_list2;
 
 typedef union 

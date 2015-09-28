@@ -476,6 +476,7 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 		   monitor_setheader(filename, &h);
 		}else
 		{
+			print_erro("Erro: open file %s\r\n", filename);
 			return 0; // tratar este erro!!!
 		}
 		
@@ -726,6 +727,13 @@ uint8_t monitor_init(uint8_t monitor_num)
 		  PRINTF("Log init erro: %d", monitor_num);
 		  return FALSE;
 	  }
+	  
+	 /* check buffer size */
+	if(monitor_state[monitor_num].config_h.entry_size > LOG_MAX_DATA_BUF_SIZE)
+	{		
+		print_erro("buffer too small \r\n");
+		goto print_erro_and_exit;
+	}
 
 	 /* change to log dir */
 	 monitor_chdir(monitor_state[monitor_num].monitor_dir_name);
@@ -840,17 +848,9 @@ void monitor_writer(uint8_t monitor_num)
 			(monitor_char_buffer[2+2*4] == '3') && (monitor_char_buffer[3+2*4]== '3'));
 
 #else	
-	
-	/* check buffer size */
-	if(monitor_state[monitor_num].config_h.entry_size > LOG_MAX_DATA_BUF_SIZE)
-	{
-		print_erro(monitor_error_msg[1], monitor_num);
-		print_erro("buffer too small \r\n");
-		return;
-	}
-	
+		
 	/* read data */
-	if(monitor_state[monitor_num].read_data((uint8_t*)monitor_data_buffer,(uint8_t)monitor_state[monitor_num].config_h.entry_size) == 0)
+	if(monitor_state[monitor_num].read_data(monitor_state[monitor_num].slave_addr,(uint8_t*)monitor_data_buffer,(uint8_t)monitor_state[monitor_num].config_h.entry_size) == 0)
 	{
 		print_erro(monitor_error_msg[1], monitor_num);
 		print_erro("read failed\r\n");

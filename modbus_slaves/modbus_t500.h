@@ -38,16 +38,20 @@
 #define T500_REGLIST2_INPUT_NREGS  13
 
 #define T500_SLAVE_ADDRESS  	(0x01)
-#define T500_REG_OFFSET			(1)
+#define T500_REG_OFFSET			(4)
 
 typedef union
 {	
 	struct
 	{
-		uint8_t Device_id;	/* device id */
+		uint8_t Device_id;		/* device id */
+		uint8_t Entradas;		/* entradas locais */
+		uint8_t Ano;			/* timestamp */
+		uint8_t Mes;			/* timestamp */
+		uint8_t Dia;			/* timestamp */
 		uint8_t Hora;			/* timestamp */
-		uint8_t Minuto;		/* timestamp */
-		uint8_t Segundo;		/* timestamp */
+		uint8_t Minuto;			/* timestamp */
+		uint8_t Segundo;		/* timestamp */		
 		uint32_t Voltage_Phase_Avg; /* Volt */
 		uint32_t Current_Phase_Avg; /* Amp */
 		uint32_t Voltage_Line_Avg; /* Volt */
@@ -60,9 +64,9 @@ typedef union
 		uint32_t Caract_Power_Factor; /* scale ??? */
 		uint32_t Frequency; /* Hz */		
 	} Reg;	
-	uint32_t Regs32[11+1];
-	uint16_t Regs16[11*2+2];
-	uint8_t  Regs8[11*4+4];	
+	uint32_t Regs32[T500_REGLIST1_INPUT_NREGS+T500_REG_OFFSET/2];
+	uint16_t Regs16[T500_REGLIST1_INPUT_NREGS*2+T500_REG_OFFSET];
+	uint8_t  Regs8[T500_REGLIST1_INPUT_NREGS*4+T500_REG_OFFSET*2];
 }modbus_t500_input_register_list1;
 
 

@@ -145,7 +145,7 @@ void print_debug(const char *format, ...);
 #define LOG_METAFILE   		 "metafile.txt"
 #define MAX_NUM_OF_ENTRIES   (56400) // equivalente a 20 dias, max. 16 bits
 #define MAX_NUM_OF_MONITORES 3
-#define NUM_OF_FIELDS        4
+#define NUM_OF_FIELDS        5
 
 /* type verification code */
 static union
@@ -224,7 +224,7 @@ void timer_set(mon_timer_t *t, int usecs);
 
 typedef struct pt pt_t;
 
-typedef uint8_t (*data_reader)(uint8_t* buf, uint8_t max_len);
+typedef uint8_t (*data_reader)(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 
 typedef struct
 {
@@ -237,6 +237,7 @@ typedef struct
 	mon_timer_t write_timer;	
 	pt_t read_pt;
 	pt_t write_pt;
+	uint8_t slave_addr;
 	uint8_t codigo;
 	data_reader read_data;
 	uint32_t time_to_send;

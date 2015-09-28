@@ -44,7 +44,7 @@
 
 static modbus_null_input_register_list NULL_IRList;
 
-uint8_t slave_null_read_data(uint8_t* buf, uint8_t max_len);
+uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 
 #define MODBUS_NULL_SLAVE_SIMULATION	0
 #if MODBUS_NULL_SLAVE_SIMULATION	
@@ -64,7 +64,10 @@ uint8_t slave_null_read_data(uint8_t* buf, uint8_t max_len);
 #define PRESSURE_VALVE_INPUT_L 		PTCD_PTCD3
 #define PRESSURE_VALVE_INPUT_L_DIR 	PTCDD_PTCDD3
 
-uint8_t slave_null_read_data(uint8_t* buf, uint8_t max_len)
+#define INPUT_PORT_DIR		PTCDD
+#define INPUT_PORT_DATA		PTCD
+
+uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 {
 		
 #if MODBUS_NULL_SLAVE_SIMULATION == 0				
@@ -79,16 +82,13 @@ uint8_t slave_null_read_data(uint8_t* buf, uint8_t max_len)
 			/* return random data */	
 			for(nregs = NULL_REGLIST_OFFSET_NREGS; nregs < (NULL_REGLIST_INPUT_NREGS+NULL_REGLIST_OFFSET_NREGS);nregs++)
 			{				
-				NULL_IRList.Regs[nregs] = random_get();
+				NULL_IRList.Regs16[nregs] = random_get();
 			}
 #endif
 
-#if 1
-			OSTime timestamp;			
-			/* get and set timestamp of reading and device id */			
-			GetCalendarTime(&timestamp);	
-			SetTimeStamp(MODBUS_NULL, (INT8U*)NULL_IRList.Regs, &timestamp);
-#endif
+		
+			/* get and set timestamp of reading and device id */
+			SetModbusHeader(slave_addr, NULL_IRList.Regs8);
 			
 			/* limit number of registers to the max. available */
 			if(max_len > sizeof(modbus_null_input_register_list)) 
@@ -96,7 +96,7 @@ uint8_t slave_null_read_data(uint8_t* buf, uint8_t max_len)
 				max_len = sizeof(modbus_null_input_register_list);
 			}
 			
-			memcpy(buf,NULL_IRList.Regs,max_len);						
+			memcpy(buf,NULL_IRList.Regs8,max_len);						
 			return (max_len);			
 }
 
@@ -113,8 +113,46 @@ void Modus_slave_null_init(void)
 	
 	ADSetup(NormalPower, HighSpeed, ShortSampleTime, 20, 12);
 	
+#if 0	
 	SENSOR_LEVEL_INPUT_H_DIR = 1;
 	SENSOR_LEVEL_INPUT_L_DIR = 1;
 	PRESSURE_VALVE_INPUT_H_DIR = 1;
 	PRESSURE_VALVE_INPUT_L_DIR = 1;	
+#else
+	INPUT_PORT_DIR = 0; // input
+#endif
 }
+
+#ifndef _WIN32
+
+uint8_t SetTimeStamp (uint8_t device_id, uint8_t *data_ptr, OSTime *timestamp)
+{
+	
+	if(timestamp == NULL) return FALSE;
+	
+	data_ptr[0] = device_id;
+	data_ptr[1] = timestamp->RTC_Hour;
+	data_ptr[2] = timestamp->RTC_Minute;
+	data_ptr[3] = timestamp->RTC_Second;
+	
+	return TRUE;
+}
+
+uint8_t SetModbusHeader (uint8_t device_id, uint8_t *data_ptr)
+{
+	/* Get and set timestamp of reading */
+	OSDateTime timestamp;
+	GetDateTime(&timestamp);
+	
+	data_ptr[0] = device_id;
+	data_ptr[1] = INPUT_PORT_DATA;
+	data_ptr[2] = (uint8_t)(timestamp.date.RTC_Year);
+	data_ptr[3] = timestamp.date.RTC_Month;
+	data_ptr[4] = timestamp.date.RTC_Day;
+	data_ptr[5] = timestamp.time.RTC_Hour;
+	data_ptr[6] = timestamp.time.RTC_Minute;
+	data_ptr[7] = timestamp.time.RTC_Second;
+	
+	return TRUE;
+}
+#endif

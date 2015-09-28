@@ -156,13 +156,17 @@ static modbus_ts_holding_register_list    TS_HRList;
 #include "random_lib.h"
 #endif
 
-uint8_t ts_read_data(uint8_t* buf, uint8_t max_len);
+uint8_t ts_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 
-uint8_t ts_read_data(uint8_t* buf, uint8_t max_len)
+uint8_t ts_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 {
 	
 		uint8_t nregs = 0;	
-	
+		
+#if !MODBUS_SLAVE_TS_SIMULATION			
+		uint16_t start_addr = TS_REG_INPUT_START;
+#endif			
+		
 		memset(TS_IRList.Regs16,0x00,SIZEARRAY(TS_IRList.Regs16));
 
 		for(nregs = 0; nregs < TS_REG_INPUT_NREGS;nregs++)
@@ -171,17 +175,16 @@ uint8_t ts_read_data(uint8_t* buf, uint8_t max_len)
 	#if MODBUS_SLAVE_TS_SIMULATION			
 			/* return random data */
 			TS_IRList.Regs16[nregs + TS_REG_OFFSET] = random_get();
+			DelayTask(7000/1920); /* delay of communication @19200 = 7Bx1000/1920 B*/
 	#else				
-			Modbus_GetData(TS_SLAVE_ADDRESS, FC_READ_INPUT_REGISTERS, (uint8_t*)&TS_IRList.Regs[nregs + TS_REG_OFFSET],
-					T500_modbus_map_regs[nregs], 2);
+			
+			Modbus_GetData(slave_addr, FC_READ_INPUT_REGISTERS, (uint8_t*)&TS_IRList.Regs16[nregs + TS_REG_OFFSET],
+					start_addr++, 1);
 	#endif					
 		}
 
 
-		OSTime timestamp;	
-		/* Get and set timestamp of reading */
-		GetCalendarTime(&timestamp);
-		SetTimeStamp(MODBUS_TS, TS_IRList.Regs8, &timestamp);
+		SetModbusHeader(slave_addr, TS_IRList.Regs8);
 		
 		if(sizeof(TS_IRList.Regs8) < max_len)
 		{

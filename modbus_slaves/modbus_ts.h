@@ -33,13 +33,13 @@
 
 #include "stdint.h"
 
-#define TS_REG_INPUT_START  1000
-#define TS_REG_INPUT_NREGS  8
+#define TS_REG_INPUT_START  1001
+#define TS_REG_INPUT_NREGS  16
 
 #define TS_REG_HOLDING_START  0000
 #define TS_REG_HOLDING_NREGS  48
 
-#define TS_REG_OFFSET		  (2)
+#define TS_REG_OFFSET		  (4)
 
 #define TS_SLAVE_ADDRESS	(0x01)   // END – Endereço do TS na comunicação serial, faixa de ajuste: 1 a 31 
 
@@ -139,30 +139,34 @@ typedef union
 {	
 	struct   							/* Faixa de Medição ou Estado - Passo */
 	{
-		uint8_t Device_id;	/* device id */
-		uint8_t Hora;			/* timestamp of last reading */
-		uint8_t Minuto;		/* timestamp of last reading  */
-		uint8_t Segundo;		/* timestamp of last reading */
-		uint8_t Temperatura_oleo; 			/* -55...200 - 0,1 */
-		uint8_t Temperatura_enrolamento;  	/* -55...200 - 0,1 */
-		uint8_t Temperatura_RTD2;				/* -55...200 - 0,1 */
-		uint8_t Temperatura_RTD3;				/* -55...200 - 0,1 */
-		uint8_t Temperatura_maxima_oleo;  	/* -55...200 - 0,1 */
-		uint8_t Temperatura_maxima_enrolamento; /* -55...200 - 0,1 */
-		uint8_t Temperatura_maxima_RTD2;		/* -55...200 - 0,1 */
-		uint8_t Temperatura_maxima_RTD3;  	/* -55...200 - 0,1 */
-		uint8_t Gradiente_Final_Temperatura; 	/* -55...55 - 0,01 */
-		uint8_t Percentual_carga;				/* 0...100 - 0,1 */
-		uint8_t Corrente_secundario_TC;		/* 0...10 - 0,01 */
-		uint8_t Corrente_transformador;       /* 0...99,98 - 0,01 */
-		Estado_Reles_t Estado_Reles;		/* bitmap */
-		uint8_t Variavel_erros;				/* ?? */
-		Opcionais_t Opcionais;				/* bitmap */
-		Alarmes_t Reles;					/* bitmap */
+		uint8_t Device_id;		/* device id */
+		uint8_t Entradas;		/* entradas locais */
+		uint8_t Ano;			/* timestamp */
+		uint8_t Mes;			/* timestamp */
+		uint8_t Dia;			/* timestamp */
+		uint8_t Hora;			/* timestamp */
+		uint8_t Minuto;			/* timestamp */
+		uint8_t Segundo;		/* timestamp */	
+		uint16_t Temperatura_oleo; 				/* -55...200 - 0,1 */
+		uint16_t Temperatura_enrolamento;  		/* -55...200 - 0,1 */
+		uint16_t Temperatura_RTD2;				/* -55...200 - 0,1 */
+		uint16_t Temperatura_RTD3;				/* -55...200 - 0,1 */
+		uint16_t Temperatura_maxima_oleo;  		/* -55...200 - 0,1 */
+		uint16_t Temperatura_maxima_enrolamento; /* -55...200 - 0,1 */
+		uint16_t Temperatura_maxima_RTD2;		/* -55...200 - 0,1 */
+		uint16_t Temperatura_maxima_RTD3;  		/* -55...200 - 0,1 */
+		uint16_t Gradiente_Final_Temperatura; 	/* -55...55 - 0,01 */
+		uint16_t Percentual_carga;				/* 0...100 - 0,1 */
+		uint16_t Corrente_secundario_TC;		/* 0...10 - 0,01 */
+		uint16_t Corrente_transformador;       /* 0...99,98 - 0,01 */
+		uint16_t Estado_Reles;					/* bitmap */
+		uint16_t Variavel_erros;				/* ?? */
+		uint16_t Opcionais;						/* bitmap */
+		uint16_t Reles;							/* bitmap */
 	}Reg;	
-	uint8_t Regs8[16+4];
-	uint16_t Regs16[8+2];
-	uint32_t Regs32[4+1];
+	uint8_t Regs8[32+8];
+	uint16_t Regs16[16+4];
+	uint32_t Regs32[8+2];
 }modbus_ts_input_register_list;
 
 

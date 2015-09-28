@@ -79,7 +79,7 @@ static uint8_t 		term_cmd_line_ndx;
 static uint8_t 		term_n_cmd;
 static command_t 	*term_cmds[MAX_CMDS];
 
-static unsigned char (*putch)(char);
+static void (*putch)(char);
 
 
 void getchar_terminal(char *c)
@@ -93,15 +93,7 @@ void getchar_terminal(char *c)
 
 void putchar_terminal(char c)
 {
-	INT8U retries = 3;
-    while(c != (char)putch(c))
-    {
-    	DelayTask(100);
-    	if(--retries == 0)
-    	{
-    		return;
-    	}
-    }
+	putch(c);
 }
 
 /*****************************************************************************
@@ -244,18 +236,13 @@ static void term_cmd_help(char *param)
   char *name;
 
   (void)param;
-  printf_usb("\r\nI understand the following commands:\r\n");
+  printf_usb("\r\nSupported commands:\r\n");
 
   for(x=0; x < term_n_cmd; x++)
   {
     printf_usb("  ");
     name = (char*)term_cmds[x]->txt;
-    y = 0;
-    while(*name)
-    {
-      y++;
-      name++;
-    }
+    y = (int)strlen(name);
     printf_usb((char *)term_cmds[x]->txt);
     for(y;y<MAX_CMD_SIZE;y++)
     {
@@ -305,7 +292,7 @@ static void term_print_prompt(void)
 *****************************************************************************/
 static void term_print_greeting(void)
 {
-	printf_terminal("CDC Virtual Comm Demo.\r\n");
+	printf_terminal("Digite um comando:\r\n");
 }
 
 /*****************************************************************************
@@ -354,9 +341,11 @@ static int term_find_command(char *name)
 * Assumptions:
 *    --
 *****************************************************************************/
-void terminal_init(unsigned char (*putch_)(char))
+void terminal_init(void (*putch_)(char))
 {
-  term_cmd_line[sizeof(term_cmd_line)-1]='\0';
+  term_cmd_line[0]='\0';
+  //memset(term_cmd_line,0x00,sizeof(term_cmd_line));
+  //term_cmd_line[sizeof(term_cmd_line)-1]='\0';
   term_cmd_line_ndx=0;
 
   term_cmds[0]=(void *)&term_help_cmd;
@@ -365,7 +354,7 @@ void terminal_init(unsigned char (*putch_)(char))
   putch=putch_;
 
  //print_greeting();
- //term_print_prompt();
+  term_print_prompt();
 }
 
 /*****************************************************************************
@@ -392,38 +381,17 @@ void terminal_process(void)
   {
 	
 	getchar_terminal(&c);
-#if 0	
-    switch(c)
-    {
-    	case '\n':
-    		break;
-    	case '\r':
-    		break;
-    	case DEL:
-    		if (term_cmd_line_ndx)
-			{
-			  while(c!=(char)(*putch)(c)){};
-			}
-    		break;  		
-    	default:
-      	  if (SilentMode == FALSE)
-      	  {
-      		  while(c!=(char)(*putch)(c)){};
-      	  }    		
-    }
-#else
-	  if (SilentMode == FALSE)
+
+	if (SilentMode == FALSE)
+	{
+	  if(c !='\n' && c!='\r')
 	  {
-		  if(c !='\n' && c!='\r')
+		  if(c != DEL || term_cmd_line_ndx)
 		  {
-			  if(c != DEL || term_cmd_line_ndx)
-			  {
-				  while(c!=(char)(*putch)(c)){};
-			  }			  
-		  }
-	  } 
-    
-#endif
+			  putchar_terminal(c);
+		  }			  
+	  }
+	} 
         
     
     /* Execute command if enter is received, or term_cmd_line is full. */
@@ -437,18 +405,21 @@ void terminal_process(void)
          parameters string. */
       term_cmd_line[term_end]=term_cmd_line[term_cmd_line_ndx]='\0';
 
+      if(term_end == 0) goto exit;
+      
       /* Identify command. */
       term_x=term_find_command(term_cmd_line+term_start);
       
       /* Command not found. */
       if (term_x == -1)
-      {
-        printf_terminal("\r\nUnknown command!\r\n");
+      {    	
+    	printf_terminal("\r\nUnknown command!\r\n");
       }
       else
       {
         (*term_cmds[term_x]->func)(term_cmd_line+term_end+1);
       }
+      exit:
       term_cmd_line_ndx=0;
       term_print_prompt();      
       SetSilentMode((char)FALSE);
