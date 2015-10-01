@@ -24,7 +24,6 @@
 #ifndef IIC_H
 #define IIC_H
 
-#include <hidef.h> /* for EnableInterrupts macro */
 #include "derivative.h" /* include peripheral declarations */
 #include "tipos.h"
 

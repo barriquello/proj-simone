@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<?fileVersion 4.0.0?><cproject storage_type_id="org.eclipse.cdt.core.XmlProjectDescriptionStorage">
+	<storageModule moduleId="org.eclipse.cdt.core.settings">
+		<cconfiguration id="net.sourceforge.usbdm.cdt.coldfire.exe.debug.configuration.1057516438">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="net.sourceforge.usbdm.cdt.coldfire.exe.debug.configuration.1057516438" moduleId="org.eclipse.cdt.core.settings" name="Debug">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.debug,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="${usbdm_rm_command} -rf" description="" id="net.sourceforge.usbdm.cdt.coldfire.exe.debug.configuration.1057516438" name="Debug" parent="net.sourceforge.usbdm.cdt.coldfire.exe.debug.configuration">
+					<folderInfo id="net.sourceforge.usbdm.cdt.coldfire.exe.debug.configuration.1057516438." name="/" resourcePath="">
+						<toolChain id="net.sourceforge.usbdm.cdt.coldfire.exe.debug.toolchain.1726519344" name="Coldfire-USBDM Toolchain" superClass="net.sourceforge.usbdm.cdt.coldfire.exe.debug.toolchain">
+							<option defaultValue="net.sourceforge.usbdm.cdt.toolchain.debug.debugLevel.max" id="net.sourceforge.usbdm.cdt.toolchain.debug.debugLevel.1858719482" name="Debug level" superClass="net.sourceforge.usbdm.cdt.toolchain.debug.debugLevel" valueType="enumerated"/>
+							<option defaultValue="net.sourceforge.usbdm.gnu.c.optimization.level.none" id="net.sourceforge.usbdm.cdt.toolchain.optimization.level.193309752" name="Optimization level" superClass="net.sourceforge.usbdm.cdt.toolchain.optimization.level" valueType="enumerated"/>
+							<option id="net.sourceforge.usbdm.cdt.coldfire.toolchain.mcpu.182647216" name="Cpu (-mcpu=)" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.mcpu" value="net.sourceforge.usbdm.cdt.coldfire.toolchain.mcpu.51" valueType="enumerated"/>
+							<option id="net.sourceforge.usbdm.cdt.toolchain.debug.mdebugformat.1435780433" name="Debug format" superClass="net.sourceforge.usbdm.cdt.toolchain.debug.mdebugformat" value="net.sourceforge.usbdm.cdt.toolchain.debug.mdebugformat.none" valueType="enumerated"/>
+							<option id="net.sourceforge.usbdm.cdt.toolchain.debug.rdimon.1879249991" name="Use semi-hosting library (--specs=rdimon.specs)" superClass="net.sourceforge.usbdm.cdt.toolchain.debug.rdimon" value="false" valueType="boolean"/>
+							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF" id="net.sourceforge.usbdm.cdt.toolchain.targetPlatform.1570350473" name="USBDM common base platform" superClass="net.sourceforge.usbdm.cdt.toolchain.targetPlatform"/>
+							<builder buildPath="${workspace_loc:/mcf51je256}/Debug" id="net.sourceforge.usbdm.cdt.toolchain.builder.596916424" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="net.sourceforge.usbdm.cdt.toolchain.builder"/>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.cppAssembler.658279121" name="Coldfire Assembler" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.cppAssembler">
+								<option id="net.sourceforge.usbdm.cdt.toolchain.cppAssembler.Directories.includePaths.1651029844" name="Include paths (-I)" superClass="net.sourceforge.usbdm.cdt.toolchain.cppAssembler.Directories.includePaths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Headers&quot;"/>
+								</option>
+								<inputType id="net.sourceforge.usbdm.cdt.coldfire.toolchain.cppAssembler.inputType.1424835203" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.cppAssembler.inputType"/>
+							</tool>
+							<tool command="gcc" id="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.compiler.1352374239" name="Coldfire C Compiler" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.compiler">
+								<option id="net.sourceforge.usbdm.gnu.c.compiler.option.include.paths.42112330" name="Include paths (-I)" superClass="net.sourceforge.usbdm.gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Headers&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../brtos/includes&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../FatFS&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../minINI&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../modbus_slaves&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../modbus_master&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../devices&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../libs&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../monitor&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../monitor/pt&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../simon-api&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../terminal&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../colduino/Sources/USB/&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../colduino/Sources/USB/app/cdc&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../colduino/Sources/USB/app/msd&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../colduino/Sources/USB/common/&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../colduino/Sources/USB/class/&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../colduino/Sources/USB/driver/&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../colduino/Sources/USB/driver/cfv1&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../colduino/Sources/drivers/&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources&quot;"/>
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../hal/GCC_CFV1&quot;"/>
+								</option>
+								<inputType id="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.compiler.input.599676133" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.compiler.input"/>
+							</tool>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.cpp.compiler.1666134319" name="Coldfire C++ Compiler" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.cpp.compiler">
+								<option id="net.sourceforge.usbdm.gnu.cpp.compiler.option.include.paths.435479168" name="Include paths (-I)" superClass="net.sourceforge.usbdm.gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Headers&quot;"/>
+								</option>
+							</tool>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.archiver.1396341130" name="Coldfire Archiver" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.archiver"/>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.linker.943054787" name="Coldfire C Linker" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.linker">
+								<option id="net.sourceforge.usbdm.cdt.toolchain.c.linker.linkerFile.364738002" name="Linker File (-T option):" superClass="net.sourceforge.usbdm.cdt.toolchain.c.linker.linkerFile" value="Linker-rom.ld" valueType="string"/>
+								<option id="gnu.c.link.option.paths.1704515550" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Settings/Linker_Files&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.636824032" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.cpp.linker.1981509410" name="Coldfire C++ Linker" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.cpp.linker">
+								<option id="net.sourceforge.usbdm.cdt.toolchain.cpp.linker.linkerFile.1863564398" name="Linker File (-T option):" superClass="net.sourceforge.usbdm.cdt.toolchain.cpp.linker.linkerFile" value="Linker-rom.ld" valueType="string"/>
+								<option id="gnu.cpp.link.option.paths.746428353" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Settings/Linker_Files&quot;"/>
+								</option>
+							</tool>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.lister.246073675" name="Coldfire Disassembler" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.lister">
+								<option id="net.sourceforge.usbdm.cdt.toolchain.lister.debugging.62526891" name="Display debug information in object file (-g)" superClass="net.sourceforge.usbdm.cdt.toolchain.lister.debugging" value="false" valueType="boolean"/>
+							</tool>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.sizer.1993669404" name="Coldfire Sizer" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.sizer"/>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.sym.1285432424" name="Coldfire Symbol Table" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.sym"/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="GCC_CFV1|terminal|simon-api|monitor|modbus_slaves|modbus_master|minINI|libs|CodeWarrior_CFV1|FatFS|devices|app|brtos|drivers|USB" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+						<entry excluding="option/unicode.c|option/ccsbcs.c|option/cc950.c|option/cc949.c|option/cc936.c|option/cc932.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="FatFS"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="GCC_CFV1"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="USB"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="app"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="brtos"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="devices"/>
+						<entry excluding="Timer1Second.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="drivers"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="libs"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="minINI"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="modbus_master"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="modbus_slaves"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="monitor"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="simon-api"/>
+						<entry flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name="terminal"/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+		<cconfiguration id="net.sourceforge.usbdm.cdt.coldfire.exe.release.configuration.532355455">
+			<storageModule buildSystemId="org.eclipse.cdt.managedbuilder.core.configurationDataProvider" id="net.sourceforge.usbdm.cdt.coldfire.exe.release.configuration.532355455" moduleId="org.eclipse.cdt.core.settings" name="Release">
+				<externalSettings/>
+				<extensions>
+					<extension id="org.eclipse.cdt.core.ELF" point="org.eclipse.cdt.core.BinaryParser"/>
+					<extension id="org.eclipse.cdt.core.GmakeErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.CWDLocator" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GCCErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GASErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+					<extension id="org.eclipse.cdt.core.GLDErrorParser" point="org.eclipse.cdt.core.ErrorParser"/>
+				</extensions>
+			</storageModule>
+			<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+				<configuration artifactName="${ProjName}" buildArtefactType="org.eclipse.cdt.build.core.buildArtefactType.exe" buildProperties="org.eclipse.cdt.build.core.buildType=org.eclipse.cdt.build.core.buildType.release,org.eclipse.cdt.build.core.buildArtefactType=org.eclipse.cdt.build.core.buildArtefactType.exe" cleanCommand="${usbdm_rm_command} -rf" description="" id="net.sourceforge.usbdm.cdt.coldfire.exe.release.configuration.532355455" name="Release" parent="net.sourceforge.usbdm.cdt.coldfire.exe.release.configuration">
+					<folderInfo id="net.sourceforge.usbdm.cdt.coldfire.exe.release.configuration.532355455." name="/" resourcePath="">
+						<toolChain id="net.sourceforge.usbdm.cdt.coldfire.exe.release.toolchain.1418963070" name="Coldfire-USBDM Toolchain" superClass="net.sourceforge.usbdm.cdt.coldfire.exe.release.toolchain">
+							<option defaultValue="net.sourceforge.usbdm.cdt.toolchain.debug.debugLevel.none" id="net.sourceforge.usbdm.cdt.toolchain.debug.debugLevel.1622098223" name="Debug level" superClass="net.sourceforge.usbdm.cdt.toolchain.debug.debugLevel" valueType="enumerated"/>
+							<option defaultValue="net.sourceforge.usbdm.gnu.c.optimization.level.most" id="net.sourceforge.usbdm.cdt.toolchain.optimization.level.1648962775" name="Optimization level" superClass="net.sourceforge.usbdm.cdt.toolchain.optimization.level" valueType="enumerated"/>
+							<option id="net.sourceforge.usbdm.cdt.coldfire.toolchain.mcpu.191657055" name="Cpu (-mcpu=)" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.mcpu" value="net.sourceforge.usbdm.cdt.coldfire.toolchain.mcpu.51" valueType="enumerated"/>
+							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF" id="net.sourceforge.usbdm.cdt.toolchain.targetPlatform.953785770" name="USBDM common base platform" superClass="net.sourceforge.usbdm.cdt.toolchain.targetPlatform"/>
+							<builder buildPath="${workspace_loc:/mcf51je256}/Release" id="net.sourceforge.usbdm.cdt.toolchain.builder.2086200522" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="net.sourceforge.usbdm.cdt.toolchain.builder"/>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.cppAssembler.831192781" name="Coldfire Assembler" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.cppAssembler">
+								<option id="net.sourceforge.usbdm.cdt.toolchain.cppAssembler.Directories.includePaths.117803058" name="Include paths (-I)" superClass="net.sourceforge.usbdm.cdt.toolchain.cppAssembler.Directories.includePaths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Headers&quot;"/>
+								</option>
+								<inputType id="net.sourceforge.usbdm.cdt.coldfire.toolchain.cppAssembler.inputType.2081831462" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.cppAssembler.inputType"/>
+							</tool>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.compiler.1590299186" name="Coldfire C Compiler" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.compiler">
+								<option id="net.sourceforge.usbdm.gnu.c.compiler.option.include.paths.1136829295" name="Include paths (-I)" superClass="net.sourceforge.usbdm.gnu.c.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Headers&quot;"/>
+								</option>
+								<inputType id="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.compiler.input.1208916679" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.compiler.input"/>
+							</tool>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.cpp.compiler.1210010261" name="Coldfire C++ Compiler" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.cpp.compiler">
+								<option id="net.sourceforge.usbdm.gnu.cpp.compiler.option.include.paths.992480664" name="Include paths (-I)" superClass="net.sourceforge.usbdm.gnu.cpp.compiler.option.include.paths" valueType="includePath">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Headers&quot;"/>
+								</option>
+							</tool>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.archiver.1866457273" name="Coldfire Archiver" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.archiver"/>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.linker.702369209" name="Coldfire C Linker" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.linker">
+								<option id="net.sourceforge.usbdm.cdt.toolchain.c.linker.linkerFile.1496608448" name="Linker File (-T option):" superClass="net.sourceforge.usbdm.cdt.toolchain.c.linker.linkerFile" value="Linker-rom.ld" valueType="string"/>
+								<option id="gnu.c.link.option.paths.1765941765" name="Library search path (-L)" superClass="gnu.c.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Settings/Linker_Files&quot;"/>
+								</option>
+								<inputType id="cdt.managedbuild.tool.gnu.c.linker.input.56066170" superClass="cdt.managedbuild.tool.gnu.c.linker.input">
+									<additionalInput kind="additionalinputdependency" paths="$(USER_OBJS)"/>
+									<additionalInput kind="additionalinput" paths="$(LIBS)"/>
+								</inputType>
+							</tool>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.cpp.linker.1388306965" name="Coldfire C++ Linker" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.cpp.linker">
+								<option id="net.sourceforge.usbdm.cdt.toolchain.cpp.linker.linkerFile.123449907" name="Linker File (-T option):" superClass="net.sourceforge.usbdm.cdt.toolchain.cpp.linker.linkerFile" value="Linker-rom.ld" valueType="string"/>
+								<option id="gnu.cpp.link.option.paths.1126428538" name="Library search path (-L)" superClass="gnu.cpp.link.option.paths" valueType="libPaths">
+									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Project_Settings/Linker_Files&quot;"/>
+								</option>
+							</tool>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.lister.1200559170" name="Coldfire Disassembler" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.lister"/>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.sizer.1042279660" name="Coldfire Sizer" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.sizer"/>
+							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.sym.184386223" name="Coldfire Symbol Table" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.sym"/>
+						</toolChain>
+					</folderInfo>
+					<sourceEntries>
+						<entry excluding="FatFS/option/unicode.c|FatFS/option/ccsbcs.c|FatFS/option/cc950.c|FatFS/option/cc949.c|FatFS/option/cc936.c|FatFS/option/cc932.c|drivers/Timer1Second.c" flags="VALUE_WORKSPACE_PATH|RESOLVED" kind="sourcePath" name=""/>
+					</sourceEntries>
+				</configuration>
+			</storageModule>
+			<storageModule moduleId="org.eclipse.cdt.core.externalSettings"/>
+		</cconfiguration>
+	</storageModule>
+	<storageModule moduleId="cdtBuildSystem" version="4.0.0">
+		<project id="mcf51je256.net.sourceforge.usbdm.cdt.newProjectType.exe.1859464747" name="Executable" projectType="net.sourceforge.usbdm.cdt.newProjectType.exe"/>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.core.LanguageSettingsProviders"/>
+	<storageModule moduleId="refreshScope" versionNumber="2">
+		<configuration configurationName="Release">
+			<resource resourceType="PROJECT" workspacePath="/mcf51je256"/>
+		</configuration>
+		<configuration configurationName="Debug">
+			<resource resourceType="PROJECT" workspacePath="/mcf51je256"/>
+		</configuration>
+	</storageModule>
+	<storageModule moduleId="org.eclipse.cdt.internal.ui.text.commentOwnerProjectMappings"/>
+	<storageModule moduleId="org.eclipse.cdt.core.language.mapping">
+		<project-mappings>
+			<content-type-mapping configuration="" content-type="org.eclipse.cdt.core.cHeader" language="org.eclipse.cdt.core.gcc"/>
+			<content-type-mapping configuration="" content-type="org.eclipse.cdt.core.cSource" language="org.eclipse.cdt.core.gcc"/>
+		</project-mappings>
+	</storageModule>
+	<storageModule moduleId="scannerConfiguration">
+		<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId=""/>
+		<scannerConfigBuildInfo instanceId="net.sourceforge.usbdm.cdt.coldfire.exe.debug.configuration.1057516438;net.sourceforge.usbdm.cdt.coldfire.exe.debug.configuration.1057516438.;net.sourceforge.usbdm.cdt.coldfire.toolchain.c.compiler.1352374239;net.sourceforge.usbdm.cdt.coldfire.toolchain.c.compiler.input.599676133">
+			<autodiscovery enabled="true" problemReportingEnabled="true" selectedProfileId="net.sourceforge.usbdm.cdt.tools.UsbdmManagedMakePerProjectProfileC"/>
+		</scannerConfigBuildInfo>
+	</storageModule>
+</cproject>

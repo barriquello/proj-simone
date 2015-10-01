@@ -904,6 +904,7 @@ void term_cmd_modbus(char *param)
 			}
 			break;
 		default:
+			break;
 			
 	}
 	param[0] = 0;

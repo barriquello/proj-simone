@@ -46,6 +46,10 @@
 #define SERVER_NAME "emon-gpsnetcms.rhcloud.com"
 #endif
 
+#ifndef API_KEY
+#define API_KEY 			"apikey=90a004390f3530d0ba10199ac2b1ac3d"
+#endif
+
 #ifndef FALSE
 #define FALSE 0
 #endif

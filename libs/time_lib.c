@@ -39,6 +39,11 @@
 #define CONST const
 #endif
 
+#if COLDUINO && __GNUC__
+#define STATIC
+#else
+#define STATIC static
+#endif
 static struct tm tmbuf;
 
 CONST uint8_t _ytab[2][12] = {
@@ -53,7 +58,7 @@ uint8_t _daylight = 0;              // Non-zero if daylight savings time is used
 long _dstbias = 0;                  // Offset for Daylight Saving Time
 long _timezone = 0;                 // Difference in seconds between GMT and local time
 
-static struct tm *gmtime_r(const time_t *timer, struct tm *tmbuf) 
+STATIC struct tm *gmtime_r(const time_t *timer, struct tm *tmbuf)
 {
   time_t time = *timer;
   uint32_t dayclock, dayno;
@@ -84,7 +89,7 @@ static struct tm *gmtime_r(const time_t *timer, struct tm *tmbuf)
   return tmbuf;
 }
 
-static struct tm *localtime_r(const time_t *timer, struct tm *tmbuf) 
+STATIC struct tm *localtime_r(const time_t *timer, struct tm *tmbuf)
 {
   time_t t;
 

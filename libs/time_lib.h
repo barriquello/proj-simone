@@ -27,7 +27,9 @@
 #ifndef _WIN32
 #include "BRTOS.h"
 #include "stdint.h"
+#if !__GNUC__
 typedef uint32_t time_t;
+#endif
 
 #if COLDUINO
 #include <time.h>
@@ -72,16 +74,19 @@ struct tm
 
 #endif
 
+
 extern long _timezone;
 extern const char *_days[];
 extern const char *_days_abbrev[];
 extern const char *_months[];
 extern const char *_months_abbrev[];
 
+#if !__GNUC__
 time_t mktime(struct tm *tmbuf);
 struct tm *localtime(const time_t *timer);
 struct tm *gmtime(const time_t *timer);
 size_t strftime(char *s, size_t maxsize, const char *format, const struct tm *t);
+#endif
 
 #ifndef _WIN32
 time_t ConvertDateTimeToUnixTime(OSDateTime * dt);

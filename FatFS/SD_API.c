@@ -39,7 +39,11 @@
 #endif
 
 #if COLDUINO
-#define nop()		asm{NOP}		
+#if __GNUC__
+#define nop() 		__asm__ volatile ("nop");
+#else
+#define nop()		asm{NOP}
+#endif
 #elif ARDUINO	
 #define nop()		asm("NOP");
 #endif	

@@ -11,6 +11,7 @@
 #include "data_types.h"
 #include "crc16.h"
 #include "modbus.h"
+#include "string.h"
 
 
 #if (PROCESSOR == COLDFIRE_V1)
@@ -696,7 +697,7 @@ sint32_t Modbus_receive(const uint8_t _byte) {
 //==============================================================================
 sint32_t Modbus_process_answ(uint8_t *ptr_data, uint16_t num_regs) {
     sint32_t err;
-    uint8_t idx;
+    //uint8_t idx;
 
     // Test at timeout
     if ((s_answ->answLen == 0) || (s_answ->answLen < MIN_ANSWER_LENGTH)) {

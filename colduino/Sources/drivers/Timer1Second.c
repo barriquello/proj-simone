@@ -24,6 +24,7 @@
 
 #include "hardware.h"
 #include "Timer1Second.h"
+#include "HAL.h"
 
 void Timer1SecondSetup()
 {
@@ -65,9 +66,17 @@ void Clear1SecondInterrupt()
 
 #if (NESTING_INT == 1)
 #pragma TRAP_PROC
+#if __GNUC__
+__attribute__((__interrupt__))
+#endif
 void timeOfDayInterrupt(void)
 #else
-interrupt void timeOfDayInterrupt(void)
+#if __GNUC__
+__attribute__((__interrupt__))
+#else
+interrupt
+#endif
+void timeOfDayInterrupt(void)
 #endif
 {
 	Clear1SecondInterrupt();

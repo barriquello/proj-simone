@@ -226,12 +226,5 @@ typedef union
 	uint32_t Regs32[46/4];
 }modbus_ts_holding_register_list;
 
-#if COLDUINO  
-#include "mb.h"
-eMBErrorCode eMBRegInputCB_TS( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs );
-eMBErrorCode eMBRegHoldingCB_TS( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNRegs, eMBRegisterMode eMode );
-eMBErrorCode eMBRegCoilsCB_TS( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNCoils, eMBRegisterMode eMode );
-eMBErrorCode eMBRegDiscreteCB_TS( UCHAR * pucRegBuffer, USHORT usAddress, USHORT usNDiscrete );
-#endif
 
 #endif /* MODBUS_TS_H_ */

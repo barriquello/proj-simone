@@ -21,8 +21,7 @@
  * Includes
  *****************************************************************************/
 #include "BRTOS.h"
-#include "hidef.h"          		/* for EnableInterrupts macro */
-#include "derivative.h"     		/* include peripheral declarations */
+#include "hardware.h"     		/* include peripheral declarations */
 #include "types.h"          		/* Contains User Defined Data Types */
 #include "usb_cdc.h"        		/* USB CDC Class Header File */
 #include "terminal.h"			/* Informs the size of the terminal buffer */

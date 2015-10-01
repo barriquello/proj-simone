@@ -50,15 +50,15 @@ extern "C"
 void main_app(void)
 {
 	
-#if 1
-
+#if !SIMULATION
 	/* init the MCU system */
 	System_Init();
+#endif
 
 	/* Init BRTOS system */
 	BRTOS_Init();	
 	
-#if COLDUINO	
+#if COLDUINO && !SIMULATION
 	led_onboard_init();	 /* Init LED onboard */
 	Modbus_init(); 		 /* Init Modbus */
 	Modus_slave_null_init(); /* Init Modbus Slave Null */
@@ -147,7 +147,7 @@ void main_app(void)
 	{
 		while (1){};
 	};
-#endif	
+
 }
 
 /* function to handle any system error */

@@ -187,7 +187,7 @@ static clock_t clock_time(void)
 
 #else /* _WIN32 */
 
-static clock_t clock = 0;
+static clock_t my_clock = 0;
 
 clock_t clock_time(void)
 {
@@ -196,14 +196,14 @@ clock_t clock_time(void)
   OS_SR_SAVE_VAR;
   
   OSEnterCritical();
-  	  local = clock;
+  	  local = my_clock;
   OSExitCritical();
   return local;
 }
 
 void BRTOS_TimerHook(void)
 {
-	clock++;
+	my_clock++;
 }
 #endif /* _WIN32 */
 

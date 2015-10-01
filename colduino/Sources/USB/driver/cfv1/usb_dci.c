@@ -47,9 +47,14 @@
 /****************************************************************************
  * Global Variables
  ****************************************************************************/
+#if __GNUC__
+__attribute__ ((section(".usb_bdt")))
+#else
 #pragma define_section usb_bdt ".usb_bdt" RW
 /* location for BDT Table and buff */
-__declspec (usb_bdt) static uint_8 g_Mem[BYTES_1024];
+__declspec (usb_bdt)
+#endif
+static uint_8 g_Mem[BYTES_1024];
 /* Pointer to BDT Map Structure */
 BDTMAP *g_bdtmap = NULL;
 /* per endpoint per direction bdt index structure */

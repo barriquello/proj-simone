@@ -21,8 +21,7 @@
  * Includes
  *****************************************************************************/
 #include "types.h"          /* User Defined Data Types */
-#include "hidef.h"          /* for EnableInterrupts macro */
-#include "derivative.h"     /* include peripheral declarations */
+#include "hardware.h"     /* include peripheral declarations */
 #include "usb_msc.h"		/* USB MSC Class Header File */
 #include "disk.h"			/* Disk Application Header File */
 #include "usb_class.h"

@@ -131,8 +131,6 @@ Command Description
 /* ----------------------- Modbus includes ----------------------------------*/
 #if COLDUINO
 #pragma warn_unusedarg off
-#include "mb.h"
-#include "mbport.h"
 #endif
 
 #include "modbus.h"

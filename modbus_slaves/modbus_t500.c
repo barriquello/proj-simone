@@ -41,7 +41,7 @@
 #include "modbus_t500.h"
 
 
-#ifndef _WIN32
+#if COLDUINO && !__GNUC__
 
 /* Input registers */
 CONST	uint16_t T500_Voltage_Phase_Avg = 2; /* Volt */
@@ -54,7 +54,21 @@ CONST	uint16_t T500_Total_Apparent_Power = 50; /* VA */
 CONST	uint16_t T500_Current_Angle_Phase_A = 58; /* deg */
 CONST	uint16_t T500_Total_Power_Factor = 66; /* scale ??? */
 CONST	uint16_t T500_Caract_Power_Factor = 74; /* scale ??? */
-CONST	uint16_t T500_Frequency = 82; /* Hz */	
+CONST	uint16_t T500_Frequency = 82; /* Hz */
+
+#else
+
+#define T500_Voltage_Phase_Avg 		2 /* Volt */
+#define T500_Current_Phase_Avg  	10 /* Amp */
+#define T500_Voltage_Line_Avg  		18 /* Volt */
+#define T500_Total_Power_Factor_Sign  26 /* scale ??? */
+#define T500_Total_Real_Power  		34 /* W*/
+#define T500_Total_Reactive_Power  	42 /* VAR*/
+#define T500_Total_Apparent_Power  	50 /* VA */
+#define T500_Current_Angle_Phase_A  58 /* deg */
+#define T500_Total_Power_Factor  	66 /* scale ??? */
+#define T500_Caract_Power_Factor  	74 /* scale ??? */
+#define T500_Frequency  			82 /* Hz */
 
 #endif
 
@@ -62,8 +76,8 @@ CONST	uint16_t T500_Frequency = 82; /* Hz */
 /* ----------------------- Modbus includes ----------------------------------*/
 #if COLDUINO
 #pragma warn_unusedarg off
-#include "mb.h"
-#include "mbport.h"
+//#include "mb.h"
+//#include "mbport.h"
 #endif
 
 #include "modbus.h"

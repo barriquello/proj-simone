@@ -30,6 +30,9 @@
 #if COLDUINO
 #include "types.h"
 #include "virtual_com.h"
+#if __GNUC__
+#include "stdint.h"
+#endif
 #else
 #define printf_usb(x)	
 #endif

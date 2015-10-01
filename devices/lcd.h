@@ -51,8 +51,7 @@
 #define BACKLIGHT_DIR PTCDD_PTCDD7
 #define BACKLIGHT	  PTCD_PTCD7
 
-
-
+#if 0
 #define  delay_450ns()      asm   \
                             {     \
                               nop \
@@ -87,6 +86,10 @@
                               nop \
                               nop \
                             }
+#else
+#define  delay_450ns()
+#define  delay_600ns()
+#endif
 
 void printf_lcd(char *string);
 void instr_lcd(char comando);

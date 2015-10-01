@@ -83,8 +83,8 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 uint8_t Modbus_init(void);
 
 #if PLATAFORMA == COLDUINO
-#include "port.h"
-void Modbus_SlaveSelect(eMBSlaves slave_option);
+//#include "port.h"
+//void Modbus_SlaveSelect(eMBSlaves slave_option);
 #endif
 
 

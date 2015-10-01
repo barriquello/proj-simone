@@ -39,8 +39,7 @@
  * Includes
  *****************************************************************************/
 #include "types.h"          /* User Defined Data Types */
-#include "hidef.h"          /* for EnableInterrupts macro */
-#include "derivative.h"     /* include peripheral declarations */
+#include "hardware.h"     /* include peripheral declarations */
 #include "user_config.h"    /* User Configuration File */
 /******************************************************************************
  * Constants - None

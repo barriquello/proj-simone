@@ -27,6 +27,12 @@
 // driver RTC DS1307
 // DS1307Address 0xD0
 
+#if __GNUC__
+#define STATIC
+#else
+#define STATIC static
+#endif
+
 #include "BRTOS.h"
 #include "sw_i2c.h"
 #include "iic.h"
@@ -200,19 +206,19 @@ static INT8U bcd2bin(INT8U val)
 }
 
 /* return  0 = 24h,  1 = 12h */
-static INT8U Get_Hour_Format(void)
+STATIC INT8U Get_Hour_Format(void)
 {	
 	INT8U address_read = RTC_RandomRead(2);
 	return (address_read & (1<<6));
 }
 
-static void Set_24h_Format(void)
+STATIC void Set_24h_Format(void)
 {
 	INT8U address_read = RTC_RandomRead(2);
 	RTC_ByteWrite(2, address_read & 0b11011111);
 }
 
-static void Set_AM_PM_Mode(void)
+STATIC void Set_AM_PM_Mode(void)
 {
 	INT8U address_read = RTC_RandomRead(2);
 	RTC_ByteWrite(2, address_read | 0b00100000);

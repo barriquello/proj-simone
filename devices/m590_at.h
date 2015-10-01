@@ -51,7 +51,6 @@
 #define M590_TCP_LOCAL_PORT	10201
 #define M590_TCP_CTX_NUM	0
 #define M590_TCP_CTX_SIZE	2048
-#define API_KEY 			"apikey=90a004390f3530d0ba10199ac2b1ac3d"
 
 #define M590_APN		 "tim.br"
 #define M590_PWD		 "tim"

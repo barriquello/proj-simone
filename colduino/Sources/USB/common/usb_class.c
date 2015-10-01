@@ -38,7 +38,7 @@
 #include "usb_class.h"      /* USB class Header File */
 #include "usb_devapi.h"     /* USB device Header file */
 #include "usb_framework.h"  /* USB framework module header file */
-#include "hidef.h"          /* for EnableInterrupts macro */
+#include "hardware.h"          /* for EnableInterrupts macro */
 
 #if (defined _MCF51MM256_H) || (defined _MCF51JE256_H) || (defined _MCF51JE128_H)
 #include "exceptions.h"
