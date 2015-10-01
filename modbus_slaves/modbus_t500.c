@@ -97,6 +97,12 @@ uint8_t t500_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 			uint8_t nregs = 0;	
 			uint8_t retries = T500_REGLIST1_INPUT_NREGS*2;
 			
+			/* limit number of registers to the max. available */
+			if(max_len > sizeof(modbus_t500_input_register_list1)) 
+			{
+				max_len = sizeof(modbus_t500_input_register_list1);
+			}
+			
 			/* Detecta equipamentos de medição e faz a leitura dos dados */					
 			/* T500 input registers */
 			memset(T500_IRList1.Regs32,0x00,SIZEARRAY(T500_IRList1.Regs32));
@@ -116,21 +122,16 @@ uint8_t t500_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 				{
 					if(--retries == 0)
 					{
-						return 0;
+						/* zera tudo e desiste */
+						memset(T500_IRList1.Regs32,0x00,SIZEARRAY(T500_IRList1.Regs32));
+						break;
 					}
 					
 				}								
 #endif					
 			}
 			
-			SetModbusHeader(slave_addr, T500_IRList1.Regs8);		
-
-			/* limit number of registers to the max. available */
-			if(max_len > sizeof(modbus_t500_input_register_list1)) 
-			{
-				max_len = sizeof(modbus_t500_input_register_list1);
-			}
-			
+			SetModbusHeader(slave_addr, T500_IRList1.Regs8);			
 			memcpy(buf,T500_IRList1.Regs8,max_len);						
 			return (max_len);
 			
