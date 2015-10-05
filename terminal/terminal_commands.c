@@ -621,10 +621,7 @@ CONST command_t wt_cmd = {
 static INT8U stdout = USE_USB;
 BRTOS_Queue *stdin_q = NULL;
 
-extern OS_QUEUE SerialPortBuffer1;
 extern BRTOS_Queue *Serial1;
-
-extern OS_QUEUE SerialPortBuffer2;
 extern BRTOS_Queue *Serial2;
 
 

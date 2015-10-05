@@ -33,7 +33,9 @@
 #include "AD.h"
 #include "BRTOS.h"
 
+#if !__GNUC__
 #pragma warn_implicitconv off
+#endif
 
 
 ////////////////////////////////////////////////

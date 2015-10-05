@@ -57,7 +57,7 @@ void TickTimer(void);
 #define STACK_MARK  			1
 
 /// Define if the optimized scheduler will be used
-#define OPTIMIZED_SCHEDULER 	0
+#define OPTIMIZED_SCHEDULER 	1
 
 /// Define if nesting interrupt is active
 #define NESTING_INT 			1
@@ -182,27 +182,13 @@ void OSRTCSetup(void);
 ////////////////////////////////////////////////////////////
 
 
-
-
-///////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////
-/////                                                     /////
-/////               Coldfire Nesting Defines              /////
-/////                                                     /////
-/////                                                     /////
-///////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////
-
-#if (NESTING_INT == 1)
-
 /*****************************************************************************************//**
 * \fn inline asm void SaveContext(void)
 * \brief Save context function
 * \return NONE
 *********************************************************************************************/
 #define SaveContext()  __asm__ volatile("lea.l		(-36, %sp), %sp \n\t" \
-						   	   	    	"movem.l		%d3-%d7, (%sp) \n\t" \
-										"movem.l		%a2-%a6, (%sp) \n\t" )
+						   	   	    	"movem.l		%d3-%d7/%a2-%a6, (%sp) \n\t")
 
 
 /// Save Context Define
@@ -215,8 +201,7 @@ void OSRTCSetup(void);
 * \brief Restore context function
 * \return NONE
 *********************************************************************************************/
-#define RestoreContext() __asm__ volatile("movem.l		(%sp), %d3-%d7 		\n\t"   \
-										  "movem.l		(%sp), %a2-%a6		\n\t"   \
+#define RestoreContext() __asm__ volatile("movem.l		(%sp), %d3-%d7/%a2-%a6 		\n\t"   \
 										  "lea.l		%sp@(36), %sp		\n\t"   )
 
 
@@ -231,7 +216,7 @@ void OSRTCSetup(void);
 * \brief Restore context function
 * \return NONE
 *********************************************************************************************/
-#define SaveSP() __asm__ volatile("MOVE    %A7,SPvalue \n\t")
+#define SaveSP() __asm__ volatile("MOVE.L    %sp,SPvalue \n\t")
 
 /// Save Stack Pointer Define
 #define OS_SAVE_SP() SaveSP()
@@ -242,7 +227,7 @@ void OSRTCSetup(void);
 * \brief Restore context function
 * \return NONE
 *********************************************************************************************/
-#define RestoreSP() __asm__ volatile("move.l  SPvalue, %sp\n\t");
+#define RestoreSP() __asm__ volatile("MOVE.l  SPvalue, %sp\n\t");
 
 /// Restore Stack Pointer Define
 #define OS_RESTORE_SP() RestoreSP()
@@ -256,22 +241,19 @@ void OSRTCSetup(void);
 * \brief Restore context function
 * \return NONE
 *********************************************************************************************/
-#define RestoreSR()
-#if 0
-__asm__ volatile("MOVE.W   SR,D1 	\n\t" \
-								 "MOVE.W   26(A7),D0 	\n\t" \
-								 "ANDI.L   #0x0700,D0  \n\t" \
-								 "ANDI.L   #0xF8FF,D1 	\n\t" \
-								 "OR       D1,D0 		\n\t" \
-								 "MOVE.W   D0,SR		\n\t" )
+#define RestoreSR()			__asm__ volatile("MOVE.W   %SR,%D1 	\n\t" \
+								 	 	 	 "MOVE.W   %sp@(26),%D0 	\n\t" \
+											 "ANDI.L   #0x0700,%D0  \n\t" \
+											 "ANDI.L   #0xF8FF,%D1 	\n\t" \
+											 "ORL       %D1,%D0 		\n\t" \
+											 "MOVE.W   %D0,%SR		\n\t" )
+
+#if (NESTING_INT == 1)
+#define OS_ENABLE_NESTING() RestoreSR() /// Restore Status Register Define
+#else
+#define OS_ENABLE_NESTING()
 #endif
-
-
-/// Restore Status Register Define
-#define OS_ENABLE_NESTING() RestoreSR()
 ////////////////////////////////////////////////////////////
-
-
 
 
 #define RestoreIntSR()	__asm__ volatile("NOP")
@@ -284,144 +266,41 @@ __asm__ volatile("MOVE.W   SR,D1 	\n\t" \
 
 
 
-#define CriticalDecNesting()
-#if 0
-__asm__ volatile("MOVE.W   %SR,%D2 	    \n\t" \
-											 "ORI.L    #0x0700,%D2   \n\t" \
+#define CriticalDecNesting()		__asm__ volatile("MOVE.W   %SR,%D2 	    \n\t" \
+											 "ORI.L    #0x0700,%D2      \n\t" \
 											 "MOVE.W   %D2,%SR 	    \n\t" \
-											 "MVZ.B    iNesting,%D0  \n\t" \
-        									 "SUBQ.L   #1,%D0 		\n\t" \
-        									 "MOVE.B   %D0,iNesting  \n\t")
-#endif
+											 "MVZ.B    iNesting,%D0     \n\t" \
+        									 "SUBQ.L   #1,%D0 			\n\t" \
+        									 "MOVE.B   %D0,iNesting  	\n\t")
 
 
 
-#define OSRestoreISR() 	__asm__ volatile("lea.l   (4, %sp), %sp\n\t" 		  \
-		 	 	 	 	 	 	 	 	 "movem.l (%sp), %d0-%d2/%a0-%a1\n\t" \
-										 "lea.l   (%sp, 24), %sp\n\t"         \
+#define OSRestoreISR() 	__asm__ volatile("movem.l %sp@(4), %d0-%d2/%a0-%a1\n\t" \
+										 "lea.l   (%sp, 28), %sp\n\t"         \
 										 "rte\n\t" 							  );
 
 #define OS_RESTORE_ISR()  OSRestoreISR()
 
 
-
-  
-#else
-
-
+#define OS_SAVE_ISR()  __asm__ volatile("stldsr #0x2700 \n\t" \
+										"lea.l		(-24, %sp), %sp \n\t" \
+  	    								"movem.l	%d0-%d2/%a0-%a1, %sp@(4) \n\t")
 
 
-
-///////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////
-/////                                                     /////
-/////          Coldfire Without Nesting Defines           /////
-/////                                                     /////
-/////                                                     /////
-///////////////////////////////////////////////////////////////
-///////////////////////////////////////////////////////////////
+#define OS_EXIT_ISR()  	OSRestoreISR()
 
 
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-/////      Save Context Define                         /////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-asm inline __declspec(register_abi) void SaveContext(void) 
-{  
-	LEA		   -40(A7),A7				    // reserve space on current stack
-	MOVEM.L  D3-D7/A2-A6,(A7)			// save CPU registers
-}
-
-#define OS_SAVE_CONTEXT() SaveContext()
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-/////      Restore Context Define                      /////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-asm inline __declspec(register_abi) void RestoreContext(void)
-{  
-	MOVEM.L (A7),D3-D7/A2-A6  			// restore other CPU registers
-	LEA		  40(A7),A7			     	    // adjust stack pointer value
-}
-
-#define OS_RESTORE_CONTEXT() RestoreContext()
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-
-
-
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-/////      Save Stack Pointer Define                   /////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-asm inline __declspec(register_abi) void OS_SAVE_SP(void) 
-{  
-	MOVE     A7,SPvalue           // save top of stack
-}
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-
-
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-/////      Save Stack Pointer Define                   /////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-asm inline __declspec(register_abi) void OS_RESTORE_SP(void)
-{  
-	MOVE    SPvalue,A7              // restore top of stack
-}
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-////////////////////////////////////////////////////////////
-
-
-
-
-
-
-
-
-
-
-asm inline __declspec(register_abi) CriticalDecNesting(void)
-{                                                                     
-        MVZ.B    iNesting,D0
-        SUBQ.L   #1,D0
-        MOVE.B   D0,iNesting
-}
-
-
-asm inline __declspec(register_abi) void OSRestoreISR(void) {
-
-     MOVEM.L          (A7),D0-D2/A0-A1                     // restore CPU scratch registers
-     LEA              20(A7),A7                            // adjust stack pointer value
-     RTE
-}
-
-#define OS_RESTORE_ISR()  OSRestoreISR()
-
-
-#endif
+#define OS_INT_SCHED()                                                  \
+    SelectedTask = OSSchedule();                                        \
+    if (currentTask != SelectedTask){                                   \
+        OS_SAVE_CONTEXT();                                              \
+        OS_SAVE_SP();                                                   \
+        ContextTask[currentTask].StackPoint = SPvalue;                  \
+	      currentTask = SelectedTask;                                   \
+        SPvalue = ContextTask[currentTask].StackPoint;                  \
+        OS_RESTORE_SP();                                                \
+        OS_RESTORE_CONTEXT();                                           \
+    }                                                                   \
 
 
 #if (OPTIMIZED_SCHEDULER == 1)
@@ -431,9 +310,9 @@ asm inline __declspec(register_abi) void OSRestoreISR(void) {
 
 #define Optimezed_Scheduler()  \
 INT8U priority;								\
-__asm volatile   ("FF1 %1       \n\t"		\
-				  "NEG %1 	    \n\t" 	    \
-				  "ADDI #31,%1  \n\t"       \
+__asm volatile   ("FF1L %1       \n\t"		\
+				  "NEGL %1 	    \n\t" 	    \
+				  "ADDI.L #31,%1  \n\t"       \
 				  "MOVE.L %0,%1 \n\t"		\
 				  : "=r" (priority)			\
 				  : "r" (READY_LIST_VAR));	\
@@ -451,13 +330,16 @@ return priority
 
 
 //////////////// ISR dedicated stack /////////////////
-#define ISR_DEDICATED_STACK 0
+#define ISR_DEDICATED_STACK 1
 
-#if (defined ISR_DEDICATED_STACK && defined ISR_DEDICATED_STACK == 1)
-	#define OS_RESTORE_ISR_SP()    //__asm__ volatile ("MOVE.L SPval_bkp, %sp \n\t")
+#if (defined ISR_DEDICATED_STACK && ISR_DEDICATED_STACK == 1)
+	#define OS_RESTORE_ISR_SP()    __asm__ volatile ("MOVE.L SPval_bkp, %sp \n\t")
 	#define ISR_STACK_SIZE  (128)
 	extern  OS_CPU_TYPE ISR_STACK[ISR_STACK_SIZE];
 	extern INT32U SPval_bkp;
 #endif
+
+
+#define Trap14_Handler		SwitchContext
 
 #endif

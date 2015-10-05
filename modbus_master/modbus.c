@@ -15,7 +15,9 @@
 
 
 #if (PROCESSOR == COLDFIRE_V1)
+#if !__GNUC__
 #pragma warn_implicitconv off
+#endif
 #endif
 
 
@@ -654,6 +656,7 @@ sint32_t Modbus_receive(const uint8_t _byte) {
           else {
               return s_answ->answLen;
           };
+          break;
 
         //----------------------------------------------------------------------
         case eMB_PARS_FUNC:

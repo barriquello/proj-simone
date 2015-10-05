@@ -32,7 +32,9 @@
 #include "printf_lib.h"
 
 #if PLATAFORMA==COLDUINO
+#if !__GNUC__
 #pragma warn_implicitconv off
+#endif
 #define DEBUG_STACK_PRINT 1
 #endif
 
@@ -86,9 +88,7 @@ void Transmite_RAM_Ocupada(INT8U Comm)
 #include "stdlib.h" 
 void Transmite_Task_Stacks(INT8U Comm)
 {
-    INT16U VirtualStack = 0;
     INT8U  j = 0;
-    INT8U  k = 0;
     CHAR8  string[32];
     INT32U *x = 0;
     INT32U *i = 0; 

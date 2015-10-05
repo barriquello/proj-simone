@@ -27,7 +27,9 @@
 #include "drivers.h"
 
 #if PLATAFORMA == COLDUINO
+#if !__GNUC__
 #pragma warn_implicitconv off
+#endif
 #else
 uint8_t dummy;
 #endif

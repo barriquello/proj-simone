@@ -9,6 +9,8 @@
 #include <stdint.h>
 #include "derivative.h"
 
+#include "exceptions.h"
+
 #define DEVICE_FAMILY_CFV1
 
 /*
@@ -192,6 +194,53 @@ void Trap13_Handler(void)                     WEAK_DEFAULT_HANDLER;
 void Trap14_Handler(void)                     WEAK_DEFAULT_HANDLER;
 void Trap15_Handler(void)                     WEAK_DEFAULT_HANDLER;
 
+
+void Int_UnsuppportedInstr_Handler(void)  WEAK_DEFAULT_HANDLER;
+void Int_Irq_Handler(void)                WEAK_DEFAULT_HANDLER;
+void Int_LVD_Handler(void)                WEAK_DEFAULT_HANDLER;
+void Int_LOL_Handler(void)                WEAK_DEFAULT_HANDLER;
+
+void Int_PDB_Handler(void)               WEAK_DEFAULT_HANDLER;
+void Int_DAC_Handler(void)               WEAK_DEFAULT_HANDLER;
+void Int_SPI1_Handler(void)               WEAK_DEFAULT_HANDLER;
+void Int_ADC_Handler(void)               WEAK_DEFAULT_HANDLER;
+
+void Int_USB_Handler(void)               WEAK_DEFAULT_HANDLER;
+void Int_TPM1_Ch0_Handler(void)           WEAK_DEFAULT_HANDLER;
+void Int_TPM1_Ch1_Handler(void)           WEAK_DEFAULT_HANDLER;
+void Int_TPM1_Ch2_Handler(void)           WEAK_DEFAULT_HANDLER;
+void Int_TPM1_Ch3_Handler(void)           WEAK_DEFAULT_HANDLER;
+void Int_TPM1_Ovf_Handler(void)           WEAK_DEFAULT_HANDLER;
+
+void Int_CMT_Handler(void)                WEAK_DEFAULT_HANDLER;
+void Int_SPI2_Handler(void)               WEAK_DEFAULT_HANDLER;
+
+void Int_TPM2_Ch0_Handler(void)           WEAK_DEFAULT_HANDLER;
+void Int_TPM2_Ch1_Handler(void)           WEAK_DEFAULT_HANDLER;
+void Int_TPM2_Ch2_Handler(void)           WEAK_DEFAULT_HANDLER;
+void Int_TPM2_Ch3_Handler(void)           WEAK_DEFAULT_HANDLER;
+void Int_TPM2_Ovf_Handler(void)           WEAK_DEFAULT_HANDLER;
+
+void Int_I2C_Handler(void)               WEAK_DEFAULT_HANDLER;
+void Int_CMP_Handler(void)               WEAK_DEFAULT_HANDLER;
+
+void Int_SCI1_Err_Handler(void)            WEAK_DEFAULT_HANDLER;
+void Int_SCI1_Rx_Handler(void)             WEAK_DEFAULT_HANDLER;
+void Int_SCI1_Tx_Handler(void)             WEAK_DEFAULT_HANDLER;
+
+void Int_SCI2_Err_Handler(void)            WEAK_DEFAULT_HANDLER;
+void Int_SCI2_Rx_Handler(void)             WEAK_DEFAULT_HANDLER;
+void Int_SCI2_Tx_Handler(void)             WEAK_DEFAULT_HANDLER;
+
+
+void Int_L7_SWI_Handler(void)             WEAK_DEFAULT_HANDLER;
+void Int_L6_SWI_Handler(void)             WEAK_DEFAULT_HANDLER;
+void Int_L5_SWI_Handler(void)             WEAK_DEFAULT_HANDLER;
+void Int_L4_SWI_Handler(void)             WEAK_DEFAULT_HANDLER;
+void Int_L3_SWI_Handler(void)             WEAK_DEFAULT_HANDLER;
+void Int_L2_SWI_Handler(void)             WEAK_DEFAULT_HANDLER;
+void Int_L1_SWI_Handler(void)             WEAK_DEFAULT_HANDLER;
+
 typedef struct {
    uint32_t *initialSP;
    intfunc  handlers[];
@@ -247,7 +296,7 @@ VectorTable const __vector_table = {
       Trap11_Handler,                     /*   43  Trap # 11                                                              */
       Trap12_Handler,                     /*   44  Trap # 12                                                              */
       Trap13_Handler,                     /*   45  Trap # 13                                                              */
-      Trap14_Handler,                     /*   46  Trap # 14                                                              */
+	  Trap14_Handler,                     /*   46  Trap # 14                                                              */
       Trap15_Handler,                     /*   47  Trap # 15                                                              */
 
                                           /*   External Interrupts */
@@ -260,7 +309,64 @@ VectorTable const __vector_table = {
       Default_Handler,                    /*   54                                                                         */
       Default_Handler,                    /*   55                                                                         */
       Default_Handler,                    /*   56                                                                         */
-      Default_Handler,                    /*   57                                                                         */
+      Default_Handler,                    /*   57   																	  */
+      Default_Handler,                    /*   58                                                                         */
+      Default_Handler,                    /*   59                                                                         */
+      Default_Handler,                    /*   60                                                                         */
+	  Int_UnsuppportedInstr_Handler,                    /*   61                                                                         */
+      Default_Handler,                    /*   62                                                                         */
+      Default_Handler,                    /*   63                                                                         */
+	  Int_Irq_Handler,                /*  64                                              */
+	  Int_LVD_Handler,                /*  65                                              */
+	  Int_LOL_Handler,                /*  66                                              */
+	  Default_Handler,                /*  67                                              */
+	  Int_PDB_Handler,				  /*  68                                              */
+	  Int_DAC_Handler,				  /*  69                                              */
+	  Int_SPI1_Handler,				  /*  70                                              */
+	  Int_ADC_Handler,				  /*  71                                              */
+	  Int_USB_Handler,
+	  Int_TPM1_Ch0_Handler,
+	  Int_TPM1_Ch1_Handler,
+	  Int_TPM1_Ch2_Handler,
+	  Int_TPM1_Ch3_Handler,
+	  Int_TPM1_Ovf_Handler,
+	  Int_CMT_Handler,
+	  Int_SPI2_Handler,
+	  Int_TPM2_Ch0_Handler,
+	  Int_TPM2_Ch1_Handler,
+	  Int_TPM2_Ch2_Handler,
+	  Int_TPM2_Ch3_Handler,
+	  Int_TPM2_Ovf_Handler,
+	  Int_I2C_Handler,
+	  Int_CMP_Handler,
+	  Int_SCI1_Err_Handler,
+	  Int_SCI1_Rx_Handler,
+	  Int_SCI1_Tx_Handler,
+	  Int_SCI2_Err_Handler,
+	  Int_SCI2_Rx_Handler,
+	  Int_SCI2_Tx_Handler,
+	  Default_Handler,                    /*   93                                                                         */
+	  Default_Handler,                    /*   94                                                                         */
+	  Default_Handler,                    /*   95                                                                         */
+	  Default_Handler,                    /*   96                                                                         */
+	  Default_Handler,                    /*   97                                                                         */
+	  Default_Handler,                    /*   98                                                                         */
+	  Default_Handler,                    /*   99                                                                         */
+	  Default_Handler,                    /*   100                                                                         */
+	  Default_Handler,                    /*   101                                                                         */
+	  Default_Handler,                    /*   102   																	  */
+	  Int_L7_SWI_Handler,             /* 103                                              */
+	  Int_L6_SWI_Handler,             /* 104                                              */
+	  Int_L5_SWI_Handler,             /* 105                                              */
+	  Int_L4_SWI_Handler,             /* 106                                              */
+	  Int_L3_SWI_Handler,             /* 107                                              */
+	  Int_L2_SWI_Handler,             /* 108                                              */
+	  Int_L1_SWI_Handler,             /* 109                                              */
+	  Default_Handler,                /*   110                                                                         */
+	  Default_Handler,                /*   111                                                                         */
+	  Default_Handler,                /*   112                                                                         */
+	  Default_Handler,                /*   113                                                                         */
+	  Default_Handler                /*   114                                                                         */
    }
 };
 

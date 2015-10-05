@@ -39,7 +39,9 @@
 #define RS485_RX 			0
 
 #if COLDUINO
+#if !__GNUC__
 #pragma warn_implicitconv off
+#endif
 #define RS485_TXRX_PIN 		PTFD_PTFD2
 #define RS485_TXRX_PINDIR 	PTFDD_PTFDD2
 #else

@@ -35,7 +35,9 @@
 #include <string.h>
 
 
+#if !__GNUC__
 #pragma warn_implicitconv off
+#endif
 
 /* reverse:  reverse string s in place */
 void reverse(char s[])

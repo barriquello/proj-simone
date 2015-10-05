@@ -250,7 +250,7 @@ static char getchar_timeout(int timeout)
 }
 #else
 static char getchar_timeout(int timeout)
-{(void)timeout;}
+{(void)timeout; return 0;}
 #endif
 
 static struct pt monitor_input_pt;

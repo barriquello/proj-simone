@@ -25,7 +25,9 @@
 #include "hardware.h"
 #include "DA.h"
 
+#if !__GNUC__
 #pragma warn_implicitconv off
+#endif
 
 
 ////////////////////////////////////////////////

@@ -1469,12 +1469,16 @@ void USB_ISR_Handler(void)
     return;
 }
 
+#if !__GNUC__
 #if (NESTING_INT == 1)
 #pragma TRAP_PROC
-void USB_ISR(void)
 #else
-interrupt void USB_ISR(void)
-#endif 
+interrupt
+#endif
+#else
+__attribute__ ((__optimize__("omit-frame-pointer")))
+#endif
+void USB_ISR(void)
 {
 	  // ************************
 	  // Entrada de interrupção

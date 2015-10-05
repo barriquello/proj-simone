@@ -1226,7 +1226,7 @@ extern CHAR8 BufferText[32];
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
   
-#if (defined ISR_DEDICATED_STACK && defined ISR_DEDICATED_STACK == 1)
+#if (defined ISR_DEDICATED_STACK && ISR_DEDICATED_STACK == 1)
 
 ////////////////////////////////////////////////////////////
 #define OS_INT_ENTER() if (!iNesting){OS_SAVE_SP(); OS_RESTORE_ISR_SP(); }; iNesting++;

@@ -136,7 +136,9 @@ register 7001. If the value for register 7001 is 12345, then the 0x03 data would
 
 /* ----------------------- Modbus includes ----------------------------------*/
 #if COLDUINO
-#pragma warn_unusedarg off
+#if !__GNUC__
+#pragma warn_implicitconv off
+#endif
 //#include "mb.h"
 //#include "mbport.h"
 #endif

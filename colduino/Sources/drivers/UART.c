@@ -35,7 +35,9 @@
 #include "terminal_io.h"
 //#include "mbport.h"
 
+#if !__GNUC__
 #pragma warn_implicitconv off
+#endif
 
 #if (ENABLE_UART1 == TRUE)
 INT8U receive_byte1 = 0;
@@ -309,12 +311,16 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 // UART1 functions
 #if (ENABLE_UART1 == TRUE)
 
+#if !__GNUC__
 #if (NESTING_INT == 1)
 #pragma TRAP_PROC
-void uart1_tx(void)
 #else
-interrupt void uart1_tx(void)
+interrupt
 #endif
+#else
+__attribute__ ((__optimize__("omit-frame-pointer")))
+#endif
+void uart1_tx(void)
 {
 	// ************************
 	// Entrada de interrupção
@@ -417,12 +423,16 @@ void printf_uart1(CHAR8 *string)
 
 }
 
+#if !__GNUC__
 #if (NESTING_INT == 1)
 #pragma TRAP_PROC
-void uart1_rx(void)
 #else
-interrupt void uart1_rx(void)
+interrupt
 #endif
+#else
+__attribute__ ((__optimize__("omit-frame-pointer")))
+#endif
+void uart1_rx(void)
 {
 	// ************************
 	// Entrada de interrupção
@@ -452,12 +462,16 @@ interrupt void uart1_rx(void)
 	// ************************
 }
 
+#if !__GNUC__
 #if (NESTING_INT == 1)
 #pragma TRAP_PROC
-void uart1_error(void)
 #else
-interrupt void uart1_error(void)
+interrupt
 #endif
+#else
+__attribute__ ((__optimize__("omit-frame-pointer")))
+#endif
+void uart1_error(void)
 {
 	// ************************
 	// Entrada de interrupção
@@ -489,12 +503,16 @@ interrupt void uart1_error(void)
 // UART2 functions
 #if (ENABLE_UART2 == TRUE)
 
+#if !__GNUC__
 #if (NESTING_INT == 1)
 #pragma TRAP_PROC
-void uart2_tx(void)
 #else
-interrupt void uart2_tx(void)
+interrupt
 #endif
+#else
+__attribute__ ((__optimize__("omit-frame-pointer")))
+#endif
+void uart2_tx(void)
 {
 	// ************************
 	// Entrada de interrupção
@@ -587,12 +605,16 @@ void printf_uart2(CHAR8 *string)
 	}
 }
 
+#if !__GNUC__
 #if (NESTING_INT == 1)
 #pragma TRAP_PROC
-void uart2_rx(void)
 #else
-interrupt void uart2_rx(void)
+interrupt
 #endif
+#else
+__attribute__ ((__optimize__("omit-frame-pointer")))
+#endif
+void uart2_rx(void)
 {
 	// ************************
 	// Entrada de interrupção
@@ -621,12 +643,16 @@ interrupt void uart2_rx(void)
 	// ************************
 }
 
+#if !__GNUC__
 #if (NESTING_INT == 1)
 #pragma TRAP_PROC
-void uart2_error(void)
 #else
-interrupt void uart2_error(void)
+interrupt
 #endif
+#else
+__attribute__ ((__optimize__("omit-frame-pointer")))
+#endif
+void uart2_error(void)
 {
 	// ************************
 	// Entrada de interrupção

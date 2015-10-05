@@ -66,7 +66,9 @@
 #include "BRTOS.h"
 
 #if (PROCESSOR == COLDFIRE_V1)
+#if !__GNUC__
 #pragma warn_implicitconv off
+#endif
 #endif
 
 #if (PROCESSOR == ATMEGA)

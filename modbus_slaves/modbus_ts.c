@@ -130,7 +130,9 @@ Command Description
 
 /* ----------------------- Modbus includes ----------------------------------*/
 #if COLDUINO
-#pragma warn_unusedarg off
+#if !__GNUC__
+#pragma warn_implicitconv off
+#endif
 #endif
 
 #include "modbus.h"

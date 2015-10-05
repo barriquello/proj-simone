@@ -28,8 +28,10 @@
 #include "hardware.h"
 #include "BRTOS.h"
 
+#if !__GNUC__
 #pragma warn_implicitconv off
 #pragma warn_unusedarg off
+#endif
 
 
 #if (SP_SIZE == 32)
@@ -43,7 +45,7 @@
   
   //////////////// ISR dedicated stack /////////////////
 
-  #if (defined ISR_DEDICATED_STACK && defined ISR_DEDICATED_STACK == 1)
+  #if (defined ISR_DEDICATED_STACK && ISR_DEDICATED_STACK == 1)
   	OS_CPU_TYPE ISR_STACK[ISR_STACK_SIZE]; //= {0x49535253,0x5441434B};
   	INT32U SPval_bkp = (INT32U)&ISR_STACK[ISR_STACK_SIZE-2];
   #endif
@@ -111,14 +113,22 @@ void OSRTCSetup(void)
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
-#if 1
+#if !__GNUC__
 #if (NESTING_INT == 1)
 #pragma TRAP_PROC
-void TickTimer(void)
 #else
-interrupt void TickTimer(void)
+interrupt
 #endif
+#else
+__attribute__ ((__optimize__("omit-frame-pointer")))
+#endif
+void TickTimer(void)
 {
+
+#if __GNUC__
+	OS_SAVE_ISR();
+#endif
+
   // ************************
   // Entrada de interrupção
   // ************************
@@ -154,8 +164,12 @@ interrupt void TickTimer(void)
   // ************************
   OS_INT_EXIT();  
   // ************************  
-}
+
+#if __GNUC__
+	OS_RESTORE_ISR();
 #endif
+}
+
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
@@ -176,25 +190,27 @@ interrupt void TickTimer(void)
 * \brief Software interrupt handler routine (Internal kernel function).
 *  Used to switch the tasks context.
 ****************************************************************/
+#if !__GNUC__
 #if (NESTING_INT == 1)
 #pragma TRAP_PROC
-void SwitchContext(void)
 #else
-interrupt void SwitchContext(void)
+interrupt
 #endif
+#else
+__attribute__ ((__optimize__("omit-frame-pointer")))
+#endif
+void SwitchContext(void)
 {
-  // ************************
-  // Entrada de interrupção
-  // ************************
-  OS_INT_ENTER();
 
-  // Interrupt Handling
-  
-  // ************************
-  // Interrupt Exit
-  // ************************
-  OS_INT_EXIT();  
-  // ************************
+#if __GNUC__
+	OS_SAVE_ISR();
+#endif
+
+	OS_INT_SCHED();
+
+#if __GNUC__
+	OS_RESTORE_ISR();
+#endif
 }
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////

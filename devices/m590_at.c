@@ -862,7 +862,7 @@ uint8_t m590_receive(uint8_t* buff, uint16_t* len)
 
 uint8_t m590_check_connection(void)
 {
-	is_m590_ok_retry(MAX_RETRIES);
+	return is_m590_ok_retry(MAX_RETRIES);
 }
 
 const modem_driver_t m590_driver  =

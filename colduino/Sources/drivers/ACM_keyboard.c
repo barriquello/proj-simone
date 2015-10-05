@@ -25,7 +25,9 @@
 #include "hardware.h"
 #include "ACM_keyboard.h"
 
+#if !__GNUC__
 #pragma warn_implicitconv off
+#endif
 
 BRTOS_Sem *sKeyboard;
 
@@ -66,12 +68,16 @@ void ACMDisable(void)
 }
 
 
+#if !__GNUC__
 #if (NESTING_INT == 1)
 #pragma TRAP_PROC
-void Analog_comparator(void)
 #else
-interrupt void Analog_comparator(void)
+interrupt
 #endif
+#else
+__attribute__ ((__optimize__("omit-frame-pointer")))
+#endif
+void Analog_comparator(void)
 {
   // ************************
   // Entrada de interrupção
