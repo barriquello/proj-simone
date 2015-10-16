@@ -40,7 +40,7 @@ void Mcu_Init()
 {
 
 #if ((defined _MCF51MM256_H) || (defined _MCF51JE256_H) || (defined _MCF51JE128_H))
-    SOPT1 = 0x72; /* Enable COP; enable bkgd, stop and wait mode */ 
+    SOPT1 = 0x32; /* Enable COP; enable bkgd, stop and wait mode */
                 /*
                  *  0b01110010
                  *    ||||||||__ bit0: RESET Pin Enable
@@ -198,12 +198,23 @@ void MCG_Init()
                 *    ||________ bit6: External reference clock is selected
                 *    |_________ bit7: External reference clock is selected
                 */
+#if (__GNUC__)
 
+  // Wait for Reference Status bit to update
+  while(MCGSC & MCGSC_IREFST_MASK){};
+
+  // Wait for clock status bits to update
+  while((MCGSC & MCGSC_CLKST_MASK) != (0b10 << MCGSC_CLKST_BITNUM)){};
+#else
   // Wait for Reference Status bit to update
   while (MCGSC_IREFST){};
   
   // Wait for clock status bits to update 
   while (MCGSC_CLKST != 0b10){};
+#endif
+
+
+
 
   //------PBE MODE------ 
   // PLLS =1; DIV32 = 1; VDIV = 1100 
@@ -219,12 +230,21 @@ void MCG_Init()
                 *    ||________ bit6: PLL is selected
                 *    |_________ bit7: Generate an interrupt request on loss of lock
                 */    
+#if (__GNUC__)
+  // wait for PLL status bit to update
+  while(!(MCGSC & MCGSC_PLLST_MASK)){};
   
+  // Wait for LOCK bit to set
+  while(!(MCGSC & MCGSC_LOCK_MASK)){};
+#else
   // wait for PLL status bit to update
   while (!MCGSC_PLLST){};
   
   // Wait for LOCK bit to set 
   while (!MCGSC_LOCK){};
+#endif
+
+
   
   //------PEE MODE------   
   // CLKS = 00; RDIV = 100; IREFS = 0
@@ -242,9 +262,13 @@ void MCG_Init()
                 *    ||________ bit6: External reference clock is selected
                 *    |_________ bit7: External reference clock is selected
                 */  
-
+#if (__GNUC__)
+  while((MCGSC & MCGSC_CLKST_MASK) != (0b11 << MCGSC_CLKST_BITNUM)){};
+#else
   // Wait for clock status bits to update 
   while (MCGSC_CLKST != 0b11){};
+#endif
+
 #endif
 }
 

@@ -35,18 +35,31 @@
 #include "rs485.h"
 
 #define RS485_BUFSIZE		(36)
-#define RS485_TX 			1
-#define RS485_RX 			0
+#define RS485_TX_STATE 		1
+#define RS485_RX_STATE 		0
 
 #if COLDUINO
 #if !__GNUC__
 #pragma warn_implicitconv off
-#endif
 #define RS485_TXRX_PIN 		PTFD_PTFD2
 #define RS485_TXRX_PINDIR 	PTFDD_PTFDD2
+#define RS485_TXRX_ENABLE() (RS485_TXRX_PINDIR = 1)
+#define RS485_RX() 			RS485_TXRX_PIN = RS485_RX_STATE
+#define RS485_TX() 			RS485_TXRX_PIN = RS485_TX_STATE
 #else
-#define RS485_TXRX_PIN 		
-#define RS485_TXRX_PINDIR 	
+#include "utils.h"
+#define RS485_TXRX_PIN 		PTFD
+#define RS485_TXRX_PINDIR 	PTFDD
+#define RS485_TXRX_ENABLE() BITSET(RS485_TXRX_PINDIR,2)
+#define RS485_RX() 			BITCLEAR(RS485_TXRX_PIN,2)
+#define RS485_TX() 			BITSET(RS485_TXRX_PIN,2)
+#endif
+#else
+#define RS485_TXRX_PIN
+#define RS485_TXRX_PINDIR
+#define RS485_TXRX_ENABLE()
+#define RS485_RX_ENABLE()
+#define RS485_TX_ENABLE()
 #endif
 
 
@@ -73,8 +86,8 @@ extern BRTOS_Queue 			*Serial2;
 void rs485_init(INT16U baudrate, INT8U mutex, INT8U priority)
 {
 	
-	RS485_TXRX_PIN = RS485_RX;
-	RS485_TXRX_PINDIR = 1;
+	RS485_RX();
+	RS485_TXRX_ENABLE();
 	
 #if UART_RS485 == UART1
 	uart_init(1,baudrate,RS485_BUFSIZE,mutex,priority);
@@ -85,25 +98,25 @@ void rs485_init(INT16U baudrate, INT8U mutex, INT8U priority)
 
 void rs485_putchar(uint8_t caracter)
 {
-	RS485_TXRX_PIN = RS485_TX;
+	RS485_TX();
 	RS485_RX_DISABLE();
 	RS485_PUTCHAR(caracter);
 	RS485_RX_ENABLE();
-	RS485_TXRX_PIN = RS485_RX;
+	RS485_RX();
 }
 
 void rs485_print(CHAR8 *string)
 {
-	RS485_TXRX_PIN = RS485_TX;
+	RS485_TX();
 	RS485_RX_DISABLE();
 	RS485_PRINTF(string);
 	RS485_RX_ENABLE();
-	RS485_TXRX_PIN = RS485_RX;
+	RS485_RX();
 }
 
 void rs485_tx(const INT8U *data, const INT16U _len)
 {
-	RS485_TXRX_PIN = RS485_TX;
+	RS485_TX();
 	RS485_RX_DISABLE();
 	INT16U len = _len;
 	while(len > 0)
@@ -112,16 +125,14 @@ void rs485_tx(const INT8U *data, const INT16U _len)
 		data++;		
 		len--;
 	}
-	RS485_TXRX_PIN = RS485_RX;
+	RS485_RX();
 	RS485_RX_ENABLE();
 }
 
 INT8U rs485_rx(CHAR8* caracter, INT16U timeout)
 {	
 	INT8U ret;
-	//RS485_TXRX_PIN = RS485_RX;
 	ret = OSQueuePend(RS485_QUEUE, caracter, timeout);
-	//RS485_TXRX_PIN = RS485_RX;
 	return (ret != TIMEOUT) ? TRUE:FALSE;
 }
 

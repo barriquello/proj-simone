@@ -172,7 +172,7 @@ void sleep_forever(void)
 
 
 /* function to handle printf/scanf */
-#if PLATAFORMA==COLDUINO
+#if PLATAFORMA==COLDUINO && !__GNUC__
 
 #include "terminal.h"
 

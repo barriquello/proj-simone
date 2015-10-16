@@ -102,13 +102,24 @@ INT8U SDCard_Init(INT8U verbose)
   FRESULT f_res;
   
 #if SD_CARD_PORT
+
+#if __GNUC__
+  SD_AUSENT_DIR_OUT();
+  SD_AUSENT_PUP();
+#else
   _SD_AUSENT = _IN;
   SD_AUSENT_PULLUP = 1;  
+#endif
 
   
   #ifdef SOCKWP
-  _SD_WP = _IN;
-  SD_WP_PULLUP = 1;   
+	#if __GNUC__
+	  SD_WP_DIR_IN();
+	  SD_WP_PUP();
+	#else
+	  _SD_WP = _IN;
+	  SD_WP_PULLUP = 1;
+	#endif
   #endif
 #endif  
   

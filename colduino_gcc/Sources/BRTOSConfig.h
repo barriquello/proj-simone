@@ -35,7 +35,7 @@
 #define PSP_ENDIAN			BRTOS_BIG_ENDIAN
 
 /// Define if simulation or DEBUG
-#define SIMULATION			1
+#define SIMULATION			0
 
 /// Define if verbose info is available
 #define VERBOSE 0

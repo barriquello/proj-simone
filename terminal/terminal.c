@@ -247,7 +247,7 @@ static void term_cmd_help(char *param)
     name = (char*)term_cmds[x]->txt;
     y = (int)strlen(name);
     printf_usb((char *)term_cmds[x]->txt);
-    for(y;y<MAX_CMD_SIZE;y++)
+    for(;y<MAX_CMD_SIZE;y++)
     {
       printf_usb(" ");
     }

@@ -30,27 +30,50 @@
 
 #include "hardware.h"
 #include "led_onboard.h"
+#include "utils.h"
 
 void led_onboard_init(void)
 {
+#if (__GNUC__)
+	BITCLEAR(PTBD,0);
+	BITSET(PTBDD,0);
+#else
 	PTBD_PTBD0 = 0;
 	PTBDD_PTBDD0 = 1;
+#endif
 }
 
 int led_onboard_state(void)
 {
+#if (__GNUC__)
+	return (BITTEST(PTBD,0) ? LED_ON : LED_OFF);
+#else
 	return (PTBD_PTBD0 ? LED_ON : LED_OFF);
+#endif
 }
 void led_onboard_on(void)
 {
+#if (__GNUC__)
+	BITCLEAR(PTBD,0);
+#else
 	PTBD_PTBD0 = 0;
+#endif
+
 }
 void led_onboard_off(void)
 {
+#if (__GNUC__)
+	BITSET(PTBD,0);
+#else
 	PTBD_PTBD0 = 1;
+#endif
 }
 void led_onboard_toggle(void)
 {
+#if (__GNUC__)
+	BITTOGGLE(PTBD,0);
+#else
 	PTBD_PTBD0 = ~PTBD_PTBD0;
+#endif
 }
 

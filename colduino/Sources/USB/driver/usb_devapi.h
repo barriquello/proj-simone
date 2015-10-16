@@ -256,7 +256,7 @@ typedef struct _USB_EP_STRUCT
 
 #if defined(__CWCC__)
 #pragma options align=reset
-#elif defined(__IAR_SYSTEMS_ICC__)
+#elif defined(__IAR_SYSTEMS_ICC__) || defined(__GNUC__)
 #pragma pack()
 #endif
 

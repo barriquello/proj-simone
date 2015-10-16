@@ -34,6 +34,7 @@
 #include "hardware.h"
 #include "spi.h"
 #include "BRTOS.h"
+#include "utils.h"
 
 #if !__GNUC__
 #pragma warn_implicitconv off
@@ -77,7 +78,13 @@ void init_SPI(INT8U spi)
         
         /* SPI1C1: SPIE=0,SPE=0,SPTIE=0,MSTR=1,CPOL=0,CPHA=0,SSOE=0,LSBFE=0 */
         SPI1C1 = 0x10;
+
+        /* SPI System Enable */
+#if __GNUC__
+        BITSETMASK(SPI1C1,SPI1C1_SPE_MASK);
+#else
         SPI1C1_SPE = 1;
+#endif
         
         (void)SPI1S;  
       }
@@ -105,8 +112,12 @@ void init_SPI(INT8U spi)
         
         /* SPI1C1: SPIE=0,SPE=0,SPTIE=0,MSTR=1,CPOL=0,CPHA=0,SSOE=0,LSBFE=0 */
         SPI2C1 = 0x10;
+
+#if __GNUC__
+        BITSETMASK(SPI2C1,SPI2C1_SPE_MASK);
+#else
         SPI2C1_SPE = 1;
-        
+#endif
         (void)SPI2S;  
       }
       #endif      
@@ -120,12 +131,24 @@ void init_SPI(INT8U spi)
 // Função para enviar dados pela porta SPI
 void SPI1_SendChar(INT8U data)
 {
-  while (!SPI1S_SPTEF){};               /* wait until transmit buffer is empty*/
+	/* wait until transmit buffer is empty*/
+	#if __GNUC__
+		 while (!(BITTESTMASK(SPI1S,SPI1S_SPTEF_MASK))){};
+	#else
+		 while (!SPI1S_SPTEF){};
+	#endif
+
   
   (void)SPI1S;
   SPI1D = data;                         /* Transmit counter*/ 
   
-  while (!SPI1S_SPRF){};                  /* wait until receive buffer is full*/
+  	/* wait until receive buffer is full*/
+	#if __GNUC__
+		 while (!(BITTESTMASK(SPI1S,SPI1S_SPRF_MASK))){};
+	#else
+		 while (!SPI1S_SPRF){};
+	#endif
+
     
   (void)SPI1S;                            // Acknowledge flag
   SPI1Data = SPI1D;                        // Acknowledge flag  
@@ -145,12 +168,22 @@ INT8U SPI1_GetChar(void)
 // Função para enviar dados pela porta SPI
 void SPI2_SendChar(INT8U data)
 {
-  while (!SPI2S_SPTEF){};               /* wait until transmit buffer is empty*/
+	/* wait until transmit buffer is empty*/
+	#if __GNUC__
+		 while (!(BITTESTMASK(SPI2S,SPI2S_SPTEF_MASK))){};
+	#else
+		 while (!SPI2S_SPTEF){};
+	#endif
   
   (void)SPI2S;
   SPI2D = data;                         /* Transmit counter*/ 
   
-  while (!SPI2S_SPRF){};                /* wait until receive buffer is full*/
+	/* wait until receive buffer is full*/
+	#if __GNUC__
+		 while (!(BITTESTMASK(SPI2S,SPI2S_SPRF_MASK))){};
+	#else
+		 while (!SPI2S_SPRF){};
+	#endif
     
   (void)SPI2S;                          // Acknowledge flag
   SPI2Data = SPI2D;                     // Acknowledge flag  

@@ -68,9 +68,13 @@
     point of view.SieCtlBit structure defines the bits that have a 
     meaning from USB controller point of view.      
  */
- 
+#if !__GNUC__
 #pragma align_array_members on
+#endif
+
 #pragma pack(1)
+
+#if !__GNUC__
 typedef struct _MCU_CTL_BIT{
         uint_8 :1;
         uint_8 :1;
@@ -92,6 +96,30 @@ typedef struct _SIE_CTL_BIT{
         uint_8 :1;
         uint_8 own:1;        
 }SIE_CTL_BIT;  /* write Stat */
+#else
+/* GCC uses reverse bitfields */
+typedef struct _MCU_CTL_BIT{
+        uint_8 own:1;				  /* USB Ownership */
+        uint_8 data:1; 				  /* Data Toggle Synch Value */
+        uint_8 ninc:1;            	  /* BD Keep Enable */
+        uint_8 keep:1;                /* Address Increment Disable */
+        uint_8 dts:1;                 /* Data Toggle Synch Enable */
+        uint_8 bdtstall:1;            /* Buffer Stall Enable */
+        uint_8 :1;
+        uint_8 :1;
+}MCU_CTL_BIT; /* read Stat */
+
+typedef struct _SIE_CTL_BIT{
+        uint_8 own:1;
+        uint_8 :1;
+        uint_8 pid3:1;                /* Packet Identifier bit 3 */
+        uint_8 pid2:1;                /* Packet Identifier bit 2 */
+        uint_8 pid1:1;                /* Packet Identifier bit 1 */
+        uint_8 pid0:1;                /* Packet Identifier bit 0 */
+        uint_8 :1;
+        uint_8 :1;
+}SIE_CTL_BIT;  /* write Stat */
+#endif
       
 typedef struct _REC_PID{
         uint_8    :2;
@@ -120,8 +148,13 @@ typedef struct _g_bdtmap {
 
   BUFF_DSC ep_dsc[MAX_BDT_INDEX];     /* Endpoint Descriptor */  
 }BDTMAP; 
+
+#if !__GNUC__
 #pragma align_array_members off
 #pragma options align=reset
+#else
+#pragma pack()
+#endif
 /******************************************************************************
  * Global Functions - None
  *****************************************************************************/

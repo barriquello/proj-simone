@@ -81,3 +81,13 @@ uint16_t byte2int(uint8_t c1, uint8_t c2);
 #define MAX(a, b)               (((a) > (b)) ? (a):(b))
 #define MIN(a, b)               (((a) < (b)) ? (a):(b))
 #define SIZEARRAY(a)            (sizeof(a) / sizeof(a[0]))
+
+#define BITSET(x,y) 	(x) |= (1<<(y));
+#define BITCLEAR(x,y) 	(x) &= ~(1<<(y));
+#define BITTEST(x,y) 	((x) & (1<<(y)))
+#define BITTOGGLE(x,y) 	(x) = (x) ^ (1<<(y));
+
+#define BITSETMASK(x,y) 	(x) |= (y);
+#define BITCLEARMASK(x,y) 	(x) &= ~(y);
+#define BITTESTMASK(x,y) 	((x) & (y))
+#define BITTOGGLEMASK(x,y) 	(x) = (x) ^ (y);

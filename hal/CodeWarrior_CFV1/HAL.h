@@ -82,9 +82,6 @@ extern INT8U  iNesting;
 extern INT32U SPvalue;
 
 
-
-
-
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
 /////      Port Defines                                /////
@@ -459,9 +456,9 @@ asm inline __declspec(register_abi) void Optimezed_Scheduler(void)
 
 
 //////////////// ISR dedicated stack /////////////////
-#define ISR_DEDICATED_STACK 1
+#define ISR_DEDICATED_STACK 	1
 
-#if (defined ISR_DEDICATED_STACK && defined ISR_DEDICATED_STACK == 1)
+#if (defined ISR_DEDICATED_STACK && ISR_DEDICATED_STACK == 1)
 	#define OS_RESTORE_ISR_SP()    asm{move.l SPval_bkp, a7}
 	#define ISR_STACK_SIZE  (128)
 	extern  OS_CPU_TYPE ISR_STACK[ISR_STACK_SIZE];

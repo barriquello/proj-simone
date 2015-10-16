@@ -362,41 +362,71 @@ void uart1_release(void)
 
 void uart1_RxEnable(void)
 {
+#if (__GNUC__)
+	BITSETMASK(SCI1C2,SCI1C2_RE_MASK);
+#else
 	SCI1C2_RE = 1;
+#endif
 }
 
 void uart1_RxDisable(void)
 {
+#if (__GNUC__)
+	BITCLEARMASK(SCI1C2,SCI1C2_RE_MASK);
+#else
 	SCI1C2_RE = 0;
+#endif
 }
 
 
 void uart1_RxEnableISR(void)
 {
+#if (__GNUC__)
+	BITSETMASK(SCI1C2,SCI1C2_RIE_MASK);
+#else
 	SCI1C2_RIE = 1;
+#endif
 }
 
 void uart1_RxDisableISR(void)
 {
-	SCI1C2_RIE = 0;
+#if (__GNUC__)
+	BITCLEARMASK(SCI1C2,SCI1C2_RIE_MASK);
+#else
+	SCI1C2_RE = 0;
+#endif
 }
 
 
 void uart1_TxEnableISR(void)
 {
+#if (__GNUC__)
+	BITSETMASK(SCI1C2,SCI1C2_TIE_MASK);
+#else
 	SCI1C2_TIE = 1;
+#endif
 }
 
 void uart1_TxDisableISR(void)
 {
-	SCI1C2_TIE = 1;
+#if (__GNUC__)
+	BITCLEARMASK(SCI1C2,SCI1C2_TIE_MASK);
+#else
+	SCI1C2_TIE = 0;
+#endif
 }
 
 INT8U putchar_uart1(INT8U caracter)
 {
 	
 	SCI1D = caracter; /* Armazena o caracter a ser transmitido no registrador de transmissão */
+
+#if (__GNUC__)
+	BITSETMASK(SCI1C2,SCI1C2_TCIE_MASK);
+#else
 	SCI1C2_TCIE = 1;
+#endif
+
 
 	if(OSSemPend(SerialTX1, TX_TIMEOUT) == TIMEOUT)
 	{
@@ -520,7 +550,14 @@ void uart2_tx(void)
 	OS_INT_ENTER();
 
 	// Tratamento da interrupção  
+
+
+#if (__GNUC__)
+	BITCLEARMASK(SCI2C2,SCI2C2_TCIE_MASK);
+#else
 	SCI2C2_TCIE = 0;
+#endif
+
 	(void) SCI2S1; /* Leitura do registrador SCIxS1 para analisar o estado da transmissão */
 	(void) SCI2C3; /* Leitura do registrador SCIxC3 para limpar o bit de paridade */
 
@@ -555,23 +592,40 @@ void uart2_release(void)
 
 void uart2_RxEnableISR(void)
 {
+#if (__GNUC__)
+	BITSETMASK(SCI2C2,SCI2C2_RIE_MASK);
+#else
 	SCI2C2_RIE = 1;
+#endif
 }
 
 void uart2_RxDisableISR(void)
 {
+#if (__GNUC__)
+	BITCLEARMASK(SCI2C2,SCI2C2_RIE_MASK);
+#else
 	SCI2C2_RIE = 0;
+#endif
 }
 
 
 void uart2_TxEnableISR(void)
 {
+
+#if (__GNUC__)
+	BITSETMASK(SCI2C2,SCI2C2_TIE_MASK);
+#else
 	SCI2C2_TIE = 1;
+#endif
 }
 
 void uart2_TxDisableISR(void)
 {
-	SCI2C2_TIE = 1;
+#if (__GNUC__)
+	BITCLEARMASK(SCI2C2,SCI2C2_TIE_MASK);
+#else
+	SCI2C2_TIE = 0;
+#endif
 }
 
 
@@ -579,7 +633,12 @@ INT8U putchar_uart2(INT8U caracter)
 {
 
 	SCI2D = caracter; /* Armazena o caracter a ser transmitido no registrador de transmissão */
+
+#if (__GNUC__)
+	BITSETMASK(SCI2C2,SCI2C2_TCIE_MASK);
+#else
 	SCI2C2_TCIE = 1;
+#endif
 	
 	if(OSSemPend(SerialTX2, TX_TIMEOUT) == TIMEOUT)
 	{

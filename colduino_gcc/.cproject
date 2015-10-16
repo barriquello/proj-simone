@@ -18,10 +18,11 @@
 					<folderInfo id="net.sourceforge.usbdm.cdt.coldfire.exe.debug.configuration.1057516438." name="/" resourcePath="">
 						<toolChain id="net.sourceforge.usbdm.cdt.coldfire.exe.debug.toolchain.1726519344" name="Coldfire-USBDM Toolchain" superClass="net.sourceforge.usbdm.cdt.coldfire.exe.debug.toolchain">
 							<option defaultValue="net.sourceforge.usbdm.cdt.toolchain.debug.debugLevel.max" id="net.sourceforge.usbdm.cdt.toolchain.debug.debugLevel.1858719482" name="Debug level" superClass="net.sourceforge.usbdm.cdt.toolchain.debug.debugLevel" valueType="enumerated"/>
-							<option defaultValue="net.sourceforge.usbdm.gnu.c.optimization.level.none" id="net.sourceforge.usbdm.cdt.toolchain.optimization.level.193309752" name="Optimization level" superClass="net.sourceforge.usbdm.cdt.toolchain.optimization.level" valueType="enumerated"/>
+							<option defaultValue="net.sourceforge.usbdm.gnu.c.optimization.level.none" id="net.sourceforge.usbdm.cdt.toolchain.optimization.level.193309752" name="Optimization level" superClass="net.sourceforge.usbdm.cdt.toolchain.optimization.level" value="net.sourceforge.usbdm.gnu.c.optimization.level.size" valueType="enumerated"/>
 							<option id="net.sourceforge.usbdm.cdt.coldfire.toolchain.mcpu.182647216" name="Cpu (-mcpu=)" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.mcpu" value="net.sourceforge.usbdm.cdt.coldfire.toolchain.mcpu.51" valueType="enumerated"/>
 							<option id="net.sourceforge.usbdm.cdt.toolchain.debug.mdebugformat.1435780433" name="Debug format" superClass="net.sourceforge.usbdm.cdt.toolchain.debug.mdebugformat" value="net.sourceforge.usbdm.cdt.toolchain.debug.mdebugformat.none" valueType="enumerated"/>
 							<option id="net.sourceforge.usbdm.cdt.toolchain.debug.rdimon.1879249991" name="Use semi-hosting library (--specs=rdimon.specs)" superClass="net.sourceforge.usbdm.cdt.toolchain.debug.rdimon" value="false" valueType="boolean"/>
+							<option id="net.sourceforge.usbdm.cdt.toolchain.optimization.compilerOther.381069745" name="Other flags (compiler)" superClass="net.sourceforge.usbdm.cdt.toolchain.optimization.compilerOther" value="" valueType="string"/>
 							<targetPlatform binaryParser="org.eclipse.cdt.core.ELF" id="net.sourceforge.usbdm.cdt.toolchain.targetPlatform.1570350473" name="USBDM common base platform" superClass="net.sourceforge.usbdm.cdt.toolchain.targetPlatform"/>
 							<builder buildPath="${workspace_loc:/mcf51je256}/Debug" id="net.sourceforge.usbdm.cdt.toolchain.builder.596916424" keepEnvironmentInBuildfile="false" name="Gnu Make Builder" superClass="net.sourceforge.usbdm.cdt.toolchain.builder"/>
 							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.cppAssembler.658279121" name="Coldfire Assembler" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.cppAssembler">
@@ -55,6 +56,12 @@
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/Sources&quot;"/>
 									<listOptionValue builtIn="false" value="&quot;${ProjDirPath}/../hal/GCC_CFV1&quot;"/>
 								</option>
+								<option id="net.sourceforge.usbdm.gnu.c.compiler.option.optimization.packStructs.215918877" name="Pack Structs (-fpack-struct)" superClass="net.sourceforge.usbdm.gnu.c.compiler.option.optimization.packStructs" value="net.sourceforge.usbdm.gnu.c.compiler.option.optimization.packStructs.none" valueType="enumerated"/>
+								<option id="net.sourceforge.usbdm.gnu.c.compiler.option.optimization.level.1440609292" name="Optimization level" superClass="net.sourceforge.usbdm.gnu.c.compiler.option.optimization.level" value="net.sourceforge.usbdm.gnu.c.optimization.level.size" valueType="enumerated"/>
+								<option id="net.sourceforge.usbdm.gnu.c.compiler.option.preprocessor.def.symbols.210692838" name="Defined symbols (-D)" superClass="net.sourceforge.usbdm.gnu.c.compiler.option.preprocessor.def.symbols"/>
+								<option id="net.sourceforge.usbdm.gnu.c.compiler.option.misc.other.2072548879" name="Other flags" superClass="net.sourceforge.usbdm.gnu.c.compiler.option.misc.other" value="-c -fmessage-length=0 -MT&quot;$@&quot;" valueType="string"/>
+								<option id="net.sourceforge.usbdm.gnu.c.compiler.option.misc.charSigning.587817061" superClass="net.sourceforge.usbdm.gnu.c.compiler.option.misc.charSigning" value="net.sourceforge.usbdm.gnu.c.compiler.option.misc.charSigning.unsigned" valueType="enumerated"/>
+								<option id="net.sourceforge.usbdm.gnu.c.compiler.option.misc.bitfieldSigning.1516352644" superClass="net.sourceforge.usbdm.gnu.c.compiler.option.misc.bitfieldSigning" value="net.sourceforge.usbdm.gnu.c.compiler.option.misc.bitfieldSigning.unsigned" valueType="enumerated"/>
 								<inputType id="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.compiler.input.599676133" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.c.compiler.input"/>
 							</tool>
 							<tool id="net.sourceforge.usbdm.cdt.coldfire.toolchain.cpp.compiler.1666134319" name="Coldfire C++ Compiler" superClass="net.sourceforge.usbdm.cdt.coldfire.toolchain.cpp.compiler">

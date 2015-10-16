@@ -118,7 +118,7 @@ void CDC_Init(void)
   	if (OSSemCreate(0,&USB_Sem) != ALLOC_EVENT_OK)
     {
         while(1){};
-     };
+    };
   	
   	// Cria uma fila de recepcao para a porta serial
   	if (OSQueueCreate(&USBRXBuffer,CONSOLE_BUFFER_SIZE, &USB) != ALLOC_EVENT_OK)

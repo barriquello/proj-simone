@@ -175,8 +175,13 @@ void power_on (void)
   DelayTask(500);    
   
 #if SD_CARD_PORT  
-  SD_CS = 1;
-  _SD_CS= 1;   
+	#if __GNUC__
+  	  SD_SELECT_DISABLE();
+  	  SD_SELECT_DIR_OUT();
+	#else
+	  SD_CS = 1;
+	  _SD_CS= 1;
+	#endif
 #endif  
 }
 
@@ -390,9 +395,20 @@ DSTATUS disk_initialize (
 	FCLK_SLOW();
 	
   /* Start SD card Init */
+#if __GNUC__
+	SD_SELECT_ENABLE();
+#else
   SD_CS=ENABLE;
+#endif
+
   SD_CLKDelay(20);            // Send 80 clocks 
-  SD_CS=DISABLE;
+
+#if __GNUC__
+	SD_SELECT_DISABLE();
+#else
+	SD_CS=DISABLE;
+#endif
+
 
   SD_CLKDelay(16);  
 

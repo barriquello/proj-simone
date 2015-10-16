@@ -54,6 +54,16 @@ typedef unsigned long dword;
 
 //#pragma options align=packed
 
+#if defined(__CWCC__)
+  #pragma push
+  #pragma cpp_extensions on
+  #pragma pack(1)
+#elif defined(__GNUC__)
+   #pragma pack(push,1)
+#else
+  #error Not supported compiler type
+#endif
+
 /**************** interrupt vector numbers ****************/
 #define VectorNumber_INITSP             0U
 #define VectorNumber_INITPC             1U
@@ -4850,7 +4860,7 @@ typedef union {
 /*** MCGSC - MCG Status and Control Register; 0xFFFF803B ***/
 typedef union {
   byte Byte;
-  struct {
+  struct{
     byte FTRIM       :1;                                       /* MCG Fine Trim */
     byte OSCINIT     :1;                                       /* OSC Initialization */
     byte CLKST0      :1;                                       /* Clock Mode Status, bit 0 */
@@ -15324,6 +15334,14 @@ typedef union {
 #define VectorNumber_VReserved72            This_symb_has_been_depreciated
 #define VReserved72                         This_symb_has_been_depreciated
 //#pragma options align=reset
+
+#if defined(__CWCC__)
+  #pragma pop
+#elif defined(__GNUC__)
+   #pragma pack(pop)
+#else
+  #error Not supported compiler type
+#endif
 
 #endif
 /*lint -restore Enable MISRA rule (5.1) checking. */

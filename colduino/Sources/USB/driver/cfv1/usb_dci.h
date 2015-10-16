@@ -97,12 +97,21 @@ typedef enum _stopmode
 #define TOKEN_COMPL_FLAG(x)             ((x) & 8)
 
 /* Setup the controller for Remote Wakeup */
+#if !__GNUC__
 #define USB_DCI_WAKEUP				\
 {									\
 	INT_STAT_RESUME = 1; 			\
 	INT_ENB_RESUME_EN = 0; 			\
 	CTL_TXSUSPEND_TOKENBUSY = 0;	\
 }
+#else
+#define USB_DCI_WAKEUP				\
+		{									\
+			BITSETMASK(INT_STAT,INT_STAT_RESUME_MASK); 				\
+			BITCLEARMASK(INT_ENB,INT_ENB_RESUME_EN_MASK); 			\
+			BITCLEARMASK(CTL,CTL_TXSUSPEND_TOKENBUSY_MASK); 		\
+		}
+#endif
 
 /* control endpoint transfer types */
 #define USB_TRF_UNKNOWN      			(0xFF)
@@ -199,7 +208,12 @@ typedef struct  _BDT_ELEM
     uint_8         direction;           /* Direction (Send/Receive) */  
     uint_8         type;                /* Type of Endpoint */
 } BDT_ELEM, *P_BDT_ELEM;
+
+#if !__GNUC__
 #pragma options align=reset
+#else
+#pragma pack()
+#endif
 
  /*****************************************************************************
  * Global Functions

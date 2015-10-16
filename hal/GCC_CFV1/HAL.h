@@ -116,7 +116,11 @@ extern INT32U SPvalue;
 /// Defines the low power command of the choosen microcontroller
 #define OS_Wait //asm(STOP #0x2000);
 /// Defines the tick timer interrupt handler code (clear flag) of the choosen microcontroller
+#if (__GNUC__)
+#define TICKTIMER_INT_HANDLER (TPM1SC &= ~TPM1SC_TOF_MASK)
+#else
 #define TICKTIMER_INT_HANDLER TPM1SC_TOF = 0
+#endif
 #define TIMER_MODULE  TPM1MOD
 #define TIMER_COUNTER TPM1CNT
 
@@ -339,7 +343,9 @@ return priority
 	extern INT32U SPval_bkp;
 #endif
 
-
-#define Trap14_Handler		SwitchContext
+#if (__GNUC__)
+#define Trap14_Handler				SwitchContext
+#define Int_TPM1_Ovf_Handler		TickTimer
+#endif
 
 #endif
