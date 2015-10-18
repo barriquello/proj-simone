@@ -27,7 +27,7 @@
 #ifndef _WIN32
 #include "BRTOS.h"
 #include "stdint.h"
-#if !__GNUC__
+#if !__GNUC__ || ARDUINO
 typedef uint32_t time_t;
 #endif
 

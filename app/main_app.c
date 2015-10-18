@@ -39,6 +39,29 @@ extern "C"
  * \brief   This software is the main entry of the project
  *****************************************************************************/
 
+#if ARDUINO
+const CHAR8 TaskName_SystemTime[] PROGMEM = "System Time";
+const CHAR8 TaskName_Monitors[] PROGMEM = "Monitors";
+const CHAR8 TaskName_Terminal[] PROGMEM = "Terminal";
+
+#if (!defined __GNUC__)
+#define CONST
+#else
+#define CONST const
+#endif
+
+PGM_P CONST MainStringTable[] PROGMEM =
+{
+	TaskName_SystemTime,
+	TaskName_Monitors,
+	TaskName_Terminal
+};
+#else
+#define TaskName_SystemTime "System Time"
+#define TaskName_Monitors "Monitors"
+#define TaskName_Terminal "Terminal"
+#endif
+
 
 /******************************************************************************
  * \name        main_app
@@ -58,20 +81,23 @@ void main_app(void)
 	/* Init BRTOS system */
 	BRTOS_Init();	
 	
-#if COLDUINO && !SIMULATION
-	led_onboard_init();	 /* Init LED onboard */
+#if (COLDUINO || ARDUINO) && !SIMULATION
+
+	#if COLDUINO
+		led_onboard_init();	 /* Init LED onboard */
+	#endif
 	Modbus_init(); 		 /* Init Modbus */
 	Modus_slave_null_init(); /* Init Modbus Slave Null */
 #endif	
 
 	/* Install task for keeping system clock, date and time */
-	if (InstallTask(&System_Time, "System Time", 256+64, 31, NULL) != OK)
+	if (InstallTask(&System_Time, TaskName_SystemTime, 256+64, 31, NULL) != OK)
 	{
 		sleep_forever();
 	};
 	
 #if 1	
-	if (InstallTask(&main_monitor, "Monitors", 1024+1024+512, 10, NULL) != OK)
+	if (InstallTask(&main_monitor, TaskName_Monitors, 1024+1024+512, 10, NULL) != OK)
 	{
 		sleep_forever();
 	};
@@ -120,7 +146,7 @@ void main_app(void)
 
 
 #if (USB_CLASS_TYPE == BRTOS_USB_CDC)
-	if (InstallTask(&Terminal_Task, "Terminal", 1024, 15, NULL) != OK)
+	if (InstallTask(&Terminal_Task, TaskName_Terminal, 1024, 15, NULL) != OK)
 	{
 		sleep_forever();
 	};

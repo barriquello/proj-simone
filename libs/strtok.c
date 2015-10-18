@@ -41,6 +41,8 @@
  * SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
+#if STRTOK
+
 #include <stddef.h>
 #include <string.h>
 
@@ -160,3 +162,5 @@ strtok_test()
 }
 
 #endif /* DEBUG_STRTOK */
+
+#endif

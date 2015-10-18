@@ -46,11 +46,12 @@ static modbus_null_input_register_list NULL_IRList;
 
 uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 
-#define MODBUS_NULL_SLAVE_SIMULATION	0
+#define MODBUS_NULL_SLAVE_SIMULATION	1
 #if MODBUS_NULL_SLAVE_SIMULATION	
 #include "random_lib.h"
 #endif
 
+#if COLDUINO
 /* port of input pins */
 #define SENSOR_LEVEL_INPUT_H 		PTCD_PTCD2
 #define SENSOR_LEVEL_INPUT_H_DIR 	PTCDD_PTCDD2
@@ -66,6 +67,13 @@ uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 
 #define INPUT_PORT_DIR		PTCDD
 #define INPUT_PORT_DATA		PTCD
+
+#elif ARDUINO
+
+#define INPUT_PORT_DIR		0 /* definir */
+#define INPUT_PORT_DATA		0 /* definir */
+
+#endif
 
 uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 {
@@ -111,7 +119,9 @@ CONST modbus_slave_t slave_NULL =
 void Modus_slave_null_init(void)
 {
 	
-	ADSetup(NormalPower, HighSpeed, ShortSampleTime, 20, 12);
+	#if COLDUINO
+		ADSetup(NormalPower, HighSpeed, ShortSampleTime, 20, 12);
+	#endif
 	
 #if 0	
 	SENSOR_LEVEL_INPUT_H_DIR = 1;
