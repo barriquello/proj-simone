@@ -52,7 +52,6 @@
 /*****************************************************************************
  * Global Functions Prototypes
  *****************************************************************************/
-void TestApp_Init(void);
 
 /****************************************************************************
  * Global Variables
@@ -68,7 +67,6 @@ static void USB_App_Callback(uint_8 controller_ID,
                         uint_8 event_type, void* val);
 static void USB_Notify_Callback(uint_8 controller_ID,
                         uint_8 event_type, void* val);
-static void Virtual_Com_App(void);
 /*****************************************************************************
  * Local Variables
  *****************************************************************************/
@@ -163,7 +161,9 @@ void cdc_process(void)
 {
     static uint_8 status 	 = 0;
     uint_8 		  sem_status = 0;
-	uint_8 size = g_send_size;
+	uint_8 size;
+
+	size = g_send_size;
 	
 	g_send_size = 0;
 	
@@ -172,7 +172,7 @@ void cdc_process(void)
      {	
 		
 		UserEnterCritical();
-		is_message_sent = 1;
+			is_message_sent = 1;
 		UserExitCritical();
 		
 		status = USB_Class_CDC_Interface_DIC_Send_Data(CONTROLLER_ID, g_curr_send_buf,size);
@@ -181,7 +181,7 @@ void cdc_process(void)
 		if (sem_status != OK)
 		{
 			UserEnterCritical();
-			is_message_sent = 0;
+				is_message_sent = 0;
 			UserExitCritical();
 		}
 		
@@ -337,22 +337,21 @@ static void USB_App_Callback (
         BytesToBeCopied = (USB_PACKET_SIZE)((dp_rcv->data_size > DATA_BUFF_SIZE) ?
                                       DATA_BUFF_SIZE:dp_rcv->data_size);
         
-        if (BytesToBeCopied <= DATA_BUFF_SIZE)
-        {
-			for(index = 0; index<BytesToBeCopied ; index++)
-			{            
-				if (dp_rcv->data_ptr[index] != 0)
+
+		for(index = 0; index<BytesToBeCopied ; index++)
+		{
+			if (dp_rcv->data_ptr[index] != 0)
+			{
+				if (OSQueuePost(USB, dp_rcv->data_ptr[index]) == BUFFER_UNDERRUN)
 				{
-					if (OSQueuePost(USB, dp_rcv->data_ptr[index]) == BUFFER_UNDERRUN)
-					{
-					  // Buffer overflow 					
-					   while(1){}
-					}
+				  break;
 				}
 			}
-			/* Previous Send is complete. Queue next receive */
-			(void)USB_Class_CDC_Interface_DIC_Recv_Data(CONTROLLER_ID, NULL, 0);
-        }
+		}
+
+		/* Previous Send is complete. Queue next receive */
+		(void)USB_Class_CDC_Interface_DIC_Recv_Data(CONTROLLER_ID, NULL, 0);
+
     }
     else if((event_type == USB_APP_SEND_COMPLETE) && (start_transactions == TRUE))
     {
@@ -396,7 +395,7 @@ static void USB_Notify_Callback (
         if(event_type == USB_APP_CDC_CARRIER_ACTIVATED)
         {
             start_transactions = TRUE;
-            echo (">> BRTOS Started!", FALSE);
+            //echo (">> BRTOS Started!", FALSE);
         }
         else if(event_type == USB_APP_CDC_CARRIER_DEACTIVATED)
         {

@@ -322,13 +322,22 @@ __attribute__ ((__optimize__("omit-frame-pointer")))
 #endif
 void uart1_tx(void)
 {
-	// ************************
-	// Entrada de interrupção
-	// ************************
+    // ************************
+    // Interrupt Entry
+    // ************************
+#if __GNUC__
+	OS_SAVE_ISR();
+#endif
+
 	OS_INT_ENTER();
 
-	// Tratamento da interrupção  
+	// Tratamento da interrupção
+#if __GNUC__
+	BITCLEARMASK(SCI1C2,SCI1C2_TCIE_MASK);
+#else
 	SCI1C2_TCIE = 0;
+#endif
+
 	(void) SCI1S1; /* Leitura do registrador SCIxS1 para analisar o estado da transmissão */
 	(void) SCI1C3; /* Leitura do registrador SCIxC3 para limpar o bit de paridade */
 
@@ -343,6 +352,9 @@ void uart1_tx(void)
 	// ************************
 	OS_INT_EXIT();
 	// ************************
+#if __GNUC__
+	OS_RESTORE_ISR();
+#endif
 }
 
 //Função para adquirir direito exclusivo a porta serial
@@ -464,9 +476,13 @@ __attribute__ ((__optimize__("omit-frame-pointer")))
 #endif
 void uart1_rx(void)
 {
-	// ************************
-	// Entrada de interrupção
-	// ************************
+    // ************************
+    // Interrupt Entry
+    // ************************
+#if __GNUC__
+	OS_SAVE_ISR();
+#endif
+
 	OS_INT_ENTER();
 
 	// Tratamento da interrupção
@@ -490,6 +506,9 @@ void uart1_rx(void)
 	// ************************
 	OS_INT_EXIT();
 	// ************************
+#if __GNUC__
+	OS_RESTORE_ISR();
+#endif
 }
 
 #if !__GNUC__
@@ -503,9 +522,13 @@ __attribute__ ((__optimize__("omit-frame-pointer")))
 #endif
 void uart1_error(void)
 {
-	// ************************
-	// Entrada de interrupção
-	// ************************
+    // ************************
+    // Interrupt Entry
+    // ************************
+#if __GNUC__
+	OS_SAVE_ISR();
+#endif
+
 	OS_INT_ENTER();
 
 	// Tratamento da interrupção
@@ -526,6 +549,9 @@ void uart1_error(void)
 	// ************************
 	OS_INT_EXIT();
 	// ************************
+#if __GNUC__
+	OS_RESTORE_ISR();
+#endif
 }
 
 #endif
@@ -544,14 +570,16 @@ __attribute__ ((__optimize__("omit-frame-pointer")))
 #endif
 void uart2_tx(void)
 {
-	// ************************
-	// Entrada de interrupção
-	// ************************
+    // ************************
+    // Interrupt Entry
+    // ************************
+#if __GNUC__
+	OS_SAVE_ISR();
+#endif
+
 	OS_INT_ENTER();
 
-	// Tratamento da interrupção  
-
-
+	// Tratamento da interrupção
 #if (__GNUC__)
 	BITCLEARMASK(SCI2C2,SCI2C2_TCIE_MASK);
 #else
@@ -573,6 +601,9 @@ void uart2_tx(void)
 	// ************************
 	OS_INT_EXIT();
 	// ************************
+#if __GNUC__
+	OS_RESTORE_ISR();
+#endif
 }
 
 //Função para adquirir direito exclusivo a porta serial
@@ -675,9 +706,14 @@ __attribute__ ((__optimize__("omit-frame-pointer")))
 #endif
 void uart2_rx(void)
 {
+
 	// ************************
-	// Entrada de interrupção
-	// ************************
+    // Interrupt Entry
+    // ************************
+#if __GNUC__
+	OS_SAVE_ISR();
+#endif
+
 	OS_INT_ENTER();
 
 	// Tratamento da interrupção
@@ -700,6 +736,9 @@ void uart2_rx(void)
 	// ************************
 	OS_INT_EXIT();
 	// ************************
+#if __GNUC__
+	OS_RESTORE_ISR();
+#endif
 }
 
 #if !__GNUC__
@@ -713,9 +752,13 @@ __attribute__ ((__optimize__("omit-frame-pointer")))
 #endif
 void uart2_error(void)
 {
-	// ************************
-	// Entrada de interrupção
-	// ************************
+    // ************************
+    // Interrupt Entry
+    // ************************
+#if __GNUC__
+	OS_SAVE_ISR();
+#endif
+
 	OS_INT_ENTER();
 
 	// Tratamento da interrupção
@@ -734,9 +777,11 @@ void uart2_error(void)
 	// ************************
 	// Interrupt Exit
 	// ************************
-	OS_INT_EXIT()
-	;
+	OS_INT_EXIT();
 	// ************************
+#if __GNUC__
+	OS_RESTORE_ISR();
+#endif
 }
 
 #endif

@@ -253,14 +253,17 @@ static char getchar_timeout(int timeout)
 {(void)timeout; return 0;}
 #endif
 
+#if 0
 static struct pt monitor_input_pt;
+static char set_input = 0;
 mon_timer_t input_timer;
+#endif
 
 volatile uint8_t monitor_running = 1;
 volatile uint8_t monitor_uploading = 1;
 volatile uint8_t monitor_is_connected = 1;
 
-static char set_input = 0;
+
 
 #define sizearray(a)  (sizeof(a) / sizeof((a)[0]))
 CONST char config_inifile[] = "config.ini";

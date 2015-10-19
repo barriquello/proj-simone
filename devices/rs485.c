@@ -69,7 +69,6 @@
 #define RS485_PRINTF(x)		printf_uart1(x)
 #define RS485_RX_ENABLE()	uart1_RxEnable();uart1_RxEnableISR();
 #define RS485_RX_DISABLE()	uart1_RxDisable();uart1_RxDisableISR();
-extern OS_QUEUE 			SerialPortBuffer1;
 extern BRTOS_Queue 			*Serial1;
 #define RS485_QUEUE 		Serial1	
 #elif UART_RS485 == UART2
@@ -77,7 +76,6 @@ extern BRTOS_Queue 			*Serial1;
 #define RS485_PRINTF(x)		printf_uart2(x)
 #define RS485_RX_ENABLE()	uart2_RxEnableISR()
 #define RS485_RX_DISABLE()	uart2_RxDisableISR()
-extern OS_QUEUE 			SerialPortBuffer2;
 extern BRTOS_Queue 			*Serial2;
 #define RS485_QUEUE 		Serial2	
 #endif
@@ -132,7 +130,7 @@ void rs485_tx(const INT8U *data, const INT16U _len)
 INT8U rs485_rx(CHAR8* caracter, INT16U timeout)
 {	
 	INT8U ret;
-	ret = OSQueuePend(RS485_QUEUE, caracter, timeout);
+	ret = OSQueuePend(RS485_QUEUE, (INT8U*)caracter, timeout);
 	return (ret != TIMEOUT) ? TRUE:FALSE;
 }
 

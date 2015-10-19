@@ -1587,9 +1587,9 @@ void USB_ISR(void)
     // ************************
     OS_INT_EXIT();  
 
-#if __GNUC__
-	OS_RESTORE_ISR();
-#endif
+	#if __GNUC__
+		OS_RESTORE_ISR();
+	#endif
 }
 
 
