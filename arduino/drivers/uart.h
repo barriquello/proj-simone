@@ -5,11 +5,11 @@
 #include "BRTOS.h"
 
 
-// Enable/disable UARTs        
+// Enable/disable UARTs       
 
 #define ENABLE_UART0   TRUE
-#define ENABLE_UART1   FALSE
-#define ENABLE_UART2   FALSE
+#define ENABLE_UART1   TRUE
+#define ENABLE_UART2   TRUE
 
 // Enable/disable mutex for UARTs
 #define UART0_MUTEX 	1
@@ -101,6 +101,7 @@ void uart1_acquire(void);
 void uart1_release(void);
 INT8U putchar_uart1(INT8U caracter);
 void printf_uart1(CHAR8 *string);
+void printP_uart1(char const *string);
 void uart1_tx(void);
 void uart1_rx(void);
 void uart1_error(void);
@@ -121,6 +122,7 @@ void uart2_acquire(void);
 void uart2_release(void);
 INT8U putchar_uart2(INT8U caracter);
 void printf_uart2(CHAR8 *string);
+void printP_uart2(char const *string);
 void uart2_tx(void);
 void uart2_rx(void);
 void uart2_error(void);

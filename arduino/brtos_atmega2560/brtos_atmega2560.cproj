@@ -99,11 +99,11 @@
       <Value>../../../brtos/includes</Value>
       <Value>../../../hal/Atmel_Studio_6_ATMEGA</Value>
       <Value>../../../libs</Value>
+      <Value>../../../FatFS</Value>
       <Value>../../drivers</Value>
       <Value>../../includes</Value>
       <Value>../includes</Value>
       <Value>../../../devices</Value>
-      <Value>../../../FatFS</Value>
       <Value>../../../terminal</Value>
       <Value>../../../minINI</Value>
       <Value>../../../modbus_master</Value>
@@ -134,6 +134,14 @@
     <Compile Include="..\..\app\main_app.c">
       <SubType>compile</SubType>
       <Link>app\main_app.c</Link>
+    </Compile>
+    <Compile Include="..\..\app\MBMaster.c">
+      <SubType>compile</SubType>
+      <Link>app\MBMaster.c</Link>
+    </Compile>
+    <Compile Include="..\..\app\tasks.c">
+      <SubType>compile</SubType>
+      <Link>app\tasks.c</Link>
     </Compile>
     <Compile Include="..\..\brtos\BRTOS.c">
       <SubType>compile</SubType>
@@ -186,6 +194,14 @@
     <Compile Include="..\..\brtos\timers.c">
       <SubType>compile</SubType>
       <Link>brtos\timers.c</Link>
+    </Compile>
+    <Compile Include="..\..\devices\m590_at.c">
+      <SubType>compile</SubType>
+      <Link>devices\m590_at.c</Link>
+    </Compile>
+    <Compile Include="..\..\devices\m590_at.h">
+      <SubType>compile</SubType>
+      <Link>devices\m590_at.h</Link>
     </Compile>
     <Compile Include="..\..\devices\rs485.c">
       <SubType>compile</SubType>
@@ -459,6 +475,14 @@
       <SubType>compile</SubType>
       <Link>modbus_slaves\modbus_slave_null.h</Link>
     </Compile>
+    <Compile Include="..\..\modbus_slaves\modbus_t500.c">
+      <SubType>compile</SubType>
+      <Link>modbus_slaves\modbus_t500.c</Link>
+    </Compile>
+    <Compile Include="..\..\modbus_slaves\modbus_t500.h">
+      <SubType>compile</SubType>
+      <Link>modbus_slaves\modbus_t500.h</Link>
+    </Compile>
     <Compile Include="..\..\modbus_slaves\modbus_ts.c">
       <SubType>compile</SubType>
       <Link>modbus_slaves\modbus_ts.c</Link>
@@ -466,10 +490,6 @@
     <Compile Include="..\..\modbus_slaves\modbus_ts.h">
       <SubType>compile</SubType>
       <Link>modbus_slaves\modbus_ts.h</Link>
-    </Compile>
-    <Compile Include="..\..\modbus_slaves\port.c">
-      <SubType>compile</SubType>
-      <Link>modbus_slaves\port.c</Link>
     </Compile>
     <Compile Include="..\..\monitor\monitor.c">
       <SubType>compile</SubType>
@@ -535,6 +555,14 @@
       <SubType>compile</SubType>
       <Link>debug_info.c</Link>
     </Compile>
+    <Compile Include="..\drivers\led_onboard.c">
+      <SubType>compile</SubType>
+      <Link>drivers\led_onboard.c</Link>
+    </Compile>
+    <Compile Include="..\drivers\led_onboard.h">
+      <SubType>compile</SubType>
+      <Link>drivers\led_onboard.h</Link>
+    </Compile>
     <Compile Include="..\drivers\mcu_driver.c">
       <SubType>compile</SubType>
       <Link>drivers\mcu_driver.c</Link>
@@ -578,10 +606,6 @@
     <Compile Include="..\main_demo.c">
       <SubType>compile</SubType>
       <Link>main_demo.c</Link>
-    </Compile>
-    <Compile Include="..\tasks.c">
-      <SubType>compile</SubType>
-      <Link>tasks.c</Link>
     </Compile>
     <Compile Include="brtos_atmega2560.c">
       <SubType>compile</SubType>

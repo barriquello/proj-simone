@@ -90,7 +90,7 @@ CONST	uint16_t T500_Frequency = 82; /* Hz */
 /* static IR list for T500 device */
 static modbus_t500_input_register_list1  T500_IRList1;
 
-#define MODBUS_SLAVE_T500_SIMULATION 	0
+#define MODBUS_SLAVE_T500_SIMULATION 	1
 #if MODBUS_SLAVE_T500_SIMULATION
 #include "random_lib.h"
 #endif

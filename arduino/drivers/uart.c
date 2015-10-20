@@ -41,6 +41,8 @@ BRTOS_Queue *Serial2;
 
 
 void uart0_init(unsigned int baudrate);
+void uart1_init(unsigned int baudrate);
+void uart2_init(unsigned int baudrate);
 
 void uart0_init(unsigned int baudrate)
 {
@@ -54,6 +56,30 @@ void uart0_init(unsigned int baudrate)
 	UCSR0C = (3<<UCSZ00); 								
 }
 
+void uart1_init(unsigned int baudrate)
+{
+	/*Set baud rate */
+	UBRR1H = (INT8U)(baudrate>>8);
+	UBRR1L = (INT8U)baudrate;
+
+	/*Enable receiver and transmitter. Enable RX interrupt */
+	UCSR1B = (1<<RXEN1) | (1<<TXEN1) | (1 << RXCIE1);
+	/* Set frame format: 8 bit data, 1 stop bit */
+	UCSR1C = (3<<UCSZ10);
+}
+
+void uart2_init(unsigned int baudrate)
+{
+	/*Set baud rate */
+	UBRR2H = (INT8U)(baudrate>>8);
+	UBRR2L = (INT8U)baudrate;
+
+	/*Enable receiver and transmitter. Enable RX interrupt */
+	UCSR2B = (1<<RXEN2) | (1<<TXEN2) | (1 << RXCIE2);
+	/* Set frame format: 8 bit data, 1 stop bit */
+	UCSR2C = (3<<UCSZ20);
+}
+
 
 void _putchar_uart0(CHAR8 data)
 {
@@ -64,24 +90,22 @@ void _putchar_uart0(CHAR8 data)
     UDR0 = data;
 }
 
-
-void _print_uart0(char *string)
+void _putchar_uart1(CHAR8 data)
 {
-  while(*string)
-  { 
-	putchar_uart0(*string);
-    string++;
-  }
+	/* Wait for empty transmit buffer */
+	while (!(UCSR1A & 0x20)){}
+	UCSR1A = 0x20;
+	// Put data into buffer, sends the data */
+	UDR1 = data;
 }
 
-void _printP_uart0(char const *string)
+void _putchar_uart2(CHAR8 data)
 {
-	char c;
-	while((c=pgm_read_byte(*string)) != 0)
-	{
-		putchar_uart0(c);
-		string++;
-	}
+	/* Wait for empty transmit buffer */
+	while (!(UCSR2A & 0x20)){}
+	UCSR2A = 0x20;
+	// Put data into buffer, sends the data */
+	UDR2 = data;
 }
 
 void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8U priority)
@@ -122,14 +146,8 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 		// Configure UART 0
 		#if (ENABLE_UART0 == TRUE)
 		if (uart == 0)
-		{
-			
-			uart0_init(baudrate);
-			
-			// Cria um mutex com contador = 1, informando que o recurso está disponível
-			// após a inicialização
-			// Prioridade máxima a acessar o recurso = priority
-			
+		{			
+			uart0_init(baudrate);			
 			if (mutex == TRUE)
 			{
 				if (OSMutexCreate(&SerialResource0, priority) != ALLOC_EVENT_OK)
@@ -156,12 +174,7 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 		if (uart == 1)
 		{
 			
-			uart1_init(baudrate);
-			
-			// Cria um mutex com contador = 1, informando que o recurso está disponível
-			// após a inicialização
-			// Prioridade máxima a acessar o recurso = priority
-		
+			uart1_init(baudrate);		
 			if (mutex == TRUE)
 			{
 				if (OSMutexCreate(&SerialResource1, priority) != ALLOC_EVENT_OK)
@@ -189,10 +202,6 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 		{
 			
 			uart2_init(baudrate);
-			
-			// Cria um mutex com contador = 1, informando que o recurso está disponível
-			// após a inicialização
-			// Prioridade máxima a acessar o recurso = priority
 			if (mutex == TRUE)
 			{
 				if (OSMutexCreate(&SerialResource2, priority) != ALLOC_EVENT_OK)
@@ -283,7 +292,7 @@ INT8U putchar_uart0(INT8U caracter)
 	_putchar_uart0(caracter);
 	
 #if 0	
-	if(OSSemPend(SerialTX2, TX_TIMEOUT) == TIMEOUT)
+	if(OSSemPend(SerialTX0, TX_TIMEOUT) == TIMEOUT)
 	{
 		return caracter++;
 	}
@@ -298,6 +307,16 @@ void printf_uart0(CHAR8 *string)
 	while (*string)
 	{
 		putchar_uart0(*string);
+		string++;
+	}
+}
+
+void printP_uart0(char const *string)
+{
+	char c;
+	while((c=pgm_read_byte(*string)) != 0)
+	{
+		putchar_uart0(c);
 		string++;
 	}
 }
@@ -437,12 +456,14 @@ void uart1_TxDisableISR(void)
 
 INT8U putchar_uart1(INT8U caracter)
 {
+	_putchar_uart1(caracter);
 	
-
+	#if 0
 	if(OSSemPend(SerialTX1, TX_TIMEOUT) == TIMEOUT)
 	{
 		return caracter++;
 	}
+	#endif
 	
 	return caracter;
 }
@@ -458,33 +479,56 @@ void printf_uart1(CHAR8 *string)
 
 }
 
+void printP_uart1(char const *string)
+{
+	char c;
+	while((c=pgm_read_byte(*string)) != 0)
+	{
+		putchar_uart1(c);
+		string++;
+	}
+}
 
-void uart1_rx(void)
 
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+//__attribute__ ((section (".lowtext")))
+ISR(USART1_RX_vect, __attribute__ ( ( naked ) ))
+#else
+ISR(USART_RX_vect, __attribute__ ( ( naked ) ))
+#endif
 {
 	// ************************
 	// Entrada de interrupção
 	// ************************
+	OS_SAVE_ISR();
 	OS_INT_ENTER();
 
+	INT8U caracter = 0;
+	caracter = UDR1;
 
-#if (NESTING_INT == 1)
+	#if (NESTING_INT == 1)
 	OS_ENABLE_NESTING();
-#endif  
+	#endif
 
-
-	if (OSQueuePost(Serial1, receive_byte1) == BUFFER_UNDERRUN)
+	if (OSQueuePost(Serial1,caracter) == BUFFER_UNDERRUN)
 	{
 		// Problema: Estouro de buffer
-		OSCleanQueue(Serial1);
+		(void)OSCleanQueue(Serial1);
 	}
 
 	// ************************
 	// Interrupt Exit
 	// ************************
 	OS_INT_EXIT();
+	OS_RESTORE_ISR();
 	// ************************
 }
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
 
 
 void uart1_error(void)
@@ -574,11 +618,14 @@ void uart2_TxDisableISR(void)
 
 INT8U putchar_uart2(INT8U caracter)
 {
+	_putchar_uart2(caracter);
 	
+	#if 0
 	if(OSSemPend(SerialTX2, TX_TIMEOUT) == TIMEOUT)
 	{
 		return caracter++;
 	}
+	#endif
 	
 	return caracter;
 }
@@ -593,33 +640,55 @@ void printf_uart2(CHAR8 *string)
 	}
 }
 
+void printP_uart2(char const *string)
+{
+	char c;
+	while((c=pgm_read_byte(*string)) != 0)
+	{
+		putchar_uart2(c);
+		string++;
+	}
+}
 
-void uart2_rx(void)
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+#if defined(__AVR_ATmega2560__) || defined(__AVR_ATmega2561__)
+//__attribute__ ((section (".lowtext")))
+ISR(USART2_RX_vect, __attribute__ ( ( naked ) ))
+#else
+ISR(USART_RX_vect, __attribute__ ( ( naked ) ))
+#endif
 {
 	// ************************
 	// Entrada de interrupção
 	// ************************
+	OS_SAVE_ISR();
 	OS_INT_ENTER();
-	
 
-#if (NESTING_INT == 1)
+	INT8U caracter = 0;
+	caracter = UDR2;
+
+	#if (NESTING_INT == 1)
 	OS_ENABLE_NESTING();
-#endif  
+	#endif
 
-	if (OSQueuePost(Serial2, receive_byte2) == BUFFER_UNDERRUN)
+	if (OSQueuePost(Serial2,caracter) == BUFFER_UNDERRUN)
 	{
 		// Problema: Estouro de buffer
-		OSCleanQueue(Serial2);
+		(void)OSCleanQueue(Serial2);
 	}
 
 	// ************************
 	// Interrupt Exit
 	// ************************
 	OS_INT_EXIT();
+	OS_RESTORE_ISR();
 	// ************************
 }
-
-
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////
 void uart2_error(void)
 {
 	// ************************

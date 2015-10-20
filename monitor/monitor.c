@@ -365,7 +365,7 @@ uint8_t monitor_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 #endif
 
 	time_now = time_now - time_elapsed_s;
-	(*timestamp) = *localtime(&(time_t){time_now});
+	(*timestamp) = *((struct tm *)localtime(&(time_t){time_now}));
 	
 	return MODEM_OK;
 }

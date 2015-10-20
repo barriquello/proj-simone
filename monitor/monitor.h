@@ -207,7 +207,7 @@ typedef enum{
 	IN_USE = 1
 } monitor_used_t;
 
-#if COLDUINO && !__GNUC__
+#if (COLDUINO && !__GNUC__) || ARDUINO
 typedef unsigned long long clock_t;
 #endif
 

@@ -31,7 +31,7 @@
 #include "AppConfig.h"
 #include "printf_lib.h"
 
-#if PLATAFORMA==COLDUINO
+#if COLDUINO || ARDUINO
 #if !__GNUC__
 #pragma warn_implicitconv off
 #endif
@@ -54,7 +54,7 @@
 #define DPUTCHAR(a,b)	UNUSED((a));UNUSED((b));
 #endif
 
-
+#if COLDUINO || ARDUINO
 void Transmite_Uptime(INT8U Comm)
 {
    OSTime Uptime;
@@ -206,7 +206,7 @@ void Reason_of_Reset(INT8U Comm)
   }
 #endif  
 }
-
+#endif
 
 #if (OSTRACE == 1) 
 /* OS trace function */
@@ -353,6 +353,5 @@ void Send_OSTrace(INT8U Comm){
   DPUTCHAR(Comm, CR);
 
 }
-
 #endif
 

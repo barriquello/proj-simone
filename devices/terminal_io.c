@@ -32,7 +32,7 @@
 #include "terminal_io.h"
 #include "uart.h"
 
-#if PLATAFORMA == COLDUINO
+#if COLDUINO
 #include "virtual_com.h"
 #endif
 
@@ -118,3 +118,25 @@ void putcharSer(INT8U SerialPort, CHAR8 caracter)
 	    break;
 	}	
 }
+
+#if ARDUINO
+void printSer_P(INT8U SerialPort, const CHAR8 *string)
+{
+	switch(SerialPort)
+	{
+		case USE_UART1:
+		#if (ENABLE_UART1 == TRUE)
+		printP_uart1((CHAR8 *)string);
+		#endif
+		break;
+		case USE_UART2:
+		#if (ENABLE_UART2 == TRUE)
+		printP_uart2((CHAR8 *)string);
+		#endif
+		break;		
+		default:
+		break;
+	}
+}
+#endif
+

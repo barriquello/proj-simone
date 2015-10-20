@@ -458,11 +458,12 @@ void terminal_process(void)
           }
       }
     }    
-    
+    #if COLDUINO
     if (SilentMode == FALSE)
     {
     	cdc_process();
     }
+	#endif
   }
 }
 

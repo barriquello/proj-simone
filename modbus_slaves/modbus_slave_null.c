@@ -70,8 +70,8 @@ uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 
 #elif ARDUINO
 
-#define INPUT_PORT_DIR		0 /* definir */
-#define INPUT_PORT_DATA		0 /* definir */
+#define INPUT_PORT_DIR		DDRF	/* atmega2560 analog input */
+#define INPUT_PORT_DATA		PORTF	/* atmega2560 analog input */
 
 #endif
 

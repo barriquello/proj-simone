@@ -37,7 +37,7 @@
 #include "stdint.h"
 
 // configuration 
-#if COLDUINO 
+#if COLDUINO || ARDUINO
 #define M590_ENABLE 1
 #else
 #define M590_ENABLE 0

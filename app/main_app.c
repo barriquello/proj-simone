@@ -82,10 +82,7 @@ void main_app(void)
 	BRTOS_Init();	
 	
 #if (COLDUINO || ARDUINO) && !SIMULATION
-
-	#if COLDUINO
-		led_onboard_init();	 /* Init LED onboard */
-	#endif
+	led_onboard_init();	 /* Init LED onboard */
 	Modbus_init(); 		 /* Init Modbus */
 	Modus_slave_null_init(); /* Init Modbus Slave Null */
 #endif	
@@ -135,8 +132,7 @@ void main_app(void)
 	
 #endif	
 	
-#if USB_DEVICE_ENABLED == 1
-#if (USB_CLASS_TYPE == BRTOS_USB_MSD)
+#if USB_DEVICE_ENABLED && (USB_CLASS_TYPE == BRTOS_USB_MSD)
 	if(InstallTask(&Mass_Storage_Device_Task,"Mass Storage Device Task",512,15,NULL) != OK)
 	{
 		while(1)
@@ -145,12 +141,11 @@ void main_app(void)
 #endif
 
 
-#if (USB_CLASS_TYPE == BRTOS_USB_CDC)
+#if (USB_DEVICE_ENABLED && (USB_CLASS_TYPE == BRTOS_USB_CDC)) || ARDUINO
 	if (InstallTask(&Terminal_Task, TaskName_Terminal, 1024, 15, NULL) != OK)
 	{
 		sleep_forever();
 	};
-#endif
 #endif
 
 
