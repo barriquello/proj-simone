@@ -165,10 +165,6 @@ void Task_modbus_master_test(void)
 
 
 /* ----------------------- Modbus includes ----------------------------------*/
-//#include "mb.h"
-//#include "mbport.h"
-
-
 uint8_t Modbus_init(void) 
 {
 

@@ -141,7 +141,7 @@ void main_app(void)
 #endif
 
 
-#if (USB_DEVICE_ENABLED && (USB_CLASS_TYPE == BRTOS_USB_CDC)) || ARDUINO
+#if (USB_DEVICE_ENABLED && (USB_CLASS_TYPE == BRTOS_USB_CDC)) //|| ARDUINO
 	if (InstallTask(&Terminal_Task, TaskName_Terminal, 1024, 15, NULL) != OK)
 	{
 		sleep_forever();
@@ -172,7 +172,7 @@ void main_app(void)
 }
 
 /* function to handle any system error */
-#if PLATAFORMA==COLDUINO
+#if COLDUINO || ARDUINO
 #include "led_onboard.h"
 #endif
 
@@ -181,7 +181,7 @@ void sleep_forever(void)
 
 	while(1)
 	{
-		#if PLATAFORMA==COLDUINO
+		#if COLDUINO || ARDUINO
 			/* sleep forever */
 			led_onboard_on();
 			DelayTask(500); 
@@ -193,7 +193,7 @@ void sleep_forever(void)
 
 
 /* function to handle printf/scanf */
-#if PLATAFORMA==COLDUINO && !__GNUC__
+#if COLDUINO && !__GNUC__
 
 #include "terminal.h"
 

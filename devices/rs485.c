@@ -34,7 +34,7 @@
 #include "uart.h"
 #include "rs485.h"
 
-#define RS485_BUFSIZE		(36)
+#define RS485_BUFSIZE		(36) /* enough to read up to 2 regs of 16 bits each */
 #define RS485_TX_STATE 		1
 #define RS485_RX_STATE 		0
 

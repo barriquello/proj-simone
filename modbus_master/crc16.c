@@ -2,6 +2,8 @@
 /* crc16.c                                                                    */
 /******************************************************************************/
 
+#include "AppConfig.h"
+#include "hardware.h"
 
 #include "data_types.h"
 #include "crc16.h"
@@ -10,9 +12,12 @@
 #define CONST const
 #endif
 
+#ifndef PROGMEM
+#define PROGMEM
+#endif
 
 /* Table of CRC values for high-order byte */
-static CONST uint8_t tableCRCHi[256] = {
+static CONST uint8_t tableCRCHi[256] PROGMEM = {
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x00, 0xC1, 0x81, 0x40,
     0x00, 0xC1, 0x81, 0x40, 0x01, 0xC0, 0x80, 0x41, 0x01, 0xC0, 0x80, 0x41,
@@ -38,7 +43,7 @@ static CONST uint8_t tableCRCHi[256] = {
 };
 
 /* Table of CRC values for low-order byte */
-static CONST uint8_t tableCRCLo[256] = {
+static CONST uint8_t tableCRCLo[256] PROGMEM = {
     0x00, 0xC0, 0xC1, 0x01, 0xC3, 0x03, 0x02, 0xC2, 0xC6, 0x06, 0x07, 0xC7,
     0x05, 0xC5, 0xC4, 0x04, 0xCC, 0x0C, 0x0D, 0xCD, 0x0F, 0xCF, 0xCE, 0x0E,
     0x0A, 0xCA, 0xCB, 0x0B, 0xC9, 0x09, 0x08, 0xC8, 0xD8, 0x18, 0x19, 0xD9,
@@ -75,8 +80,16 @@ uint16_t ModbusCrc16(const uint8_t * const _pBuff, uint32_t _len)
 
     while(_len--) {
         wInd = (uint32_t)(CrcLo ^ _pBuff[bInd++]);
-        CrcLo = (uint8_t)(CrcHi ^ tableCRCHi[wInd]);
+		
+#if ARDUINO	
+		uint8_t byte = pgm_read_byte(&(tableCRCHi[wInd]));
+		CrcLo = (uint8_t)(CrcHi ^ byte);
+		byte = pgm_read_byte(&(tableCRCLo[wInd]));
+		CrcHi = byte;
+#else	
+        CrcLo = (uint8_t)(CrcHi ^ tableCRCHi[wInd]);	
         CrcHi = tableCRCLo[wInd];
+#endif			
     };
     //return((uint16_t)(CrcLo << 8 | CrcHi));
     return ((uint16_t)(CrcHi << 8 | CrcLo));
@@ -92,8 +105,16 @@ static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
         /* pass through message buffer */
         while (buffer_length--) {
                 i = crc_hi ^ *buffer++; /* calculate the CRC  */
-                crc_hi = crc_lo ^ tableCRCHi[i];
-                crc_lo = tableCRCLo[i];
+				#if ARDUINO
+					uint8_t byte = pgm_read_byte(&(tableCRCHi[i]));
+					crc_hi = crc_lo ^ byte;
+					byte = pgm_read_byte(&(tableCRCLo[i]));
+					crc_lo = byte;
+				#else
+					crc_hi = crc_lo ^ tableCRCHi[i];
+					crc_lo = tableCRCLo[i];
+				#endif				
+
         }
 
         return (uint16_t)(crc_hi << 8 | crc_lo);

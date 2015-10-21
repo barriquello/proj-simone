@@ -62,7 +62,7 @@ static FATFS FATFS_Obj;
 // File object
 FIL      file_obj;
 // File object 2
-FIL      file_obj2;
+//FIL      file_obj2;
 
 // File Info object
 FILINFO Finfo;
@@ -840,8 +840,10 @@ INT8U RenameFile(CHAR8 *OldFileName,CHAR8 *NewFileName, INT8U verbose)
   }
 }
 
+#if 0	
 INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
 {
+	
   INT32U  p1, p2, s1, s2;
   CHAR8   *NewDstName, *CopyName;
   INT8U   f_res = 0;
@@ -956,8 +958,10 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
   {
 	  PRINT((verbose == VERBOSE_ON),(CHAR8*)SD_API_CARD_NOT_PRESENT);
       return SD_FAT_ERROR;
-  }
+  }  
 }
+#endif
+
 
 
 INT8U WriteUptimeLog(INT8U verbose)

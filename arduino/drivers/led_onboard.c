@@ -39,7 +39,7 @@
 
 void led_onboard_init(void)
 {
-#if (__GNUC__) && LED_PORT
+#if LED_PORT
 	BITCLEAR(LED_PORT_DATA,LED_PIN);
 	BITSET(PTBDD,LED_PIN);
 #endif
@@ -47,26 +47,29 @@ void led_onboard_init(void)
 
 int led_onboard_state(void)
 {
-#if (__GNUC__) && LED_PORT
+#if LED_PORT
 	return (BITTEST(LED_PORT_DATA,LED_PIN) ? LED_ON : LED_OFF);
+#else
+	return 0;
 #endif
+
 }
 void led_onboard_on(void)
 {
-#if (__GNUC__) && LED_PORT
+#if LED_PORT
 	BITCLEAR(LED_PORT_DATA,LED_PIN);
 #endif
 
 }
 void led_onboard_off(void)
 {
-#if (__GNUC__) && LED_PORT
+#if LED_PORT
 	BITSET(LED_PORT_DATA,LED_PIN);
 #endif
 }
 void led_onboard_toggle(void)
 {
-#if (__GNUC__) && LED_PORT
+#if LED_PORT
 	BITTOGGLE(LED_PORT_DATA,LED_PIN);
 #endif
 }

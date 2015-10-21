@@ -239,22 +239,28 @@ static void term_cmd_help(char *param)
   char *name;
 
   (void)param;
-  printf_usb("\r\nSupported commands:\r\n");
+  printf_terminal("\r\nSupported commands:\r\n");
 
   for(x=0; x < term_n_cmd; x++)
   {
-    printf_usb("  ");
+    printf_terminal("  ");
     name = (char*)term_cmds[x]->txt;
     y = (int)strlen(name);
-    printf_usb((char *)term_cmds[x]->txt);
+	#if ARDUINO
+		extern char BufferText[];
+		strcpy_P(BufferText, (PGM_P)pgm_read_word(name));
+		printf_terminal((CHAR8*)BufferText);
+	#else
+		printf_terminal((char *)name);
+	#endif
     for(;y<MAX_CMD_SIZE;y++)
     {
-      printf_usb(" ");
+      printf_terminal(" ");
     }
-    printf_usb((char *)term_cmds[x]->help_txt);
-    printf_usb("\r\n");
+    printf_terminal((char *)term_cmds[x]->help_txt);
+    printf_terminal("\r\n");
   }
-  printf_usb("\r\n");
+  printf_terminal("\r\n");
 }
 
 

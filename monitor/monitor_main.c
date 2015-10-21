@@ -112,7 +112,7 @@ T20150101073300S ->
 #include <stdlib.h>
 #include <string.h>
 
-#if PLATAFORMA == ARDUINO
+#if ARDUINO
 //#include "time_lib.h"
 #else
 #include <time.h>
@@ -145,27 +145,48 @@ monitor_config_ok_t config_check;
 #define DEBUG_MONITOR 1
 
 #if DEBUG_MONITOR
-#ifdef _WIN32
-#define PRINTF(...) printf(__VA_ARGS__);
-#define DPRINTF(...) printf(__VA_ARGS__);
+#if _WIN32
+#define PSTR(x)		(x)
+#define PRINTF(...)			printf(__VA_ARGS__);
+#define DPRINTF(...)		print_erro(__VA_ARGS__);
+#define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
+#elif ARDUINO 
+#define PRINTF(...)			printf_lib(__VA_ARGS__);
+#define DPRINTF(...)		print_erro(__VA_ARGS__);
+#define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
 #else
-#define PRINTF(...) printf_lib(__VA_ARGS__);
-#define DPRINTF(...) print_debug(__VA_ARGS__);
+#define PSTR(x)			(x)
+#define PRINTF(...) 	printf_lib(__VA_ARGS__);
+#define DPRINTF(...) 	print_erro(__VA_ARGS__);
+#define PRINT_ERRO(...) print_erro(__VA_ARGS__);
 #endif
 #else
+#define PSTR(x)		(x)
 #define PRINTF(...)
 #define DPRINTF(...)
+#define PRINT_ERRO(...)
 #endif
 
 #ifndef CONST
 #define CONST const
 #endif
 
+#if ARDUINO
+extern char BufferText[];
+const char monitor_error_msg0[] PROGMEM = "\r\nConfig erro: faltando ";
+const char monitor_error_msg1[] PROGMEM = "\r\nMonitor erro: %d ";
+PGM_P CONST monitor_error_msg[] PROGMEM =
+{
+	monitor_error_msg0,
+	monitor_error_msg1
+};
+#else
 const char* monitor_error_msg[] =
 {
 	"\r\nConfig erro: faltando ",
 	"\r\nMonitor erro: %d "
 };
+#endif
 /*---------------------------------------------------------------------------*/
 /*
  * Timer library
@@ -263,9 +284,6 @@ volatile uint8_t monitor_running = 1;
 volatile uint8_t monitor_uploading = 1;
 volatile uint8_t monitor_is_connected = 1;
 
-
-
-#define sizearray(a)  (sizeof(a) / sizeof((a)[0]))
 CONST char config_inifile[] = "config.ini";
 
 /*---------------------------------------------------------------------------*/
@@ -318,13 +336,13 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 			timer_set(timer, (uint32_t)period/10);
 		}
 		time_before = clock_time();
-		PRINTF("M %d W start @%d\r\n", _monitor, (uint32_t)(time_before & MASK32));
+		PRINTF(PSTR("M %d W start @%d\r\n"), _monitor, (uint32_t)(time_before & MASK32));
 		
 		monitor_writer(_monitor);
 		
 		time_now = clock_time();
 		time_elapsed = (uint32_t)(time_now-time_before);
-		PRINTF("M %d W end @%d, diff %d\r\n", _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
+		PRINTF(PSTR("M %d W end @%d, diff %d\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
   }
   PT_END(pt);
 }
@@ -347,14 +365,14 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));
 		
 		time_before = clock_time();
-		PRINTF("M %d R start @%d\r\n", _monitor, (uint32_t)(time_before & MASK32));
+		PRINTF(PSTR("M %d R start @%d\r\n"), _monitor, (uint32_t)(time_before & MASK32));
 		
 		monitor_reader(_monitor);
 		
 		time_now = clock_time();
 		
 		time_elapsed = (uint32_t)(time_now-time_before);
-		PRINTF("M %d R end @%d, diff %d\r\n", _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
+		PRINTF(PSTR("M %d R end @%d, diff %d\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
   }
   PT_END(pt);
 }
@@ -374,13 +392,6 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 #define SEND_STRING1 "GET /input/post.json?json={"
 #define SEND_STRING2 ("}&apikey=" API_KEY " HTTP/1.1\r\nHost: " SERVER_NAME "\r\n\r\n\r\n")
 #define SEND_STRING3 "}&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n"
-#endif
-
-//#define DEBUG
-#if DEBUG == 1 
-#define dprintf(...)	printf(__VA_ARGS__)
-#else
-#define dprintf(...)
 #endif
 
 #if 0
@@ -427,8 +438,13 @@ static int callback_inifile(const char *section, const char *key, const char *va
 			
 			if(num_monitores > MAX_NUM_OF_MONITORES)
 			{
-				print_erro(monitor_error_msg[0]);
-				print_erro("num_monitores superior ao suportado\n\r.");
+				#if ARDUINO
+				strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]), sizeof(BufferText));
+				PRINT_ERRO(BufferText);
+				#else
+				PRINT_ERRO(monitor_error_msg[0]);
+				#endif
+				PRINT_ERRO(PSTR("num_monitores superior ao suportado\n\r."));
 			}else
 			{
 				config_check.bit.num_mon_ok=1;
@@ -480,7 +496,7 @@ static int callback_inifile(const char *section, const char *key, const char *va
 		}
 		if(strcmp(key,"nome") == 0)
 		{
-			strncpy(monitor_state[mon_cnt].monitor_dir_name, value, sizearray(monitor_state[mon_cnt].monitor_dir_name));
+			strncpy(monitor_state[mon_cnt].monitor_dir_name, value, SIZEARRAY(monitor_state[mon_cnt].monitor_dir_name));
 			++field_cnt;
 		}
 		if(strcmp(key,"intervalo") == 0)
@@ -511,32 +527,57 @@ static void config_check_erro(void)
 	int erro = 0;
 	if(config_check.bit.num_mon_ok == 0)
 	{
-		print_erro(monitor_error_msg[0]);
-		print_erro("num_monitores ou maior que %d \n\r.", MAX_NUM_OF_MONITORES);
+		#if ARDUINO
+		strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]), sizeof(BufferText));
+		PRINT_ERRO(BufferText);
+		#else
+		PRINT_ERRO(monitor_error_msg[0]);
+		#endif
+		PRINT_ERRO(PSTR("num_monitores ou maior que %d \n\r."), MAX_NUM_OF_MONITORES);
 		erro++;
 	}
 	if(config_check.bit.server_ok == 0)
 	{
 		
-		print_erro(monitor_error_msg[0]);
-		print_erro("simon server \n\r.");
+		#if ARDUINO
+		strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]), sizeof(BufferText));
+		PRINT_ERRO(BufferText);
+		#else
+		PRINT_ERRO(monitor_error_msg[0]);
+		#endif
+		PRINT_ERRO(PSTR("simon server \n\r."));
 		erro++;
 	}
 	if(config_check.bit.ip_ok == 0)
 	{
-		print_erro(monitor_error_msg[0]);
-		print_erro("simon ip \n\r.");
+		#if ARDUINO
+		strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]), sizeof(BufferText));
+		PRINT_ERRO(BufferText);
+		#else
+		PRINT_ERRO(monitor_error_msg[0]);
+		#endif
+		PRINT_ERRO(PSTR("simon ip \n\r."));
 	}
 	if(config_check.bit.key_ok == 0)
 	{
-		print_erro(monitor_error_msg[0]);
-		print_erro("apikey \n\r.");
+		#if ARDUINO
+		strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]), sizeof(BufferText));
+		PRINT_ERRO(BufferText);
+		#else
+		PRINT_ERRO(monitor_error_msg[0]);
+		#endif
+		PRINT_ERRO(PSTR("apikey \n\r."));
 		erro++;
 	}
 	if(config_check.bit.gprs_apn_ok == 0)
 	{
-		print_erro(monitor_error_msg[0]);
-		print_erro("gprs server\n\r.");		
+		#if ARDUINO
+		strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]), sizeof(BufferText));
+		PRINT_ERRO(BufferText);
+		#else
+		PRINT_ERRO(monitor_error_msg[0]);
+		#endif
+		PRINT_ERRO(PSTR("gprs server\n\r."));		
 	}
 	if (erro)
 	{
@@ -567,8 +608,8 @@ void main_monitor(void)
 #define TESTES 0	
 #if TESTES		
 	struct tm ts;
-	char server_reply[]="Date: Wed, 02 Sep 2015 19:01:30 GMT";
-	get_server_time(server_reply, &ts);
+	char server_reply_test[]="Date: Wed, 02 Sep 2015 19:01:30 GMT";
+	get_server_time(server_reply_test, &ts);
 #endif
 	
 #ifdef _WIN32
@@ -582,14 +623,14 @@ void main_monitor(void)
 	extern const modem_driver_t win_http;
 	if(simon_init(&win_http) != MODEM_OK)
 	{
-		print_erro ("Simon init error\r\n");
+		PRINT_ERRO (PSTR("Simon init error\r\n"));
 	}
 #else
 	/* modem gprs driver */
 	extern const modem_driver_t m590_driver;
 	if(simon_init(&m590_driver) != MODEM_OK)
 	{
-		print_erro ("Simon init error\r\n");
+		PRINT_ERRO(PSTR("Simon init error\r\n"));
 	}
 #endif
 
@@ -622,7 +663,7 @@ void main_monitor(void)
 	ini_browse(callback_inifile, NULL, config_inifile);
 	config_check_erro();
 
-	print_debug("Config OK\r\n");
+	DPRINTF(PSTR("Config OK\r\n"));
 	
 #if COLDUINO || ARDUINO
 	DelayTask(5000);	
@@ -635,7 +676,7 @@ void main_monitor(void)
 		if(monitor_state[monitor_num].state != IN_USE			
 			|| monitor_init(monitor_num) != TRUE)
 		{
-			print_erro(monitor_error_msg[1], monitor_num);
+			PRINT_ERRO(monitor_error_msg[1], monitor_num);
 			sleep_forever();
 		}
 		
@@ -648,9 +689,14 @@ void main_monitor(void)
 			monitor_state[monitor_num].read_data = modbus_slaves_all[monitor_state[monitor_num].codigo]->slave_reader;			
 		}else
 		{
-			modbus_slave_erro:				
-			print_erro(monitor_error_msg[1], monitor_num);
-			print_erro("modbus slave não suportado \r\n");
+			modbus_slave_erro:	
+			#if ARDUINO				
+				strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[1]), sizeof(BufferText));
+				PRINT_ERRO(BufferText, monitor_num);
+			#else
+				PRINT_ERRO(monitor_error_msg[1], monitor_num);
+			#endif			
+			PRINT_ERRO(PSTR("modbus slave nao suportado \r\n"));
 			sleep_forever();
 		}		
 		

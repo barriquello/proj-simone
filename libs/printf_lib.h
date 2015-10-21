@@ -8,23 +8,35 @@
 #ifndef PRINTF_LIB_H_
 #define PRINTF_LIB_H_
 
+#include "AppConfig.h"
+
 int printf_lib(const char *format, ...);
 int sprintf_lib(char *out, const char *format, ...);
 int snprintf_lib( char *buf, unsigned int count, const char *format, ... );
 int vsprintf_lib(char *out, const char *format, ...);
 
-#ifndef _WIN32
+#if COLDUINO
 #define DISABLE_SNPRINTF 1
+#else
+#define DISABLE_SNPRINTF 0
 #endif
 
 #include <stdarg.h>
 #if DISABLE_SNPRINTF
+#include "terminal.h" 
 #define SNPRINTF(...) 	snprintf_lib(__VA_ARGS__)
 #define VSPRINTF(...)	vsprintf_lib(__VA_ARGS__)
 #else
 #include "stdio.h"
+#ifdef __AVR__
+#include "hardware.h"
+#define SNPRINTF(...) 	snprintf_P(__VA_ARGS__)
+#define VSPRINTF(...)	vsprintf_P(__VA_ARGS__)
+#else
 #define SNPRINTF(...) 	snprintf(__VA_ARGS__)
 #define VSPRINTF(...)	vsprintf(__VA_ARGS__)
+#endif
+
 #endif
 
 #endif /* PRINTF_H_ */
