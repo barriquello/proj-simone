@@ -48,7 +48,7 @@ extern "C" {
 /*****************************************************************************
  * Macro definitions
  *****************************************************************************/
-#define MAX_CMDS      22
+#define MAX_CMDS      8
 #define MAX_CMD_SIZE  8
 /*****************************************************************************
  * Local types.
@@ -76,7 +76,7 @@ static const command_t term_help_cmd = {
 };
 
 static char			SilentMode = 0; 
-static char 		term_cmd_line[256];
+static char 		term_cmd_line[32];
 static uint8_t 		term_cmd_line_ndx;
 
 static uint8_t 		term_n_cmd;

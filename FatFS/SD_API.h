@@ -81,10 +81,10 @@ INT8U cmd_verify_zeros(INT8U *pfile, INT8U num);
 extern FIL      file_obj;
 
 //Mensagens padrão da API do SD
-extern CONST INT8U SD_API_FILE_NOT_FOUND[];
-extern CONST INT8U SD_API_FILE_INVALID[];
-extern CONST INT8U SD_API_CARD_BUSY[];
-extern CONST INT8U SD_API_CARD_NOT_PRESENT[];
+extern CONST CHAR8 SD_API_FILE_NOT_FOUND[];
+extern CONST CHAR8 SD_API_FILE_INVALID[];
+extern CONST CHAR8 SD_API_CARD_BUSY[];
+extern CONST CHAR8 SD_API_CARD_NOT_PRESENT[];
 
 
 /******** COMANDS USED IN THE APPLICATION *************/

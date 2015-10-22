@@ -34,6 +34,7 @@
 #include "BRTOS.h"
 
 #define USE_USB		0
+#define USE_UART0   0
 #define USE_UART1	1
 #define USE_UART2	2
 
@@ -48,5 +49,10 @@ void terminal_output (CHAR8 c);
 
 void printSer(INT8U SerialPort, const CHAR8 *string);
 void putcharSer(INT8U SerialPort, CHAR8 caracter);
+
+#ifdef __AVR__
+void printSer_P(INT8U SerialPort, const CHAR8 *string);
+void putcharSer_P(INT8U SerialPort, CHAR8 caracter);
+#endif
 
 #endif /* TERMINAL_IO_H_ */

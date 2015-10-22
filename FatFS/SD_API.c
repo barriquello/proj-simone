@@ -78,10 +78,11 @@ CHAR8 Lfname[256];
 
 
 //Mensagens padrão da API do SD
-CONST INT8U SD_API_FILE_NOT_FOUND[]={"\n\rFile or directory not found.\n\r"};
-CONST INT8U SD_API_FILE_INVALID[]={"\n\rInvalid file or directory name.\n\r"};
-CONST INT8U SD_API_CARD_BUSY[]={"\n\rSD card busy !!!\n\r"};
-CONST INT8U SD_API_CARD_NOT_PRESENT[]={"\n\rSD card is not present or not initialized !\n\r"};
+
+CONST CHAR8 SD_API_FILE_NOT_FOUND[]={"\n\rFile or directory not found.\n\r"};
+CONST CHAR8 SD_API_FILE_INVALID[]={"\n\rInvalid file or directory name.\n\r"};
+CONST CHAR8 SD_API_CARD_BUSY[]={"\n\rSD card busy !!!\n\r"};
+CONST CHAR8 SD_API_CARD_NOT_PRESENT[]={"\n\rSD card is not present or not initialized !\n\r"};
 
 
 BRTOS_Mutex * SDCard_ResourceInit(INT8U priority)

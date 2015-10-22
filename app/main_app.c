@@ -141,7 +141,7 @@ void main_app(void)
 #endif
 
 
-#if (USB_DEVICE_ENABLED && (USB_CLASS_TYPE == BRTOS_USB_CDC)) //|| ARDUINO
+#if (USB_DEVICE_ENABLED && (USB_CLASS_TYPE == BRTOS_USB_CDC)) || ARDUINO
 	if (InstallTask(&Terminal_Task, TaskName_Terminal, 1024, 15, NULL) != OK)
 	{
 		sleep_forever();
