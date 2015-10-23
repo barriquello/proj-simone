@@ -32,7 +32,7 @@
 #include "terminal_io.h"
 #include "uart.h"
 
-#if PLATAFORMA == COLDUINO
+#if COLDUINO
 #include "virtual_com.h"
 #endif
 
@@ -88,6 +88,9 @@ void printSer(INT8U SerialPort, const CHAR8 *string)
 		#if (ENABLE_USB)
 	    printf_usb((CHAR8 *)string);
 		#endif
+		#if (ENABLE_UART0 == TRUE)
+		printf_uart0((CHAR8 *)string);
+		#endif
 	    break;	    	    
 	  default:
 	    break;
@@ -113,8 +116,65 @@ void putcharSer(INT8U SerialPort, CHAR8 caracter)
 		#if (ENABLE_USB)
 	    putchar_usb(caracter);
 		#endif
+		#if (ENABLE_UART0 == TRUE)
+		putchar_uart0(caracter);
+		#endif		
 	    break;	    	    
 	  default:
 	    break;
 	}	
 }
+
+#if ARDUINO
+void printSer_P(INT8U SerialPort, const CHAR8 *string)
+{
+	switch(SerialPort)
+	{
+		case USE_UART0:
+		#if (ENABLE_UART0 == TRUE)
+		printP_uart0((CHAR8 *)string);
+		#endif
+		case USE_UART1:
+		#if (ENABLE_UART1 == TRUE)
+		printP_uart1((CHAR8 *)string);
+		#endif
+		break;
+		case USE_UART2:
+		#if (ENABLE_UART2 == TRUE)
+		printP_uart2((CHAR8 *)string);
+		#endif
+		break;		
+		default:
+		break;
+	}
+}
+
+void putcharSer_P(INT8U SerialPort, CHAR8 caracter)
+{
+	switch(SerialPort)
+	{
+		case USE_UART1:
+		#if (ENABLE_UART1 == TRUE)
+		putchar_uart1(pgm_read_byte(&caracter));
+		#endif
+		break;
+		case USE_UART2:
+		#if (ENABLE_UART2 == TRUE)
+		putchar_uart2(pgm_read_byte(&caracter));
+		#endif
+		break;
+		case USE_USB:
+		#if (ENABLE_USB)
+		putchar_usb(caracter);
+		#endif
+		#if (ENABLE_UART0 == TRUE)
+		putchar_uart0(pgm_read_byte(&caracter));
+		#endif
+		break;
+		default:
+		break;
+	}
+}
+
+#endif
+

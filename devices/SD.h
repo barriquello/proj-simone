@@ -30,10 +30,10 @@
 #include "AppConfig.h"
 #include "OS_types.h"
 #include "diskio.h"
+#include "utils.h"
 
 #if COLDUINO
 #include "types.h"
-#include "utils.h"
 #else
 #include "stdint.h"
 #endif
@@ -70,45 +70,63 @@ typedef union
 
 
 #if COLDUINO
-#define SD_CARD_PORT	1
+	#define SD_CARD_PORT		1
+	#define SD_CARD_DETECTION	1
 
-#if !__GNUC__
-/* SD card Inserted detection Pin */
-#define SD_CS    PTAD_PTAD0      /* Slave Select 1 */
-#define _SD_CS   PTADD_PTADD0
+	#if !__GNUC__
+	/* SD card Inserted detection Pin */
+	#define SD_CS    PTAD_PTAD0      /* Slave Select 1 */
+	#define _SD_CS   PTADD_PTADD0
 
-#define SD_AUSENT        (PTBD_PTBD7)
-#define _SD_AUSENT       PTBDD_PTBDD7
-#define SD_AUSENT_PULLUP PTBPE_PTBPE7
+	#define SD_AUSENT        (PTBD_PTBD7)
+	#define _SD_AUSENT       PTBDD_PTBDD7
+	#define SD_AUSENT_PULLUP PTBPE_PTBPE7
 
-#define SD_WP			  PTBD_PTBD6
-#define _SD_WP			  PTBDD_PTBDD6
-#define SD_WP_PULLUP	  PTBPE_PTBPE6
+	#define SD_WP			  PTBD_PTBD6
+	#define _SD_WP			  PTBDD_PTBDD6
+	#define SD_WP_PULLUP	  PTBPE_PTBPE6
 
-#else
-#define SD_SELECT()		  		BITTEST(PTAD,0)
-#define SD_SELECT_DIR_OUT() 	BITSET(PTADD,0)
-#define SD_SELECT_ENABLE()		BITCLEAR(PTAD,0)
-#define SD_SELECT_DISABLE()		BITSET(PTAD,0)
-#define IS_SD_AUSENT()	  		BITTEST(PTBD,7)
-#define SD_AUSENT_DIR_OUT()		BITSET(PTBDD,7)
-#define SD_AUSENT_PUP()	  		BITSET(PTBPE,7)
-#define IS_SD_WP()		  		BITTEST(PTBD,6)
-#define SD_WP_DIR_IN()      	BITCLEAR(PTBDD,6)
-#define SD_WP_PUP()	  	  		BITSET(PTBPE,6)
+	#else
+	#define SD_SELECT()		  		BITTEST(PTAD,0)
+	#define SD_SELECT_DIR_OUT() 	BITSET(PTADD,0)
+	#define SD_SELECT_ENABLE()		BITCLEAR(PTAD,0)
+	#define SD_SELECT_DISABLE()		BITSET(PTAD,0)
+	#define IS_SD_AUSENT()	  		BITTEST(PTBD,7)
+	#define SD_AUSENT_DIR_OUT()		BITSET(PTBDD,7)
+	#define SD_AUSENT_PUP()	  		BITSET(PTBPE,7)
+	#define IS_SD_WP()		  		BITTEST(PTBD,6)
+	#define SD_WP_DIR_IN()      	BITCLEAR(PTBDD,6)
+	#define SD_WP_PUP()	  	  		BITSET(PTBPE,6)
 
-#define SD_AUSENT 			IS_SD_AUSENT()
-#endif
+	#define SD_AUSENT 			IS_SD_AUSENT()
+	#endif
 
-#define	FCLK_SLOW()	  SCGC2  |= SCGC2_SPI1_MASK;        /* Enables spi1 clock */			\
-(void)SPI1S;                      /* Read the status register */		\
-(void)SPI1D;                      /* Read the device register */		\
-SPI1BR = 0x10; 					/* 196 Khz with 24 MHz busclock */ 	\
-SPI1C2 = 0x00;                                      					\
-SPI1C1 = SPI1C1_SPE_MASK | SPI1C1_MSTR_MASK
+	#define	FCLK_SLOW()	  SCGC2  |= SCGC2_SPI1_MASK;        /* Enables spi1 clock */			\
+	(void)SPI1S;                      /* Read the status register */		\
+	(void)SPI1D;                      /* Read the device register */		\
+	SPI1BR = 0x10; 					/* 196 Khz with 24 MHz busclock */ 	\
+	SPI1C2 = 0x00;                                      					\
+	SPI1C1 = SPI1C1_SPE_MASK | SPI1C1_MSTR_MASK
 
-#define	FCLK_FAST()	  SPI1BR = 0x00
+	#define	FCLK_FAST()	  SPI1BR = 0x00
+#elif ARDUINO
+	#define SD_CARD_PORT		1
+	#define SD_CARD_DETECTION	0
+	#define IS_SD_AUSENT()	  	FALSE
+	
+	/* port for arduino mega 2560 - shield SD - CS pin PG5 */
+	#define SD_SELECT_PORT_DATA		PORTG
+	#define SD_SELECT_PORT_DIR      DDRG
+	#define SD_SELECT_PIN           5
+	#define SD_SELECT()		  		BITTEST(SD_SELECT_PORT_DATA,SD_SELECT_PIN)
+	#define SD_SELECT_DIR_OUT() 	BITSET(SD_SELECT_PORT_DIR,SD_SELECT_PIN)
+	#define SD_SELECT_ENABLE()		BITCLEAR(SD_SELECT_PORT_DATA,SD_SELECT_PIN)
+	#define SD_SELECT_DISABLE()		BITSET(SD_SELECT_PORT_DATA,SD_SELECT_PIN)
 
+	#define SD_AUSENT 				0
+
+	#define	FCLK_SLOW()	   DDRB = (1<<PB1)|(1<<PB2); SPCR = (1<<SPE)|(1<<MSTR) | (0b11); (void)SPDR; (void)SPSR;
+	#define	FCLK_FAST()	   SPCR	= SPCR & ~(0b11); (void)SPDR; (void)SPSR;
 #else
 
 /* SD card Inserted detection Pin */
@@ -138,23 +156,28 @@ SPI1C1 = SPI1C1_SPE_MASK | SPI1C1_MSTR_MASK
 #define DISABLE   1
 
 /* Port Controls  (Platform dependent) */
-#if SD_CARD_PORT
-#if __GNUC__
-#define CS_LOW()   SD_SELECT_ENABLE()
-#define	CS_HIGH()  SD_SELECT_DISABLE()
-#define SOCKWP	   IS_SD_WP()
-#define SOCKINS    (!(IS_SD_AUSENT()))
+#if COLDUINO
+	#if __GNUC__
+		#define CS_LOW()   SD_SELECT_ENABLE()
+		#define	CS_HIGH()  SD_SELECT_DISABLE()
+		#define SOCKWP	   IS_SD_WP()
+		#define SOCKINS    (!(IS_SD_AUSENT()))
+	#else
+		#define CS_LOW()	SD_CS = 0			/* MMC CS = L */
+		#define	CS_HIGH()	SD_CS = 1			/* MMC CS = H */
+		#define SOCKWP	    SD_WP	            /* Write protected. yes:true, no:false, default:false */
+		#define SOCKINS		(!SD_AUSENT)	        /* Card detected.   yes:true, no:false, default:true */
+	#endif
+#elif ARDUINO
+	#define CS_LOW()				SD_SELECT_ENABLE()
+	#define	CS_HIGH()				SD_SELECT_DISABLE()
+	//#define SOCKWP	    	        /* Write protected. yes:true, no:false, default:false */
+	#define SOCKINS			      TRUE		/* Card detected.   yes:true, no:false, default:true */
 #else
-#define CS_LOW()	SD_CS = 0			/* MMC CS = L */
-#define	CS_HIGH()	SD_CS = 1			/* MMC CS = H */
-#define SOCKWP	    SD_WP	            /* Write protected. yes:true, no:false, default:false */
-#define SOCKINS		(!SD_AUSENT)	        /* Card detected.   yes:true, no:false, default:true */
-#endif
-#else
-#define CS_LOW()				/* MMC CS = L */
-#define	CS_HIGH()				/* MMC CS = H */
-//#define SOCKWP	    	        /* Write protected. yes:true, no:false, default:false */
-#define SOCKINS			      0  /* Card detected.   yes:true, no:false, default:true */
+	#define CS_LOW()				/* MMC CS = L */
+	#define	CS_HIGH()				/* MMC CS = H */
+	//#define SOCKWP	    	        /* Write protected. yes:true, no:false, default:false */
+	#define SOCKINS			      0  /* Card detected.   yes:true, no:false, default:true */
 #endif
 
 /* Error Codes */

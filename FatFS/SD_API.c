@@ -38,7 +38,7 @@
 #define PRINT(a,...)
 #endif
 
-#if COLDUINO
+#if COLDUINO || ARDUINO
 #if __GNUC__
 #define nop() 		__asm__ volatile ("nop");
 #else
@@ -62,7 +62,7 @@ static FATFS FATFS_Obj;
 // File object
 FIL      file_obj;
 // File object 2
-FIL      file_obj2;
+//FIL      file_obj2;
 
 // File Info object
 FILINFO Finfo;
@@ -78,10 +78,11 @@ CHAR8 Lfname[256];
 
 
 //Mensagens padrão da API do SD
-CONST INT8U SD_API_FILE_NOT_FOUND[]={"\n\rFile or directory not found.\n\r"};
-CONST INT8U SD_API_FILE_INVALID[]={"\n\rInvalid file or directory name.\n\r"};
-CONST INT8U SD_API_CARD_BUSY[]={"\n\rSD card busy !!!\n\r"};
-CONST INT8U SD_API_CARD_NOT_PRESENT[]={"\n\rSD card is not present or not initialized !\n\r"};
+
+CONST CHAR8 SD_API_FILE_NOT_FOUND[]={"\n\rFile or directory not found.\n\r"};
+CONST CHAR8 SD_API_FILE_INVALID[]={"\n\rInvalid file or directory name.\n\r"};
+CONST CHAR8 SD_API_CARD_BUSY[]={"\n\rSD card busy !!!\n\r"};
+CONST CHAR8 SD_API_CARD_NOT_PRESENT[]={"\n\rSD card is not present or not initialized !\n\r"};
 
 
 BRTOS_Mutex * SDCard_ResourceInit(INT8U priority)
@@ -101,26 +102,24 @@ INT8U SDCard_Init(INT8U verbose)
 { 
   FRESULT f_res;
   
-#if SD_CARD_PORT
+#if SD_CARD_PORT && SD_CARD_DETECTION
 
-#if __GNUC__
-  SD_AUSENT_DIR_OUT();
-  SD_AUSENT_PUP();
-#else
-  _SD_AUSENT = _IN;
-  SD_AUSENT_PULLUP = 1;  
-#endif
-
-  
-  #ifdef SOCKWP
 	#if __GNUC__
-	  SD_WP_DIR_IN();
-	  SD_WP_PUP();
+	  SD_AUSENT_DIR_OUT();
+	  SD_AUSENT_PUP();
 	#else
-	  _SD_WP = _IN;
-	  SD_WP_PULLUP = 1;
+	  _SD_AUSENT = _IN;
+	  SD_AUSENT_PULLUP = 1; 
 	#endif
-  #endif
+	#ifdef SOCKWP
+		#if __GNUC__
+			SD_WP_DIR_IN();
+			SD_WP_PUP();
+		#else
+			_SD_WP = _IN;
+			SD_WP_PULLUP = 1;
+		#endif
+	#endif
 #endif  
   
   nop();nop();nop();
@@ -842,8 +841,10 @@ INT8U RenameFile(CHAR8 *OldFileName,CHAR8 *NewFileName, INT8U verbose)
   }
 }
 
+#if 0	
 INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
 {
+	
   INT32U  p1, p2, s1, s2;
   CHAR8   *NewDstName, *CopyName;
   INT8U   f_res = 0;
@@ -958,8 +959,10 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
   {
 	  PRINT((verbose == VERBOSE_ON),(CHAR8*)SD_API_CARD_NOT_PRESENT);
       return SD_FAT_ERROR;
-  }
+  }  
 }
+#endif
+
 
 
 INT8U WriteUptimeLog(INT8U verbose)

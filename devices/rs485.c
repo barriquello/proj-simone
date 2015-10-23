@@ -34,50 +34,66 @@
 #include "uart.h"
 #include "rs485.h"
 
-#define RS485_BUFSIZE		(36)
+#define RS485_BUFSIZE		(36) /* enough to read up to 2 regs of 16 bits each */
 #define RS485_TX_STATE 		1
 #define RS485_RX_STATE 		0
 
 #if COLDUINO
-#if !__GNUC__
-#pragma warn_implicitconv off
-#define RS485_TXRX_PIN 		PTFD_PTFD2
-#define RS485_TXRX_PINDIR 	PTFDD_PTFDD2
-#define RS485_TXRX_ENABLE() (RS485_TXRX_PINDIR = 1)
-#define RS485_RX() 			RS485_TXRX_PIN = RS485_RX_STATE
-#define RS485_TX() 			RS485_TXRX_PIN = RS485_TX_STATE
+	#if !__GNUC__
+	#pragma warn_implicitconv off
+	#define RS485_TXRX_PIN 		PTFD_PTFD2
+	#define RS485_TXRX_PINDIR 	PTFDD_PTFDD2
+	#define RS485_TXRX_ENABLE() (RS485_TXRX_PINDIR = 1)
+	#define RS485_RX() 			RS485_TXRX_PIN = RS485_RX_STATE
+	#define RS485_TX() 			RS485_TXRX_PIN = RS485_TX_STATE
+	#else
+	#include "utils.h"
+	#define RS485_TXRX_PIN 		PTFD
+	#define RS485_TXRX_PINDIR 	PTFDD
+	#define RS485_TXRX_ENABLE() BITSET(RS485_TXRX_PINDIR,2)
+	#define RS485_RX() 			BITCLEAR(RS485_TXRX_PIN,2)
+	#define RS485_TX() 			BITSET(RS485_TXRX_PIN,2)
+	#endif
+#elif ARDUINO
+/* arduino mega2560 - shield rs485 - pth3 */
+#define RS485_TXRX_PORT_DATA	PORTH
+#define RS485_TXRX_PORT_DIR		DDRH
+#define RS485_TXRX_PIN			3
+#define RS485_TXRX_ENABLE()		BITSET(RS485_TXRX_PORT_DIR,RS485_TXRX_PIN)
+#define RS485_RX()				BITCLEAR(RS485_TXRX_PORT_DATA,RS485_TXRX_PIN)
+#define RS485_TX()				BITSET(RS485_TXRX_PORT_DATA,RS485_TXRX_PIN)
 #else
-#include "utils.h"
-#define RS485_TXRX_PIN 		PTFD
-#define RS485_TXRX_PINDIR 	PTFDD
-#define RS485_TXRX_ENABLE() BITSET(RS485_TXRX_PINDIR,2)
-#define RS485_RX() 			BITCLEAR(RS485_TXRX_PIN,2)
-#define RS485_TX() 			BITSET(RS485_TXRX_PIN,2)
-#endif
-#else
+#define RS485_TXRX_PORT_DATA
+#define RS485_TXRX_PORT_DIR
 #define RS485_TXRX_PIN
-#define RS485_TXRX_PINDIR
-#define RS485_TXRX_ENABLE()
-#define RS485_RX_ENABLE()
-#define RS485_TX_ENABLE()
+#define RS485_TXRX_ENABLE()		
+#define RS485_RX()		
+#define RS485_TX()		
+
 #endif
 
-
-#if COLDUINO
-#if UART_RS485 == UART1
+#if COLDUINO || ARDUINO
+#if UART_RS485 == UART0
+#define RS485_PUTCHAR(x) 	putchar_uart0(x)
+#define RS485_PRINTF(x)		printf_uart0(x)
+#define RS485_RX_ENABLE()	uart0_RxEnable();uart0_RxEnableISR();
+#define RS485_RX_DISABLE()	uart0_RxDisable();uart0_RxDisableISR();
+extern BRTOS_Queue 			*Serial0;
+#define RS485_QUEUE 		Serial0
+#elif UART_RS485 == UART1
 #define RS485_PUTCHAR(x) 	putchar_uart1(x)
 #define RS485_PRINTF(x)		printf_uart1(x)
 #define RS485_RX_ENABLE()	uart1_RxEnable();uart1_RxEnableISR();
 #define RS485_RX_DISABLE()	uart1_RxDisable();uart1_RxDisableISR();
 extern BRTOS_Queue 			*Serial1;
-#define RS485_QUEUE 		Serial1	
+#define RS485_QUEUE 		Serial1
 #elif UART_RS485 == UART2
 #define RS485_PUTCHAR(x) 	putchar_uart2(x)
 #define RS485_PRINTF(x)		printf_uart2(x)
 #define RS485_RX_ENABLE()	uart2_RxEnableISR()
 #define RS485_RX_DISABLE()	uart2_RxDisableISR()
 extern BRTOS_Queue 			*Serial2;
-#define RS485_QUEUE 		Serial2	
+#define RS485_QUEUE 		Serial2
 #endif
 
 
@@ -87,7 +103,9 @@ void rs485_init(INT16U baudrate, INT8U mutex, INT8U priority)
 	RS485_RX();
 	RS485_TXRX_ENABLE();
 	
-#if UART_RS485 == UART1
+#if UART_RS485 == UART0
+uart_init(0,baudrate,RS485_BUFSIZE,mutex,priority);	
+#elif UART_RS485 == UART1
 	uart_init(1,baudrate,RS485_BUFSIZE,mutex,priority);
 #elif UART_RS485 == UART2	
 	uart_init(2,baudrate,RS485_BUFSIZE,mutex,priority);

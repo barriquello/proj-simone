@@ -82,10 +82,7 @@ void main_app(void)
 	BRTOS_Init();	
 	
 #if (COLDUINO || ARDUINO) && !SIMULATION
-
-	#if COLDUINO
-		led_onboard_init();	 /* Init LED onboard */
-	#endif
+	led_onboard_init();	 /* Init LED onboard */
 	Modbus_init(); 		 /* Init Modbus */
 	Modus_slave_null_init(); /* Init Modbus Slave Null */
 #endif	
@@ -135,8 +132,7 @@ void main_app(void)
 	
 #endif	
 	
-#if USB_DEVICE_ENABLED == 1
-#if (USB_CLASS_TYPE == BRTOS_USB_MSD)
+#if USB_DEVICE_ENABLED && (USB_CLASS_TYPE == BRTOS_USB_MSD)
 	if(InstallTask(&Mass_Storage_Device_Task,"Mass Storage Device Task",512,15,NULL) != OK)
 	{
 		while(1)
@@ -145,12 +141,11 @@ void main_app(void)
 #endif
 
 
-#if (USB_CLASS_TYPE == BRTOS_USB_CDC)
+#if (USB_DEVICE_ENABLED && (USB_CLASS_TYPE == BRTOS_USB_CDC)) || ARDUINO
 	if (InstallTask(&Terminal_Task, TaskName_Terminal, 1024, 15, NULL) != OK)
 	{
 		sleep_forever();
 	};
-#endif
 #endif
 
 
@@ -177,7 +172,7 @@ void main_app(void)
 }
 
 /* function to handle any system error */
-#if PLATAFORMA==COLDUINO
+#if COLDUINO || ARDUINO
 #include "led_onboard.h"
 #endif
 
@@ -186,7 +181,7 @@ void sleep_forever(void)
 
 	while(1)
 	{
-		#if PLATAFORMA==COLDUINO
+		#if COLDUINO || ARDUINO
 			/* sleep forever */
 			led_onboard_on();
 			DelayTask(500); 
@@ -198,7 +193,7 @@ void sleep_forever(void)
 
 
 /* function to handle printf/scanf */
-#if PLATAFORMA==COLDUINO && !__GNUC__
+#if COLDUINO && !__GNUC__
 
 #include "terminal.h"
 

@@ -62,20 +62,20 @@ typedef struct {
 
 #define CONSOLE_BUFFER_SIZE  (144)
 
-extern int terminal_add_cmd(command_t *cmd);
-extern int terminal_delete_cmd(command_t *cmd);
-extern void terminal_init(void (*putch_)(char));
-extern void terminal_process(void);
-extern int term_skipp_space(char *cmd_line, int start);
-extern int term_find_word(char *cmd_line, int start);
-extern int term_cmp_str(char *a, char *b);
+int terminal_add_cmd(command_t *cmd);
+int terminal_delete_cmd(command_t *cmd);
+void terminal_init(void (*putch_)(char));
+void terminal_process(void);
+int term_skipp_space(char *cmd_line, int start);
+int term_find_word(char *cmd_line, int start);
+int term_cmp_str(char *a, char *b);
 
 void SetSilentMode(char mode);
 unsigned char TerminalBackup(char *backup);
 
-extern void printf_terminal(char *s);
-extern void putchar_terminal(char c);
-extern void getchar_terminal(char *c);
+void printf_terminal(char *s);
+void putchar_terminal(char c);
+void getchar_terminal(char *c);
 
 #ifdef __cplusplus
 }

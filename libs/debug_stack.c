@@ -31,7 +31,7 @@
 #include "AppConfig.h"
 #include "printf_lib.h"
 
-#if PLATAFORMA==COLDUINO
+#if COLDUINO || ARDUINO
 #if !__GNUC__
 #pragma warn_implicitconv off
 #endif
@@ -44,8 +44,13 @@
 
 
 #if DEBUG_STACK_PRINT
+#if COLDUINO
 #define DPRINTF(a,...) printSer(a,__VA_ARGS__);
 #define DPUTCHAR(a,b)  putcharSer(a,b);
+#elif ARDUINO
+#define DPRINTF(a,...) printSer_P(a,__VA_ARGS__);
+#define DPUTCHAR(a,b)  putcharSer_P(a,b);
+#endif
 #else
 #ifndef UNUSED
 #define UNUSED(a)		(void)((a))
@@ -54,7 +59,43 @@
 #define DPUTCHAR(a,b)	UNUSED((a));UNUSED((b));
 #endif
 
+#define UptimeText_def		"UPTIME: %d d %d h %d m %d s\n\r"
+#define MemoryText_def		"MEMORY: %d of %d\n\r"
+#define IdleTaskText_def	"[%d] Idle Task: "
+#define CPULoadText_def		"CPU LOAD: %d.%d%%\n\r"
+#define TaskStackText_def	"\n\rTASK STACK:\n\r"
+#define MemoryTextOf_def	"%d of %d\r\n "
 
+
+#if ARDUINO
+const CHAR8 UptimeText[] PROGMEM = UptimeText_def;
+const CHAR8 CPULoadText[] PROGMEM = CPULoadText_def;
+const CHAR8 IdleTaskText[] PROGMEM = IdleTaskText_def;
+const CHAR8 TaskStackText[] PROGMEM = TaskStackText_def;
+const CHAR8 MemoryText[] PROGMEM = MemoryText_def;
+const CHAR8 MemoryTextOf[] PROGMEM = MemoryTextOf_def;
+
+PGM_P CONST DebugStringTable[] PROGMEM =
+{
+	UptimeText,
+	CPULoadText,
+	IdleTaskText,
+	TaskStackText,
+	MemoryText,
+	MemoryTextOf
+};
+
+#elif COLDUINO
+#define UptimeText		UptimeText_def
+#define MemoryText		MemoryText_def
+#define MemoryTextOf	MemoryTextOf_def
+#define IdleTaskText	IdleTaskText_def
+#define CPULoadText		CPULoadText_def
+#define TaskStackText	TaskStackText_def
+#endif
+
+
+#if COLDUINO || ARDUINO
 void Transmite_Uptime(INT8U Comm)
 {
    OSTime Uptime;
@@ -66,7 +107,7 @@ void Transmite_Uptime(INT8U Comm)
    	   UpDate = OSUpDate();
    UserExitCritical();
    
-   SNPRINTF(string,SIZEARRAY(string),"UPTIME: %d d %d h %d m %d s\n\r",
+   SNPRINTF(string,SIZEARRAY(string),UptimeText,
 		   UpDate.RTC_Day,Uptime.RTC_Hour,Uptime.RTC_Minute,Uptime.RTC_Second);   
    DPRINTF(Comm,string);
 }
@@ -81,7 +122,7 @@ void Transmite_RAM_Ocupada(INT8U Comm)
     	SPAddress = iStackAddress * sizeof(OS_CPU_TYPE);
     UserExitCritical();    
     
-    SNPRINTF(string,SIZEARRAY(string),"MEMORY: %d of %d\n\r",SPAddress,HEAP_SIZE);
+    SNPRINTF(string,SIZEARRAY(string),MemoryText,SPAddress,HEAP_SIZE);
     DPRINTF(Comm, string);
 }
 
@@ -94,7 +135,7 @@ void Transmite_Task_Stacks(INT8U Comm)
     INT32U *i = 0; 
     INT32U *p = 0; 
    
-    DPRINTF(Comm, "\n\rTASK STACK:\n\r");    
+    DPRINTF(Comm, TaskStackText);    
           
     for (j=1;j<=NumberOfInstalledTasks;j++)
     {  
@@ -116,11 +157,11 @@ void Transmite_Task_Stacks(INT8U Comm)
       p = x;      
       while(*p++ == 0 && p<i){}         
       
-      SNPRINTF(string,SIZEARRAY(string),"%d of %d\r\n ",ContextTask[j].StackInit - (INT32U) p,ContextTask[j].StackInit - (INT32U) x);      
+      SNPRINTF(string,SIZEARRAY(string),MemoryTextOf,ContextTask[j].StackInit - (INT32U) p,ContextTask[j].StackInit - (INT32U) x);      
       DPRINTF(Comm, string);
     } 
     
-    SNPRINTF(string,SIZEARRAY(string),"[%d] Idle Task: ",j);
+    SNPRINTF(string,SIZEARRAY(string),IdleTaskText,j);
     DPRINTF(Comm, string);
     
     UserEnterCritical();
@@ -132,7 +173,7 @@ void Transmite_Task_Stacks(INT8U Comm)
     while(*p++ == 0 && p<i){} 
 
     j = NUMBER_OF_TASKS+1;
-    SNPRINTF(string,SIZEARRAY(string),"%d of %d\r\n",ContextTask[j].StackInit - (INT32U) p,ContextTask[j].StackInit - (INT32U) x);      
+    SNPRINTF(string,SIZEARRAY(string),MemoryTextOf,ContextTask[j].StackInit - (INT32U) p,ContextTask[j].StackInit - (INT32U) x);      
     DPRINTF(Comm, string);
 }
 
@@ -152,7 +193,7 @@ void Transmite_CPU_Load(INT8U Comm)
     	percent = 1000; 
     }    
     
-    SNPRINTF(string,SIZEARRAY(string),"CPU LOAD: %d.%d%%\n\r",percent/10,percent%10);
+    SNPRINTF(string,SIZEARRAY(string),CPULoadText,percent/10,percent%10);
     DPRINTF(Comm, string);
 
 }
@@ -206,7 +247,7 @@ void Reason_of_Reset(INT8U Comm)
   }
 #endif  
 }
-
+#endif
 
 #if (OSTRACE == 1) 
 /* OS trace function */
@@ -353,6 +394,5 @@ void Send_OSTrace(INT8U Comm){
   DPUTCHAR(Comm, CR);
 
 }
-
 #endif
 

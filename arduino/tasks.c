@@ -33,12 +33,13 @@
 #include "terminal_commands.h"
 #endif
 
-#if PLATAFORMA==COLDUINO
+#if COLDUINO
 #include "virtual_com.h"
-#include "led_onboard.h"
 #endif
 
-#if PLATAFORMA==ARDUINO
+#include "led_onboard.h"
+
+#if ARDUINO
 #define __RESET_WATCHDOG()	wdt_reset()
 #endif
 
@@ -141,6 +142,7 @@ void Task_3(void)
 }
 #endif
 
+#if 0
 #include "OSInfo.h"
 
 char BufferTextDebug[128];
@@ -218,3 +220,4 @@ void Task_Serial(void)
       }
    }
 }
+#endif

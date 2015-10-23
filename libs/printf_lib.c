@@ -30,14 +30,12 @@
 
 #ifndef _WIN32
 #include "terminal.h"
+#define PUTCHAR(x)		putchar_terminal(x)
+#else
+#define PUTCHAR(x)		putchar(x)
 #endif
 
 #include "printf_lib.h"
-
-#if DISABLE_SNPRINTF
-#define putchar(x) putchar_terminal(x)
-#endif
-
 
 static void printchar(char **str, int c)
 {
@@ -47,7 +45,7 @@ static void printchar(char **str, int c)
 	}
 	else
 	{ 
-		(void)putchar(c);
+		(void)PUTCHAR(c);
 	}
 }
 

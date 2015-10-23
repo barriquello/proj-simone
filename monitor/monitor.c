@@ -45,13 +45,22 @@
 #define DEBUG_MONITOR 1
 
 #if DEBUG_MONITOR
-#ifndef _WIN32
-#define PRINTF(...) printf_lib(__VA_ARGS__);
+#if COLDUINO
+#define PSTR(x)				(x)
+#define PRINTF(...)			printf_lib(__VA_ARGS__);
+#define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
+#elif ARDUINO
+#define PRINTF(...)			printf_lib(__VA_ARGS__);
+#define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
 #else
-#define PRINTF(...) printf(__VA_ARGS__);
+#define PSTR(x)				(x)
+#define PRINTF(...) 		printf(__VA_ARGS__);
+#define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
 #endif
 #else
+#define PSTR(x)			(x)
 #define PRINTF(...)
+#define PRINT_ERRO(...)
 #endif
 
 #define MONITOR_TESTS 0
@@ -85,7 +94,6 @@ LOG_FILETYPE stderr_f;
 /*-----------------------------------------------------------------------------------*/
 void print_erro(const char *format, ...)
 {
-
   va_list argptr;
   va_start(argptr, format);
   VSPRINTF(monitor_char_buffer, format, argptr);  
@@ -104,8 +112,8 @@ void print_erro(const char *format, ...)
   (void)monitor_close(&stderr_f);
 }
 
+#if 0
 LOG_FILETYPE debug_f;
-
 #define debug_file		"debug.txt"
 
 /*-----------------------------------------------------------------------------------*/
@@ -129,6 +137,7 @@ void print_debug(const char *format, ...)
   (void)monitor_write(monitor_char_buffer,&debug_f);
   (void)monitor_close(&debug_f);
 }
+#endif
 
 
 void monitor_createentry(char* buffer, uint16_t *dados, uint8_t len)
@@ -365,7 +374,7 @@ uint8_t monitor_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 #endif
 
 	time_now = time_now - time_elapsed_s;
-	(*timestamp) = *localtime(&(time_t){time_now});
+	(*timestamp) = *((struct tm *)localtime(&(time_t){time_now}));
 	
 	return MODEM_OK;
 }
@@ -416,13 +425,13 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 			/* rename file */
 			strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
 
-			PRINTF("\r\n %s will be renamed to %s \r\n", filename,new_filename);
+			PRINTF(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
 			ret = monitor_rename((char*)filename, (const char*)new_filename);
 
 			/* if rename failed, try other name */
 			while(!ret)
 			{
-				PRINTF("\r\n rename failed \r\n");
+				PRINTF(PSTR("\r\n rename failed \r\n"));
 				time_t time_now = mktime(&ts);
 				time_now +=3600;
 				ts = *localtime(&(time_t){time_now});
@@ -430,7 +439,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 
 				monitor_setheader((const char*)filename, &h);
 
-				PRINTF("\r\n %s will be renamed to %s \r\n", filename,new_filename);
+				PRINTF(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
 				ret = monitor_rename((char*)filename, (const char*)new_filename);
 
 			}
@@ -438,7 +447,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 			/* log is reading the same file ? */
 			if(strcmp(monitor_state[monitor_num].monitor_name_reading, monitor_state[monitor_num].monitor_name_writing) == 0)
 			{
-				PRINTF("\r\n reading the same file that we renamed! \r\n");
+				PRINTF(PSTR("\r\n reading the same file that we renamed! \r\n"));
 
 				strcpy(monitor_state[monitor_num].monitor_name_reading,new_filename);
 
@@ -476,7 +485,7 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 		   monitor_setheader(filename, &h);
 		}else
 		{
-			print_erro("Erro: open file %s\r\n", filename);
+			PRINT_ERRO("Erro: open file %s\r\n", filename);
 			return 0; // tratar este erro!!!
 		}
 		
@@ -505,7 +514,7 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 			 }		
 		 }
 		 
-		 print_debug("Erro: new header", monitor_num);
+		 PRINT_ERRO("Erro: new header", monitor_num);
 		
 	}
 
@@ -549,9 +558,9 @@ static int monitor_entry_send(uint8_t mon_id, monitor_entry_t* entry, uint16_t l
 	cnt = build_entry_to_send(data_vector,entry->values,len);
 
 #if 0	
-	PRINTF("\r\n");
+	PRINTF(PSTR("\r\n"));
 	PRINTF(data_vector);
-	PRINTF("\r\n");
+	PRINTF(PSTR("\r\n"));
 #endif	
 	
 #ifdef _WIN32	
@@ -640,7 +649,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
 				  
 				   
-				   PRINTF("Mon %d, entry: %d of %d, delay: %d - avg: %d", 
+				   PRINTF(PSTR("Mon %d, entry: %d of %d, delay: %d - avg: %d"), 
 						   monitor_num,
 						   h.last_idx, h.count,
 						   monitor_state[monitor_num].time_to_send,
@@ -723,15 +732,15 @@ uint8_t monitor_init(uint8_t monitor_num)
 	  }else
 	  {
 		  print_erro_and_exit:
-		  print_erro("Log init erro: %d", monitor_num);
-		  PRINTF("Log init erro: %d", monitor_num);
+		  PRINT_ERRO(PSTR("Log init erro: %d"), monitor_num);
+		  PRINTF(PSTR("Log init erro: %d"), monitor_num);
 		  return FALSE;
 	  }
 	  
 	 /* check buffer size */
 	if(monitor_state[monitor_num].config_h.entry_size > LOG_MAX_DATA_BUF_SIZE)
 	{		
-		print_erro("buffer too small \r\n");
+		PRINT_ERRO(PSTR("buffer too small \r\n"));
 		goto print_erro_and_exit;
 	}
 
@@ -852,8 +861,8 @@ void monitor_writer(uint8_t monitor_num)
 	/* read data */
 	if(monitor_state[monitor_num].read_data(monitor_state[monitor_num].slave_addr,(uint8_t*)monitor_data_buffer,(uint8_t)monitor_state[monitor_num].config_h.entry_size) == 0)
 	{
-		print_erro(monitor_error_msg[1], monitor_num);
-		print_erro("read failed\r\n");
+		PRINT_ERRO(monitor_error_msg[1], monitor_num);
+		PRINT_ERRO("read failed\r\n");
 		return;
 	}
 	
@@ -872,17 +881,27 @@ void monitor_writer(uint8_t monitor_num)
 	{
 		missing_entries++; /* count missing entries */
 		
-		print_erro(monitor_error_msg[1], (uint8_t) monitor_num);
-		print_erro("write failed\r\n");
-
-		PRINTF(monitor_error_msg[1],(uint8_t) monitor_num);
-		PRINTF("write failed\r\n");
+		#if ARDUINO
+		strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[1]), sizeof(BufferText));
+		PRINT_ERRO(BufferText, monitor_num);
+		#else
+		PRINT_ERRO(monitor_error_msg[1], (uint8_t) monitor_num);
+		#endif				
 		
-		PRINTF("\r\nMissed entries %d\r\n", missing_entries);
+		PRINT_ERRO(PSTR("write failed\r\n"));
+
+		#if ARDUINO
+			strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[1]), sizeof(BufferText));
+			PRINTF(BufferText, monitor_num);
+		#else
+			PRINTF(monitor_error_msg[1],(uint8_t) monitor_num);
+		#endif		
+		PRINTF(PSTR("write failed\r\n"));		
+		PRINTF(PSTR("\r\nMissed entries %d\r\n"), missing_entries);
 	}else
 	{
-		PRINTF("\r\nMon %d, Entry %d: ", monitor_num, cnt);
-		PRINTF("%s\r\n", monitor_char_buffer);
+		PRINTF(PSTR("\r\nMon %d, Entry %d: "), monitor_num, cnt);
+		PRINTF(PSTR("%s\r\n"), monitor_char_buffer);
 	}
 
 	/* change to parent dir */

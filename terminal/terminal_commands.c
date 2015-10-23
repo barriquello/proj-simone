@@ -38,11 +38,107 @@
 #include "tasks.h"
 #include "string.h"
 
+#define Ver_HelpText_def "BRTOS Version"
+#define Top_HelpText_def "BRTOS TOP"
+#define Rst_HelpText_def "CPU Reason of the Reset"
+#define Temp_HelpText_def "Show core temperature"
+#define SetGetTime_HelpText_def "Set/Get OS Date and Time"
+#define Cat_HelpText_def "Read file"
+#define Ls_HelpText_def "List files"
+#define Cd_HelpText_def "Change dir"
+#define Mount_HelpText_def "Mount SD Card"
+#define Sr_HelpText_def "Remove SD Card"
+#define Rm_HelpText_def "Remove File"
+#define Rn_HelpText_def "Rename File"
+#define Cr_HelpText_def "Create File"
+#define Mkdir_HelpText_def "Make dir"
+#define Cp_HelpText_def "Copy File"
+#define Wt_HelpText_def "Write Uptime to File"
+#define Echo_HelpText_def "Print in terminal"
+#define EchoOut_HelpText_def  "Set output for echo"
+#define Esp_HelpText_def "Control ESP8266"
+#define M590_HelpText_def "Control M590 modem"
+#define Modbus_HelpText_def "Control Modbus"
+
 #if COLDUINO
 #include "virtual_com.h"
+#define  Ver_HelpText Ver_HelpText_def
+#define  Top_HelpText Top_HelpText_def
+#define  Rst_HelpText Rst_HelpText_def
+#define  Temp_HelpText Temp_HelpText_def
+#define  SetGetTime_HelpText SetGetTime_HelpText_def
+#define  Cat_HelpText Cat_HelpText_def
+#define  Ls_HelpText Ls_HelpText_def
+#define  Cd_HelpText Cd_HelpText_def
+#define  Mount_HelpText Mount_HelpText_def
+#define  Sr_HelpText Sr_HelpText_def
+#define  Rm_HelpText Rm_HelpText_def
+#define  Rn_HelpText Rn_HelpText_def
+#define  Cr_HelpText Cr_HelpText_def
+#define  Mkdir_HelpText Mkdir_HelpText_def
+#define  Cp_HelpText Cp_HelpText_def
+#define  Wt_HelpText Wt_HelpText_def
+#define  Echo_HelpText Echo_HelpText_def
+#define  EchoOut_HelpText  EchoOut_HelpText_def
+#define  Esp_HelpText Esp_HelpText_def
+#define  M590_HelpText M590_HelpText_def
+#define  Modbus_HelpText Modbus_HelpText_def
+#elif ARDUINO
+typedef enum
+{
+	VER = 0, TOP, RST, TEMP, SETGETTIME, CAT, LS, CD, MOUNT, SR, RM,RN, CR_CMD, 
+	MKDIR, CP, WT, ECHO, ECHO_OUT, ESP, M590, MODBUS
+} enum_help_text_cmd;
+
+const char Ver_HelpText[] PROGMEM = Ver_HelpText_def;
+const char Top_HelpText[] PROGMEM = Top_HelpText_def;
+const char Rst_HelpText[] PROGMEM = Rst_HelpText_def;
+const char Temp_HelpText[] PROGMEM = Temp_HelpText_def;
+const char SetGetTime_HelpText[] PROGMEM = SetGetTime_HelpText_def;
+const char Cat_HelpText[] PROGMEM = Cat_HelpText_def;
+const char Ls_HelpText[] PROGMEM = Ls_HelpText_def;
+const char Cd_HelpText[] PROGMEM = Cd_HelpText_def;
+const char Mount_HelpText[] PROGMEM = Mount_HelpText_def;
+const char Sr_HelpText[] PROGMEM = Sr_HelpText_def;
+const char Rm_HelpText[] PROGMEM = Rm_HelpText_def;
+const char Rn_HelpText[] PROGMEM = Rn_HelpText_def;
+const char Cr_HelpText[] PROGMEM = Cr_HelpText_def;
+const char Mkdir_HelpText[] PROGMEM = Mkdir_HelpText_def;
+const char Cp_HelpText[] PROGMEM = Cp_HelpText_def;
+const char Wt_HelpText[] PROGMEM = Wt_HelpText_def;
+const char Echo_HelpText[] PROGMEM = Echo_HelpText_def;
+const char EchoOut_HelpText[] PROGMEM =  EchoOut_HelpText_def;
+const char Esp_HelpText[] PROGMEM = Esp_HelpText_def;
+const char M590_HelpText[] PROGMEM = M590_HelpText_def;
+const char Modbus_HelpText[] PROGMEM = Modbus_HelpText_def;
+
+PGM_P CONST HelpTextTable[] PROGMEM =
+{
+	Ver_HelpText,
+	Top_HelpText,
+	Rst_HelpText,
+	Temp_HelpText,
+	SetGetTime_HelpText,
+	Cat_HelpText,
+	Ls_HelpText,
+	Cd_HelpText,
+	Mount_HelpText,
+	Sr_HelpText,
+	Rm_HelpText,
+	Rn_HelpText,
+	Cr_HelpText,
+	Mkdir_HelpText,
+	Cp_HelpText,
+	Wt_HelpText,
+	Echo_HelpText,
+	EchoOut_HelpText,
+	Esp_HelpText,
+	M590_HelpText,
+	Modbus_HelpText,
+};
 #endif
 
-INT8U entradas[CONSOLE_BUFFER_SIZE]; //vetor para a entrada de dados
+char entradas[CONSOLE_BUFFER_SIZE]; //vetor para a entrada de dados
 
 // BRTOS version Command
 void term_cmd_ver(char *param)
@@ -55,8 +151,9 @@ void term_cmd_ver(char *param)
   printf_terminal("\n\r");
 }
 
-CONST command_t ver_cmd = {
-  "ver", term_cmd_ver, "BRTOS Version"
+CONST command_t ver_cmd = 
+{
+  "ver", term_cmd_ver, Ver_HelpText
 };
 
 
@@ -73,7 +170,7 @@ void term_cmd_top(char *param)
 }
 
 CONST command_t top_cmd = {
-  "top", term_cmd_top, "BRTOS TOP"
+  "top", term_cmd_top, Top_HelpText
 };
 
 
@@ -86,7 +183,7 @@ void term_cmd_rst(char *param)
 }
 
 CONST command_t rst_cmd = {
-  "rst", term_cmd_rst, "CPU Reason of the Reset"
+  "rst", term_cmd_rst, Rst_HelpText
 };
 
 // Core temperature Command
@@ -108,7 +205,7 @@ void term_cmd_temp(char *param)
 }
 
 CONST command_t temp_cmd = {
-  "temp", term_cmd_temp, "Show core temperature"
+  "temp", term_cmd_temp, Temp_HelpText
 };
 
 void term_cmd_setget_time(char *param){
@@ -116,33 +213,33 @@ void term_cmd_setget_time(char *param){
 	OS_RTC datetime; /* dd/mm/yyyy hh:mm:ss */
 	char string[5];
 	
-	if(*param != NULL) // set
+	if(param != NULL) // set
 	{				
 		datetime.Day = (INT8U)((*param) - '0')*10; // day
-		*param++ = NULL;
+		param++;
 		
-		if(*param != NULL)
+		if(*param != '\0')
 		{    			
 		    datetime.Day += (INT8U)((*param++) - '0'); // day		    		    		   
 		    if(datetime.Day > 31){	goto time_format_error; }
 		    		    
-			if(*(++param) != NULL)
+			if(*(++param) != '\0')
 			{    			
 			    datetime.Month = (INT8U)((*param++) - '0')*10; // month
-				if(*param != NULL)
+				if(*param != '\0')
 				{    			
 				    datetime.Month += (INT8U)((*param++) - '0'); // month				    
 				    if(datetime.Month > 12) {	goto time_format_error; }
-				    if(*(++param) != NULL)
+				    if(*(++param) != '\0')
 					{    			
 					    datetime.Year = (INT16U)((*param++) - '0')*1000; // year
-					    if(*param != NULL)
+					    if(*param != '\0')
 						{    			
 							datetime.Year += (INT16U)((*param++) - '0')*100; // year
-						    if(*param != NULL)
+						    if(*param != '\0')
 							{    			
 								datetime.Year += (INT16U)((*param++) - '0')*10; // year
-							    if(*param != NULL)
+							    if(*param != '\0')
 								{    			
 									datetime.Year += (INT16U)((*param++) - '0'); // year
 									if(datetime.Year > 2100){goto time_format_error; }
@@ -151,28 +248,28 @@ void term_cmd_setget_time(char *param){
 									RTC_DS1307_Set_Date((INT8U)((datetime.Year%1000)%100),datetime.Month,datetime.Day);
 #endif									
 									
-									if(*(++param) != NULL) // set
+									if(*(++param) != '\0') // set
 									{			
 										datetime.Hour = (INT8U)((*param) - '0')*10; // hour
-										*param++ = NULL;
+										*param++ = '\0';
 										
-										if(*param != NULL)
+										if(*param != '\0')
 										{    			
 											datetime.Hour += (INT8U)((*param++) - '0'); // hour
 											if(datetime.Hour > 23){goto time_format_error; }
 											
-											if(*(++param) != NULL)
+											if(*(++param) != '\0')
 											{    			
 												datetime.Min = (INT8U)((*param++) - '0')*10; // min
-												if(*param != NULL)
+												if(*param != '\0')
 												{    			
 													datetime.Min += (INT8U)((*param++) - '0'); // min
 													if(datetime.Min > 59){goto time_format_error; }
 													
-													if(*(++param) != NULL)
+													if(*(++param) != '\0')
 													{    			
 														datetime.Sec = (INT8U)((*param++) - '0')*10; // sec
-														if(*param != NULL)
+														if(*param != '\0')
 														{    			
 															datetime.Sec += (INT8U)((*param++) - '0'); // sec
 															if(datetime.Sec > 59){goto time_format_error; }
@@ -200,8 +297,8 @@ void term_cmd_setget_time(char *param){
 	
 	
 time_format_error:		
-	while(*param != NULL){
-		*param = NULL;	
+	while(*param != '\0'){
+		*param = '\0';	
 		param++;
 	}    	    
 	
@@ -293,14 +390,13 @@ print_date:
 }
 
 CONST command_t setget_time_cmd = {
-  "time", term_cmd_setget_time, "Set/Get OS Date and Time"
+  "time", term_cmd_setget_time, SetGetTime_HelpText
 };
 
 
 // File Read Command
 void term_cmd_cat(char *param)
 {  
-  INT8U i       = 0;
   INT8U retorno = 0;
   CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
   CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
@@ -328,7 +424,7 @@ void term_cmd_cat(char *param)
 }
 
 CONST command_t cat_cmd = {
-  "cat", term_cmd_cat, "Read file"
+  "cat", term_cmd_cat, Cat_HelpText
 };
 
 
@@ -347,14 +443,14 @@ void term_cmd_ls(char *param)
 }
 
 CONST command_t ls_cmd = {
-  "ls", term_cmd_ls, "List files"
+  "ls", term_cmd_ls, Ls_HelpText
 };
 
 
 // Change Dir Command
 void term_cmd_cd(char *param)
 {  
-  INT8U i       = 0;
+  
   INT8U retorno = 0;
   CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
   CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
@@ -382,7 +478,7 @@ void term_cmd_cd(char *param)
 }
 
 CONST command_t cd_cmd = {
-  "cd", term_cmd_cd, "Change dir"
+  "cd", term_cmd_cd, Cd_HelpText
 };
 
 // Mount SD Card Command
@@ -392,17 +488,15 @@ extern char musics[WAV_LIST_SIZE][WAV_NAME_SIZE];
 
 void term_cmd_mount(char *param)
 {    
-  INT8U status = 0;
-  INT8U i = 0; 
 
   (void)*param;
   
   // Initialize SD card
-  status = SDCard_Init(VERBOSE_ON);
+  (void) SDCard_Init(VERBOSE_ON);
 }
 
 CONST command_t mount_cmd = {
-  "mount", term_cmd_mount, "Mount SD Card"
+  "mount", term_cmd_mount, Mount_HelpText
 };
 
 
@@ -416,7 +510,7 @@ void term_cmd_sr(char *param)
 }
 
 CONST command_t sr_cmd = {
-  "sr", term_cmd_sr, "Remove SD Card"
+  "sr", term_cmd_sr, Sr_HelpText
 };
 
 
@@ -469,7 +563,7 @@ void term_cmd_rm(char *param)
 }
 
 CONST command_t rm_cmd = {
-  "rm", term_cmd_rm, "Del file or dir"
+  "rm", term_cmd_rm, Rm_HelpText
 };
 
 
@@ -501,7 +595,7 @@ void term_cmd_rn(char *param)
 }
 
 CONST command_t rn_cmd = {
-  "rn", term_cmd_rn, "Rename file"
+  "rn", term_cmd_rn, Rn_HelpText
 };
 
 
@@ -534,14 +628,14 @@ void term_cmd_cr(char *param)
 }
 
 CONST command_t cr_cmd = {
-  "cr", term_cmd_cr, "Create file"
+  "cr", term_cmd_cr, Cr_HelpText
 };
 
 
 // Make Dir Command
 void term_cmd_mkdir(char *param)
 {  
-  INT8U i       = 0;
+  
   INT8U retorno = 0;
   CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
   CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
@@ -567,14 +661,13 @@ void term_cmd_mkdir(char *param)
 }
 
 CONST command_t mkdir_cmd = {
-  "mkdir", term_cmd_mkdir, "Make dir"
+  "mkdir", term_cmd_mkdir, Mkdir_HelpText
 };
 
 
 // Copy File Command
 void term_cmd_cp(char *param)
 {  
-  INT8U     i       = 0;
   INT8U     retorno = 0;
   CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
   CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
@@ -589,6 +682,7 @@ void term_cmd_cp(char *param)
   // verifica o nome digitado
   retorno = file_name_verify(name2,name1,(INT8U*)&entradas[0],2);
   
+  #if 0
   if(retorno==API_COMMAND_OK)
   {
     (void)CopyFile(name1,name2,VERBOSE_ON);
@@ -597,10 +691,11 @@ void term_cmd_cp(char *param)
   {
 	printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
   }
+  #endif
 }
 
 CONST command_t cp_cmd = {
-  "cp", term_cmd_cp, "Copy file"
+  "cp", term_cmd_cp, Cp_HelpText
 };
 
 
@@ -673,7 +768,7 @@ void term_cmd_echo(char *param)
 }
 
 CONST command_t echo_cmd = {
-  "echo", term_cmd_echo, "Print in terminal"
+  "echo", term_cmd_echo, Echo_HelpText
 };
 
 // Print a string in the terminal
@@ -702,18 +797,17 @@ void term_cmd_echo_out(char *param)
 		}
 	}
 
-	error:
-		printSer(USE_USB, "INVALID STDOUT\n\r");
+	printSer(USE_USB, "INVALID STDOUT\n\r");
 
 
 }
 
 CONST command_t echo_stdout_cmd = {
-  "stdout", term_cmd_echo_out, "Set output for echo"
+  "stdout", term_cmd_echo_out, EchoOut_HelpText
 };
 
 
-static void echo_post(const INT8U * dados, INT8U len)
+static void echo_post(const char * dados, INT8U len)
 {
 	while(len>0)
 	{
@@ -731,7 +825,6 @@ static void echo_post(const INT8U * dados, INT8U len)
 void echo (char *string, char Terminalbackup)
 {
     INT8U backup_cnt = 0;
-    INT8U i = 0;
     char backup[(CONSOLE_BUFFER_SIZE/2)];
 	const char *command_start = "echo ";
 	const char *command_end   = "\n\r";
@@ -788,7 +881,7 @@ void term_cmd_esp(char *param)
 }
 
 CONST command_t esp_cmd = {
-  "esp", term_cmd_esp, "Control ESP8266"
+  "esp", term_cmd_esp, Esp_HelpText
 };
 
 
@@ -840,7 +933,7 @@ void term_cmd_m590(char *param)
 }
 
 CONST command_t m590_cmd = {
-  "m590", term_cmd_m590, "Control M590 modem"
+  "m590", term_cmd_m590, M590_HelpText
 };
 
 static uint16_t start_addr = 0;
@@ -857,7 +950,7 @@ static uint16_t modbus_buf[16];
 void term_cmd_modbus(char *param)
 {	
 
-	uint32_t input;
+	int input;
 	uint8_t k = 0;
 	
 	printf_terminal("\r\n");
@@ -908,5 +1001,5 @@ void term_cmd_modbus(char *param)
 }
 
 CONST command_t modbus_cmd = {
-  "modbus", term_cmd_modbus, "Modbus master"
+  "modbus", term_cmd_modbus, Modbus_HelpText
 };

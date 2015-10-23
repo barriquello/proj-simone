@@ -136,7 +136,10 @@ static int monitor_rename(TCHAR *source, const TCHAR *dest)
 #endif
 
 void print_erro(const char *format, ...);
+
+#if 0
 void print_debug(const char *format, ...);
+#endif
 
 #define LOG_HEADER_LEN		 50
 #define LOG_MAX_ENTRY_SIZE   256
@@ -207,7 +210,7 @@ typedef enum{
 	IN_USE = 1
 } monitor_used_t;
 
-#if COLDUINO && !__GNUC__
+#if (COLDUINO && !__GNUC__) || ARDUINO
 typedef unsigned long long clock_t;
 #endif
 

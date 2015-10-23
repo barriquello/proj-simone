@@ -81,7 +81,7 @@ extern const char *_days_abbrev[];
 extern const char *_months[];
 extern const char *_months_abbrev[];
 
-#if !__GNUC__
+#if !__GNUC__ || ARDUINO
 time_t mktime(struct tm *tmbuf);
 struct tm *localtime(const time_t *timer);
 struct tm *gmtime(const time_t *timer);

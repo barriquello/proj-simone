@@ -1,0 +1,24 @@
+colduino - modem
+uart2 - pte5, pte6
+
+Colduino - rs485
+uart1 - ptd6,ptd7
+en/dis - pft2
+
+
+Arduino - rs485
+uart0 - D0,D1
+en/dis - D6 (pth3 - atmega2560)
+
+Arduino - modem
+uart2 e uart3 - D14,15,16,17
+
+Arduino - sd card
+spi - D11,12,13
+cs - D4 (ptg5 - atmega2560)
+
+
+
+
+
+

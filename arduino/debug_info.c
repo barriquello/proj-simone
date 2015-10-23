@@ -2,6 +2,7 @@
 #include "AppConfig.h"
 #include "drivers.h"
 
+#if 0
 #if ARDUINO
 #define Serial_Envia_Frase(x)		print_uart0(x)
 #define Serial_Envia_Caracter(x)	putchar_uart0(x)
@@ -417,6 +418,8 @@ void Send_OSTrace(void){
   Serial_Envia_Caracter(CR);
 
 }
+
+#endif
 
 #endif
 

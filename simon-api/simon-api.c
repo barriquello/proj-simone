@@ -46,8 +46,8 @@
 
 #include "time_lib.h"
 
-uint8_t get_server_time(char* server_reply, struct tm *ts);
-uint8_t get_server_confirmation(char* server_reply);
+uint8_t get_server_time(char* _server_reply, struct tm *ts);
+uint8_t get_server_confirmation(char* _server_reply);
 
 static input in = NULL;
 static output out = NULL;
@@ -67,8 +67,9 @@ char simon_hostname[MAX_HOSTNAME_LEN];
 char simon_hostip[MAX_HOSTIP_LEN];
 char simon_apikey[MAX_APIKEY_LEN];
 
-static char message[1024];
-static char server_reply[1024];
+static char message[128];
+static char server_reply[512];
+
 static char* hostname = simon_hostname;
 uint16_t recv_size;
 
@@ -108,12 +109,12 @@ uint8_t simon_get_time(struct tm * t)
 	//char* get_time_request = "GET /";
 	uint8_t ret = MODEM_ERR;
 	
-	SNPRINTF(server_reply, SIZEARRAY(message), get_time_request, (char*)simon_apikey);
+	SNPRINTF(message, SIZEARRAY(message), get_time_request, (char*)simon_apikey);
 	
-	SNPRINTF(message, SIZEARRAY(message),
+	SNPRINTF(server_reply, SIZEARRAY(server_reply),
 		     "%s HTTP/1.1\r\n"
 		     "Host: %s\r\n"
-		     "\r\n\r\n", server_reply, hostname);
+		     "\r\n\r\n", message, hostname);
 	
 	//PRINTF(message);
 	
@@ -121,7 +122,7 @@ uint8_t simon_get_time(struct tm * t)
 	{
 		return MODEM_ERR;
 	}
-	if(out((uint8_t*)message , (uint16_t)strlen(message)) != MODEM_OK)
+	if(out((uint8_t*)server_reply , (uint16_t)strlen(server_reply)) != MODEM_OK)
 	{
 		return MODEM_ERR;
 	}
@@ -158,16 +159,16 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 	
 	if(len > SIZEARRAY(message)) return MODEM_ERR;
 	
-	SNPRINTF(server_reply, SIZEARRAY(message), send_monitor, mon_id, time, buf, (char*)simon_apikey);
+	SNPRINTF(message, SIZEARRAY(message), send_monitor, mon_id, time, buf, (char*)simon_apikey);
 	
 	/// Form request
-	SNPRINTF(message, SIZEARRAY(message),
+	SNPRINTF(server_reply, SIZEARRAY(server_reply),
 		     "%s HTTP/1.1\r\n"
 		     "Host: %s\r\n"
-		     "\r\n\r\n", server_reply, hostname);
+		     "\r\n\r\n", message, hostname);
 
 #if 0	
-	PRINTF(message);
+	PRINTF(server_reply);
 #endif	
 
 #define SIMON_SKIP_SEND 0
@@ -180,7 +181,7 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 		return MODEM_ERR;
 	}
 	
-	if(out((uint8_t*)message, (uint16_t)strlen(message)) != MODEM_OK)
+	if(out((uint8_t*)server_reply, (uint16_t)strlen(server_reply)) != MODEM_OK)
 	{
 		return MODEM_ERR;
 	}
@@ -203,11 +204,11 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 	return ret;
 }
 
-uint8_t get_server_confirmation(char* server_reply)
+uint8_t get_server_confirmation(char* _server_reply)
 {
 	/* search server confirmation: HTTP 200 OK */
 	char *ret;
-	ret = strstr(server_reply, "HTTP/1.1 200 OK");	
+	ret = strstr(_server_reply, "HTTP/1.1 200 OK");	
 	if(ret == NULL)
 	{
 		return MODEM_ERR;
@@ -218,7 +219,7 @@ uint8_t get_server_confirmation(char* server_reply)
 	}	
 }
 
-uint8_t get_server_time(char* server_reply, struct tm *ts)
+uint8_t get_server_time(char* _server_reply, struct tm *ts)
 {
 	
 	char *ret;
@@ -228,7 +229,7 @@ uint8_t get_server_time(char* server_reply, struct tm *ts)
 	struct tm t;
 	char delim[2] = " ";
 	
-	ret = strstr(server_reply, "Date:");
+	ret = strstr(_server_reply, "Date:");
 	
 	if(ret == NULL) return FALSE; 
 	
