@@ -12,19 +12,19 @@
 //#define DEBUG 0
 
 /// Define if verbose info is available
-#define VERBOSE 0
+#define VERBOSE					0
 
 /// Define if error check is available
-#define ERROR_CHECK 0
+#define ERROR_CHECK				0
 
 /// Define if compute cpu load is active
-#define COMPUTES_CPU_LOAD 1
+#define COMPUTES_CPU_LOAD		1
 
 // Define if whatchdog active
-#define WATCHDOG 1
+#define WATCHDOG				1
 
 /// Define Number of Priorities
-#define NUMBER_OF_PRIORITIES 16
+#define NUMBER_OF_PRIORITIES	8
 
 /// Define if OS Trace is active
 #define OSTRACE 0
@@ -35,13 +35,13 @@
 
 // Define the number of Task to be Installed
 // must always be equal or higher to NumberOfInstalledTasks
-#define NUMBER_OF_TASKS 6
+#define NUMBER_OF_TASKS		16
 
 /// Define if TimerHook function is active
-#define TIMER_HOOK_EN 0
+#define TIMER_HOOK_EN		0
 
 /// Define if IdleHook function is active
-#define IDLE_HOOK_EN 0
+#define IDLE_HOOK_EN		0
 
 
 // Habilita o serviço de semáforo do sistema
@@ -83,14 +83,13 @@
 
 
 //Stack Defines
-// P/ ATMEGA com 2KB de RAM, configurado com 512 p/ STACK Virtual
-#define HEAP_SIZE 4*128
+// P/ ATMEGA2560 com 8kB de RAM, configurado com 1.5kB p/ STACK Virtual
+#define HEAP_SIZE				46*32
 
 // Queue heap defines
-// Configurado com 512B p/ filas
-#define QUEUE_HEAP_SIZE 1*32
+#define QUEUE_HEAP_SIZE			 (2*32 + 3*32)
 
 
 // Stack Size of the Idle Task
-#define IDLE_STACK_SIZE             (INT16U)80
+#define IDLE_STACK_SIZE          2*32
 

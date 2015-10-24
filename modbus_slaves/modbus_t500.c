@@ -95,7 +95,7 @@ static modbus_t500_input_register_list1  T500_IRList1;
 #include "random_lib.h"
 #endif
 
-const uint16_t T500_modbus_map_regs[] =
+const uint16_t T500_modbus_map_regs[] PROGMEM =
 {
 		T500_Voltage_Phase_Avg,T500_Current_Phase_Avg,T500_Voltage_Line_Avg,
 		T500_Total_Power_Factor_Sign,T500_Total_Real_Power,T500_Total_Reactive_Power,
@@ -126,10 +126,10 @@ uint8_t t500_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 				
 #if MODBUS_SLAVE_T500_SIMULATION			
 				/* return random data */
-				T500_IRList1.Regs32[nregs + (T500_REG_OFFSET/2)] = (random_get()<<16)+random_get();
+				T500_IRList1.Regs32[nregs + (T500_REG_OFFSET/2)] = (uint32_t)((uint32_t)(random_get()<<16)+(uint32_t)random_get());
 #else				
 				if(Modbus_GetData(slave_addr, FC_READ_INPUT_REGISTERS, (uint8_t*)&T500_IRList1.Regs32[nregs + (T500_REG_OFFSET/2)],
-						T500_modbus_map_regs[nregs], 2) == MODBUS_OK)
+						pgm_read_byte(&(T500_modbus_map_regs[nregs])), 2) == MODBUS_OK)
 				{
 					nregs++;
 				}else

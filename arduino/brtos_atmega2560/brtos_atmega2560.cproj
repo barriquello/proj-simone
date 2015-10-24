@@ -259,98 +259,6 @@
       <SubType>compile</SubType>
       <Link>FatFs\SD_API.h</Link>
     </Compile>
-    <Compile Include="..\..\freemodbus\modbus\functions\mbfunccoils.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\functions\mbfunccoils.c</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\functions\mbfuncdiag.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\functions\mbfuncdiag.c</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\functions\mbfuncdisc.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\functions\mbfuncdisc.c</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\functions\mbfuncholding.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\functions\mbfuncholding.c</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\functions\mbfuncinput.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\functions\mbfuncinput.c</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\functions\mbfuncother.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\functions\mbfuncother.c</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\functions\mbutils.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\functions\mbutils.c</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\include\mb.h">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\include\mb.h</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\include\mbconfig.h">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\include\mbconfig.h</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\include\mbframe.h">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\include\mbframe.h</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\include\mbfunc.h">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\include\mbfunc.h</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\include\mbport.h">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\include\mbport.h</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\include\mbproto.h">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\include\mbproto.h</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\include\mbutils.h">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\include\mbutils.h</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\mb.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\mb.c</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\rtu\mbcrc.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\rtu\mbcrc.c</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\rtu\mbcrc.h">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\rtu\mbcrc.h</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\rtu\mbrtu.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\rtu\mbrtu.c</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\modbus\rtu\mbrtu.h">
-      <SubType>compile</SubType>
-      <Link>freemodbus\modbus\rtu\mbrtu.h</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\port\port.h">
-      <SubType>compile</SubType>
-      <Link>freemodbus\port\port.h</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\port\portevent.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\port\portevent.c</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\port\portserial.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\port\portserial.c</Link>
-    </Compile>
-    <Compile Include="..\..\freemodbus\port\porttimer.c">
-      <SubType>compile</SubType>
-      <Link>freemodbus\port\porttimer.c</Link>
-    </Compile>
     <Compile Include="..\..\hal\Atmel_Studio_6_ATMEGA\HAL.c">
       <SubType>compile</SubType>
       <Link>brtos\hal\HAL.c</Link>
@@ -620,11 +528,6 @@
     <Folder Include="brtos\includes\" />
     <Folder Include="drivers\" />
     <Folder Include="FatFs\option" />
-    <Folder Include="freemodbus\modbus" />
-    <Folder Include="freemodbus\modbus\functions" />
-    <Folder Include="freemodbus\modbus\include" />
-    <Folder Include="freemodbus\modbus\rtu" />
-    <Folder Include="freemodbus\port" />
     <Folder Include="includes\" />
     <Folder Include="app" />
     <Folder Include="monitor" />
@@ -633,7 +536,6 @@
     <Folder Include="minINI" />
     <Folder Include="FatFs" />
     <Folder Include="devices" />
-    <Folder Include="freemodbus" />
     <Folder Include="modbus_master" />
     <Folder Include="modbus_slaves" />
     <Folder Include="simon-api" />

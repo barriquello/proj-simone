@@ -40,7 +40,7 @@
 #include "AppConfig.h"
 #include "modbus_pm210.h"
 
-#ifndef _WIN32
+#if COLDUINO
 /* Input registers */
 // 10 bytes
 CONST uint16_t Real_Energy_Consumption_H 			= 4000; /* kWh, scale = reg 4108 */

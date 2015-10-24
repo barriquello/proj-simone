@@ -142,7 +142,7 @@ monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 monitor_config_ok_t config_check;
 
 
-#define DEBUG_MONITOR 1
+#define DEBUG_MONITOR 0
 
 #if DEBUG_MONITOR
 #if _WIN32

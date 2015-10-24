@@ -69,9 +69,9 @@ static INT8U gReceiveBuffer[256];
 #endif
 
 #define UNUSED(x)   (void)x;
-#define MAX_RETRIES  2
+#define MAX_RETRIES		2
 
-#define DEBUG_PUTCHAR 1
+#define DEBUG_PUTCHAR	0
 
 #if DEBUG_PUTCHAR
 #define DPUTCHAR(x)		putcharSer(USE_USB,x);
@@ -92,19 +92,58 @@ typedef enum
 	CLOSE1,
 }m590_enum_cmd;
 
-#define CONST const
-CONST char *m590_init_cmd[]= 
+#define AT_def		"AT\r\n"
+#define	CREG_def	"AT+CREG?\r\n"
+#define	XISP_def	"AT+XISP=0\r\n"
+#define XIIC1_def	"AT+XIIC=1\r\n"
+#define	XIIC_def	"AT+XIIC?\r\n"
+#define IPSTAT_def  "AT+IPSTATUS=0\r"
+#define	CLK_def		"AT+CCLK?\r\n"
+#define	CLOSE0_def	"AT+TCPCLOSE=0\r\n"
+#define	CLOSE1_def  "AT+TCPCLOSE=1\r\n"
+	
+#define CONST const	
+		
+#if ARDUINO
+CONST char AT_str[]    PROGMEM = AT_def;
+CONST char CREG_str[]  PROGMEM = CREG_def;
+CONST char XISP_str[]	PROGMEM = XISP_def;
+CONST char XIIC1_str[]	PROGMEM = XIIC1_def;
+CONST char XIIC_str[]	PROGMEM = XIIC_def;
+CONST char IPSTAT_str[] PROGMEM = IPSTAT_def;
+CONST char CLK_str[]	PROGMEM = CLK_def;
+CONST char CLOSE0_str[] PROGMEM = CLOSE0_def;
+CONST char CLOSE1_str[] PROGMEM = CLOSE1_def;
+
+CONST char * const m590_init_cmd[] PROGMEM =
 {
-		"AT\r\n",
-		"AT+CREG?\r\n",
-		"AT+XISP=0\r\n",
-		"AT+XIIC=1\r\n",
-		"AT+XIIC?\r\n",
-		"AT+IPSTATUS=0\r",
-		"AT+CCLK?\r\n",
-		"AT+TCPCLOSE=0\r\n",
-		"AT+TCPCLOSE=1\r\n"
+	AT_str,
+	CREG_str,
+	XISP_str,
+	XIIC1_str,
+	XIIC_str,
+	IPSTAT_str,
+	CLK_str,
+	CLOSE0_str,
+	CLOSE1_str
 };
+
+#elif COLDUINO
+#define PROGMEM
+CONST char *m590_init_cmd[] = 
+{
+	AT_def,
+	CREG_def,
+	XISP_def,
+	XIIC1_def,
+	XIIC_def,
+	IPSTAT_def,
+	CLK_def,
+	CLOSE0_def,
+	CLOSE1_def
+};
+
+#endif
 
 static void at_m590_print_reply(void)
 {

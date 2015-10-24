@@ -104,7 +104,7 @@ void rs485_init(INT16U baudrate, INT8U mutex, INT8U priority)
 	RS485_TXRX_ENABLE();
 	
 #if UART_RS485 == UART0
-uart_init(0,baudrate,RS485_BUFSIZE,mutex,priority);	
+	uart_init(0,baudrate,RS485_BUFSIZE,mutex,priority);	
 #elif UART_RS485 == UART1
 	uart_init(1,baudrate,RS485_BUFSIZE,mutex,priority);
 #elif UART_RS485 == UART2	

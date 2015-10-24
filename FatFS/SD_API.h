@@ -77,14 +77,17 @@ INT8U FormatDisk(INT8U verbose);
 INT8U cmd_verify_zeros(INT8U *pfile, INT8U num);
 #endif
 
-
+#if 0
 extern FIL      file_obj;
+#endif
 
 //Mensagens padrão da API do SD
+#if COLDUINO || ARDUINO
 extern CONST CHAR8 SD_API_FILE_NOT_FOUND[];
 extern CONST CHAR8 SD_API_FILE_INVALID[];
 extern CONST CHAR8 SD_API_CARD_BUSY[];
 extern CONST CHAR8 SD_API_CARD_NOT_PRESENT[];
+#endif
 
 
 /******** COMANDS USED IN THE APPLICATION *************/

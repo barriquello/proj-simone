@@ -39,10 +39,9 @@ extern "C"
  * \brief   This software is the main entry of the project
  *****************************************************************************/
 
-#if ARDUINO
-const CHAR8 TaskName_SystemTime[] PROGMEM = "System Time";
-const CHAR8 TaskName_Monitors[] PROGMEM = "Monitors";
-const CHAR8 TaskName_Terminal[] PROGMEM = "Terminal";
+#define TaskName_SystemTime_def		"System Time"
+#define TaskName_Monitors_def		"Monitors"
+#define TaskName_Terminal_def		"Terminal"
 
 #if (!defined __GNUC__)
 #define CONST
@@ -50,16 +49,24 @@ const CHAR8 TaskName_Terminal[] PROGMEM = "Terminal";
 #define CONST const
 #endif
 
+#if ARDUINO
+const CHAR8 TaskName_SystemTime_str[] PROGMEM = TaskName_SystemTime_def;
+const CHAR8 TaskName_Monitors_str[] PROGMEM = TaskName_Monitors_def;
+const CHAR8 TaskName_Terminal_str[] PROGMEM = TaskName_Terminal_def;
+
 PGM_P CONST MainStringTable[] PROGMEM =
 {
-	TaskName_SystemTime,
-	TaskName_Monitors,
-	TaskName_Terminal
+	TaskName_SystemTime_str,
+	TaskName_Monitors_str,
+	TaskName_Terminal_str
 };
+#define	TaskName_SystemTime TaskName_SystemTime_str //((&(MainStringTable[0])))
+#define TaskName_Monitors   TaskName_Monitors_str //((&(MainStringTable[1])))
+#define	TaskName_Terminal   TaskName_Terminal_str //((&(MainStringTable[2])))
 #else
-#define TaskName_SystemTime "System Time"
-#define TaskName_Monitors "Monitors"
-#define TaskName_Terminal "Terminal"
+#define	TaskName_SystemTime TaskName_SystemTime_def
+#define TaskName_Monitors   TaskName_Monitors_def
+#define	TaskName_Terminal   TaskName_Terminal_def
 #endif
 
 
@@ -88,13 +95,13 @@ void main_app(void)
 #endif	
 
 	/* Install task for keeping system clock, date and time */
-	if (InstallTask(&System_Time, TaskName_SystemTime, 256+64, 31, NULL) != OK)
+	if (InstallTask(&System_Time, TaskName_SystemTime, TASK_STACKSIZE_SYSTEM_TIME, TASK_PRIORITY_SYSTEM_TIME, NULL) != OK)
 	{
 		sleep_forever();
 	};
 	
 #if 1	
-	if (InstallTask(&main_monitor, TaskName_Monitors, 1024+1024+512, 10, NULL) != OK)
+	if (InstallTask(&main_monitor, TaskName_Monitors, TASK_STACKSIZE_MONITORS, TASK_PRIORITY_MONITORS, NULL) != OK)
 	{
 		sleep_forever();
 	};
@@ -109,13 +116,13 @@ void main_app(void)
 
 #if TESTE_MODBUS
 
-	if (InstallTask(&Task_modbus_slave, "MB slave", 256, 23, NULL) != OK)
+	if (InstallTask(&Task_modbus_slave, "MB slave", 256, 5, NULL) != OK)
 	{
 		while (1){}
 	}
 	
 
-	if (InstallTask(&Task_modbus_slave_test, "MB slave test", 256, 22, NULL) != OK)
+	if (InstallTask(&Task_modbus_slave_test, "MB slave test", 256, 6, NULL) != OK)
 	{
 		while (1){}
 	}
@@ -123,7 +130,7 @@ void main_app(void)
 #if TESTE_MODBUS_SLAVE
 #if (defined TESTE_MODBUS_MASTER && TESTE_MODBUS_MASTER == 1)	
 	
-	if (InstallTask(&Task_modbus_master_test, "MB master test", (384+64), 21, NULL) != OK)
+	if (InstallTask(&Task_modbus_master_test, "MB master test", (384+64), 5, NULL) != OK)
 	{
 		while (1){}
 	}
@@ -133,7 +140,7 @@ void main_app(void)
 #endif	
 	
 #if USB_DEVICE_ENABLED && (USB_CLASS_TYPE == BRTOS_USB_MSD)
-	if(InstallTask(&Mass_Storage_Device_Task,"Mass Storage Device Task",512,15,NULL) != OK)
+	if(InstallTask(&Mass_Storage_Device_Task,"Mass Storage Device Task",TASK_STACKSIZE_MSD,TASK_PRIORITY_TERMINAL,NULL) != OK)
 	{
 		while(1)
 		{};
@@ -142,7 +149,7 @@ void main_app(void)
 
 
 #if (USB_DEVICE_ENABLED && (USB_CLASS_TYPE == BRTOS_USB_CDC)) || ARDUINO
-	if (InstallTask(&Terminal_Task, TaskName_Terminal, 1024, 15, NULL) != OK)
+	if (InstallTask(&Terminal_Task, TaskName_Terminal, TASK_STACKSIZE_TERMINAL, TASK_PRIORITY_TERMINAL, NULL) != OK)
 	{
 		sleep_forever();
 	};
@@ -150,13 +157,13 @@ void main_app(void)
 
 
 #if 0
-	if(InstallTask(&HMI,"Human-Machine Interface task",416,10,NULL) != OK)
+	if(InstallTask(&HMI,"Human-Machine Interface task",416,1,NULL) != OK)
 	{
 		while(1)
 		{};
 	};
 
-	if(InstallTask(&Keyboard_Handler,"Keyboard handler task",416,12,NULL) != OK)
+	if(InstallTask(&Keyboard_Handler,"Keyboard handler task",416,2,NULL) != OK)
 	{
 		while(1)
 		{};

@@ -52,7 +52,7 @@ uint8_t get_server_confirmation(char* _server_reply);
 static input in = NULL;
 static output out = NULL;
 
-#define DEBUG_SIMON 1
+#define DEBUG_SIMON 0
 #if DEBUG_SIMON
 #ifndef _WIN32
 #define PRINTF(...) printf_lib(__VA_ARGS__);
@@ -68,7 +68,7 @@ char simon_hostip[MAX_HOSTIP_LEN];
 char simon_apikey[MAX_APIKEY_LEN];
 
 static char message[128];
-static char server_reply[512];
+static char server_reply[256];
 
 static char* hostname = simon_hostname;
 uint16_t recv_size;

@@ -60,7 +60,7 @@ typedef struct {
 #endif
 } command_t;
 
-#define CONSOLE_BUFFER_SIZE  (144)
+#define CONSOLE_BUFFER_SIZE  (64)
 
 int terminal_add_cmd(command_t *cmd);
 int terminal_delete_cmd(command_t *cmd);

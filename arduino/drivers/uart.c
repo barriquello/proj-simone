@@ -643,7 +643,7 @@ void printf_uart2(CHAR8 *string)
 void printP_uart2(char const *string)
 {
 	char c;
-	while((c=pgm_read_byte(*string)) != 0)
+	while((c=pgm_read_byte(string)) != 0)
 	{
 		putchar_uart2(c);
 		string++;

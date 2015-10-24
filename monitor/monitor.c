@@ -63,7 +63,7 @@
 #define PRINT_ERRO(...)
 #endif
 
-#define MONITOR_TESTS 0
+#define MONITOR_TESTS	0
 
 extern monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 

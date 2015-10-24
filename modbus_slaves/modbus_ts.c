@@ -51,7 +51,7 @@
 #define Parametro_RL3 	(1<<2)
 #define Parametro_RL4 	(1<<3)
 
-
+#if COLDUINO
 /* Holding registers */
 CONST uint16_t Parametro_ALMO = 1;  /* alarme por temperatura do óleo */
 CONST uint16_t Parametro_DSLO = 2;  /* desligamento por temperatura do óleo */
@@ -118,6 +118,7 @@ CONST uint16_t Opcionais 						= 1015;
 CONST uint16_t Reles 							= 1016;
 CONST uint16_t Ponteiro_LOG 					= 1017;
 
+#endif
 
 /* 
  * Supported MODBUS Commands
@@ -142,10 +143,12 @@ Command Description
 #include "time_lib.h"
 #include "utils.h"
 
-/* ----------------------- CONSTants ------------------------------------------*/
+/* ----------------------- Constants ------------------------------------------*/
 
+#if 0
 CONST char TS_ID_string[] = "TS";
 CONST uint16_t SIZEOF_TS_ID_STRING = sizeof(TS_ID_string);
+#endif
 		
 /* static IR and HR list for TS device */
 static modbus_ts_input_register_list  	  TS_IRList;

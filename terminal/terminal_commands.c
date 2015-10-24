@@ -418,7 +418,7 @@ void term_cmd_cat(char *param)
   }
   else
   {
-	  printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
+	  printf_terminal((CHAR8*)SD_API_FILE_INVALID);
   }  
   
 }
@@ -472,7 +472,7 @@ void term_cmd_cd(char *param)
   }
   else
   {
-	  printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
+	  printf_terminal( (CHAR8*)SD_API_FILE_INVALID);
   }   
 
 }
@@ -541,9 +541,9 @@ void term_cmd_rm(char *param)
 	fr = empty_directory(name1);
 
 	if (fr) {
-		printSer(USE_USB, (CHAR8*)"\r\nFunction failed.\r\n");
+		printf_terminal( (CHAR8*)"\r\nFunction failed.\r\n");
 	} else {
-		printSer(USE_USB, (CHAR8*)"\r\nAll contents were successfully removed.\n");
+		printf_terminal( (CHAR8*)"\r\nAll contents were successfully removed.\n");
 	}	
   }
   else
@@ -557,7 +557,7 @@ void term_cmd_rm(char *param)
 	  }
 	  else
 	  {
-		printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
+		printf_terminal( (CHAR8*)SD_API_FILE_INVALID);
 	  }
   }  
 }
@@ -590,7 +590,7 @@ void term_cmd_rn(char *param)
   }
   else
   {
-	printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
+	printf_terminal( (CHAR8*)SD_API_FILE_INVALID);
   }
 }
 
@@ -623,7 +623,7 @@ void term_cmd_cr(char *param)
   }
   else
   {
-	printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
+	printf_terminal( (CHAR8*)SD_API_FILE_INVALID);
   }
 }
 
@@ -656,7 +656,7 @@ void term_cmd_mkdir(char *param)
   }
   else
   {
-	printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
+	printf_terminal( (CHAR8*)SD_API_FILE_INVALID);
   }
 }
 
@@ -689,7 +689,7 @@ void term_cmd_cp(char *param)
   }
   else
   {
-	printSer(USE_USB, (CHAR8*)SD_API_FILE_INVALID);
+	printf_terminal( (CHAR8*)SD_API_FILE_INVALID);
   }
   #endif
 }
@@ -725,7 +725,7 @@ void term_cmd_echo(char *param)
 {
 	INT8U caracter;
 	if(param == NULL) return;
-	printSer(USE_USB, "\n\r");
+	printf_terminal( "\n\r");
 
 #if UART1_MUTEX
 	if(stdout == USE_UART1)
@@ -748,7 +748,7 @@ void term_cmd_echo(char *param)
 	{
 		while(OSQueuePend(stdin_q, &caracter, 100) != TIMEOUT)
 		{
-			putcharSer(USE_USB, (CHAR8)caracter);
+			putchar_terminal( (CHAR8)caracter);
 		}	
 	}
 	
@@ -775,7 +775,7 @@ CONST command_t echo_cmd = {
 void term_cmd_echo_out(char *param)
 {	
 	INT8U std_output;
-	printSer(USE_USB, "\n\r");	
+	printf_terminal( "\n\r");	
 	if(param != NULL)
 	{		
 		std_output = (INT8U)(param[0]-'0');
@@ -790,14 +790,14 @@ void term_cmd_echo_out(char *param)
 			{
 				stdin_q = Serial2;
 			}
-			printSer(USE_USB, "STDOUT = ");
-			putcharSer(USE_USB, (CHAR8)param[0]);
-			printSer(USE_USB, "\n\r");
+			printf_terminal( "STDOUT = ");
+			putchar_terminal( (CHAR8)param[0]);
+			printf_terminal( "\n\r");
 			return;
 		}
 	}
 
-	printSer(USE_USB, "INVALID STDOUT\n\r");
+	printf_terminal( "INVALID STDOUT\n\r");
 
 
 }
@@ -844,6 +844,8 @@ void echo (char *string, char Terminalbackup)
     	echo_post(backup,backup_cnt);    	
     }
 }
+
+#if 0
 
 #include "esp8266_at.h"
 
@@ -936,6 +938,10 @@ CONST command_t m590_cmd = {
   "m590", term_cmd_m590, M590_HelpText
 };
 
+#endif
+
+#if 0
+
 static uint16_t start_addr = 0;
 static uint8_t slave_addr = 1;
 static uint8_t num_regs = 1;
@@ -1003,3 +1009,4 @@ void term_cmd_modbus(char *param)
 CONST command_t modbus_cmd = {
   "modbus", term_cmd_modbus, Modbus_HelpText
 };
+#endif

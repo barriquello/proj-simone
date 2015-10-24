@@ -55,7 +55,7 @@
 #define M590_APN		 "tim.br"
 #define M590_PWD		 "tim"
 
-#define M590_UART_BUFSIZE	256
+#define M590_UART_BUFSIZE	64
 #define M590_UART_TIMEOUT	10
 
 #if M590_ENABLE
@@ -67,7 +67,11 @@
 	#endif
 	#define	M590_UART_PINS 		UART1_PTD6_PTD7
 	#define M590_UART_MUTEX		UART1_MUTEX
+	#if ARDUINO
+	#define m590_print(x)		printSer_P(USE_UART1,(x));
+	#else
 	#define m590_print(x)		printSer(USE_UART1,(char*)x);
+	#endif
 	#define m590_putchar(x)		putcharSer(USE_UART1,x)
 	extern BRTOS_Queue 			*Serial1;
 	#define M590_QUEUE			Serial1
@@ -87,7 +91,11 @@
 		#error "UART 2 is disabled"
 	#endif	
 	#define M590_UART_MUTEX		UART2_MUTEX
-	#define m590_print(x)		printSer(USE_UART2,x)
+	#if ARDUINO
+	#define m590_print(x)		printSer_P(USE_UART2,(x));
+	#else
+	#define m590_print(x)		printSer(USE_UART2,(char*)x);
+	#endif
 	#define m590_putchar(x)		putcharSer(USE_UART2,x)
 	extern BRTOS_Queue 			*Serial2;
 	#define M590_QUEUE			Serial2

@@ -30,7 +30,7 @@
 #include "string.h"
 #include "terminal_io.h"
 
-#define SD_PRINT 1
+#define SD_PRINT 0
 
 #if SD_PRINT
 #define PRINT(a,...) if(a) { printf_lib(__VA_ARGS__);}
@@ -78,11 +78,22 @@ CHAR8 Lfname[256];
 
 
 //Mensagens padrão da API do SD
+#define SD_API_FILE_NOT_FOUND_DEF		"\n\rFile or directory not found.\n\r"
+#define SD_API_FILE_INVALID_DEF			"\n\rInvalid file or directory name.\n\r"
+#define SD_API_CARD_BUSY_DEF			"\n\rSD card busy !!!\n\r"
+#define SD_API_CARD_NOT_PRESENT_DEF		"\n\rSD card is not present or not initialized !\n\r"
 
-CONST CHAR8 SD_API_FILE_NOT_FOUND[]={"\n\rFile or directory not found.\n\r"};
-CONST CHAR8 SD_API_FILE_INVALID[]={"\n\rInvalid file or directory name.\n\r"};
-CONST CHAR8 SD_API_CARD_BUSY[]={"\n\rSD card busy !!!\n\r"};
-CONST CHAR8 SD_API_CARD_NOT_PRESENT[]={"\n\rSD card is not present or not initialized !\n\r"};
+#if COLDUINO 
+CONST CHAR8 SD_API_FILE_NOT_FOUND[]=SD_API_FILE_NOT_FOUND_DEF;
+CONST CHAR8 SD_API_FILE_INVALID[]=SD_API_FILE_INVALID_DEF;
+CONST CHAR8 SD_API_CARD_BUSY[]=SD_API_CARD_BUSY_DEF;
+CONST CHAR8 SD_API_CARD_NOT_PRESENT[]=SD_API_CARD_NOT_PRESENT_DEF;
+#elif ARDUINO
+CONST CHAR8 SD_API_FILE_NOT_FOUND[] PROGMEM =SD_API_FILE_NOT_FOUND_DEF;
+CONST CHAR8 SD_API_FILE_INVALID[] PROGMEM =SD_API_FILE_INVALID_DEF;
+CONST CHAR8 SD_API_CARD_BUSY[] PROGMEM  =SD_API_CARD_BUSY_DEF;
+CONST CHAR8 SD_API_CARD_NOT_PRESENT[] PROGMEM =SD_API_CARD_NOT_PRESENT_DEF;
+#endif
 
 
 BRTOS_Mutex * SDCard_ResourceInit(INT8U priority)

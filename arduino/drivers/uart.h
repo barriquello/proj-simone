@@ -3,7 +3,7 @@
  */
 
 #include "BRTOS.h"
-
+#include "AppConfig.h"
 
 // Enable/disable UARTs       
 
@@ -17,9 +17,15 @@
 #define UART2_MUTEX 	1
 
 // Config mutex priorities for UARTs
+#if COLDUINO
 #define UART0_MUTEX_PRIO 	9
 #define UART1_MUTEX_PRIO 	10
 #define UART2_MUTEX_PRIO 	11
+#elif ARDUINO
+#define UART0_MUTEX_PRIO 	4
+#define UART1_MUTEX_PRIO 	5
+#define UART2_MUTEX_PRIO 	6
+#endif
 
 /*! \def CR
  \brief ASCII code for carry return
