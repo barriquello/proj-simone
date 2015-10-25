@@ -44,9 +44,10 @@
 #else
 #define STATIC static
 #endif
+
 static struct tm tmbuf;
 
-CONST uint8_t _ytab[2][12] = {
+CONST uint8_t _ytab[2][12] PROGMEM = {
   {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31},
   {31, 29, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31}
 };
@@ -236,24 +237,80 @@ time_t ConvertDateTimeToUnixTime(OSDateTime * dt)
 }
 #endif
 
-CONST char *_days[] = {
-  "Sunday", "Monday", "Tuesday", "Wednesday",
-  "Thursday", "Friday", "Saturday"
+#define SUNDAY_DEF  "Sunday"
+#define MONDAY_DEF  "Monday"
+#define TUESDAY_DEF  "Tuesday"
+#define WEDNESDAY_DEF  "Wednesday"	 
+#define THURSDAY_DEF  "Thursday"
+#define FRIDAY_DEF  "Friday" 
+#define SATURDAY_DEF  "Saturday"
+
+CONST char SUNDAY_str[] PROGMEM = SUNDAY_DEF;
+CONST char MONDAY_str[] PROGMEM=MONDAY_DEF;
+CONST char TUESDAY_str[] PROGMEM=TUESDAY_DEF;
+CONST char WEDNESDAY_str[] PROGMEM=WEDNESDAY_DEF;
+CONST char THURSDAY_str[] PROGMEM=THURSDAY_DEF;
+CONST char FRIDAY_str[] PROGMEM=FRIDAY_DEF;
+CONST char SATURDAY_str[] PROGMEM=SATURDAY_DEF;
+
+#define JANUARY_DEF		"January"
+#define FEBRUARY_DEF	"February"
+#define MARCH_DEF		"March"
+#define APRIL_DEF		"April"
+#define MAY_DEF			"May"
+#define JUNE_DEF		"June"
+#define JULY_DEF		"July"
+#define AUGUST_DEF		"August"
+#define SEPTEMBER_DEF	"September"
+#define OCTOBER_DEF		"October"
+#define NOVEMBER_DEF	"November"
+#define DECEMBER_DEF	"December"
+
+CONST char JANUARY_str[] PROGMEM = JANUARY_DEF;
+CONST char FEBRUARY_str[] PROGMEM = FEBRUARY_DEF;
+CONST char MARCH_str[] PROGMEM = MARCH_DEF;
+CONST char APRIL_str[] PROGMEM = APRIL_DEF;
+CONST char MAY_str[] PROGMEM = MAY_DEF;
+CONST char JUNE_str[] PROGMEM = JUNE_DEF;
+CONST char JULY_str[] PROGMEM = JULY_DEF;
+CONST char AUGUST_str[] PROGMEM = AUGUST_DEF;
+CONST char SEPTEMBER_str[] PROGMEM = SEPTEMBER_DEF;
+CONST char OCTOBER_str[] PROGMEM = OCTOBER_DEF;
+CONST char NOVEMBER_str[] PROGMEM =  NOVEMBER_DEF;
+CONST char DECEMBER_str[] PROGMEM = DECEMBER_DEF;
+
+  
+CONST char * CONST _days[] PROGMEM = {
+	SUNDAY_str,
+	MONDAY_str,
+	TUESDAY_str,
+	WEDNESDAY_str,
+	THURSDAY_str,
+	FRIDAY_str,
+	SATURDAY_str
 };
 
-CONST char *_days_abbrev[] = {
+CONST char * CONST _days_abbrev[] PROGMEM= {
   "Sun", "Mon", "Tue", "Wed", 
   "Thu", "Fri", "Sat"
 };
 
-CONST char *_months[] = {
-  "January", "February", "March",
-  "April", "May", "June",
-  "July", "August", "September",
-  "October", "November", "December"
+CONST char * CONST _months[] PROGMEM= {
+	JANUARY_str,
+	FEBRUARY_str,
+	MARCH_str,
+	APRIL_str,
+	MAY_str,
+	JUNE_str,
+	JULY_str,
+	AUGUST_str,
+	SEPTEMBER_str,
+	OCTOBER_str,
+	NOVEMBER_str,
+	DECEMBER_str,
 };
 
-CONST char *_months_abbrev[] = {
+CONST char * CONST _months_abbrev[] PROGMEM= {
   "Jan", "Feb", "Mar",
   "Apr", "May", "Jun",
   "Jul", "Aug", "Sep",

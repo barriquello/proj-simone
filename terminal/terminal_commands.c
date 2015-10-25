@@ -545,9 +545,10 @@ void term_cmd_rm(char *param)
 
 	newline();
 	if (fr) {
-		printf_terminal( (CHAR8*)"Function failed.");
+		
+		printf_terminal( (CHAR8*)SD_API_CARD_ERROR);
 	} else {
-		printf_terminal( (CHAR8*)"All contents were successfully removed.");
+		printf_terminal( (CHAR8*)SD_API_FILE_REMOVED);
 	}	
 	newline();
   }

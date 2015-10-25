@@ -76,10 +76,10 @@ struct tm
 
 
 extern long _timezone;
-extern const char *_days[];
-extern const char *_days_abbrev[];
-extern const char *_months[];
-extern const char *_months_abbrev[];
+extern const char * CONST _days[];
+extern const char * CONST _days_abbrev[];
+extern const char * CONST _months[];
+extern const char * CONST _months_abbrev[];
 
 #if !__GNUC__ || ARDUINO
 time_t mktime(struct tm *tmbuf);

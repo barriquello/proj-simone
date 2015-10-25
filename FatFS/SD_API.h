@@ -83,10 +83,13 @@ extern FIL      file_obj;
 
 //Mensagens padrão da API do SD
 #if COLDUINO || ARDUINO
+extern CONST CHAR8 SD_API_CARD[];
 extern CONST CHAR8 SD_API_FILE_NOT_FOUND[];
 extern CONST CHAR8 SD_API_FILE_INVALID[];
 extern CONST CHAR8 SD_API_CARD_BUSY[];
 extern CONST CHAR8 SD_API_CARD_NOT_PRESENT[];
+extern CONST CHAR8 SD_API_FILE_REMOVED[];
+extern CONST CHAR8 SD_API_CARD_ERROR[];
 #endif
 
 
