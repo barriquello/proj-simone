@@ -140,15 +140,20 @@ PGM_P CONST HelpTextTable[] PROGMEM =
 
 char entradas[CONSOLE_BUFFER_SIZE]; //vetor para a entrada de dados
 
+void newline(void)
+{
+	printf_terminal("\n\r");	
+}
+
 // BRTOS version Command
 void term_cmd_ver(char *param)
 {
   (void)*param;
-  printf_terminal("\n\r");
+  newline();
 #if COLDUINO  
   printf_terminal((CHAR8*)version);
 #endif  
-  printf_terminal("\n\r");
+  newline();
 }
 
 CONST command_t ver_cmd = 
@@ -156,13 +161,11 @@ CONST command_t ver_cmd =
   "ver", term_cmd_ver, Ver_HelpText
 };
 
-
-
 // TOP Command (similar to the linux command)
 void term_cmd_top(char *param)
 {
   (void)*param;
-  printf_terminal("\n\r");
+  newline();
   Transmite_CPU_Load(USE_USB);
   Transmite_Uptime(USE_USB);
   Transmite_RAM_Ocupada(USE_USB);
@@ -178,7 +181,7 @@ CONST command_t top_cmd = {
 void term_cmd_rst(char *param)
 {
   (void)*param;
-  printf_terminal("\n\r");
+  newline();
   Reason_of_Reset(USE_USB);
 }
 
@@ -199,7 +202,7 @@ void term_cmd_temp(char *param)
   UserExitCritical();
   
   PrintDecimal(temp, string);
-  printf_terminal("\n\r");
+  newline();
   printf_terminal((CHAR8*)&string[3]);
   printf_terminal(" degrees");
 }
@@ -320,19 +323,19 @@ time_format_error:
 #endif	
 		
 	INT8S cmp = CompareDateTime(&rtc,&datetime);
+	newline();
 	if( cmp == 0 || cmp == -1)
-	{		
-		if (cmp == 0)
-			printf_terminal("\n\r =");
+	{				
+		if (cmp == 0)		
+			printf_terminal(" =");
 		else
-			printf_terminal("\n\r <");
-		
+			printf_terminal(" <");		
 		goto print_date;
 		
 	}
 	else
 	{
-		printf_terminal("\n\r > ");
+		printf_terminal(" > ");
 		
 		datetime = rtc;
 		goto print_date;	
@@ -341,7 +344,7 @@ time_format_error:
 print_date:
 				
 	/* print current Date & Time */
-	printf_terminal("\n\r");
+	newline();
 	
 	/* day */
 	Print2Digits(datetime.Day, ZEROS_ALIGN, string);
@@ -371,7 +374,7 @@ print_date:
 	/* seconds */
 	Print2Digits(datetime.Sec, ZEROS_ALIGN, string);
 	printf_terminal((CHAR8*)string);	
-	printf_terminal("\n\r");
+	newline();
 
 #else	
 	print_date:
@@ -382,9 +385,9 @@ print_date:
 		PrintDateTime(&timestamp, string);
 				
 		/* print current Date & Time */
-		printf_terminal("\n\r");
+		newline();
 		printf_terminal((CHAR8*)string);
-		printf_terminal("\n\r");
+		newline();
 #endif		
 	
 }
@@ -540,11 +543,13 @@ void term_cmd_rm(char *param)
 	strcpy(name1, "/");  /* Directory to be emptied */
 	fr = empty_directory(name1);
 
+	newline();
 	if (fr) {
-		printf_terminal( (CHAR8*)"\r\nFunction failed.\r\n");
+		printf_terminal( (CHAR8*)"Function failed.");
 	} else {
-		printf_terminal( (CHAR8*)"\r\nAll contents were successfully removed.\n");
+		printf_terminal( (CHAR8*)"All contents were successfully removed.");
 	}	
+	newline();
   }
   else
   {
@@ -725,7 +730,7 @@ void term_cmd_echo(char *param)
 {
 	INT8U caracter;
 	if(param == NULL) return;
-	printf_terminal( "\n\r");
+	newline();
 
 #if UART1_MUTEX
 	if(stdout == USE_UART1)
@@ -775,7 +780,7 @@ CONST command_t echo_cmd = {
 void term_cmd_echo_out(char *param)
 {	
 	INT8U std_output;
-	printf_terminal( "\n\r");	
+	newline();
 	if(param != NULL)
 	{		
 		std_output = (INT8U)(param[0]-'0');
@@ -792,14 +797,13 @@ void term_cmd_echo_out(char *param)
 			}
 			printf_terminal( "STDOUT = ");
 			putchar_terminal( (CHAR8)param[0]);
-			printf_terminal( "\n\r");
+			newline();
 			return;
 		}
 	}
 
-	printf_terminal( "INVALID STDOUT\n\r");
-
-
+	printf_terminal( "INVALID STDOUT");
+	newline();
 }
 
 CONST command_t echo_stdout_cmd = {
@@ -859,7 +863,7 @@ CONST char cmd_esp_help[] = {
 };
 void term_cmd_esp(char *param)
 {	
-	printf_terminal("\r\n");
+	newline();
 	switch (param[0])
 	{
 		case '1': at_esp_init();
@@ -904,7 +908,7 @@ CONST char cmd_m590_help[] = {
 
 void term_cmd_m590(char *param)
 {	
-	printf_terminal("\r\n");
+	newline();
 	switch (param[0])
 	{
 		case 'i': at_m590_init();
@@ -959,7 +963,7 @@ void term_cmd_modbus(char *param)
 	int input;
 	uint8_t k = 0;
 	
-	printf_terminal("\r\n");
+	newline();
 	switch (param[0])
 	{
 		case 'a': 
@@ -996,7 +1000,8 @@ void term_cmd_modbus(char *param)
 				
 			}else
 			{
-				printf_terminal("Modbus erro\r\n");
+				printf_terminal("Modbus erro");
+				newline();
 			}
 			break;
 		default:

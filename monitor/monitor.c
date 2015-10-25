@@ -87,13 +87,16 @@ CONST modbus_slave_t * modbus_slaves_all[MODBUS_NUM_SLAVES] =
 		&slave_T500,
 };
 
-LOG_FILETYPE stderr_f;
 
-#define error_file		"erro.txt"
+
 #include <stdarg.h>
 /*-----------------------------------------------------------------------------------*/
 void print_erro(const char *format, ...)
 {
+	
+	LOG_FILETYPE stderr_f;
+	#define error_file		"erro.txt"
+	
   va_list argptr;
   va_start(argptr, format);
   VSPRINTF(monitor_char_buffer, format, argptr);  
@@ -113,12 +116,11 @@ void print_erro(const char *format, ...)
 }
 
 #if 0
-LOG_FILETYPE debug_f;
-#define debug_file		"debug.txt"
-
 /*-----------------------------------------------------------------------------------*/
 void print_debug(const char *format, ...)
 {
+	LOG_FILETYPE debug_f;
+	#define debug_file		"debug.txt"
 
   va_list argptr;
   va_start(argptr, format);

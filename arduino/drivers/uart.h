@@ -5,26 +5,34 @@
 #include "BRTOS.h"
 #include "AppConfig.h"
 
-// Enable/disable UARTs       
-
+// Enable/disable UARTs
 #define ENABLE_UART0   TRUE
 #define ENABLE_UART1   TRUE
 #define ENABLE_UART2   TRUE
 
 // Enable/disable mutex for UARTs
+#ifndef UART0_MUTEX
 #define UART0_MUTEX 	1
-#define UART1_MUTEX 	1
-#define UART2_MUTEX 	1
+#endif
+#ifndef UART1_MUTEX
+#define UART1_MUTEX 	0
+#endif
+#ifndef UART2_MUTEX
+#define UART2_MUTEX 	0
+#endif
 
 // Config mutex priorities for UARTs
-#if COLDUINO
+
+#ifndef UART0_MUTEX_PRIO
 #define UART0_MUTEX_PRIO 	9
+#endif
+
+#ifndef UART1_MUTEX_PRIO
 #define UART1_MUTEX_PRIO 	10
+#endif
+
+#ifndef UART2_MUTEX_PRIO
 #define UART2_MUTEX_PRIO 	11
-#elif ARDUINO
-#define UART0_MUTEX_PRIO 	4
-#define UART1_MUTEX_PRIO 	5
-#define UART2_MUTEX_PRIO 	6
 #endif
 
 /*! \def CR

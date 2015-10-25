@@ -314,7 +314,7 @@ void printf_uart0(CHAR8 *string)
 void printP_uart0(char const *string)
 {
 	char c;
-	while((c=pgm_read_byte(*string)) != 0)
+	while((c=pgm_read_byte(string)) != 0)
 	{
 		putchar_uart0(c);
 		string++;
@@ -482,7 +482,7 @@ void printf_uart1(CHAR8 *string)
 void printP_uart1(char const *string)
 {
 	char c;
-	while((c=pgm_read_byte(*string)) != 0)
+	while((c=pgm_read_byte(string)) != 0)
 	{
 		putchar_uart1(c);
 		string++;

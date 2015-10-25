@@ -56,7 +56,7 @@ static char ip[16];
 static char *hostname = NULL;
 static INT8U gReceiveBuffer[256];
 
-#define DEBUG_PRINT 1
+#define DEBUG_PRINT 0
 
 #if DEBUG_PRINT
 #define PRINT(...) 		printSer(USE_USB,__VA_ARGS__);
@@ -90,6 +90,8 @@ typedef enum
 	CLK,
 	CLOSE0,
 	CLOSE1,
+	CGDCONT,
+	XGAUTH
 }m590_enum_cmd;
 
 #define AT_def		"AT\r\n"
@@ -101,6 +103,8 @@ typedef enum
 #define	CLK_def		"AT+CCLK?\r\n"
 #define	CLOSE0_def	"AT+TCPCLOSE=0\r\n"
 #define	CLOSE1_def  "AT+TCPCLOSE=1\r\n"
+#define	CGDCONT_def  ("AT+CGDCONT=1,\"IP\",\"" M590_APN "\"\r\n")
+#define	XGAUTH_def	 ("AT+XGAUTH=1,1,\"" M590_PWD "\",\"" M590_PWD "\"\r\n")
 	
 #define CONST const	
 		
@@ -114,6 +118,8 @@ CONST char IPSTAT_str[] PROGMEM = IPSTAT_def;
 CONST char CLK_str[]	PROGMEM = CLK_def;
 CONST char CLOSE0_str[] PROGMEM = CLOSE0_def;
 CONST char CLOSE1_str[] PROGMEM = CLOSE1_def;
+CONST char CGDCONT_str[] PROGMEM = CGDCONT_def;
+CONST char XGAUTH_str[] PROGMEM = XGAUTH_def;
 
 CONST char * const m590_init_cmd[] PROGMEM =
 {
@@ -125,7 +131,9 @@ CONST char * const m590_init_cmd[] PROGMEM =
 	IPSTAT_str,
 	CLK_str,
 	CLOSE0_str,
-	CLOSE1_str
+	CLOSE1_str,
+	CGDCONT_str,
+	XGAUTH_str
 };
 
 #elif COLDUINO
@@ -140,7 +148,9 @@ CONST char *m590_init_cmd[] =
 	IPSTAT_def,
 	CLK_def,
 	CLOSE0_def,
-	CLOSE1_def
+	CLOSE1_def,
+	CGDCONT_def,
+	XGAUTH_def
 };
 
 #endif
@@ -397,8 +407,7 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 			}
 		}while(retries-- > 0);
 	}
-	
-	out:
+
 		PRINT("tcp conn failed\r\n");
 		return FALSE;
 }
@@ -429,10 +438,10 @@ uint8_t m590_init(void)
 	m590_print(m590_init_cmd[XISP]);
 	GET_REPLY_PRINT();
 	
-	m590_print(("AT+CGDCONT=1,\"IP\",\"" M590_APN "\"\r\n"));
+	m590_print(m590_init_cmd[CGDCONT]);
 	GET_REPLY_PRINT();
 
-	m590_print(("AT+XGAUTH=1,1,\"" M590_PWD "\",\"" M590_PWD "\"\r\n"));
+	m590_print(m590_init_cmd[XGAUTH]);
 	GET_REPLY_PRINT();
 
 	m590_print(m590_init_cmd[XIIC1]);
@@ -775,7 +784,9 @@ uint8_t m590_host_ip(void)
 	m590_print(hostname);
 	m590_print("\"\r\n");
 	m590_get_reply(ip,16);
-	m590_release();		
+	m590_release();	
+	
+	return MODEM_OK;	
 }
 
 char* m590_get_ip(void)

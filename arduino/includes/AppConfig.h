@@ -17,11 +17,6 @@
 #include "Timer_RTC_DS1307.h"
 #endif
 
-#if SD_PRESENTE
-#include "SD_API.h"
-#define SDCARD_MUTEX_PRIORITY 	29
-#endif
-
 #define USB_DEVICE_ENABLED	  0
 #define TESTE_MODBUS    	  0
 #define TESTE_MODBUS_SLAVE    0
@@ -57,6 +52,32 @@
 #define TASK_PRIORITY_SYSTEM_TIME		7
 #define TASK_PRIORITY_MONITORS			3
 #define TASK_PRIORITY_TERMINAL			2
+#endif
+
+#if SD_PRESENTE
+#include "SD_API.h"
+#if COLDUINO
+#define SDCARD_MUTEX_PRIORITY 			29
+#elif ARDUINO
+#define SDCARD_MUTEX_PRIORITY 			6
+#endif
+#endif
+
+#if COLDUINO
+
+#define UART0_MUTEX 		1
+#define UART1_MUTEX 		0
+#define UART2_MUTEX 		0
+#define UART0_MUTEX_PRIO 	9
+#define UART1_MUTEX_PRIO 	10
+#define UART2_MUTEX_PRIO 	11
+#elif ARDUINO
+#define UART0_MUTEX 		1
+#define UART1_MUTEX 		0
+#define UART2_MUTEX 		0
+#define UART0_MUTEX_PRIO 	4
+#define UART1_MUTEX_PRIO 	
+#define UART2_MUTEX_PRIO 	
 #endif
 
 #include "BRTOSConfig.h"

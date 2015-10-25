@@ -161,8 +161,8 @@ void Terminal_Task(void)
 #endif
 
 	/* Add terminal commands */
-	//(void) terminal_add_cmd((command_t*) &ver_cmd);
-	//(void) terminal_add_cmd((command_t*) &top_cmd);
+	(void) terminal_add_cmd((command_t*) &ver_cmd);
+	(void) terminal_add_cmd((command_t*) &top_cmd);
 	// (void) terminal_add_cmd((command_t*) &rst_cmd);
 	//(void) terminal_add_cmd((command_t*) &temp_cmd);
 	//(void) terminal_add_cmd((command_t*) &setget_time_cmd);

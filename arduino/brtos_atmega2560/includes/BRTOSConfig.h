@@ -35,7 +35,7 @@
 
 // Define the number of Task to be Installed
 // must always be equal or higher to NumberOfInstalledTasks
-#define NUMBER_OF_TASKS		16
+#define NUMBER_OF_TASKS		6
 
 /// Define if TimerHook function is active
 #define TIMER_HOOK_EN		0

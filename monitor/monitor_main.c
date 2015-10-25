@@ -146,7 +146,7 @@ monitor_config_ok_t config_check;
 
 #if DEBUG_MONITOR
 #if _WIN32
-#define PSTR(x)		(x)
+#define PSTR(x)				(x)
 #define PRINTF(...)			printf(__VA_ARGS__);
 #define DPRINTF(...)		print_erro(__VA_ARGS__);
 #define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
@@ -762,8 +762,6 @@ void main_monitor(void)
 		#endif
 		
 	}
-
-	out:
 
 #ifdef _WIN32
 	ftime(&end);
