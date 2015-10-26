@@ -13,6 +13,7 @@
  * It will configure the MCU to disable STOP and COP Modules.
  * It also set the MCG configuration and bus clock frequency.
  ****************************************************************************/
+#define F_CPU 16000000UL 
 void Mcu_Init()
 {
 

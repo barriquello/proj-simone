@@ -77,6 +77,8 @@ void printf_terminal(char *s);
 void putchar_terminal(char c);
 void getchar_terminal(char *c);
 
+void printf_terminal_P(const char *s);
+
 #ifdef __cplusplus
 }
 #endif

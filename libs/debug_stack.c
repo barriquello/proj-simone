@@ -48,8 +48,9 @@
 #define DPRINTF(a,...) printSer(a,__VA_ARGS__);
 #define DPUTCHAR(a,b)  putcharSer(a,b);
 #elif ARDUINO
-#define DPRINTF(a,...) printSer_P(a,__VA_ARGS__);
-#define DPUTCHAR(a,b)  putcharSer_P(a,b);
+#define DPRINTF(a,...)		printSer(a,__VA_ARGS__);
+#define DPRINTF_P(a,...)	printSer_P(a,__VA_ARGS__);
+#define DPUTCHAR(a,b)		putcharSer(a,b);
 #endif
 #else
 #ifndef UNUSED
@@ -64,26 +65,37 @@
 #define IdleTaskText_def	"[%d] Idle Task: "
 #define CPULoadText_def		"CPU LOAD: %d.%d%%\n\r"
 #define TaskStackText_def	"\n\rTASK STACK:\n\r"
-#define MemoryTextOf_def	"%d of %d\r\n "
+#define MemoryTextOf_def	": %d of %d\r\n "
+#define TaskName_def		 "[%d]"
 
 
 #if ARDUINO
-const CHAR8 UptimeText[] PROGMEM = UptimeText_def;
-const CHAR8 CPULoadText[] PROGMEM = CPULoadText_def;
-const CHAR8 IdleTaskText[] PROGMEM = IdleTaskText_def;
-const CHAR8 TaskStackText[] PROGMEM = TaskStackText_def;
-const CHAR8 MemoryText[] PROGMEM = MemoryText_def;
-const CHAR8 MemoryTextOf[] PROGMEM = MemoryTextOf_def;
+const CHAR8 UptimeText_str[] PROGMEM = UptimeText_def;
+const CHAR8 CPULoadText_str[] PROGMEM = CPULoadText_def;
+const CHAR8 IdleTaskText_str[] PROGMEM = IdleTaskText_def;
+const CHAR8 TaskStackText_str[] PROGMEM = TaskStackText_def;
+const CHAR8 MemoryText_str[] PROGMEM = MemoryText_def;
+const CHAR8 MemoryTextOf_str[] PROGMEM = MemoryTextOf_def;
+const CHAR8 TaskName_str[] PROGMEM = TaskName_def;
 
 PGM_P CONST DebugStringTable[] PROGMEM =
 {
-	UptimeText,
-	CPULoadText,
-	IdleTaskText,
-	TaskStackText,
-	MemoryText,
-	MemoryTextOf
+	UptimeText_str,
+	CPULoadText_str,
+	IdleTaskText_str,
+	TaskStackText_str,
+	MemoryText_str,
+	MemoryTextOf_str,
+	TaskName_str
 };
+
+#define UptimeText		(&(DebugStringTable[0]))
+#define CPULoadText		(&(DebugStringTable[1]))
+#define IdleTaskText	(&(DebugStringTable[2]))
+#define TaskStackText	(&(DebugStringTable[3]))
+#define MemoryText		(&(DebugStringTable[4]))
+#define MemoryTextOf	(&(DebugStringTable[5]))
+#define TaskNameText	(&(DebugStringTable[6]))
 
 #elif COLDUINO
 #define UptimeText		UptimeText_def
@@ -92,6 +104,7 @@ PGM_P CONST DebugStringTable[] PROGMEM =
 #define IdleTaskText	IdleTaskText_def
 #define CPULoadText		CPULoadText_def
 #define TaskStackText	TaskStackText_def
+#define TaskNameText	TaskName_def
 #endif
 
 
@@ -135,13 +148,17 @@ void Transmite_Task_Stacks(INT8U Comm)
     INT32U *i = 0; 
     INT32U *p = 0; 
    
-    DPRINTF(Comm, TaskStackText);    
+    STRCPY(string,TaskStackText);
+    DPRINTF(Comm, string);  
           
     for (j=1;j<=NumberOfInstalledTasks;j++)
     {  
       
-     SNPRINTF(string,SIZEARRAY(string),"[%d] %s: ",j,(char*)ContextTask[j].TaskName);
-     DPRINTF(Comm, string);
+     SNPRINTF(string,SIZEARRAY(string),TaskNameText,j);
+	 DPRINTF(Comm, string);
+	 strncpy_P(string,(ContextTask[j].TaskName),SIZEARRAY(string));
+	 DPRINTF(Comm, string);
+     
       
       UserEnterCritical();
       i = (INT32U*)ContextTask[j].StackPoint;

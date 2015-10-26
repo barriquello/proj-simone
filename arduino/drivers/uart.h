@@ -5,10 +5,16 @@
 #include "BRTOS.h"
 #include "AppConfig.h"
 
+#define BAUD(x)		((configCPU_CLOCK_HZ/16/(x)) - 1)
+
 // Enable/disable UARTs
 #define ENABLE_UART0   TRUE
 #define ENABLE_UART1   TRUE
 #define ENABLE_UART2   TRUE
+
+#define UART0 		0
+#define UART1 		1
+#define UART2 		2
 
 // Enable/disable mutex for UARTs
 #ifndef UART0_MUTEX
@@ -93,6 +99,7 @@ extern BRTOS_Queue *Serial0;
 void uart0_acquire(void);
 void uart0_release(void);
 INT8U putchar_uart0(INT8U caracter);
+INT8U getchar_uart0(CHAR8* caracter, INT16U timeout);
 void printf_uart0(CHAR8 *string);
 void printP_uart0(char const *string);
 void uart0_tx(void);

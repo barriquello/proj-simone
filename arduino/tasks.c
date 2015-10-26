@@ -43,7 +43,7 @@
 #define __RESET_WATCHDOG()	wdt_reset()
 #endif
 
-
+#if 0
 /* Task to keep system date and time */
 void System_Time(void)
 {
@@ -105,6 +105,7 @@ void System_Time(void)
 	}
 
 }
+#endif 
 
 #if 0
 

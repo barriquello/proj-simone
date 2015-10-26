@@ -39,6 +39,10 @@
 #define CONST const
 #endif
 
+#ifndef PROGMEM
+#define PROGMEM
+#endif
+
 #if COLDUINO && __GNUC__
 #define STATIC
 #else

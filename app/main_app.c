@@ -60,9 +60,9 @@ PGM_P CONST MainStringTable[] PROGMEM =
 	TaskName_Monitors_str,
 	TaskName_Terminal_str
 };
-#define	TaskName_SystemTime TaskName_SystemTime_str //((&(MainStringTable[0])))
-#define TaskName_Monitors   TaskName_Monitors_str //((&(MainStringTable[1])))
-#define	TaskName_Terminal   TaskName_Terminal_str //((&(MainStringTable[2])))
+#define	TaskName_SystemTime pgm_read_word((&(MainStringTable[0])))
+#define TaskName_Monitors   pgm_read_word((&(MainStringTable[1])))
+#define	TaskName_Terminal   pgm_read_word((&(MainStringTable[2])))
 #else
 #define	TaskName_SystemTime TaskName_SystemTime_def
 #define TaskName_Monitors   TaskName_Monitors_def
@@ -100,7 +100,7 @@ void main_app(void)
 		sleep_forever();
 	};
 	
-#if 1	
+#if 0	
 	if (InstallTask(&main_monitor, TaskName_Monitors, TASK_STACKSIZE_MONITORS, TASK_PRIORITY_MONITORS, NULL) != OK)
 	{
 		sleep_forever();

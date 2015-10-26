@@ -8,7 +8,7 @@
 
 #define SD_PRESENTE         1 
 #define RTC_PRESENTE  		0
-#define GPRSMODEM_PRESENTE  0
+#define MODEM_PRESENTE		0
 #define PM200_PRESENTE   	0
 #define TS_PRESENTE   		0
 #define NULL_PRESENTE   	1
@@ -64,7 +64,7 @@
 #endif
 
 #if COLDUINO
-
+#define MODEM_UART			2
 #define UART0_MUTEX 		1
 #define UART1_MUTEX 		0
 #define UART2_MUTEX 		0
@@ -72,6 +72,7 @@
 #define UART1_MUTEX_PRIO 	10
 #define UART2_MUTEX_PRIO 	11
 #elif ARDUINO
+#define MODEM_UART			2
 #define UART0_MUTEX 		1
 #define UART1_MUTEX 		0
 #define UART2_MUTEX 		0
@@ -86,6 +87,7 @@
 #if HEAP_SIZE < ((TASK_STACKSIZE_TOTAL) + (IDLE_STACK_SIZE))
 #error "Must increase HEAP_SIZE"
 #endif
+
 
 
 

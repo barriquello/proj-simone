@@ -33,18 +33,13 @@
 
 #define SD_PRESENTE         1
 #define RTC_PRESENTE  		0
-#define GPRSMODEM_PRESENTE  0
+#define MODEM_PRESENTE  	0
 #define PM200_PRESENTE   	0
 #define TS_PRESENTE   		0
 #define NULL_PRESENTE   	1
 
 #if RTC_PRESENTE
 #include "Timer_RTC_DS1307.h"
-#endif
-
-#if SD_PRESENTE
-#include "SD_API.h"
-#define SDCARD_MUTEX_PRIORITY 	29
 #endif
 
 #define USB_DEVICE_ENABLED	  1
@@ -71,6 +66,59 @@
 #define CONST const
 #endif
 
+
+#if COLDUINO
+#define TASK_STACKSIZE_SYSTEM_TIME		(256+64)
+#define TASK_STACKSIZE_MONITORS			(1024*2+512)
+#define TASK_STACKSIZE_TERMINAL			(1024)
+
+#define TASK_PRIORITY_SYSTEM_TIME		15
+#define TASK_PRIORITY_MONITORS			10
+#define TASK_PRIORITY_TERMINAL			5
+
+#elif ARDUINO
+#define TASK_STACKSIZE_SYSTEM_TIME		(128)
+#define TASK_STACKSIZE_MONITORS			(1024)
+#define TASK_STACKSIZE_TERMINAL			(256)
+
+#define TASK_PRIORITY_SYSTEM_TIME		7
+#define TASK_PRIORITY_MONITORS			3
+#define TASK_PRIORITY_TERMINAL			2
+#endif
+
+#if SD_PRESENTE
+#include "SD_API.h"
+#if COLDUINO
+#define SDCARD_MUTEX_PRIORITY 			29
+#elif ARDUINO
+#define SDCARD_MUTEX_PRIORITY 			6
+#endif
+#endif
+
+#if COLDUINO
+#define MODEM_UART			2
+#define UART0_MUTEX 		1
+#define UART1_MUTEX 		0
+#define UART2_MUTEX 		0
+#define UART0_MUTEX_PRIO 	9
+#define UART1_MUTEX_PRIO 	10
+#define UART2_MUTEX_PRIO 	11
+#elif ARDUINO
+#define MODEM_UART			2
+#define UART0_MUTEX 		1
+#define UART1_MUTEX 		0
+#define UART2_MUTEX 		0
+#define UART0_MUTEX_PRIO 	4
+#define UART1_MUTEX_PRIO 	
+#define UART2_MUTEX_PRIO 	
+#endif
+
+#include "BRTOSConfig.h"
+#define TASK_STACKSIZE_TOTAL		((TASK_STACKSIZE_SYSTEM_TIME)+(TASK_STACKSIZE_MONITORS)+(TASK_STACKSIZE_TERMINAL))
+
+#if HEAP_SIZE < ((TASK_STACKSIZE_TOTAL) + (IDLE_STACK_SIZE))
+#error "Must increase HEAP_SIZE"
+#endif
 
 
 

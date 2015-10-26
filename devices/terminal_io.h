@@ -38,8 +38,8 @@
 #define USE_UART1	1
 #define USE_UART2	2
 
-typedef INT8U (*term_input)(CHAR8 *);
-typedef INT8U (*term_output)(CHAR8);	
+typedef CHAR8 (*term_input)(CHAR8 *);
+typedef CHAR8 (*term_output)(CHAR8);	
 
 void terminal_set_input (term_input _input);
 void terminal_set_output (term_output _output);

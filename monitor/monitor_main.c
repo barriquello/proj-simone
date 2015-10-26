@@ -161,7 +161,9 @@ monitor_config_ok_t config_check;
 #define PRINT_ERRO(...) print_erro(__VA_ARGS__);
 #endif
 #else
+#ifndef PSTR
 #define PSTR(x)		(x)
+#endif
 #define PRINTF(...)
 #define DPRINTF(...)
 #define PRINT_ERRO(...)
@@ -626,12 +628,14 @@ void main_monitor(void)
 		PRINT_ERRO (PSTR("Simon init error\r\n"));
 	}
 #else
+#if MODEM_PRESENTE
 	/* modem gprs driver */
 	extern const modem_driver_t m590_driver;
 	if(simon_init(&m590_driver) != MODEM_OK)
 	{
 		PRINT_ERRO(PSTR("Simon init error\r\n"));
 	}
+#endif
 #endif
 
 #if _WIN32	

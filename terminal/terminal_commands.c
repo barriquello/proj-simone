@@ -142,7 +142,7 @@ char entradas[CONSOLE_BUFFER_SIZE]; //vetor para a entrada de dados
 
 void newline(void)
 {
-	printf_terminal("\n\r");	
+	printf_terminal_P(PSTR("\n\r"));	
 }
 
 // BRTOS version Command
@@ -152,6 +152,8 @@ void term_cmd_ver(char *param)
   newline();
 #if COLDUINO  
   printf_terminal((CHAR8*)version);
+#elif ARDUINO    
+  printf_terminal_P((CHAR8*)pgm_read_word(&(BRTOSStringTable[0])));
 #endif  
   newline();
 }

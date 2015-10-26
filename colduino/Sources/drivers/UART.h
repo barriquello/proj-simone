@@ -25,23 +25,47 @@
  \brief Rotinas para transferir e receber dados via UART.
  */
 
+#include "AppConfig.h"
 #include "BRTOS.h"
 
 #ifndef UART_H
 #define UART_H
 
-// Enable/disable UARTs        
+#define UART0 		0
+#define UART1 		1
+#define UART2 		2
+
+// Enable/disable UARTs       
 
 #define ENABLE_UART1   TRUE
 #define ENABLE_UART2   TRUE
 
+
 // Enable/disable mutex for UARTs
-#define UART1_MUTEX 	1
-#define UART2_MUTEX 	1
+#ifndef UART0_MUTEX
+#define UART0_MUTEX 	1
+#endif
+#ifndef UART1_MUTEX
+#define UART1_MUTEX 	0
+#endif
+#ifndef UART2_MUTEX
+#define UART2_MUTEX 	0
+#endif
 
 // Config mutex priorities for UARTs
+
+#ifndef UART0_MUTEX_PRIO
+#define UART0_MUTEX_PRIO 	19
+#endif
+
+#ifndef UART1_MUTEX_PRIO
 #define UART1_MUTEX_PRIO 	20
+#endif
+
+#ifndef UART2_MUTEX_PRIO
 #define UART2_MUTEX_PRIO 	21
+#endif
+
 
 /*! \def CR
  \brief ASCII code for carry return

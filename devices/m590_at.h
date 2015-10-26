@@ -35,6 +35,7 @@
 #include "UART.h"
 #include "terminal_io.h"
 #include "stdint.h"
+#include "AppConfig.h"
 
 // configuration 
 #if COLDUINO || ARDUINO
@@ -44,7 +45,7 @@
 #endif
 
 #define M590_BAUD 			9600
-#define M590_UART 			2
+#define M590_UART 			MODEM_UART
 #define M590_TCP_SERVER_NAME "emon-gpsnetcms.rhcloud.com"
 #define M590_TCP_SERVER_IP 	"54.160.189.224"
 #define M590_TCP_PORT		80

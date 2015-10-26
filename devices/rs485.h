@@ -29,14 +29,10 @@
 #include "uart.h"
 #include "AppConfig.h"
 
-#define UART0 		0
-#define UART1 		1
-#define UART2 		2
-
 #if COLDUINO
 #define UART_RS485   UART1
 #elif ARDUINO
-#define UART_RS485   UART0
+#define UART_RS485   UART1 //UART0
 #endif
 
 

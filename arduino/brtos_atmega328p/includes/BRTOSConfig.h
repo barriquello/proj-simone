@@ -84,13 +84,13 @@
 
 //Stack Defines
 // P/ ATMEGA com 2KB de RAM, configurado com 512 p/ STACK Virtual
-#define HEAP_SIZE 4*128
+#define HEAP_SIZE		4*128
 
 // Queue heap defines
 // Configurado com 512B p/ filas
-#define QUEUE_HEAP_SIZE 1*32
+#define QUEUE_HEAP_SIZE			1*32
 
 
 // Stack Size of the Idle Task
-#define IDLE_STACK_SIZE             (INT16U)80
+#define IDLE_STACK_SIZE             80
 

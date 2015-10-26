@@ -57,7 +57,7 @@ void uart0_init(unsigned int baudrate)
 }
 
 void uart1_init(unsigned int baudrate)
-{
+{	
 	/*Set baud rate */
 	UBRR1H = (INT8U)(baudrate>>8);
 	UBRR1L = (INT8U)baudrate;
@@ -250,19 +250,32 @@ void uart0_tx(void)
 	// ************************
 }
 
+INT8U getchar_uart0(CHAR8* caracter, INT16U timeout)
+{
+	INT8U ret;
+	uart0_acquire();
+		ret = OSQueuePend(Serial0, (INT8U*)caracter, timeout);
+	uart0_release();
+	return (ret != TIMEOUT) ? TRUE:FALSE;
+}
+
 //Função para adquirir direito exclusivo a porta serial
 // Assim que possível colocar recurso de timeout
 void uart0_acquire(void)
 {
+#if UART0_MUTEX		
 	// Aloca o recurso da porta serial
 	OSMutexAcquire(SerialResource0);
+#endif		
 }
 
 //Função para liberar a porta serial
 void uart0_release(void)
 {
+#if UART0_MUTEX		
 	// Libera o recurso da porta serial
 	OSMutexRelease(SerialResource0);
+#endif	
 }
 
 void uart0_RxEnableISR(void)
@@ -303,22 +316,29 @@ INT8U putchar_uart0(INT8U caracter)
 
 void printf_uart0(CHAR8 *string)
 {
-
+	uart0_acquire();
 	while (*string)
 	{
 		putchar_uart0(*string);
 		string++;
 	}
+	uart0_release();
 }
 
 void printP_uart0(char const *string)
 {
 	char c;
+
+	uart0_acquire();
+
 	while((c=pgm_read_byte(string)) != 0)
 	{
 		putchar_uart0(c);
 		string++;
 	}
+
+	uart0_release();
+
 }
 
 ////////////////////////////////////////////////////////////
@@ -392,8 +412,6 @@ void uart1_tx(void)
 	// ************************
 	OS_INT_ENTER();
 
-
-
 #if (NESTING_INT == 1)
 	OS_ENABLE_NESTING();
 #endif  
@@ -411,15 +429,19 @@ void uart1_tx(void)
 // Assim que possível colocar recurso de timeout
 void uart1_acquire(void)
 {
+#if UART1_MUTEX	
 	// Aloca o recurso da porta serial
 	OSMutexAcquire(SerialResource1);
+#endif	
 }
 
 //Função para liberar a porta serial
 void uart1_release(void)
 {
+#if UART1_MUTEX	
 	// Libera o recurso da porta serial
 	OSMutexRelease(SerialResource1);
+#endif		
 }
 
 void uart1_RxEnable(void)

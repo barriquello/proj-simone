@@ -76,6 +76,7 @@ CONST	uint16_t T500_Frequency = 82; /* Hz */
 /* ----------------------- Modbus includes ----------------------------------*/
 #if COLDUINO
 #pragma warn_unusedarg off
+#define PROGMEM
 //#include "mb.h"
 //#include "mbport.h"
 #endif

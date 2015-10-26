@@ -122,41 +122,44 @@ void Mass_Storage_Device_Task(void)
 #endif
 #endif
 
-#define TERM_UART1   0
-#define TERM_UART2   0
+/* Config terminal task */
+#if ARDUINO
+#define TERM_UART			0
+#endif
+
+#define TERM_BUFSIZE		32
+#define TERM_MUTEX			TRUE
+#define TERM_BAUDRATE		19200
+
+#if TERM_UART == 0
+#define TERM_MUTEX_PRIO		UART0_MUTEX_PRIO
+#define TERM_OUTPUT			putchar_uart0
+#elif  TERM_UART == 1
+#define TERM_MUTEX_PRIO		UART1_MUTEX_PRIO
+#define TERM_OUTPUT			putchar_uart1
+#else
+#define TERM_MUTEX_PRIO		UART2_MUTEX_PRIO
+#define TERM_OUTPUT			putchar_uart2
+#endif
 
 /* Task to process terminal commands */
+#include "terminal_io.h"	
+
 void Terminal_Task(void)
 {
 	/* task setup */
-	
-	/* Init the UART 1 */
-	#if ENABLE_UART1 && TERM_UART1
-	#define UART1_BUFSIZE	256
-	#if UART1_MUTEX
-	uart_init(1,9600,UART1_BUFSIZE,TRUE,UART1_MUTEX_PRIO);
-	#else
-	uart_init(1,9600,UART1_BUFSIZE,FALSE,0);
-	#endif
-	#endif
-
-	/* Init the UART 2 */
-	#if ENABLE_UART2 && TERM_UART2
-	#define UART2_BUFSIZE	256
-	#if UART2_MUTEX
-	uart_init(2,9600,UART2_BUFSIZE,TRUE,UART2_MUTEX_PRIO);
-	#else
-	uart_init(2,9600,UART2_BUFSIZE,FALSE,0);
-	#endif
-	#endif
-		
+	/* Init the Term UART */
+#ifdef TERM_UART		
+	uart_init(TERM_UART,BAUD(TERM_BAUDRATE),TERM_BUFSIZE,TERM_MUTEX,TERM_MUTEX_PRIO);
+	terminal_set_output(TERM_OUTPUT);
+#endif	
+			
 #if COLDUINO	
 #if (USB_CLASS_TYPE == BRTOS_USB_CDC)		
 	(void) CDC_Init();  /* Init the USB CDC Application */
 	terminal_init(putchar_usb);
 #endif
 #elif ARDUINO
-	#include "terminal_io.h"
 	terminal_init(terminal_output);
 #endif
 
@@ -182,7 +185,8 @@ void Terminal_Task(void)
 	//(void) terminal_add_cmd((command_t*) &esp_cmd);
 	//(void) terminal_add_cmd((command_t*) &m590_cmd);	
 	//(void) terminal_add_cmd((command_t*) &modbus_cmd);	
-
+	
+	printf_terminal_P(PSTR("Terminal started\r\n"));
 	while (1)
 	{
 		/* process incoming terminal commands */

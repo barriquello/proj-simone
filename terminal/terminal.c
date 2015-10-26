@@ -83,15 +83,35 @@ static uint8_t 		term_n_cmd;
 static command_t 	*term_cmds[MAX_CMDS];
 
 static void (*putch)(char);
+static void (*getch)(char *);
 
+#if ARDUINO
+#include "uart.h"
+#define terminal_acquire()	uart0_acquire()
+#define terminal_release()	uart0_release()
+#elif COLDUINO
+#define terminal_acquire()	
+#define terminal_release()	
+#define printf_terminal_P	printf_terminal
+#endif
 
 void getchar_terminal(char *c)
-{    
-	INT8U data;
-#if COLDUINO	
+{    	
+#if COLDUINO
+	INT8U data;	
 	(void)OSQueuePend(USB, &data, 0);
-#endif	
 	*c=(char)data;
+#elif ARDUINO	
+	while(1)
+	{			
+			if(getchar_uart0(c, 10) == TRUE)
+			{
+				return;
+			}
+			DelayTask(1000);
+	}	
+#endif	
+	
 }
 
 void putchar_terminal(char c)
@@ -99,6 +119,20 @@ void putchar_terminal(char c)
 	putch(c);
 }
 
+void printf_terminal_P(const char *s)
+{
+		char c;
+		terminal_acquire();
+
+		while((c=pgm_read_byte(s)) != 0)
+		{
+			putchar_terminal(c);
+			s++;
+		}
+
+		terminal_release();
+	
+}
 /*****************************************************************************
  * Name:
  *    print
@@ -114,6 +148,7 @@ void putchar_terminal(char c)
  *****************************************************************************/
 void printf_terminal(char *s)
 {
+  terminal_acquire();
   while(*s)
   {
 #if 0	  
@@ -123,6 +158,7 @@ void printf_terminal(char *s)
 #endif		
       s++;
   }
+  terminal_release();
 }
 
 
@@ -281,7 +317,7 @@ static void term_cmd_help(char *param)
 *****************************************************************************/
 static void term_print_prompt(void)
 {
-  printf_terminal("\r\n>");
+  printf_terminal_P(PSTR("\r\n>"));
 }
 
 /*****************************************************************************

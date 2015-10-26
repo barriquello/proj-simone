@@ -169,14 +169,6 @@
       <SubType>compile</SubType>
       <Link>debug_info.c</Link>
     </Compile>
-    <Compile Include="..\drivers\uart.c">
-      <SubType>compile</SubType>
-      <Link>drivers\uart.c</Link>
-    </Compile>
-    <Compile Include="..\drivers\uart.h">
-      <SubType>compile</SubType>
-      <Link>drivers\uart.h</Link>
-    </Compile>
     <Compile Include="..\includes\debug_info.h">
       <SubType>compile</SubType>
       <Link>includes\debug_info.h</Link>
