@@ -438,14 +438,15 @@ CONST command_t cat_cmd = {
 // List Files Command
 void term_cmd_ls(char *param)
 {  
-  INT8U name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
+  //INT8U name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
   
   (void)*param;
 
   // Limpa o buffer de entradas
-  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);
+  //memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);
   memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
-  (void)ListFiles(name1);
+  //(void)ListFiles(name1);
+  (void)ListFiles(entradas);
   
 }
 

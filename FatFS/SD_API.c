@@ -35,6 +35,7 @@
 #if SD_PRINT
 #if ARDUINO
 #define PRINT(a,...) if(a) { printf_lib(__VA_ARGS__);}
+//#define PRINT(a,...) if(a) { extern char BufferText[]; snprintf_lib(BufferText,SIZEARRAY(BufferText), __VA_ARGS__);  printf_terminal(BufferText);}
 #else
 #define PRINT(a,...) if(a) { printf_lib(__VA_ARGS__);}
 #endif
@@ -328,8 +329,8 @@ void ListFiles(INT8U *pname1)
   							s1++;
   							p1 += Finfo.fsize;
   						}
-
-  						PRINT(TRUE,"%c%c%c%c%c %u/%02u/%02u %02u:%02u %9u  %s",
+#if 0
+  					SNPRINTF(BufferText,SIZEARRAY(BufferText), PSTR("%c%c%c%c%c %u/%02u/%02u %02u:%02u %9u  %s"),
   								(Finfo.fattrib & AM_DIR) ? 'D' : '-',
   								(Finfo.fattrib & AM_RDO) ? 'R' : '-',
   								(Finfo.fattrib & AM_HID) ? 'H' : '-',
@@ -338,13 +339,25 @@ void ListFiles(INT8U *pname1)
   								(Finfo.fdate >> 9) + 1980, (Finfo.fdate >> 5) & 15, Finfo.fdate & 31,
   								(Finfo.ftime >> 11), (Finfo.ftime >> 5) & 63,                        
   								Finfo.fsize, &(Finfo.fname[0]));	
-  					   Finfo.fname[0] = 0;
-            
+				    printf_terminal(BufferText);
+  					 
+#else
+					PRINT(TRUE,"%c%c%c%c%c %u/%02u/%02u %02u:%02u %9u  %s",
+					(Finfo.fattrib & AM_DIR) ? 'D' : '-',
+					(Finfo.fattrib & AM_RDO) ? 'R' : '-',
+					(Finfo.fattrib & AM_HID) ? 'H' : '-',
+					(Finfo.fattrib & AM_SYS) ? 'S' : '-',
+					(Finfo.fattrib & AM_ARC) ? 'A' : '-',
+					(Finfo.fdate >> 9) + 1980, (Finfo.fdate >> 5) & 15, Finfo.fdate & 31,
+					(Finfo.ftime >> 11), (Finfo.ftime >> 5) & 63,
+					Finfo.fsize, &(Finfo.fname[0]));
+#endif						 
+                Finfo.fname[0] = 0;
 				#if _USE_LFN
-  					PRINT(TRUE,"  %s\n\r", Lfname);					
-				#else
-  					PRINT(TRUE, "\n\r");
+  					PRINT(TRUE,"  %s", Lfname);					
 				#endif
+  					PRINT(TRUE, "\n\r");
+				
   				}
 			}
 
