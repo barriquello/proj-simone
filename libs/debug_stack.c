@@ -36,12 +36,11 @@
 #pragma warn_implicitconv off
 #endif
 #define DEBUG_STACK_PRINT 1
-#endif
-
+#else
 #ifdef _WIN32
 #define DEBUG_STACK_PRINT 1
 #endif
-
+#endif
 
 #if DEBUG_STACK_PRINT
 #if COLDUINO
@@ -62,17 +61,15 @@
 
 #define UptimeText_def		"UPTIME: %d d %d h %d m %d s\n\r"
 #define MemoryText_def		"MEMORY: %d of %d\n\r"
-#define IdleTaskText_def	"[%d] Idle Task: "
 #define CPULoadText_def		"CPU LOAD: %d.%d%%\n\r"
 #define TaskStackText_def	"\n\rTASK STACK:\n\r"
-#define MemoryTextOf_def	": %d of %d\r\n "
+#define MemoryTextOf_def	": %d of %d\r\n"
 #define TaskName_def		 "[%d]"
 
 
 #if ARDUINO
 const CHAR8 UptimeText_str[] PROGMEM = UptimeText_def;
 const CHAR8 CPULoadText_str[] PROGMEM = CPULoadText_def;
-const CHAR8 IdleTaskText_str[] PROGMEM = IdleTaskText_def;
 const CHAR8 TaskStackText_str[] PROGMEM = TaskStackText_def;
 const CHAR8 MemoryText_str[] PROGMEM = MemoryText_def;
 const CHAR8 MemoryTextOf_str[] PROGMEM = MemoryTextOf_def;
@@ -82,7 +79,6 @@ PGM_P CONST DebugStringTable[] PROGMEM =
 {
 	UptimeText_str,
 	CPULoadText_str,
-	IdleTaskText_str,
 	TaskStackText_str,
 	MemoryText_str,
 	MemoryTextOf_str,
@@ -91,17 +87,15 @@ PGM_P CONST DebugStringTable[] PROGMEM =
 
 #define UptimeText		(&(DebugStringTable[0]))
 #define CPULoadText		(&(DebugStringTable[1]))
-#define IdleTaskText	(&(DebugStringTable[2]))
-#define TaskStackText	(&(DebugStringTable[3]))
-#define MemoryText		(&(DebugStringTable[4]))
-#define MemoryTextOf	(&(DebugStringTable[5]))
-#define TaskNameText	(&(DebugStringTable[6]))
+#define TaskStackText	(&(DebugStringTable[2]))
+#define MemoryText		(&(DebugStringTable[3]))
+#define MemoryTextOf	(&(DebugStringTable[4]))
+#define TaskNameText	(&(DebugStringTable[5]))
 
 #elif COLDUINO
 #define UptimeText		UptimeText_def
 #define MemoryText		MemoryText_def
 #define MemoryTextOf	MemoryTextOf_def
-#define IdleTaskText	IdleTaskText_def
 #define CPULoadText		CPULoadText_def
 #define TaskStackText	TaskStackText_def
 #define TaskNameText	TaskName_def
@@ -140,58 +134,62 @@ void Transmite_RAM_Ocupada(INT8U Comm)
 }
 
 #include "stdlib.h" 
+#if SP_SIZE == 16
+typedef INT16U sp_t;
+#else
+typedef INT32U sp_t;
+#endif
+
 void Transmite_Task_Stacks(INT8U Comm)
 {
     INT8U  j = 0;
+	INT8U  k = 0;
     CHAR8  string[32];
-    INT32U *x = 0;
-    INT32U *i = 0; 
-    INT32U *p = 0; 
+    sp_t *x = 0;
+    sp_t *i = 0; 
+    sp_t *p = 0; 
    
     STRCPY(string,TaskStackText);
     DPRINTF(Comm, string);  
-          
-    for (j=1;j<=NumberOfInstalledTasks;j++)
+    
+	j = 0;      
+    do
     {  
-      
+     if(++j > NumberOfInstalledTasks) 
+	 {
+		j = NUMBER_OF_TASKS+1;
+		k = NumberOfInstalledTasks;
+	 }else
+	 {		 
+		k = j-1;
+	 }
+	 
      SNPRINTF(string,SIZEARRAY(string),TaskNameText,j);
 	 DPRINTF(Comm, string);
-	 strncpy_P(string,(ContextTask[j].TaskName),SIZEARRAY(string));
-	 DPRINTF(Comm, string);
-     
+	 STRCPY_P(string,(ContextTask[j].TaskName));
+	 DPRINTF(Comm, string);     
       
       UserEnterCritical();
-      i = (INT32U*)ContextTask[j].StackPoint;
+      i = (sp_t*)ContextTask[j].StackPoint;
       if (j == 1)
       {
-    	  x = (INT32U*)&STACK[0];
+    	  x = (sp_t*)&STACK[0];
       }else
-      {
-    	  x = (INT32U*)ContextTask[j-1].StackInit;
+      {		  
+		x = (sp_t*)ContextTask[k].StackInit;    	  
       }
       UserExitCritical();  
       
       p = x;      
+	  #if (STACK_MARK && ARDUINO)
+		p = p+4;
+	  #endif
       while(*p++ == 0 && p<i){}         
       
-      SNPRINTF(string,SIZEARRAY(string),MemoryTextOf,ContextTask[j].StackInit - (INT32U) p,ContextTask[j].StackInit - (INT32U) x);      
+	  i = (sp_t*)ContextTask[j].StackInit;
+      SNPRINTF(string,SIZEARRAY(string),MemoryTextOf,(i - p)*sizeof(sp_t), (i - x)*sizeof(sp_t));      
       DPRINTF(Comm, string);
-    } 
-    
-    SNPRINTF(string,SIZEARRAY(string),IdleTaskText,j);
-    DPRINTF(Comm, string);
-    
-    UserEnterCritical();
-    	i = (INT32U*)ContextTask[NUMBER_OF_TASKS+1].StackPoint;
-    	x = (INT32U*)ContextTask[j-1].StackInit;     
-    UserExitCritical();  
-         
-    p = x;      
-    while(*p++ == 0 && p<i){} 
-
-    j = NUMBER_OF_TASKS+1;
-    SNPRINTF(string,SIZEARRAY(string),MemoryTextOf,ContextTask[j].StackInit - (INT32U) p,ContextTask[j].StackInit - (INT32U) x);      
-    DPRINTF(Comm, string);
+    } while(j < NUMBER_OF_TASKS+1);	
 }
 
 

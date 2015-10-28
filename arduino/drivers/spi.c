@@ -26,8 +26,8 @@ void init_SPI(INT8U spi)
       {          
         // set PB2(MOSI), PB1(SCK) as output
         DDRB    = (1<<PB1)|(1<<PB2);
-        // enable SPI in Master Mode with SCK = CK/4
-        SPCR    = (1<<SPE)|(1<<MSTR);
+        // enable SPI in Master Mode with SCK = CK/4		
+		SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR1) | (1 << SPR0);
 		
         IOReg   = SPSR;                 	// clear SPIF bit in SPSR
         IOReg   = SPDR;

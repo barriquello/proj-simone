@@ -79,12 +79,12 @@
 #define configTICK_RATE_HZ            (INT32U)1000
 #define configTIMER_PRE_SCALER        (INT8U)3
 #define configTIMER_PRE_SCALER_VALUE  (INT8U)64
-#define OSRTCEN                     0
+#define OSRTCEN							0
 
 
 //Stack Defines
 // P/ ATMEGA2560 com 8kB de RAM, configurado com 1.5kB p/ STACK Virtual
-#define HEAP_SIZE				46*32
+#define HEAP_SIZE				50*32
 
 // Queue heap defines
 #define QUEUE_HEAP_SIZE			 (2*32 + 3*32)

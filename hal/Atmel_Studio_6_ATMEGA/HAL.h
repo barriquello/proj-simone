@@ -18,20 +18,22 @@
 #define OS_CPU_TYPE 	INT8U
 
 /// Define if nesting interrupt is active
-#define NESTING_INT 0
+#define NESTING_INT		0
 
 /// Define if its necessary to save status register / interrupt info
 #define OS_SR_SAVE_VAR
 
 /// Define stack growth direction
-#define STACK_GROWTH 0            /// 1 -> down; 0-> up
+#define STACK_GROWTH		0            /// 1 -> down; 0-> up
 
 /// Define the RAM buffer used to copy strings
 /// Just to ATMEGA and PIC18 microcontrollers
 #define TEXT_BUFFER_SIZE	32
 
 // Define CPU Stack Pointer Size
-#define SP_SIZE 16
+#define SP_SIZE			16
+
+#define STACK_MARK		1
 
 extern INT16U SPvalue;
 
@@ -60,7 +62,11 @@ extern INT16U SPvalue;
 //Stack Defines
 
 /* stacked by the RTI interrupt process */
+#if STACK_MARK
+#define NUMBER_MIN_OF_STACKED_BYTES (36)
+#else
 #define NUMBER_MIN_OF_STACKED_BYTES 36
+#endif
 
 void CreateVirtualStack(void(*FctPtr)(void), INT16U NUMBER_OF_STACKED_BYTES);
 void TickTimerSetup(void);                      

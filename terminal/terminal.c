@@ -92,7 +92,6 @@ static void (*getch)(char *);
 #elif COLDUINO
 #define terminal_acquire()	
 #define terminal_release()	
-#define printf_terminal_P	printf_terminal
 #endif
 
 void getchar_terminal(char *c)
@@ -119,9 +118,11 @@ void putchar_terminal(char c)
 	putch(c);
 }
 
+#if ARDUINO
 void printf_terminal_P(const char *s)
 {
-		char c;
+		
+	char c;
 		terminal_acquire();
 
 		while((c=pgm_read_byte(s)) != 0)
@@ -130,9 +131,9 @@ void printf_terminal_P(const char *s)
 			s++;
 		}
 
-		terminal_release();
-	
+		terminal_release();	
 }
+#endif
 /*****************************************************************************
  * Name:
  *    print

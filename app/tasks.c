@@ -151,7 +151,11 @@ void Terminal_Task(void)
 	/* Init the Term UART */
 #ifdef TERM_UART		
 	uart_init(TERM_UART,BAUD(TERM_BAUDRATE),TERM_BUFSIZE,TERM_MUTEX,TERM_MUTEX_PRIO);
+	
+#if 1
 	terminal_set_output(TERM_OUTPUT);
+#endif
+
 #endif	
 			
 #if COLDUINO	
@@ -162,18 +166,20 @@ void Terminal_Task(void)
 #elif ARDUINO
 	terminal_init(terminal_output);
 #endif
-
+	
 	/* Add terminal commands */
 	(void) terminal_add_cmd((command_t*) &ver_cmd);
 	(void) terminal_add_cmd((command_t*) &top_cmd);
-	// (void) terminal_add_cmd((command_t*) &rst_cmd);
+	#if COLDUINO
+		(void) terminal_add_cmd((command_t*) &rst_cmd);
+	#endif
 	//(void) terminal_add_cmd((command_t*) &temp_cmd);
 	//(void) terminal_add_cmd((command_t*) &setget_time_cmd);
 	//(void) terminal_add_cmd((command_t*) &cat_cmd);
-	//(void) terminal_add_cmd((command_t*) &ls_cmd);
+	(void) terminal_add_cmd((command_t*) &ls_cmd);
 	//(void) terminal_add_cmd((command_t*) &cd_cmd);
-	//(void) terminal_add_cmd((command_t*) &mount_cmd);
-	//(void) terminal_add_cmd((command_t*) &sr_cmd);
+	(void) terminal_add_cmd((command_t*) &mount_cmd);
+	(void) terminal_add_cmd((command_t*) &sr_cmd);
 	//(void) terminal_add_cmd((command_t*) &rm_cmd);
 	//(void) terminal_add_cmd((command_t*) &rn_cmd);
 	//(void) terminal_add_cmd((command_t*) &cr_cmd);

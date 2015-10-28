@@ -73,9 +73,11 @@
 
 #if (PROCESSOR == ATMEGA)
 const CHAR8 version[] PROGMEM = BRTOS_VERSION;	///< Informs BRTOS version
+const CHAR8 idle_name[] PROGMEM = "Idle Task";	///< Informs BRTOS version
 PGM_P CONST BRTOSStringTable[] PROGMEM = 
 {
-    version
+    version,
+	idle_name
 };
 
 #else
@@ -1178,6 +1180,12 @@ INT8U UnBlockMultipleTask(INT8U TaskStart, INT8U TaskNumber)
    ContextTask[NUMBER_OF_TASKS+1].Priority = 0;
    // Determina a tarefa que irá ocupar esta prioridade
    PriorityVector[0] = NUMBER_OF_TASKS+1;
+   
+	#if (PROCESSOR == ATMEGA)
+	ContextTask[NUMBER_OF_TASKS+1].TaskName = (char*) pgm_read_word(&(BRTOSStringTable[1]));
+	#else
+	ContextTask[NUMBER_OF_TASKS+1].TaskName = "Idle Task";
+	#endif
    
    // Fill the virtual task stack
    #if (TASK_WITH_PARAMETERS == 1)   

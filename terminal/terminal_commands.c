@@ -140,8 +140,10 @@ PGM_P CONST HelpTextTable[] PROGMEM =
 
 char entradas[CONSOLE_BUFFER_SIZE]; //vetor para a entrada de dados
 
+
 void newline(void)
 {
+
 	printf_terminal_P(PSTR("\n\r"));	
 }
 

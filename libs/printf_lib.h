@@ -23,10 +23,12 @@ int vsprintf_lib(char *out, const char *format, ...);
 
 #include <stdarg.h>
 #if DISABLE_SNPRINTF
-#include "terminal.h" 
+#include "terminal.h"
+#include "string.h"
 #define SNPRINTF(...) 	snprintf_lib(__VA_ARGS__)
 #define VSPRINTF(...)	vsprintf_lib(__VA_ARGS__)
 #define STRCPY(a,b)		strncpy(a,b, SIZEARRAY(a))
+#define STRCPY_P(a,b)	strncpy(a,b, SIZEARRAY(a))
 #else
 #include "stdio.h"
 #ifdef __AVR__
@@ -34,6 +36,7 @@ int vsprintf_lib(char *out, const char *format, ...);
 #define SNPRINTF(a,b,c,...) 	snprintf_P(a,b,(PGM_P)pgm_read_word(c),__VA_ARGS__)
 #define VSPRINTF(a,b,...)		vsprintf_P(a,(PGM_P)pgm_read_word(b),__VA_ARGS__)
 #define STRCPY(a,b)				strncpy_P(a,(PGM_P)pgm_read_word(b), SIZEARRAY(a))
+#define STRCPY_P(a,b)			strncpy_P(a,b, SIZEARRAY(a))
 #else
 #define SNPRINTF(...) 	snprintf(__VA_ARGS__)
 #define VSPRINTF(...)	vsprintf(__VA_ARGS__)

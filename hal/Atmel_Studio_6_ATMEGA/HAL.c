@@ -174,6 +174,13 @@ void CreateVirtualStack(void(*FctPtr)(void), INT16U NUMBER_OF_STACKED_BYTES)
    STACK[iStackAddress + NUMBER_OF_STACKED_BYTES - 1] = ((unsigned int) (FctPtr)) & 0x00FF;
    STACK[iStackAddress + NUMBER_OF_STACKED_BYTES - 2] = ((unsigned int) (FctPtr)) >> 8;  
 #endif   
+
+	#if STACK_MARK
+		STACK[iStackAddress + NUMBER_OF_STACKED_BYTES + 1] = 'T';
+		STACK[iStackAddress + NUMBER_OF_STACKED_BYTES + 2] = 'S';
+		STACK[iStackAddress + NUMBER_OF_STACKED_BYTES + 3] = 'K';
+		STACK[iStackAddress + NUMBER_OF_STACKED_BYTES + 4] = (NumberOfInstalledTasks + '0');
+	#endif
    
    
 }

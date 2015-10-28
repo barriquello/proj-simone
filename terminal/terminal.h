@@ -79,6 +79,13 @@ void getchar_terminal(char *c);
 
 void printf_terminal_P(const char *s);
 
+#if COLDUINO
+#define printf_terminal_P	printf_terminal
+#ifndef PSTR
+#define PSTR(x)				(x)
+#endif
+#endif
+
 #ifdef __cplusplus
 }
 #endif

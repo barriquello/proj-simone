@@ -125,7 +125,7 @@ typedef union
 
 	#define SD_AUSENT 				0
 
-	#define	FCLK_SLOW()	   DDRB = (1<<PB1)|(1<<PB2); SPCR = (1<<SPE)|(1<<MSTR) | (0b11); (void)SPDR; (void)SPSR;
+	#define	FCLK_SLOW()	   DDRB = (1<<PB0)| (1<<PB1)|(1<<PB2); SPCR = (1 << SPE) | (1 << MSTR) | (1 << SPR1) | (1 << SPR0); SPSR &= ~(1 << SPI2X); (void)SPDR; (void)SPSR;
 	#define	FCLK_FAST()	   SPCR	= SPCR & ~(0b11); (void)SPDR; (void)SPSR;
 #else
 

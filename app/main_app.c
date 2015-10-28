@@ -43,13 +43,14 @@ extern "C"
 #define TaskName_Monitors_def		"Monitors"
 #define TaskName_Terminal_def		"Terminal"
 
-#if (!defined __GNUC__)
-#define CONST
-#else
+#if ARDUINO
+
+#if (__GNUC__)
 #define CONST const
+#else
+#define CONST 
 #endif
 
-#if ARDUINO
 const CHAR8 TaskName_SystemTime_str[] PROGMEM = TaskName_SystemTime_def;
 const CHAR8 TaskName_Monitors_str[] PROGMEM = TaskName_Monitors_def;
 const CHAR8 TaskName_Terminal_str[] PROGMEM = TaskName_Terminal_def;
@@ -76,7 +77,21 @@ PGM_P CONST MainStringTable[] PROGMEM =
  * \param       None
  * \return      None
  *****************************************************************************/
-
+#include "stdint.h"
+char check_ints(void)
+{
+	if(sizeof(uint8_t) != 1) return 0;
+	if(sizeof(uint16_t) != 2) return 0;
+	if(sizeof(uint32_t) != 4) return 0;	
+	if(sizeof(INT8U) != 1) return 0;
+	if(sizeof(INT16U) != 2) return 0;
+	if(sizeof(INT32U) != 4) return 0;
+	if(sizeof(BYTE) != 1) return 0;
+	if(sizeof(WORD) != 2) return 0;
+	if(sizeof(DWORD) != 4) return 0;
+	
+	return 1;
+}
 void main_app(void)
 {
 	
@@ -84,6 +99,11 @@ void main_app(void)
 	/* init the MCU system */
 	System_Init();
 #endif
+
+	if(check_ints() == 0)
+	{
+		while(1);
+	}
 
 	/* Init BRTOS system */
 	BRTOS_Init();	

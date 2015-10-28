@@ -30,6 +30,7 @@
 #include "ff.h"
 #include "AppConfig.h"
 
+
 /* Defines */
 #define SD_FAT_MUTEX_EN		1		// Enable SD/FAT file system mutex
 #define SD_BMP				0		// Enable SD/BMP file read
@@ -70,6 +71,8 @@ FRESULT open_append (FIL* fp, const char* path );    /* [OUT] File object to cre
 FRESULT empty_directory (char* path);      /* Working buffer filled with start directory */
 
 void CSVListFiles(char **files);
+
+void SDCard_PrintStatus(INT8U verbose, INT8U status);
 
 #if 0
 INT8U WriteFile(INT8U *FileName, void (*fill_buffer)(void),INT8U verbose);

@@ -172,17 +172,19 @@ void power_on (void)
 	//PORTE &= ~0x80;				/* Socket power on */
     
   // Wait power up stabilization
-  DelayTask(500);    
-  
-#if SD_CARD_PORT  
-	#if __GNUC__
-  	  SD_SELECT_DISABLE();
-  	  SD_SELECT_DIR_OUT();
-	#else
-	  SD_CS = 1;
-	  _SD_CS= 1;
+	#if COLDUINO  
+		DelayTask(500);    
 	#endif
-#endif  
+  
+	#if SD_CARD_PORT
+		#if __GNUC__
+			SD_SELECT_DISABLE();
+			SD_SELECT_DIR_OUT();
+		#else
+			SD_CS = 1;
+			_SD_CS= 1;
+		#endif
+	#endif
 }
 
 
@@ -191,7 +193,6 @@ void power_off (void)
 {
 	/* Disable SPI function */
 	/* Disable drivers */
-	// Deve ser implementado
 	Stat |= STA_NOINIT;
 }
 
@@ -359,7 +360,7 @@ INT8U GetCardStat(void)
 }
 
 /*-----------------------------------------------------------------------*/
-/* Get Card Stat Init                                                       */
+/* Get Card Stat Init                                                    */
 /*-----------------------------------------------------------------------*/
 
 INT8U GetCardInit(void)
@@ -398,7 +399,7 @@ DSTATUS disk_initialize (
 #if __GNUC__
 	SD_SELECT_ENABLE();
 #else
-  SD_CS=ENABLE;
+	SD_CS=ENABLE;
 #endif
 
   SD_CLKDelay(20);            // Send 80 clocks 
@@ -425,7 +426,7 @@ DSTATUS disk_initialize (
 			if (ocr[2] == 0x01 && ocr[3] == 0xAA) {				    /* The card can work at vdd range of 2.7-3.6V */
 				while (Timer1 && send_cmd(ACMD41, 1UL << 30))   /* Wait for leaving idle state (ACMD41 with HCS bit) */
 				{
-          #ifdef USE_OS
+				  #ifdef USE_OS
 				    DelayTask(1);
 				    Timer1--;
 				  #endif
@@ -754,7 +755,7 @@ void SD_CLKDelay(INT8U u8Frames)
 void GetFatTimer(INT32U *time)
 {
   UserEnterCritical();
-  *time = Timer;
+	*time = Timer;
   UserExitCritical();
 }
 

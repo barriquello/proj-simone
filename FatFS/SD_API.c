@@ -30,10 +30,14 @@
 #include "string.h"
 #include "terminal_io.h"
 
-#define SD_PRINT 0
+#define SD_PRINT 1
 
 #if SD_PRINT
+#if ARDUINO
 #define PRINT(a,...) if(a) { printf_lib(__VA_ARGS__);}
+#else
+#define PRINT(a,...) if(a) { printf_lib(__VA_ARGS__);}
+#endif
 #else
 #define PRINT(a,...)
 #endif
@@ -78,31 +82,61 @@ CHAR8 Lfname[256];
 
 
 //Mensagens padrão da API do SD
-#define SD_API_FILE_NOT_FOUND_DEF		"\n\rFile or directory not found.\n\r"
-#define SD_API_FILE_INVALID_DEF			"\n\rInvalid file or directory name.\n\r"
-#define SD_API_CARD_DEF					"\n\rSD card"
-#define SD_API_CARD_BUSY_DEF			"busy !!!\n\r"
-#define SD_API_CARD_NOT_PRESENT_DEF		"is not present or not initialized !\n\r"
-#define SD_API_FILE_REMOVED_DEF			"All contents were successfully removed."
+#define SD_API_FILE_NOT_FOUND_DEF		"File or directory not found.\n\r"
+#define SD_API_FILE_INVALID_DEF			"Invalid file or directory name.\n\r"
+#define SD_API_CARD_DEF					"\r\nSD card "
+#define SD_API_CARD_BUSY_DEF			"busy!\n\r"
+#define SD_API_CARD_NOT_PRESENT_DEF		"not present or not initialized !\n\r"
+#define SD_API_FILE_REMOVED_DEF			"All contents removed."
 #define SD_API_CARD_ERROR_DEF			"Function failed."
+#define SD_API_CARD_MOUNTED_DEF			"mounted!\n\r"
+#define SD_API_CARD_DETECTED_DEF		"detected!\n\r"
+#define SD_API_CARD_MOUNT_FAILURE_DEF   " failed to mount!\n\r"
+#define SD_API_CARD_INIT_FAILURE_DEF    " failed to initialize!\n\r"
 
-#if COLDUINO 
-CONST CHAR8 SD_API_CARD[]=SD_API_CARD_DEF;
-CONST CHAR8 SD_API_FILE_NOT_FOUND[]=SD_API_FILE_NOT_FOUND_DEF;
-CONST CHAR8 SD_API_FILE_INVALID[]=SD_API_FILE_INVALID_DEF;
-CONST CHAR8 SD_API_CARD_BUSY[]=SD_API_CARD_BUSY_DEF;
-CONST CHAR8 SD_API_CARD_NOT_PRESENT[]=SD_API_CARD_NOT_PRESENT_DEF;
-CONST CHAR8 SD_API_FILE_REMOVED[]=SD_API_FILE_REMOVED_DEF;
-CONST CHAR8 SD_API_CARD_ERROR[]=SD_API_CARD_ERROR_DEF;
-#elif ARDUINO
+#if COLDUINO
+#define PROGMEM
+#define PGM_P const char*
+#endif
+
 CONST CHAR8 SD_API_CARD[] PROGMEM =SD_API_CARD_DEF;
 CONST CHAR8 SD_API_FILE_NOT_FOUND[] PROGMEM =SD_API_FILE_NOT_FOUND_DEF;
 CONST CHAR8 SD_API_FILE_INVALID[] PROGMEM =SD_API_FILE_INVALID_DEF;
-CONST CHAR8 SD_API_CARD_BUSY[] PROGMEM  =SD_API_CARD_BUSY_DEF;
 CONST CHAR8 SD_API_CARD_NOT_PRESENT[] PROGMEM =SD_API_CARD_NOT_PRESENT_DEF;
 CONST CHAR8 SD_API_FILE_REMOVED[] PROGMEM=SD_API_FILE_REMOVED_DEF;
 CONST CHAR8 SD_API_CARD_ERROR[] PROGMEM=SD_API_CARD_ERROR_DEF;
-#endif
+CONST CHAR8 SD_API_CARD_MOUNTED[] PROGMEM =SD_API_CARD_MOUNTED_DEF;
+CONST CHAR8 SD_API_CARD_DETECTED[] PROGMEM =SD_API_CARD_DETECTED_DEF;
+CONST CHAR8 SD_API_CARD_MOUNT_FAILURE[] PROGMEM =SD_API_CARD_MOUNT_FAILURE_DEF;
+CONST CHAR8 SD_API_CARD_INIT_FAILURE[] PROGMEM =SD_API_CARD_INIT_FAILURE_DEF;
+
+enum
+{
+	SD_CARD_STATUS = 0,
+	FILE_NOT_FOUND,
+	FILE_INVALID,
+	SD_CARD_NOT_PRESENT,
+	FILE_REMOVED,
+	SD_CARD_ERROR,
+	SD_CARD_MOUNTED,
+	SD_CARD_DETECTED,
+	SD_CARD_MOUNT_FAILURE,
+	SD_CARD_INIT_FAILURE
+};
+
+PGM_P CONST SDCard_StringTable[] PROGMEM =
+{
+	SD_API_CARD,
+	SD_API_FILE_NOT_FOUND,
+	SD_API_FILE_INVALID,
+	SD_API_CARD_NOT_PRESENT,
+	SD_API_FILE_REMOVED,
+	SD_API_CARD_ERROR,
+	SD_API_CARD_MOUNTED,
+	SD_API_CARD_DETECTED,
+	SD_API_CARD_MOUNT_FAILURE,
+	SD_API_CARD_INIT_FAILURE
+};
 
 
 BRTOS_Mutex * SDCard_ResourceInit(INT8U priority)
@@ -117,6 +151,20 @@ BRTOS_Mutex * SDCard_ResourceInit(INT8U priority)
   return SDCardResource;
 }
 
+#include "terminal.h"
+void SDCard_PrintStatus(INT8U verbose, INT8U status)
+{
+	#if COLDUINO
+		PRINT(verbose==VERBOSE_ON, SDCard_StringTable[0]);	
+		PRINT(verbose==VERBOSE_ON, SDCard_StringTable[status]);	
+	#else
+	if(verbose==VERBOSE_ON)
+	{
+		printf_terminal_P((PGM_P)pgm_read_word(&(SDCard_StringTable[0])));	
+		printf_terminal_P((PGM_P)pgm_read_word(&(SDCard_StringTable[status])));		
+	}
+	#endif
+}
 
 INT8U SDCard_Init(INT8U verbose)
 { 
@@ -142,77 +190,69 @@ INT8U SDCard_Init(INT8U verbose)
 	#endif
 #endif  
   
-  nop();nop();nop();
-  
+  nop();nop();nop();  
   if (GetCardInit())
-  {
-    
-	PRINT((verbose == VERBOSE_ON),SD_API_CARD);
-    PRINT((verbose == VERBOSE_ON),"is already mounted!\n\r");
-    
+  {    	
+	SDCard_PrintStatus(verbose,SD_CARD_MOUNTED);	
     return SD_OK;
   }
   else
-  {
+  {	
     // Check the status of the SD card and sends messages
     if (SD_AUSENT)
-    {
-	  PRINT((verbose == VERBOSE_ON),SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), "is not present!\n\r");
+    {	  
+      SDCard_PrintStatus(verbose, SD_CARD_NOT_PRESENT);
       return NO_SD_CARD;
     }   
     else
-    {
-         
-	  PRINT((verbose == VERBOSE_ON),SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON),"detected.\n\r");
-      
-      // Initialize SD card
-      if (disk_initialize(0) == OK)
-      {
-        // Mount FAT File System
-        //f_res = f_mount(0, &FATFS_Obj);
-    	  f_res = f_mount(&FATFS_Obj, "", 0);
+    {         		      
+		  // Initialize SD card
+		  if (disk_initialize(0) == OK)
+		  {
+			   SDCard_PrintStatus(verbose, SD_CARD_DETECTED); 
+			  
+				// Mount FAT File System
+				//f_res = f_mount(0, &FATFS_Obj);
+    			f_res = f_mount(&FATFS_Obj, "", 0);
         
-        if (f_res != FR_OK)
-        {
-		  PRINT((verbose == VERBOSE_ON),SD_API_CARD);
-          PRINT((verbose == VERBOSE_ON)," failed to mount!\n\r");          
-          return MOUNT_SD_FAILS;
-        }else
-        {
-        	  PRINT((verbose == VERBOSE_ON),"\n\r");
-              switch(GetCardType())
-              {
-                case CT_MMC:
-                	PRINT((verbose == VERBOSE_ON),"MMC Card ver 3");
-                  break;
+				if (f_res != FR_OK)
+				{		  
+				  SDCard_PrintStatus(verbose, SD_CARD_MOUNT_FAILURE);    
+				  return MOUNT_SD_FAILS;
+				}else
+				{     
+				  #if 1	  
+				  switch(GetCardType())
+				  {
+					case CT_MMC:
+                		PRINT((verbose == VERBOSE_ON)," MMC v3");
+					  break;
 
-                case CT_SD1:
-                	PRINT((verbose == VERBOSE_ON), "SD Card ver 1");
-                  break;
+					case CT_SD1:
+                		PRINT((verbose == VERBOSE_ON), " SD v1");
+					  break;
                   
-                case CT_SD2:
-                	PRINT((verbose == VERBOSE_ON),"SD Card ver 2");
-                  break;
+					case CT_SD2:
+                		PRINT((verbose == VERBOSE_ON)," SD v2");
+					  break;
                   
-                case CT_SDC:
-                	PRINT((verbose == VERBOSE_ON),"SDHC Card");
-                  break;
+					case CT_SDC:
+                		PRINT((verbose == VERBOSE_ON)," SDHC");
+					  break;
                   
-                default:
-                	PRINT((verbose == VERBOSE_ON),"Unknown Card");
-                  break;
-              }
-              PRINT((verbose == VERBOSE_ON)," mounted !\n\r");
-          return SD_OK;
-        }
-      }else
-      {    	
-		PRINT((verbose == VERBOSE_ON),SD_API_CARD);
-    	PRINT((verbose == VERBOSE_ON),"failed to initialize!\n\r");        
-        return INIT_SD_FAILS;
-      }
+					default:
+                		PRINT((verbose == VERBOSE_ON)," Unknown");
+					  break;
+				  }
+				  #endif
+				  SDCard_PrintStatus(verbose, SD_CARD_MOUNTED);	
+			  return SD_OK;
+			}
+		}else
+		{
+			SDCard_PrintStatus(verbose, SD_CARD_INIT_FAILURE);
+			return INIT_SD_FAILS;
+		}
     }
   }
 }
@@ -225,9 +265,6 @@ INT8U SDCard_SafeRemove(INT8U verbose)
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexAcquire(SDCardResource);
     #endif    
-    
-    if (sd_command == SD_INACTIVE)
-    {
       // Umount File System
       //f_mount(0,NULL);
       f_mount(NULL,"", 0);
@@ -235,25 +272,14 @@ INT8U SDCard_SafeRemove(INT8U verbose)
       
       #if (SD_FAT_MUTEX_EN == 1)
         OSMutexRelease(SDCardResource);
-      #endif      
-      PRINT((verbose == VERBOSE_ON),SD_API_CARD);
+      #endif    
+	    
       PRINT((verbose == VERBOSE_ON), " is safe to remove!\n\r");
       return SD_OK;
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif
-      PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), SD_API_CARD_BUSY);      
-      return SD_BUSY;
-    }
   }
   else
   {	  
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), SD_API_CARD_NOT_PRESENT);
+	  SDCard_PrintStatus(verbose, SD_CARD_NOT_PRESENT);
       return SD_FAT_ERROR;
   }    
 }
@@ -268,85 +294,71 @@ void ListFiles(INT8U *pname1)
     
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexAcquire(SDCardResource);
-    #endif    
+    #endif  
+	  
     if (GetCardInit())
     {      
-      if (sd_command == SD_INACTIVE)
-      {      
-        sd_command = SD_FILE_LISTING;
-
-        // list files
-        PRINT(TRUE, "\n\r");
-      	if (*pname1 == 0)
-      	{
-      	  ptr = ".";
-      	}else
-      	{
-      	  ptr = pname1;
-      	}
-      	p1 = s1 = s2 = 0;
-				f_res = f_opendir(&Dir, ptr);
+			// list files
+			PRINT(TRUE, "\n\r");
+      		if (pname1 == NULL)
+      		{
+      		  ptr = ".";
+      		}else
+      		{
+      		  ptr = pname1;
+      		}
+      		p1 = s1 = s2 = 0;
+			f_res = f_opendir(&Dir, ptr);
 				
-				if (!f_res) 
-				{
-  				for(;;)
-  				{
-            #if _USE_LFN
-  					Finfo.lfname = Lfname;
-  					Finfo.lfsize = sizeof(Lfname);
-            #endif
-            
-  					f_res = f_readdir(&Dir, &Finfo);
-  					if ((f_res != FR_OK) || !Finfo.fname[0]) break;
-  					if (Finfo.fattrib & AM_DIR)
+			if (!f_res)
+			{
+  					for(;;)
   					{
-  						s2++;
-  					} else
-  					{
-  						s1++;
-  						p1 += Finfo.fsize;
-  					}
+				#if _USE_LFN
+  						Finfo.lfname = Lfname;
+  						Finfo.lfsize = sizeof(Lfname);
+				#endif            
+  						f_res = f_readdir(&Dir, &Finfo);
+  						if ((f_res != FR_OK) || !Finfo.fname[0]) break;
+  						if (Finfo.fattrib & AM_DIR)
+  						{
+  							s2++;
+  						} else
+  						{
+  							s1++;
+  							p1 += Finfo.fsize;
+  						}
 
-  					PRINT(TRUE,"%c%c%c%c%c %u/%02u/%02u %02u:%02u %9u  %s",
-  							(Finfo.fattrib & AM_DIR) ? 'D' : '-',
-  							(Finfo.fattrib & AM_RDO) ? 'R' : '-',
-  							(Finfo.fattrib & AM_HID) ? 'H' : '-',
-  							(Finfo.fattrib & AM_SYS) ? 'S' : '-',
-  							(Finfo.fattrib & AM_ARC) ? 'A' : '-',
-  							(Finfo.fdate >> 9) + 1980, (Finfo.fdate >> 5) & 15, Finfo.fdate & 31,
-  							(Finfo.ftime >> 11), (Finfo.ftime >> 5) & 63,                        
-  							Finfo.fsize, &(Finfo.fname[0]));	
-  				  Finfo.fname[0] = 0;
+  						PRINT(TRUE,"%c%c%c%c%c %u/%02u/%02u %02u:%02u %9u  %s",
+  								(Finfo.fattrib & AM_DIR) ? 'D' : '-',
+  								(Finfo.fattrib & AM_RDO) ? 'R' : '-',
+  								(Finfo.fattrib & AM_HID) ? 'H' : '-',
+  								(Finfo.fattrib & AM_SYS) ? 'S' : '-',
+  								(Finfo.fattrib & AM_ARC) ? 'A' : '-',
+  								(Finfo.fdate >> 9) + 1980, (Finfo.fdate >> 5) & 15, Finfo.fdate & 31,
+  								(Finfo.ftime >> 11), (Finfo.ftime >> 5) & 63,                        
+  								Finfo.fsize, &(Finfo.fname[0]));	
+  					   Finfo.fname[0] = 0;
             
-            #if _USE_LFN
-  				PRINT(TRUE,"  %s\n\r", Lfname);					
-            #else
-  				PRINT(TRUE, "\n\r");
-            #endif
+				#if _USE_LFN
+  					PRINT(TRUE,"  %s\n\r", Lfname);					
+				#else
+  					PRINT(TRUE, "\n\r");
+				#endif
   				}
-				}
+			}
 
-				PRINT(TRUE,"%4u File(s), %u bytes total \n\r%4u Dir(s)", s1, p1, s2);
+			PRINT(TRUE,"%4u File(s), %u bytes total \n\r%4u Dir(s)", s1, p1, s2);
 
-				if (f_getfree(ptr, (DWORD*)&p1, &fs) == FR_OK)
-				{
-					PRINT(TRUE,", %u bytes free \n\r", p1 * fs->csize * 512);
-				}
-        
-        sd_command = SD_INACTIVE;
-
-      }
-      else
-      {
-		  PRINT(TRUE,SD_API_CARD);
-    	  PRINT(TRUE, SD_API_CARD_BUSY);  
-      }              
-    }
-    else
-    {
-    	PRINT(TRUE,SD_API_CARD);
-		PRINT(TRUE, SD_API_CARD_NOT_PRESENT);
-    }
+			if (f_getfree(ptr, (DWORD*)&p1, &fs) == FR_OK)
+			{
+				PRINT(TRUE,", %u bytes free \n\r", p1 * fs->csize * 512);
+			}     
+	}
+	else
+	{
+		SDCard_PrintStatus(TRUE, SD_CARD_NOT_PRESENT);
+	}
 
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexRelease(SDCardResource);
@@ -363,8 +375,7 @@ void CSVListFiles(char **files)
 	 INT8U   i;
 	 INT8U j;
 	 CHAR8   *ptr;
-	 char	 *file; 
-	 
+	 char	 *file;  
 	 
     
     #if (SD_FAT_MUTEX_EN == 1)
@@ -372,10 +383,6 @@ void CSVListFiles(char **files)
     #endif    
     if (GetCardInit())
     {      
-      if (sd_command == SD_INACTIVE)
-      {      
-        sd_command = SD_FILE_LISTING;
-
         // list files
       	ptr = ".";
       	
@@ -433,19 +440,7 @@ void CSVListFiles(char **files)
 				
   			}
 		}
-        
-        sd_command = SD_INACTIVE;
-
-      }
-      else
-      {
-        //PRINT((verbose == VERBOSE_ON), SD_API_CARD_BUSY);  
-      }              
-    }
-    else
-    {
-      //PRINT((verbose == VERBOSE_ON), SD_API_CARD_NOT_PRESENT);
-    }
+	}
 
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexRelease(SDCardResource);
@@ -465,97 +460,79 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
   
   if (GetCardInit())
   {
-    #if (SD_FAT_MUTEX_EN == 1)
-      OSMutexAcquire(SDCardResource);
-    #endif
-    
-    if (sd_command == SD_INACTIVE)
-    {    
-      sd_command = SD_FILE_READING;
+
+		#if (SD_FAT_MUTEX_EN == 1)
+		OSMutexAcquire(SDCardResource);
+		#endif
       
-      if (f_open(&file_obj, (CHAR8*)FileName, 	FA_READ) == FR_OK)
-      {  
-        PRINT((verbose == VERBOSE_ON),"\n\r");
+		  if (f_open(&file_obj, (CHAR8*)FileName, 	FA_READ) == FR_OK)
+		  {  
+			PRINT((verbose == VERBOSE_ON),"\n\r");
         
-		p2 = 0;  			
-		SetFatTimer((INT32U)0);     
-		p1 = f_size(&file_obj);
+			p2 = 0;  			
+			SetFatTimer((INT32U)0);     
+			p1 = f_size(&file_obj);
         
-		while (p1) 
-		{
-			if (p1 >= sizeof(Buff))	
-			{ 
-			  cnt = sizeof(Buff);
-			  p1 -= sizeof(Buff);
-			}
-			else 			
+			while (p1) 
 			{
-			  cnt = (INT16U)p1;
-			  p1 = 0;
-			}
-			if (f_read(&file_obj, (CHAR8*)Buff, cnt, (UINT*)&s2) != FR_OK)
-			{
-			  break;
-			}else
-			{
-			p2 += s2;
-			if (cnt != s2) break;  					                					
+				if (p1 >= sizeof(Buff))	
+				{ 
+				  cnt = sizeof(Buff);
+				  p1 -= sizeof(Buff);
+				}
+				else 			
+				{
+				  cnt = (INT16U)p1;
+				  p1 = 0;
+				}
+				if (f_read(&file_obj, (CHAR8*)Buff, cnt, (UINT*)&s2) != FR_OK)
+				{
+				  break;
+				}else
+				{
+					p2 += s2;
+					if (cnt != s2) break;  					                					
 			
-			// Envia os dados para a porta serial
-			for(i=0;i<cnt;i++)
-			{
-			  ReadDataHandle(USE_USB, Buff[i]);
-			}
-		 }
-		}
+					// Envia os dados para a porta serial
+					for(i=0;i<cnt;i++)
+					{
+					  ReadDataHandle(USE_USB, Buff[i]);
+					}
+				}
+			} // end while
 				
-		GetFatTimer(&s2);
-        f_close(&file_obj);
+			GetFatTimer(&s2);
+			f_close(&file_obj);
         
-        //Sets these variables to inactive states
-        sd_command = SD_INACTIVE;        
+			PRINT(TRUE,"\n\r%u bytes read with %u bytes/sec.\n\r", p2, s2 ? (p2 * 100 / s2) : 0);        
+			PRINT(TRUE, "\n\r");
         
-        PRINT(TRUE,"\n\r%u bytes read with %u bytes/sec.\n\r", p2, s2 ? (p2 * 100 / s2) : 0);        
-        PRINT(TRUE, "\n\r");
+			#if (SD_FAT_MUTEX_EN == 1)
+			  OSMutexRelease(SDCardResource);
+			#endif        
         
-        #if (SD_FAT_MUTEX_EN == 1)
-          OSMutexRelease(SDCardResource);
-        #endif        
+			return SD_FILE_READ;
+		} 
+		else
+		{       
         
-        return SD_FILE_READ;
-      } 
-      else
-      {       
-        
-		PRINT((verbose == VERBOSE_ON), "\n\r");
-		PRINT((verbose == VERBOSE_ON), (CHAR8*)FileName);
-		PRINT((verbose == VERBOSE_ON), " not found.\n\r");
-        
-        sd_command = SD_INACTIVE;
-        
-        #if (SD_FAT_MUTEX_EN == 1)
-          OSMutexRelease(SDCardResource);
-        #endif
-        
-        return SD_FILE_NOT_FOUND;
-      }
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif  
-      PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_BUSY);      
-      return SD_BUSY;      
-    }
-  }
-  else
-  {
-      PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-	  PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_NOT_PRESENT);
-      return SD_FAT_ERROR;
-  }
+			PRINT((verbose == VERBOSE_ON), "\n\r");
+			PRINT((verbose == VERBOSE_ON), (CHAR8*)FileName);
+			PRINT((verbose == VERBOSE_ON), " not found.\n\r");
+			
+			#if (SD_FAT_MUTEX_EN == 1)
+			OSMutexRelease(SDCardResource);
+			#endif
+			
+			return SD_FILE_NOT_FOUND;
+		}
+	}
+	else
+	{
+		PRINT((verbose == VERBOSE_ON), SD_API_CARD);
+		PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_NOT_PRESENT);
+		return SD_FAT_ERROR;
+	}
 }
 
 
@@ -567,15 +544,10 @@ INT8U ChangeDir(CHAR8 *FileName, INT8U verbose)
   {
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexAcquire(SDCardResource);
-    #endif    
-    
-    if (sd_command == SD_INACTIVE)
-    {    
-      sd_command = SD_DIR_CHANGING;
+    #endif 
       
       if (f_chdir(FileName) == FR_OK)
       {  
-        sd_command = SD_INACTIVE;        
         
         #if (SD_FAT_MUTEX_EN == 1)
           OSMutexRelease(SDCardResource);
@@ -586,8 +558,6 @@ INT8U ChangeDir(CHAR8 *FileName, INT8U verbose)
       }
       else
       {
-        sd_command = SD_INACTIVE;
-        
         #if (SD_FAT_MUTEX_EN == 1)
           OSMutexRelease(SDCardResource);
         #endif        
@@ -598,17 +568,6 @@ INT8U ChangeDir(CHAR8 *FileName, INT8U verbose)
         
         return SD_OPEN_DIR_FAILURE;
       }
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif      
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_BUSY);           
-
-      return SD_BUSY;
-    }
   }
   else
   {
@@ -617,8 +576,6 @@ INT8U ChangeDir(CHAR8 *FileName, INT8U verbose)
       return SD_FAT_ERROR;
   }
 }
-
-
 
 INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
 {
@@ -672,8 +629,6 @@ INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
       #endif      
 	  
 	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_BUSY);
-
       return SD_BUSY;
     }
   }
