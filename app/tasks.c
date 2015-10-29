@@ -152,7 +152,7 @@ void Terminal_Task(void)
 #ifdef TERM_UART		
 	uart_init(TERM_UART,BAUD(TERM_BAUDRATE),TERM_BUFSIZE,TERM_MUTEX,TERM_MUTEX_PRIO);
 	
-#if 0
+#if 1
 	terminal_set_output(TERM_OUTPUT);
 #endif
 
@@ -175,24 +175,27 @@ void Terminal_Task(void)
 	#endif
 	//(void) terminal_add_cmd((command_t*) &temp_cmd);
 	//(void) terminal_add_cmd((command_t*) &setget_time_cmd);
-	//(void) terminal_add_cmd((command_t*) &cat_cmd);
+	(void) terminal_add_cmd((command_t*) &cat_cmd);
 	(void) terminal_add_cmd((command_t*) &ls_cmd);
-	//(void) terminal_add_cmd((command_t*) &cd_cmd);
+	(void) terminal_add_cmd((command_t*) &cd_cmd);
 	(void) terminal_add_cmd((command_t*) &mount_cmd);
 	(void) terminal_add_cmd((command_t*) &sr_cmd);
-	//(void) terminal_add_cmd((command_t*) &rm_cmd);
-	//(void) terminal_add_cmd((command_t*) &rn_cmd);
-	//(void) terminal_add_cmd((command_t*) &cr_cmd);
-	//(void) terminal_add_cmd((command_t*) &mkdir_cmd);
-	//(void) terminal_add_cmd((command_t*) &cp_cmd);
+	(void) terminal_add_cmd((command_t*) &rm_cmd);
+	(void) terminal_add_cmd((command_t*) &rn_cmd);
+	(void) terminal_add_cmd((command_t*) &cr_cmd);
+	(void) terminal_add_cmd((command_t*) &mkdir_cmd);
+	(void) terminal_add_cmd((command_t*) &cp_cmd);
 	//(void) terminal_add_cmd((command_t*) &wt_cmd);
 	// (void) terminal_add_cmd((command_t*) &echo_cmd);
 	// (void) terminal_add_cmd((command_t*) &echo_stdout_cmd);
 	//(void) terminal_add_cmd((command_t*) &esp_cmd);
 	//(void) terminal_add_cmd((command_t*) &m590_cmd);	
 	//(void) terminal_add_cmd((command_t*) &modbus_cmd);	
+	#if 0
 	extern command_t *term_cmds[];
-	(*term_cmds[1]->func)(0);
+	(*term_cmds[6]->func)("name1 name2");
+	(*term_cmds[6]->func)(" name1 name2");
+	#endif
 	
 	printf_terminal_P(PSTR("Terminal started\r\n"));
 	while (1)

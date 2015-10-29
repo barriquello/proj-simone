@@ -161,12 +161,10 @@ void term_cmd_ver(char *param)
   newline();
 }
 
-#define Ver_CmdText_def "ver"
-const char Ver_CmdText_str[] PROGMEM = Ver_CmdText_def;
 
 CONST command_t ver_cmd = 
 {
-  Ver_CmdText_str, term_cmd_ver, Ver_HelpText
+  "ver", term_cmd_ver, Ver_HelpText
 };
 
 // TOP Command (similar to the linux command)
@@ -408,29 +406,11 @@ CONST command_t setget_time_cmd = {
 // File Read Command
 void term_cmd_cat(char *param)
 {  
-  INT8U retorno = 0;
-  CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
-  CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
   
-  // Limpa o buffer de entradas
-  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);  
-  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);  
-  memset(entradas,0x00,CONSOLE_BUFFER_SIZE); 
-  
-  entradas[0] = 0x20;  
-  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
-  
-  // verifica o nome digitado
-  retorno = file_name_verify(name1,name2,(INT8U*)&entradas[0],1);
-  
-  if(retorno==API_COMMAND_OK)
-  {
-    (void)ReadFile(name1,VERBOSE_ON);
-  }
-  else
-  {
-	  printf_terminal((CHAR8*)SD_API_FILE_INVALID);
-  }  
+  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);  
+  strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1); 
+ 
+  (void)ReadFile(entradas,VERBOSE_ON);
   
 }
 
@@ -442,14 +422,9 @@ CONST command_t cat_cmd = {
 // List Files Command
 void term_cmd_ls(char *param)
 {  
-  //INT8U name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
   
   (void)*param;
-
-  // Limpa o buffer de entradas
-  //memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);
   memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
-  //(void)ListFiles(name1);
   (void)ListFiles(entradas);
   
 }
@@ -462,29 +437,10 @@ CONST command_t ls_cmd = {
 void term_cmd_cd(char *param)
 {  
   
-  INT8U retorno = 0;
-  CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
-  CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
+  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);  
+  strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1); 
   
-  // Limpa o buffer de entradas
-  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);
-  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);
-  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
-  
-  entradas[0] = 0x20;  
-  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
-  
-  // verifica o nome digitado
-  retorno = file_name_verify(name1,name2,(INT8U*)&entradas[0],1);
-  
-  if(retorno==API_COMMAND_OK)
-  {
-    (void)ChangeDir(name1,VERBOSE_ON);
-  }
-  else
-  {
-	  printf_terminal( (CHAR8*)SD_API_FILE_INVALID);
-  }   
+  (void)ChangeDir(entradas,VERBOSE_ON);
 
 }
 
@@ -493,15 +449,10 @@ CONST command_t cd_cmd = {
 };
 
 // Mount SD Card Command
-#if (SD_WAVE == 1)
-extern char musics[WAV_LIST_SIZE][WAV_NAME_SIZE];
-#endif
-
 void term_cmd_mount(char *param)
 {    
 
-  (void)*param;
-  
+  (void)*param;  
   // Initialize SD card
   (void) SDCard_Init(VERBOSE_ON);
 }
@@ -514,8 +465,7 @@ CONST command_t mount_cmd = {
 // Safely remove SD Card Command
 void term_cmd_sr(char *param)
 {  
-  (void)*param;
-  
+  (void)*param;  
   // Remove SD card safely
   (void)SDCard_SafeRemove(VERBOSE_ON);
 }
@@ -528,32 +478,19 @@ CONST command_t sr_cmd = {
 // File Delete Command
 void term_cmd_rm(char *param)
 {  
-  INT8U     i       = 0;
-  INT8U     retorno = 0;
-  CHAR8     name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
-  CHAR8     name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
+
+  memset(entradas,0x00,CONSOLE_BUFFER_SIZE); 
+  strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1);
   
-  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);  
-  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);  
-  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
-  
-  i = 0;  
-  entradas[0] = 0x20;
-  i++;
-  
-  entradas[0] = 0x20;  
-  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
-  
-  if (entradas[1] == '*') // remove all
+  if (entradas[0] == '*') // remove all
   {
 	FRESULT fr;
 	  
-	strcpy(name1, "/");  /* Directory to be emptied */
-	fr = empty_directory(name1);
+	strncpy(entradas, "/", sizeof(entradas));  /* Directory to be emptied */
+	fr = empty_directory(entradas);
 
 	newline();
-	if (fr) {
-		
+	if (fr) {		
 		printf_terminal( (CHAR8*)SD_API_CARD_ERROR);
 	} else {
 		printf_terminal( (CHAR8*)SD_API_FILE_REMOVED);
@@ -561,18 +498,8 @@ void term_cmd_rm(char *param)
 	newline();
   }
   else
-  {
-	  // verifica o nome digitado
-	  retorno = file_name_verify(name1,name2,(INT8U*)&entradas[0],1);
-	  
-	  if(retorno==API_COMMAND_OK)
-	  {
-		(void)DeleteFile(name1, VERBOSE_ON);
-	  }
-	  else
-	  {
-		printf_terminal( (CHAR8*)SD_API_FILE_INVALID);
-	  }
+  {	 
+	(void)DeleteFile(entradas, VERBOSE_ON);	  
   }  
 }
 
@@ -584,28 +511,21 @@ CONST command_t rm_cmd = {
 // File Rename Command
 void term_cmd_rn(char *param)
 {  
-  INT8U     retorno = 0;
-  CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
-  CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
+
+  char *p;
+  CHAR8 name[(CONSOLE_BUFFER_SIZE)]; //vetor para a leitura dos nomes dos arquivos  
   
-  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);  
-  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(name,0x00,CONSOLE_BUFFER_SIZE);  
   memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
-  
-  entradas[0] = 0x20;  
-  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
-  
-  // verifica o nome digitado
-  retorno = file_name_verify(name2,name1,(INT8U*)&entradas[0],2);
-  
-  if(retorno==API_COMMAND_OK)
-  {
-    (void)RenameFile(name1,name2,VERBOSE_ON);
+ 
+  if ((p = strrchr(param, ' ')))
+  {	  
+	  strncpy(entradas, p+1, CONSOLE_BUFFER_SIZE-1); 
+	  *(p) = 0;
+	  strncpy(name, param, CONSOLE_BUFFER_SIZE-1); 
   }
-  else
-  {
-	printf_terminal( (CHAR8*)SD_API_FILE_INVALID);
-  }
+  (void)RenameFile(name,entradas,VERBOSE_ON);
+  
 }
 
 CONST command_t rn_cmd = {
@@ -616,29 +536,11 @@ CONST command_t rn_cmd = {
 // Create File Command
 void term_cmd_cr(char *param)
 {  
-  INT8U retorno = 0;
-  CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
-  CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
   
-  
-  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);  
-  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);  
-  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
-  
-  entradas[0] = 0x20;  
-  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
-  
-  // verifica o nome digitado
-  retorno = file_name_verify(name1,name2,(INT8U*)&entradas[0],1);
-  
-  if(retorno==API_COMMAND_OK)
-  {
-    (void)CreateFile(name1,VERBOSE_ON);
-  }
-  else
-  {
-	printf_terminal( (CHAR8*)SD_API_FILE_INVALID);
-  }
+  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);  
+  strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1); 
+ 
+  (void)CreateFile(entradas,VERBOSE_ON);
 }
 
 CONST command_t cr_cmd = {
@@ -649,29 +551,10 @@ CONST command_t cr_cmd = {
 // Make Dir Command
 void term_cmd_mkdir(char *param)
 {  
-  
-  INT8U retorno = 0;
-  CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
-  CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
-  
-  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);  
-  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);   
+     
   memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
-  
-  entradas[0] = 0x20;  
-  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
-  
-  // verifica o nome digitado
-  retorno = file_name_verify(name1,name2,(INT8U*)&entradas[0],1);
-  
-  if(retorno==API_COMMAND_OK)
-  {
-    (void)CreateDir(name1,VERBOSE_ON);
-  }
-  else
-  {
-	printf_terminal( (CHAR8*)SD_API_FILE_INVALID);
-  }
+  strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1); 
+  (void)CreateDir(entradas,VERBOSE_ON);
 }
 
 CONST command_t mkdir_cmd = {
@@ -682,30 +565,21 @@ CONST command_t mkdir_cmd = {
 // Copy File Command
 void term_cmd_cp(char *param)
 {  
-  INT8U     retorno = 0;
-  CHAR8 name1[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos  
-  CHAR8 name2[(CONSOLE_BUFFER_SIZE/2)]; //vetor para a leitura dos nomes dos arquivos 
+  char *p;
+  CHAR8 name[(CONSOLE_BUFFER_SIZE)]; //vetor para a leitura dos nomes dos arquivos
   
-  memset(name1,0x00,CONSOLE_BUFFER_SIZE/2);  
-  memset(name2,0x00,CONSOLE_BUFFER_SIZE/2);  
+  memset(name,0x00,CONSOLE_BUFFER_SIZE);
   memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
   
-  entradas[0] = 0x20;  
-  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);
-  
-  // verifica o nome digitado
-  retorno = file_name_verify(name2,name1,(INT8U*)&entradas[0],2);
-  
-  #if 0
-  if(retorno==API_COMMAND_OK)
+  if ((p = strrchr(param, ' ')))
   {
-    (void)CopyFile(name1,name2,VERBOSE_ON);
+	  strncpy(entradas, p+1, CONSOLE_BUFFER_SIZE-1);
+	  *(p) = 0;
+	  strncpy(name, param, CONSOLE_BUFFER_SIZE-1);
   }
-  else
-  {
-	printf_terminal( (CHAR8*)SD_API_FILE_INVALID);
-  }
-  #endif
+ 
+  (void)CopyFile(name,entradas,VERBOSE_ON);
+  
 }
 
 CONST command_t cp_cmd = {
@@ -715,10 +589,8 @@ CONST command_t cp_cmd = {
 
 // Write File Test Command
 void term_cmd_wt(char *param)
-{  
-  
-  entradas[0] = 0x20;  
-  strncpy(&entradas[1], param,CONSOLE_BUFFER_SIZE-1);   
+{    
+ strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1);   
  (void)WriteUptimeLog(VERBOSE_ON);
  
 }

@@ -763,13 +763,14 @@ INT8U RenameFile(CHAR8 *OldFileName,CHAR8 *NewFileName, INT8U verbose)
   }
 }
 
-#if 0	
+#if 1	
 INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
 {
 	
   INT32U  p1, p2, s1, s2;
   CHAR8   *NewDstName, *CopyName;
   INT8U   f_res = 0;
+  FIL      file_obj2;
   
   if (GetCardInit())
   {  
@@ -912,142 +913,6 @@ INT8U WriteUptimeLog(INT8U verbose)
 }
 
 #include <ctype.h>
-
-INT8U file_name_verify(CHAR8 *pname1,CHAR8 *pname2, INT8U *pfile, INT8U num)
-{
-   INT8U i=0;
-   INT8U j=0;
-   INT8U number = num;
-   INT8U test_caps = 0;
-   INT8U estado = NOME;   
-
-   while (num) 
-   {   
-     j=0;
-     i=0;
-     if(*pfile!=0x20) return API_FILENAME_ERROR; //verifica se foi digitado espaço entre o comando e o nome do arquivo  
-     pfile++;         //incrementa endereço do vetor de dados para iniciar a leitura do nome do arquivo que foi digitado          
-     
-     estado = NOME;   
-     while(estado!=FIM) //faz a leitura até que chegue ao final do arquivo
-        {
-          switch(estado)
-            {
-              case NOME:   //estado inicial, começa pelo nome do arquivo
-                if(*pfile!='.')//faz a leitura do nome até encontar o ponto ou o número máximo de caracteres estourar
-                {
-                   
-                   if (!isalnum(*pfile))
-                   {
-					  return API_FILENAME_ERROR;
-                   }    
-                   
-                   if (num == 1)*pname1=*pfile; //faz a leitura letra por letra
-                   if (num == 2)*pname2=*pfile; //se existirem dois nomes de arquivo (caso rename) le o segundo arquivo após ler o primeiro 
-                   pfile++;
-                   if (num == 1) pname1++;
-                   if (num == 2) pname2++;
-                   i++;                   
-                   
-                   if(i>=60)//se o nome exceder o número máximo de caracteres
-                   {
-                      return API_FILENAME_ERROR; 
-                   }
-                   
-                   if(*pfile==0x20)
-                   {
-					   if ((number > 1) && (num == 2))
-					   {                      
-						   estado = FIM;
-					   }
-					   else
-					   {                      
-						  return API_FILENAME_ERROR; 
-					   }
-                   }
-                                      
-                   if(*pfile==0)
-                   {
-                      *pname1=*pfile;
-                      *pname2=*pfile;
-                      estado = FIM;
-                   }                          
-                }
-                else //quando o ponto for encontrado e o nome estiver correto muda estado para ler a extensão do arquivo
-                {
-                     if (num == 1)*pname1=*pfile;
-                     if (num == 2)*pname2=*pfile;
-                     estado = EXTENSAO;
-                     pfile++;
-                     if (num == 1) pname1++;
-                     if (num == 2) pname2++;
-                     i++;                   
-                }
-                
-              break;
-                
-                case EXTENSAO:
-                  if((*pfile!=0x20)&&(*pfile!=0))//verifica se não existe espaços ou caracteres incorretos
-                  {
-					if (!isalnum(*pfile))
-					{
-					  return API_FILENAME_ERROR;
-					}             
-                    
-                    if (num == 1)*pname1=*pfile;
-                    if (num == 2)*pname2=*pfile;
-                    pfile++;
-                    if (num == 1) pname1++;
-                    if (num == 2) pname2++;
-                    j++;
-                    
-                    // fim de string
-                    if (j == 3)
-                    {                    	
-                        if (num == 1)*pname1=0;
-                        if (num == 2)*pname2=0;
-                    }else
-                    {
-						if(j>=4) //se a extensão for maior do que três caracteres retorna erro
-						{
-						  return API_FILENAME_ERROR; 
-						}
-                    }
-                  }
-                  else
-                  {
-                    // Um arquivo pode não ter extensão ou ter extensão menor do que 3 caracteres
-                    if(j)
-                    {                      
-                      if (number == 1)
-                      {
-                        if(*pfile==0x20)
-                        {
-                          return API_FILENAME_ERROR; 
-                        }
-                      }
-                      estado = FIM; //vai para estado final
-                    }
-                    else
-                    {
-                      return API_FILENAME_ERROR; 
-                    }
-                     
-                  }
-                break;
-                
-                default:
-                return API_FILENAME_ERROR;
-                break;
-            }        
-        }
-        num--;// decrementa num e le o próximo arquivo, se existir
-   }   
-   
-   return API_COMMAND_OK; //retorna leitura de aquivos correta
-
-}
-
 /*------------------------------------------------------------/
 / Open or create a file in append mode
 /------------------------------------------------------------*/

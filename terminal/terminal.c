@@ -48,7 +48,7 @@ extern "C" {
 /*****************************************************************************
  * Macro definitions
  *****************************************************************************/
-#define MAX_CMDS      8
+#define MAX_CMDS      10
 #define MAX_CMD_SIZE  8
 /*****************************************************************************
  * Local types.
@@ -291,26 +291,24 @@ static void term_cmd_help(char *param)
   char *name;
 
   (void)param;
-  printf_terminal_P(PSTR("\r\nSupported commands:\r\n"));
+  newline();
+  printf_terminal_P(PSTR("Supported commands:"));
+  newline();
 
   for(x=0; x < term_n_cmd; x++)
   {
     printf_terminal_P(PSTR("  "));
     name = (char*)term_cmds[x]->txt;
     y = (int)strlen(name);
-	#if ARDUINO
-		printf_terminal(name);
-	#else
-		printf_terminal((char *)name);
-	#endif
+	printf_terminal((char *)name);
     for(;y<MAX_CMD_SIZE;y++)
     {
       printf_terminal(" ");
     }
     printf_terminal_P(term_cmds[x]->help_txt);
-    printf_terminal_P(PSTR("\r\n"));
+    newline();
   }
-  printf_terminal_P(PSTR("\r\n"));
+  newline();
 }
 
 
@@ -331,7 +329,8 @@ static void term_cmd_help(char *param)
 *****************************************************************************/
 static void term_print_prompt(void)
 {
-  printf_terminal_P(PSTR("\r\n>"));
+  newline();
+  printf_terminal_P(PSTR(">"));
 }
 
 /*****************************************************************************
@@ -351,7 +350,8 @@ static void term_print_prompt(void)
 *****************************************************************************/
 static void term_print_greeting(void)
 {
-	printf_terminal("Digite um comando:\r\n");
+	printf_terminal("Digite um comando:");
+	newline();
 }
 
 /*****************************************************************************
@@ -394,7 +394,7 @@ static int term_find_command(char *name)
 *    N/A
 *
 * Description:
-*    Inicialise the terminal. Set local varaibles to a default value, print
+*    Initialise the terminal. Set local variables to a default value, print
 *    greeting message and prompt.
 *
 * Assumptions:
@@ -472,7 +472,9 @@ void terminal_process(void)
       /* Command not found. */
       if (term_x == -1)
       {    	
-    	printf_terminal_P(PSTR("\r\nUnknown command!\r\n"));
+		newline();
+    	printf_terminal_P(PSTR("Unknown command!"));
+		newline();
       }
       else
       {
