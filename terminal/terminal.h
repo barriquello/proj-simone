@@ -76,6 +76,8 @@ unsigned char TerminalBackup(char *backup);
 void printf_terminal(char *s);
 void putchar_terminal(char c);
 void getchar_terminal(char *c);
+void terminal_acquire(void);
+void terminal_release(void);
 
 void printf_terminal_P(const char *s);
 

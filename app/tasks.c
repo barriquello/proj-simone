@@ -152,7 +152,7 @@ void Terminal_Task(void)
 #ifdef TERM_UART		
 	uart_init(TERM_UART,BAUD(TERM_BAUDRATE),TERM_BUFSIZE,TERM_MUTEX,TERM_MUTEX_PRIO);
 	
-#if 1
+#if 0
 	terminal_set_output(TERM_OUTPUT);
 #endif
 
@@ -191,6 +191,8 @@ void Terminal_Task(void)
 	//(void) terminal_add_cmd((command_t*) &esp_cmd);
 	//(void) terminal_add_cmd((command_t*) &m590_cmd);	
 	//(void) terminal_add_cmd((command_t*) &modbus_cmd);	
+	extern command_t *term_cmds[];
+	(*term_cmds[1]->func)(0);
 	
 	printf_terminal_P(PSTR("Terminal started\r\n"));
 	while (1)

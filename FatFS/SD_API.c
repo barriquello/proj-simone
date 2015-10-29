@@ -29,13 +29,14 @@
 #include "utils.h"
 #include "string.h"
 #include "terminal_io.h"
+#include "terminal.h"
 
 #define SD_PRINT 1
 
 #if SD_PRINT
 #if ARDUINO
-#define PRINT(a,...) if(a) { printf_lib(__VA_ARGS__);}
-//#define PRINT(a,...) if(a) { extern char BufferText[]; snprintf_lib(BufferText,SIZEARRAY(BufferText), __VA_ARGS__);  printf_terminal(BufferText);}
+#define PRINT(a,...)	if(a) {	printf_lib(__VA_ARGS__); }
+//#define PRINT(a,...) if(a) {printf_lib(__VA_ARGS__);}
 #else
 #define PRINT(a,...) if(a) { printf_lib(__VA_ARGS__);}
 #endif
@@ -60,8 +61,6 @@
   BRTOS_Mutex *SDCardResource = NULL;
 #endif
   
-SD_STATE  sd_command = SD_INACTIVE;    // Variable to indicate commands for SD
-
 static FATFS FATFS_Obj;
 
 // File object
@@ -73,6 +72,7 @@ FIL      file_obj;
 FILINFO Finfo;
 // Directory object
 DIR     Dir;
+
 // Read/Write Buffer
 INT8U   Buff[512];
 
@@ -588,18 +588,11 @@ INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
   {
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexAcquire(SDCardResource);
-    #endif       
-    
-    if (sd_command == SD_INACTIVE)
-    {    
-      sd_command = SD_FILE_WRITING;
-      
+    #endif    
+	         
       if (f_open(&file_obj, FileName, 	FA_CREATE_NEW) == FR_OK)
       {  
         f_close(&file_obj);
-        
-        //Sets these variables to inactive states
-        sd_command = SD_INACTIVE;        
         
         #if (SD_FAT_MUTEX_EN == 1)
           OSMutexRelease(SDCardResource);
@@ -613,7 +606,6 @@ INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
       }
       else
       {
-        sd_command = SD_INACTIVE;
         
         #if (SD_FAT_MUTEX_EN == 1)
           OSMutexRelease(SDCardResource);
@@ -624,16 +616,7 @@ INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
         PRINT((verbose == VERBOSE_ON), (CHAR8*)" was not created.\n\r");        
         return SD_CREATE_FILE_FAILURE;
       }
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif      
-	  
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      return SD_BUSY;
-    }
+    
   }
   else
   {
@@ -653,14 +636,10 @@ INT8U CreateDir(CHAR8 *FileName, INT8U verbose)
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexAcquire(SDCardResource);
     #endif    
-        
-    if (sd_command == SD_INACTIVE)
-    {    
-      sd_command = SD_DIR_CREATING;
+  
       
       if (f_mkdir( FileName) == FR_OK)
       {  
-        sd_command = SD_INACTIVE;        
         
         #if (SD_FAT_MUTEX_EN == 1)
           OSMutexRelease(SDCardResource);
@@ -674,7 +653,6 @@ INT8U CreateDir(CHAR8 *FileName, INT8U verbose)
       }
       else
       {
-        sd_command = SD_INACTIVE;
         
         #if (SD_FAT_MUTEX_EN == 1)
           OSMutexRelease(SDCardResource);
@@ -685,18 +663,7 @@ INT8U CreateDir(CHAR8 *FileName, INT8U verbose)
         PRINT((verbose == VERBOSE_ON), (CHAR8*)" was not created.\n\r");
         
         return SD_CREATE_DIR_FAILURE;
-      }
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif      
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_BUSY);
-      
-      return SD_BUSY;
-    }
+      }    
   }
   else
   {
@@ -716,15 +683,8 @@ INT8U DeleteFile(CHAR8 *FileName, INT8U verbose)
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexAcquire(SDCardResource);
     #endif    
-    
-    if (sd_command == SD_INACTIVE)
-    {
-      // Indicates that the file will be deleted
-      sd_command = SD_FILE_DELETING;
-      
+        
       sd_status = f_unlink(FileName);
-      
-      sd_command = SD_INACTIVE;      
       
       #if (SD_FAT_MUTEX_EN == 1)
         OSMutexRelease(SDCardResource);
@@ -752,18 +712,7 @@ INT8U DeleteFile(CHAR8 *FileName, INT8U verbose)
           PRINT((verbose == VERBOSE_ON), SD_API_FILE_NOT_FOUND);
           return SD_FILE_NOT_FOUND;
         }
-      }
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif      
-		PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-       PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_BUSY);
-
-      return SD_BUSY;
-    }
+      }    
   }
   else
   {
@@ -784,15 +733,8 @@ INT8U RenameFile(CHAR8 *OldFileName,CHAR8 *NewFileName, INT8U verbose)
       OSMutexAcquire(SDCardResource);
     #endif    
     
-    if (sd_command == SD_INACTIVE)
-    {
-      // Indicates that the file will be renamed
-      sd_command = SD_FILE_RENAMING;
-      
-      // Passa para a função os nomes dos arquivos
+        // Passa para a função os nomes dos arquivos
       sd_status = f_rename(OldFileName, NewFileName);
-
-      sd_command = SD_INACTIVE;
       
       #if (SD_FAT_MUTEX_EN == 1)
         OSMutexRelease(SDCardResource);
@@ -810,26 +752,14 @@ INT8U RenameFile(CHAR8 *OldFileName,CHAR8 *NewFileName, INT8U verbose)
         PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_FILE_NOT_FOUND);       
         
         return SD_FILE_NOT_FOUND;
-      }
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif      
-	  
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_BUSY);
-      
-      return SD_BUSY;
-    }
+      }    
   }
   else
   {
-      PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_NOT_PRESENT);
-      
-      return SD_FAT_ERROR;
+	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
+	  PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_NOT_PRESENT);
+	  
+	  return SD_FAT_ERROR;
   }
 }
 
@@ -846,16 +776,10 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexAcquire(SDCardResource);
     #endif
-
-    if (sd_command == SD_INACTIVE)
-    {
-      // Indicates that the file will be renamed
-      sd_command = SD_FILE_COPYING;
       
       // Passa para a função os nomes dos arquivos
       if (f_open(&file_obj, SrcFileName, FA_OPEN_EXISTING | FA_READ) != FR_OK)
       {        
-        sd_command = SD_INACTIVE;
         
         #if (SD_FAT_MUTEX_EN == 1)
           OSMutexRelease(SDCardResource);
@@ -892,7 +816,6 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
         
         if (f_open(&file_obj2, DstFileName, FA_CREATE_ALWAYS | FA_WRITE) != FR_OK)
         {                
-          sd_command = SD_INACTIVE;
           
           #if (SD_FAT_MUTEX_EN == 1)
             OSMutexRelease(SDCardResource);
@@ -927,26 +850,12 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
             
        GetFatTimer(&p2);                                   
        PRINT((verbose == VERBOSE_ON),"\n\r%u bytes copied with %u bytes/sec.\n\r", p1, p2 ? (p1 * 100 / p2) : 0);    
- 
-      
-      sd_command = SD_INACTIVE;
       
       #if (SD_FAT_MUTEX_EN == 1)
         OSMutexRelease(SDCardResource);
       #endif      
       
       return SD_FILE_COPIED;
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif      
-	  
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON),(CHAR8*)SD_API_CARD_BUSY);
-      return SD_BUSY;
-    }
   }
   else
   {
@@ -970,10 +879,6 @@ INT8U WriteUptimeLog(INT8U verbose)
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexAcquire(SDCardResource);
     #endif
-
-    if (sd_command == SD_INACTIVE)
-    {    
-        sd_command = SD_FILE_WRITING;
         
         if (f_open(&file_obj, "uptime.txt", 	FA_WRITE) == FR_NO_FILE)
         {     
@@ -989,28 +894,14 @@ INT8U WriteUptimeLog(INT8U verbose)
         
         f_printf(&file_obj, "Uptime: %d Days, %d Hours, %d minutes and %d seconds \n\r", UpDate.RTC_Day, Uptime.RTC_Hour, Uptime.RTC_Minute,Uptime.RTC_Second);  
         f_close(&file_obj);
-        
-        sd_command = SD_INACTIVE;
-        
+
         #if (SD_FAT_MUTEX_EN == 1)
           OSMutexRelease(SDCardResource);
         #endif        
         
         PRINT((verbose == VERBOSE_ON),(CHAR8*)"\n\rUptime written !\n\r");  
         
-        return SD_FILE_WRITTEN;
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif      
-	  
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_BUSY);
-
-      return SD_BUSY;
-    }
+        return SD_FILE_WRITTEN;   
   }
   else
   {
@@ -1255,13 +1146,10 @@ INT8U WriteFile(FIL* fp,  const char* filename, INT8U *ptr_data, INT8U length)
   
   if (GetCardInit())
   {
-    #if (SD_FAT_MUTEX_EN == 1)
-      OSMutexAcquire(SDCardResource);
-    #endif
+		#if (SD_FAT_MUTEX_EN == 1)
+		OSMutexAcquire(SDCardResource);
+		#endif
 
-    if (sd_command == SD_INACTIVE)
-    {    
-        sd_command = SD_FILE_WRITING;
         
         if (f_open(fp, filename, FA_WRITE) == FR_NO_FILE)
         {     
@@ -1290,23 +1178,14 @@ INT8U WriteFile(FIL* fp,  const char* filename, INT8U *ptr_data, INT8U length)
 		
 		f_printf(fp, "\n\r");
 		
-        f_close(fp);
-        
-        sd_command = SD_INACTIVE;
+        f_close(fp);       
+
         
         #if (SD_FAT_MUTEX_EN == 1)
           OSMutexRelease(SDCardResource);
         #endif       
         
-        return SD_FILE_WRITTEN;
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif 
-      return SD_BUSY;
-    }
+        return SD_FILE_WRITTEN;    
   }
   else
   {
@@ -1329,40 +1208,34 @@ INT8U GetLastCreatedFileName(char fileName[])
 #endif    
 	if (GetCardInit())
 	{
-		if (sd_command == SD_INACTIVE)
-		{
-			sd_command = SD_FILE_LISTING;
-
-			f_res = f_opendir(&Dir, ptr);
+		f_res = f_opendir(&Dir, ptr);
 			
-			/* Percorre o diretório.*/
-			if (!f_res)
+		/* Percorre o diretório.*/
+		if (!f_res)
+		{
+			for (;;)
 			{
-				for (;;)
-				{
 #if _USE_LFN
-					Finfo.lfname = Lfname;
-					Finfo.lfsize = sizeof(Lfname);
+				Finfo.lfname = Lfname;
+				Finfo.lfsize = sizeof(Lfname);
 #endif
-					f_res = f_readdir(&Dir, &Finfo);
+				f_res = f_readdir(&Dir, &Finfo);
 
-					if ((f_res != FR_OK) || !Finfo.fname[0])
-					{
-						break;						
-					}
-					else
-					{
-						/* guarda nome do ultimo arquivo salvo */
-						strcpy(fileName, Finfo.fname);
-						ret = TRUE;
-					}
-					
-					Finfo.fname[0] = 0;
+				if ((f_res != FR_OK) || !Finfo.fname[0])
+				{
+					break;						
 				}
+				else
+				{
+					/* guarda nome do ultimo arquivo salvo */
+					strcpy(fileName, Finfo.fname);
+					ret = TRUE;
+				}
+					
+				Finfo.fname[0] = 0;
 			}
-
-			sd_command = SD_INACTIVE;			
-		}
+		}	
+		
 	}
 
 #if (SD_FAT_MUTEX_EN == 1)

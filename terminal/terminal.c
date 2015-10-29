@@ -68,11 +68,14 @@ static void term_cmd_help(char *param);
 static void term_print_prompt(void);
 static int  term_find_command(char *name);
 
+#define Help_HelpText_def "Help of commands"
+const char Help_HelpText_str[] PROGMEM = Help_HelpText_def;
+
 /*****************************************************************************
  * Module variables.
  *****************************************************************************/
 static const command_t term_help_cmd = {
-  "help", term_cmd_help, "Help of commands"
+  "help", term_cmd_help, Help_HelpText_str
 };
 
 static char			SilentMode = 0; 
@@ -80,18 +83,30 @@ static char 		term_cmd_line[32];
 static uint8_t 		term_cmd_line_ndx;
 
 static uint8_t 		term_n_cmd;
-static command_t 	*term_cmds[MAX_CMDS];
+command_t 	*term_cmds[MAX_CMDS];
 
 static void (*putch)(char);
 static void (*getch)(char *);
 
 #if ARDUINO
 #include "uart.h"
-#define terminal_acquire()	uart0_acquire()
-#define terminal_release()	uart0_release()
+void terminal_acquire(void)	
+{
+	uart0_acquire();
+}
+void terminal_release(void)
+{
+		uart0_release();
+}
 #elif COLDUINO
-#define terminal_acquire()	
-#define terminal_release()	
+void terminal_acquire(void)
+{
+
+}
+void terminal_release(void)
+{
+
+}
 #endif
 
 void getchar_terminal(char *c)
@@ -276,17 +291,15 @@ static void term_cmd_help(char *param)
   char *name;
 
   (void)param;
-  printf_terminal("\r\nSupported commands:\r\n");
+  printf_terminal_P(PSTR("\r\nSupported commands:\r\n"));
 
   for(x=0; x < term_n_cmd; x++)
   {
-    printf_terminal("  ");
+    printf_terminal_P(PSTR("  "));
     name = (char*)term_cmds[x]->txt;
     y = (int)strlen(name);
 	#if ARDUINO
-		extern char BufferText[];
-		strcpy_P(BufferText, (PGM_P)pgm_read_word(name));
-		printf_terminal((CHAR8*)BufferText);
+		printf_terminal(name);
 	#else
 		printf_terminal((char *)name);
 	#endif
@@ -294,10 +307,10 @@ static void term_cmd_help(char *param)
     {
       printf_terminal(" ");
     }
-    printf_terminal((char *)term_cmds[x]->help_txt);
-    printf_terminal("\r\n");
+    printf_terminal_P(term_cmds[x]->help_txt);
+    printf_terminal_P(PSTR("\r\n"));
   }
-  printf_terminal("\r\n");
+  printf_terminal_P(PSTR("\r\n"));
 }
 
 
@@ -433,7 +446,7 @@ void terminal_process(void)
 	  if(c !='\n' && c!='\r')
 	  {
 		  if(c != DEL || term_cmd_line_ndx)
-		  {
+		  {			  
 			  putchar_terminal(c);
 		  }			  
 	  }
@@ -459,11 +472,13 @@ void terminal_process(void)
       /* Command not found. */
       if (term_x == -1)
       {    	
-    	printf_terminal("\r\nUnknown command!\r\n");
+    	printf_terminal_P(PSTR("\r\nUnknown command!\r\n"));
       }
       else
       {
-        (*term_cmds[term_x]->func)(term_cmd_line+term_end+1);
+		terminal_acquire();
+			(*term_cmds[term_x]->func)(term_cmd_line+term_end+1);
+		terminal_release();
       }
       exit:
       term_cmd_line_ndx=0;

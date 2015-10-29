@@ -38,6 +38,7 @@
 #include "tasks.h"
 #include "string.h"
 
+#define Help_HelpText_def "Help of commands"
 #define Ver_HelpText_def "BRTOS Version"
 #define Top_HelpText_def "BRTOS TOP"
 #define Rst_HelpText_def "CPU Reason of the Reset"
@@ -62,6 +63,7 @@
 
 #if COLDUINO
 #include "virtual_com.h"
+#define  Help_HelpText Help_HelpText_def
 #define  Ver_HelpText Ver_HelpText_def
 #define  Top_HelpText Top_HelpText_def
 #define  Rst_HelpText Rst_HelpText_def
@@ -84,58 +86,57 @@
 #define  M590_HelpText M590_HelpText_def
 #define  Modbus_HelpText Modbus_HelpText_def
 #elif ARDUINO
+
 typedef enum
 {
-	VER = 0, TOP, RST, TEMP, SETGETTIME, CAT, LS, CD, MOUNT, SR, RM,RN, CR_CMD, 
+	HELP = 0, VER, TOP, RST, TEMP, SETGETTIME, CAT, LS, CD, MOUNT, SR, RM,RN, CR_CMD, 
 	MKDIR, CP, WT, ECHO, ECHO_OUT, ESP, M590, MODBUS
 } enum_help_text_cmd;
 
-const char Ver_HelpText[] PROGMEM = Ver_HelpText_def;
-const char Top_HelpText[] PROGMEM = Top_HelpText_def;
-const char Rst_HelpText[] PROGMEM = Rst_HelpText_def;
-const char Temp_HelpText[] PROGMEM = Temp_HelpText_def;
-const char SetGetTime_HelpText[] PROGMEM = SetGetTime_HelpText_def;
-const char Cat_HelpText[] PROGMEM = Cat_HelpText_def;
-const char Ls_HelpText[] PROGMEM = Ls_HelpText_def;
-const char Cd_HelpText[] PROGMEM = Cd_HelpText_def;
-const char Mount_HelpText[] PROGMEM = Mount_HelpText_def;
-const char Sr_HelpText[] PROGMEM = Sr_HelpText_def;
-const char Rm_HelpText[] PROGMEM = Rm_HelpText_def;
-const char Rn_HelpText[] PROGMEM = Rn_HelpText_def;
-const char Cr_HelpText[] PROGMEM = Cr_HelpText_def;
-const char Mkdir_HelpText[] PROGMEM = Mkdir_HelpText_def;
-const char Cp_HelpText[] PROGMEM = Cp_HelpText_def;
-const char Wt_HelpText[] PROGMEM = Wt_HelpText_def;
-const char Echo_HelpText[] PROGMEM = Echo_HelpText_def;
-const char EchoOut_HelpText[] PROGMEM =  EchoOut_HelpText_def;
-const char Esp_HelpText[] PROGMEM = Esp_HelpText_def;
-const char M590_HelpText[] PROGMEM = M590_HelpText_def;
-const char Modbus_HelpText[] PROGMEM = Modbus_HelpText_def;
+const char Ver_HelpText_str[] PROGMEM = Ver_HelpText_def;
+const char Top_HelpText_str[] PROGMEM = Top_HelpText_def;
+const char Rst_HelpText_str[] PROGMEM = Rst_HelpText_def;
+const char Temp_HelpText_str[] PROGMEM = Temp_HelpText_def;
+const char SetGetTime_HelpText_str[] PROGMEM = SetGetTime_HelpText_def;
+const char Cat_HelpText_str[] PROGMEM = Cat_HelpText_def;
+const char Ls_HelpText_str[] PROGMEM = Ls_HelpText_def;
+const char Cd_HelpText_str[] PROGMEM = Cd_HelpText_def;
+const char Mount_HelpText_str[] PROGMEM = Mount_HelpText_def;
+const char Sr_HelpText_str[] PROGMEM = Sr_HelpText_def;
+const char Rm_HelpText_str[] PROGMEM = Rm_HelpText_def;
+const char Rn_HelpText_str[] PROGMEM = Rn_HelpText_def;
+const char Cr_HelpText_str[] PROGMEM = Cr_HelpText_def;
+const char Mkdir_HelpText_str[] PROGMEM = Mkdir_HelpText_def;
+const char Cp_HelpText_str[] PROGMEM = Cp_HelpText_def;
+const char Wt_HelpText_str[] PROGMEM = Wt_HelpText_def;
+const char Echo_HelpText_str[] PROGMEM = Echo_HelpText_def;
+const char EchoOut_HelpText_str[] PROGMEM =  EchoOut_HelpText_def;
+const char Esp_HelpText_str[] PROGMEM = Esp_HelpText_def;
+const char M590_HelpText_str[] PROGMEM = M590_HelpText_def;
+const char Modbus_HelpText_str[] PROGMEM = Modbus_HelpText_def;
 
-PGM_P CONST HelpTextTable[] PROGMEM =
-{
-	Ver_HelpText,
-	Top_HelpText,
-	Rst_HelpText,
-	Temp_HelpText,
-	SetGetTime_HelpText,
-	Cat_HelpText,
-	Ls_HelpText,
-	Cd_HelpText,
-	Mount_HelpText,
-	Sr_HelpText,
-	Rm_HelpText,
-	Rn_HelpText,
-	Cr_HelpText,
-	Mkdir_HelpText,
-	Cp_HelpText,
-	Wt_HelpText,
-	Echo_HelpText,
-	EchoOut_HelpText,
-	Esp_HelpText,
-	M590_HelpText,
-	Modbus_HelpText,
-};
+#define  Ver_HelpText Ver_HelpText_str
+#define  Top_HelpText Top_HelpText_str
+#define  Rst_HelpText Rst_HelpText_str
+#define  Temp_HelpText Temp_HelpText_str
+#define  SetGetTime_HelpText SetGetTime_HelpText_str
+#define  Cat_HelpText Cat_HelpText_str
+#define  Ls_HelpText Ls_HelpText_str
+#define  Cd_HelpText Cd_HelpText_str
+#define  Mount_HelpText Mount_HelpText_str
+#define  Sr_HelpText Sr_HelpText_str
+#define  Rm_HelpText Rm_HelpText_str
+#define  Rn_HelpText Rn_HelpText_str
+#define  Cr_HelpText Cr_HelpText_str
+#define  Mkdir_HelpText Mkdir_HelpText_str
+#define  Cp_HelpText Cp_HelpText_str
+#define  Wt_HelpText Wt_HelpText_str
+#define  Echo_HelpText Echo_HelpText_str
+#define  EchoOut_HelpText  EchoOut_HelpText_str
+#define  Esp_HelpText Esp_HelpText_str
+#define  M590_HelpText M590_HelpText_str
+#define  Modbus_HelpText Modbus_HelpText_str
+
 #endif
 
 char entradas[CONSOLE_BUFFER_SIZE]; //vetor para a entrada de dados
@@ -160,9 +161,12 @@ void term_cmd_ver(char *param)
   newline();
 }
 
+#define Ver_CmdText_def "ver"
+const char Ver_CmdText_str[] PROGMEM = Ver_CmdText_def;
+
 CONST command_t ver_cmd = 
 {
-  "ver", term_cmd_ver, Ver_HelpText
+  Ver_CmdText_str, term_cmd_ver, Ver_HelpText
 };
 
 // TOP Command (similar to the linux command)
@@ -453,7 +457,6 @@ void term_cmd_ls(char *param)
 CONST command_t ls_cmd = {
   "ls", term_cmd_ls, Ls_HelpText
 };
-
 
 // Change Dir Command
 void term_cmd_cd(char *param)
