@@ -37,7 +37,9 @@
 
 #include "printf_lib.h"
 
-static void printchar(char **str, int c)
+#define REGISTER 
+
+static void printchar(char **str, uint8_t c)
 {
 	if (str) {
 		**str = (char)c;
@@ -52,13 +54,13 @@ static void printchar(char **str, int c)
 #define PAD_RIGHT 1
 #define PAD_ZERO 2
 
-static int prints(char **out, const char *string, int width, int pad)
+static uint16_t prints(char **out, const char *string, uint8_t width, uint8_t pad)
 {
-	register int pc = 0, padchar = ' ';
+	REGISTER uint16_t pc = 0, padchar = ' ';
 
 	if (width > 0) {
-		register int len = 0;
-		register const char *ptr;
+		REGISTER uint8_t len = 0;
+		REGISTER const char *ptr;
 		for (ptr = string; *ptr; ++ptr) ++len;
 		if (len >= width) width = 0;
 		else width -= len;
@@ -85,12 +87,13 @@ static int prints(char **out, const char *string, int width, int pad)
 /* the following should be enough for 32 bit int */
 #define PRINT_BUF_LEN 12
 
-static int printi(char **out, int i, int b, int sg, int width, int pad, int letbase)
+static uint16_t printi(char **out, int32_t i, uint8_t b, uint8_t sg, uint8_t width, uint8_t pad, uint8_t letbase)
 {
 	char print_buf[PRINT_BUF_LEN];
-	register char *s;
-	register int t, neg = 0, pc = 0;
-	register unsigned int u = (unsigned int)i;
+	REGISTER char *s;
+	REGISTER uint32_t t;
+	uint16_t neg = 0, pc = 0;
+	REGISTER uint32_t u = (uint32_t)i;
 
 	if (i == 0) {
 		print_buf[0] = '0';
@@ -100,14 +103,14 @@ static int printi(char **out, int i, int b, int sg, int width, int pad, int letb
 
 	if (sg && b == 10 && i < 0) {
 		neg = 1;
-		u = (unsigned int)-i;
+		u = (uint32_t)-i;
 	}
 
 	s = print_buf + PRINT_BUF_LEN-1;
 	*s = '\0';
 
 	while (u) {
-		t = (unsigned int)u % b;
+		t = (uint32_t)u % b;
 		if( t >= 10 )
 			t += letbase - '0' - 10;
 		*--s = (char)(t + '0');
@@ -128,10 +131,10 @@ static int printi(char **out, int i, int b, int sg, int width, int pad, int letb
 	return pc + prints (out, s, width, pad);
 }
 
-static int print( char **out, const char *format, va_list args )
+static uint16_t print( char **out, const char *format, va_list args )
 {
-	register int width, pad;
-	register int pc = 0;
+	REGISTER uint8_t width, pad;
+	REGISTER uint16_t pc = 0;
 	char scr[2];
 
 	for (; *format != 0; ++format) {
@@ -153,7 +156,7 @@ static int print( char **out, const char *format, va_list args )
 				width += *format - '0';
 			}
 			if( *format == 's' ) {
-				register char *s = (char *)va_arg( args, int );
+				REGISTER char *s = (char *)va_arg( args, int );
 				pc += prints (out, s?s:"(null)", width, pad);
 				continue;
 			}
@@ -171,6 +174,10 @@ static int print( char **out, const char *format, va_list args )
 			}
 			if( *format == 'u' ) {
 				pc += printi (out, va_arg( args, int ), 10, 0, width, pad, 'a');
+				continue;
+			}
+			if( *format == 'l' ) {
+				pc += printi (out, va_arg( args, long int ), 10, 0, width, pad, 'a');
 				continue;
 			}
 			if( *format == 'c' ) {

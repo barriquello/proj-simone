@@ -64,7 +64,7 @@ int ff_del_syncobj (	/* !=0:Function succeeded, ==0:Could not delete due to any 
 	_SYNC_t sobj		/* Sync object tied to the logical drive to be deleted */
 )
 {
-	int ret = 0;
+	int ret = 1;
 
 	(void)sobj;
 
@@ -76,7 +76,9 @@ int ff_del_syncobj (	/* !=0:Function succeeded, ==0:Could not delete due to any 
 //	ret = (int)(err == OS_NO_ERR);
 
 //  vSemaphoreDelete(sobj);		/* FreeRTOS */
-//	ret = 1;
+    
+	
+	ret = 1;
 
 	return ret;
 }

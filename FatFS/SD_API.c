@@ -330,19 +330,9 @@ void ListFiles(INT8U *pname1)
   							p1 += Finfo.fsize;
   						}
 #if 0
-  					SNPRINTF(BufferText,SIZEARRAY(BufferText), PSTR("%c%c%c%c%c %u/%02u/%02u %02u:%02u %9u  %s"),
-  								(Finfo.fattrib & AM_DIR) ? 'D' : '-',
-  								(Finfo.fattrib & AM_RDO) ? 'R' : '-',
-  								(Finfo.fattrib & AM_HID) ? 'H' : '-',
-  								(Finfo.fattrib & AM_SYS) ? 'S' : '-',
-  								(Finfo.fattrib & AM_ARC) ? 'A' : '-',
-  								(Finfo.fdate >> 9) + 1980, (Finfo.fdate >> 5) & 15, Finfo.fdate & 31,
-  								(Finfo.ftime >> 11), (Finfo.ftime >> 5) & 63,                        
-  								Finfo.fsize, &(Finfo.fname[0]));	
-				    printf_terminal(BufferText);
   					 
 #else
-					PRINT(TRUE,"%c%c%c%c%c %u/%02u/%02u %02u:%02u %9u  %s",
+					PRINT(TRUE,"%c%c%c%c%c %u/%02u/%02u %02u:%02u %9l  %s",
 					(Finfo.fattrib & AM_DIR) ? 'D' : '-',
 					(Finfo.fattrib & AM_RDO) ? 'R' : '-',
 					(Finfo.fattrib & AM_HID) ? 'H' : '-',
@@ -361,11 +351,11 @@ void ListFiles(INT8U *pname1)
   				}
 			}
 
-			PRINT(TRUE,"%4u File(s), %u bytes total \n\r%4u Dir(s)", s1, p1, s2);
+			PRINT(TRUE,"%4l File(s), %l bytes total \n\r%4l Dir(s)", s1, p1, s2);
 
 			if (f_getfree(ptr, (DWORD*)&p1, &fs) == FR_OK)
 			{
-				PRINT(TRUE,", %u bytes free \n\r", p1 * fs->csize * 512);
+				PRINT(TRUE,", %l bytes free \n\r", (uint32_t)(p1 * fs->csize * 512));
 			}     
 	}
 	else
