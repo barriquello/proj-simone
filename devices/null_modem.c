@@ -58,6 +58,7 @@ static INT8U null_modem_TxBuffer[32];
 #define PRINT_BUF(...)    //printf_terminal(__VA_ARGS__);
 #define PRINT_REPLY(...)  printf_terminal(__VA_ARGS__);
 #else
+#define PRINT_P(...)      
 #define PRINT(...)
 #define PRINT_BUF(...)
 #define PRINT_REPLY(...)  

@@ -65,16 +65,6 @@ static FATFS FATFS_Obj;
 
 // File object
 FIL      file_obj;
-// File object 2
-//FIL      file_obj2;
-
-// File Info object
-FILINFO Finfo;
-// Directory object
-DIR     Dir;
-
-// Read/Write Buffer
-INT8U   Buff[512];
 
 #if _USE_LFN
 //char Lfname[512];
@@ -291,7 +281,9 @@ void ListFiles(INT8U *pname1)
 	 FRESULT f_res;
 	 INT32U  p1, s1, s2;
 	 CHAR8   *ptr;
-	 FATFS   *fs;				// Pointer to file system object*/
+	 FATFS   *fs;	// Pointer to file system object*/
+	 FILINFO Finfo;  // File Info object	 
+	 DIR     Dir; // Directory object
     
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexAcquire(SDCardResource);
@@ -379,7 +371,8 @@ void CSVListFiles(char **files)
 	 INT8U j;
 	 CHAR8   *ptr;
 	 char	 *file;  
-	 
+	 FILINFO Finfo;  // File Info object
+	 DIR     Dir; // Directory object
     
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexAcquire(SDCardResource);
@@ -452,15 +445,15 @@ void CSVListFiles(char **files)
 
   
 #define ReadDataHandle(SerPort, data) putcharSer(SerPort, data)
-
+INT8U   Buff[512];  // Read/Write Buffer
 
 INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
 {
 	INT32U  p1, p2, s2;
 	INT16U  cnt = 0;
 	INT16U  i = 0;
-    INT8U   sd_status = 0;
-  
+    INT8U   sd_status = 0;	
+	  
   if (GetCardInit())
   {
 
@@ -770,7 +763,9 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
   INT32U  p1, p2, s1, s2;
   CHAR8   *NewDstName, *CopyName;
   INT8U   f_res = 0;
+  //FIL      file_obj2;
   FIL      file_obj2;
+  INT8U    Buff[512];  // Read/Write Buffer
   
   if (GetCardInit())
   {  
@@ -1067,6 +1062,8 @@ INT8U GetLastCreatedFileName(char fileName[])
 	FRESULT f_res;
 	CHAR8 *ptr = ".";
 	INT8U ret = FALSE;
+	FILINFO Finfo;  // File Info object
+	DIR     Dir; // Directory object
 
 #if (SD_FAT_MUTEX_EN == 1)
 	OSMutexAcquire(SDCardResource);
