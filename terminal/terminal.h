@@ -35,6 +35,13 @@ extern "C" {
 
 typedef void (cmd_func)(char *params);
 
+/*****************************************************************************
+ * Macro definitions
+ *****************************************************************************/
+#define MAX_CMDS		12
+#define MAX_CMD_SIZE	8
+#define CONSOLE_BUFFER_SIZE  (32)
+
 #ifndef CONST
 #define CONST const
 #endif
@@ -50,7 +57,7 @@ typedef struct {
 #if INROM
   const char *txt;
 #else
-  char txt[8];
+  char txt[MAX_CMD_SIZE];
 #endif
   cmd_func * func;
 #if INROM
@@ -59,8 +66,6 @@ typedef struct {
   char help_txt[24];
 #endif
 } command_t;
-
-#define CONSOLE_BUFFER_SIZE  (64)
 
 int terminal_add_cmd(command_t *cmd);
 int terminal_delete_cmd(command_t *cmd);

@@ -435,7 +435,6 @@ static int callback_inifile(const char *section, const char *key, const char *va
 
 		if(strcmp(key,"num_monitores") == 0)
 		{
-			//num_monitores = (uint8_t)strtoul(value,NULL,0);
 			num_monitores = (uint8_t)StringToInteger((char*)value);
 			
 			if(num_monitores > MAX_NUM_OF_MONITORES)
@@ -486,13 +485,13 @@ static int callback_inifile(const char *section, const char *key, const char *va
   	   /* configura monitores */
   	   if(strcmp(key,"slave") == 0)
   	   {
-  	  			monitor_state[mon_cnt].slave_addr =  (uint8_t)StringToInteger((char*)value); //strtoul(value,NULL,0);
+  	  			monitor_state[mon_cnt].slave_addr =  (uint8_t)StringToInteger((char*)value);
   	  			++field_cnt;
   	    }
   	  		
 		if(strcmp(key,"codigo") == 0)
 		{
-			monitor_state[mon_cnt].codigo =  (uint8_t)StringToInteger((char*)value); //strtoul(value,NULL,0);
+			monitor_state[mon_cnt].codigo =  (uint8_t)StringToInteger((char*)value);
 			monitor_state[mon_cnt].config_h.mon_id = monitor_state[mon_cnt].codigo;
 			++field_cnt;
 		}
@@ -503,13 +502,13 @@ static int callback_inifile(const char *section, const char *key, const char *va
 		}
 		if(strcmp(key,"intervalo") == 0)
 		{
-			monitor_state[mon_cnt].config_h.time_interv = (uint16_t)StringToInteger((char*)value); //strtoul(value,NULL,0);
+			monitor_state[mon_cnt].config_h.time_interv = (uint16_t)StringToInteger((char*)value);
 			++field_cnt;
 		}
 
 		if(strcmp(key,"tamanho") == 0)
 		{
-			monitor_state[mon_cnt].config_h.entry_size = (uint16_t)StringToInteger((char*)value); //strtoul(value,NULL,0);
+			monitor_state[mon_cnt].config_h.entry_size = (uint16_t)StringToInteger((char*)value);
 			++field_cnt;
 		}
 		if(field_cnt == NUM_OF_FIELDS)

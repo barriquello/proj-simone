@@ -127,13 +127,6 @@ void main_app(void)
 	};
 #endif	
 	
-#if TESTE_RS485
-	if (InstallTask(&Tarefa_RS485, "Tarefa de teste RS485", 256, 5, NULL) != OK)
-	{
-		while (1){};
-	};
-#endif
-
 #if TESTE_MODBUS
 
 	if (InstallTask(&Task_modbus_slave, "MB slave", 256, 5, NULL) != OK)
@@ -148,7 +141,7 @@ void main_app(void)
 	}
 	
 #if TESTE_MODBUS_SLAVE
-#if (defined TESTE_MODBUS_MASTER && TESTE_MODBUS_MASTER == 1)	
+#if (TESTE_MODBUS_MASTER == 1)	
 	
 	if (InstallTask(&Task_modbus_master_test, "MB master test", (384+64), 5, NULL) != OK)
 	{

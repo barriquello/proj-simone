@@ -35,7 +35,7 @@
 
 // Define the number of Task to be Installed
 // must always be equal or higher to NumberOfInstalledTasks
-#define NUMBER_OF_TASKS		6
+#define NUMBER_OF_TASKS		4
 
 /// Define if TimerHook function is active
 #define TIMER_HOOK_EN		0
@@ -83,8 +83,8 @@
 
 
 //Stack Defines
-// P/ ATMEGA2560 com 8kB de RAM, configurado com 1.5kB p/ STACK Virtual
-#define HEAP_SIZE				50*32
+// P/ ATMEGA2560 com 8kB de RAM, configurado com 4kB p/ STACK Virtual
+#define HEAP_SIZE				 128*32
 
 // Queue heap defines
 #define QUEUE_HEAP_SIZE			 (2*32 + 3*32)

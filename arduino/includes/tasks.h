@@ -41,8 +41,6 @@ void Tarefa_termometro(void);
 void Tarefa_datalogger(void);
 void Tarefa_GPRS(void);
 
-void Tarefa_RS485(void);
-
 void Task_modbus_slave_test(void);
 void Task_modbus_slave(void);
 void Task_modbus_master_test(void);
