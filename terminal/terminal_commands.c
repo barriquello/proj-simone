@@ -58,7 +58,8 @@
 #define Echo_HelpText_def "Print in terminal"
 #define EchoOut_HelpText_def  "Set output for echo"
 #define Esp_HelpText_def "Control ESP8266"
-#define M590_HelpText_def "Control M590 modem"
+#define m590_HelpText_def "Control m590 modem"
+#define null_modem_HelpText_def "Control null_modem modem"
 #define Modbus_HelpText_def "Control Modbus"
 
 #if COLDUINO
@@ -83,14 +84,15 @@
 #define  Echo_HelpText Echo_HelpText_def
 #define  EchoOut_HelpText  EchoOut_HelpText_def
 #define  Esp_HelpText Esp_HelpText_def
-#define  M590_HelpText M590_HelpText_def
+#define  m590_HelpText m590_HelpText_def
+#define  null_modem_HelpText null_modem_HelpText_def
 #define  Modbus_HelpText Modbus_HelpText_def
 #elif ARDUINO
 
 typedef enum
 {
 	HELP = 0, VER, TOP, RST, TEMP, SETGETTIME, CAT, LS, CD, MOUNT, SR, RM,RN, CR_CMD, 
-	MKDIR, CP, WT, ECHO, ECHO_OUT, ESP, M590, MODBUS
+	MKDIR, CP, WT, ECHO, ECHO_OUT, ESP, NULL_MODEM, M590, MODBUS
 } enum_help_text_cmd;
 
 const char Ver_HelpText_str[] PROGMEM = Ver_HelpText_def;
@@ -112,7 +114,8 @@ const char Wt_HelpText_str[] PROGMEM = Wt_HelpText_def;
 const char Echo_HelpText_str[] PROGMEM = Echo_HelpText_def;
 const char EchoOut_HelpText_str[] PROGMEM =  EchoOut_HelpText_def;
 const char Esp_HelpText_str[] PROGMEM = Esp_HelpText_def;
-const char M590_HelpText_str[] PROGMEM = M590_HelpText_def;
+const char m590_HelpText_str[] PROGMEM = m590_HelpText_def;
+const char null_modem_HelpText_str[] PROGMEM = null_modem_HelpText_def;
 const char Modbus_HelpText_str[] PROGMEM = Modbus_HelpText_def;
 
 #define  Ver_HelpText Ver_HelpText_str
@@ -134,17 +137,16 @@ const char Modbus_HelpText_str[] PROGMEM = Modbus_HelpText_def;
 #define  Echo_HelpText Echo_HelpText_str
 #define  EchoOut_HelpText  EchoOut_HelpText_str
 #define  Esp_HelpText Esp_HelpText_str
-#define  M590_HelpText M590_HelpText_str
+#define  m590_HelpText m590_HelpText_str
+#define  null_modem_HelpText null_modem_HelpText_str
 #define  Modbus_HelpText Modbus_HelpText_str
 
 #endif
 
 char entradas[CONSOLE_BUFFER_SIZE]; //vetor para a entrada de dados
 
-
 void newline(void)
 {
-
 	printf_terminal_P(PSTR("\n\r"));	
 }
 
@@ -425,7 +427,7 @@ void term_cmd_ls(char *param)
   
   (void)*param;
   memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
-  (void)ListFiles(entradas);
+  (void)ListFiles((INT8U*)entradas);
   
 }
 
@@ -734,7 +736,7 @@ void echo (char *string, char Terminalbackup)
 
 #include "esp8266_at.h"
 
-CONST char cmd_esp_help[] = {
+CONST char cmd_esp_help[] PROGMEM = {
 		"\r\n usage:\r\n"
 		"1 - init \r\n"
 		"2 - open \r\n"
@@ -763,7 +765,7 @@ void term_cmd_esp(char *param)
 			at_esp_send(NULL);
 			break;
 		default:
-			printf_terminal((char*)cmd_esp_help);
+			printf_terminal_P((PGM_P)pgm_read_word(cmd_esp_help));
 	}
 }
 
@@ -771,10 +773,62 @@ CONST command_t esp_cmd = {
   "esp", term_cmd_esp, Esp_HelpText
 };
 
+#endif
 
 #include "m590_at.h"
 
-CONST char cmd_m590_help[] = {
+CONST char cmd_m590_help[] PROGMEM = {
+	"\r\n usage:\r\n"
+	"i - init \r\n"
+	"o - open \r\n"
+	"s - send \r\n"
+	"r - receive \r\n"
+	"c - close \r\n"
+	"a - init, open, send \r\n"
+	"e - server \r\n"
+	"d - dns \r\n"
+	"t - time \r\n"
+};
+
+void term_cmd_m590(char *param)
+{
+	newline();
+	switch (param[0])
+	{
+		case 'i': at_m590_init();
+		break;
+		case 'o': at_m590_open();
+		break;
+		case 's': at_m590_send(NULL);
+		break;
+		case 'r': at_m590_receive(entradas,SIZEARRAY(entradas));
+		break;
+		case 'c': at_m590_close();
+		break;
+		case 'a':
+		at_m590_init();
+		at_m590_open();
+		at_m590_send(NULL);
+		break;
+		case 'e': at_m590_server();
+		break;
+		case 'd': at_m590_dns(param);
+		break;
+		case 't': at_m590_time();
+		break;
+		default:
+		printf_terminal_P((PGM_P)pgm_read_word(cmd_m590_help));
+	}
+	param[0] = 0;
+}
+
+CONST command_t m590_cmd = {
+	"m590", term_cmd_m590, m590_HelpText
+};
+
+#include "null_modem.h"
+
+CONST char cmd_null_modem_help[] PROGMEM = {
 		"\r\n usage:\r\n"
 		"i - init \r\n"
 		"o - open \r\n"
@@ -787,43 +841,43 @@ CONST char cmd_m590_help[] = {
 		"t - time \r\n"
 };
 
-void term_cmd_m590(char *param)
+void term_cmd_null_modem(char *param)
 {	
 	newline();
 	switch (param[0])
 	{
-		case 'i': at_m590_init();
+		case 'i': at_null_modem_init();
 			break;
-		case 'o': at_m590_open();
+		case 'o': at_null_modem_open();
 			break;
-		case 's': at_m590_send(NULL);
+		case 's': at_null_modem_send(NULL);
 			break;
-		case 'r': at_m590_receive(entradas,SIZEARRAY(entradas));
+		case 'r': at_null_modem_receive(entradas,SIZEARRAY(entradas));
 			break;					
-		case 'c': at_m590_close();
+		case 'c': at_null_modem_close();
 			break;
 		case 'a':
-			at_m590_init();
-			at_m590_open();
-			at_m590_send(NULL);
+			at_null_modem_init();
+			at_null_modem_open();
+			at_null_modem_send(NULL);
 			break;	
-		case 'e': at_m590_server();
+		case 'e': at_null_modem_server();
 			break;			
-		case 'd': at_m590_dns(param);
+		case 'd': at_null_modem_dns(param);
 			break;	
-		case 't': at_m590_time();
+		case 't': at_null_modem_time();
 			break;	
 		default:
-			printf_terminal((char*)cmd_m590_help);
+			printf_terminal_P((PGM_P)pgm_read_word(cmd_null_modem_help));
 	}
 	param[0] = 0;
 }
 
-CONST command_t m590_cmd = {
-  "m590", term_cmd_m590, M590_HelpText
+CONST command_t null_modem_cmd = {
+  "null_modem", term_cmd_null_modem, null_modem_HelpText
 };
 
-#endif
+
 
 #if 0
 

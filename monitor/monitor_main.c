@@ -634,6 +634,13 @@ void main_monitor(void)
 	{
 		PRINT_ERRO(PSTR("Simon init error\r\n"));
 	}
+#else
+	/* null modem driver */
+	extern const modem_driver_t null_modem_driver;
+	if(simon_init(&null_modem_driver) != MODEM_OK)
+	{
+		PRINT_ERRO(PSTR("Simon init error\r\n"));
+	}
 #endif
 #endif
 

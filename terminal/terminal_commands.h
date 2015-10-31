@@ -114,7 +114,11 @@ extern CONST command_t sin2da_cmd;
 void term_cmd_esp(char *param);
 extern CONST command_t esp_cmd;
 
-// Control m590
+// Control null_modem
+void term_cmd_null_modem(char *param);
+extern CONST command_t null_modem_cmd;
+
+// Control m590 modem
 void term_cmd_m590(char *param);
 extern CONST command_t m590_cmd;
 

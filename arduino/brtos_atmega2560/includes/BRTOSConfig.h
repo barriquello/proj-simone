@@ -69,7 +69,7 @@
 #define BRTOS_MAX_MUTEX        2
 
 // Define o número máximo de Mailbox (limita a alocação de memória p/ mailbox)
-#define BRTOS_MAX_MBOX         1
+#define BRTOS_MAX_MBOX         0
 
 // Define o número máximo de filas (limita a alocação de memória p/ filas)
 #define BRTOS_MAX_QUEUE        3
