@@ -25,6 +25,8 @@
 #include "string.h"
 #include "assert.h"
 
+#if MONITOR_TESTS
+
 #ifdef _WIN32
 #define DEBUG_MONITOR 1
 #endif
@@ -36,6 +38,7 @@
 #endif
 
 extern monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
+
 
 static void test_openlog(uint8_t logger)
 {
@@ -115,8 +118,6 @@ static void test_getheader(uint8_t logger)
 	monitor_getheader(monitor_getfilename_to_write(logger), &h);
 }
 
-
-#if 0
 void test_build_data_vector(void)
 {
 	char data_vector[1024];

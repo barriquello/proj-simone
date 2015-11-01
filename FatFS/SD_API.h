@@ -53,7 +53,7 @@
 INT8U SDCard_Init(INT8U verbose);
 INT8U SDCard_SafeRemove(INT8U verbose);
 
-void ListFiles(INT8U *pname1);
+void ListFiles(CHAR8 *pname1);
 INT8U ReadFile(CHAR8 *FileName, INT8U verbose);
 INT8U RenameFile(CHAR8 *OldFileName,CHAR8 *NewFileName, INT8U verbose);
 INT8U CreateFile(CHAR8 *FileName, INT8U verbose);

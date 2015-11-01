@@ -781,7 +781,6 @@ void main_monitor(void)
 	printf("\nOperation took %u milliseconds\n", diff);
 	getchar();
 #else
-	sleep_forever:
 	sleep_forever();
 #endif
 

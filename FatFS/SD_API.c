@@ -48,14 +48,12 @@
 #if __GNUC__
 #define nop() 		__asm__ volatile ("nop");
 #else
+#pragma warn_implicitconv off
 #define nop()		asm{NOP}
 #endif
 #elif ARDUINO	
 #define nop()		asm("NOP");
 #endif	
-
-#pragma warn_implicitconv off
-
 
 #if (SD_FAT_MUTEX_EN == 1)
   BRTOS_Mutex *SDCardResource = NULL;
@@ -65,9 +63,9 @@ static FATFS FATFS_Obj;
 
 // File object
 FIL      file_obj;
+INT8U    Buff[512];  // Read/Write Buffer
 
 #if _USE_LFN
-//char Lfname[512];
 CHAR8 Lfname[256];
 #endif
 
@@ -276,7 +274,7 @@ INT8U SDCard_SafeRemove(INT8U verbose)
 }
 
 
-void ListFiles(INT8U *pname1)
+void ListFiles(CHAR8 *pname1)
 {
 	 FRESULT f_res;
 	 INT32U  p1, s1, s2;
@@ -444,15 +442,11 @@ void CSVListFiles(char **files)
 }
 
   
-#define ReadDataHandle(SerPort, data) putcharSer(SerPort, data)
-INT8U   Buff[512];  // Read/Write Buffer
-
 INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
 {
 	INT32U  p1, p2, s2;
 	INT16U  cnt = 0;
 	INT16U  i = 0;
-    INT8U   sd_status = 0;	
 	  
   if (GetCardInit())
   {
@@ -469,31 +463,26 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
 			SetFatTimer((INT32U)0);     
 			p1 = f_size(&file_obj);
         
+			PRINT(TRUE,"file size: %u bytes.\n\r", p1);
 			while (p1) 
 			{
-				if (p1 >= sizeof(Buff))	
-				{ 
-				  cnt = sizeof(Buff);
-				  p1 -= sizeof(Buff);
-				}
-				else 			
-				{
-				  cnt = (INT16U)p1;
-				  p1 = 0;
-				}
+				cnt = MIN(p1,sizeof(Buff));
+				p1 -= cnt;
 				if (f_read(&file_obj, (CHAR8*)Buff, cnt, (UINT*)&s2) != FR_OK)
 				{
+				  PRINT(TRUE,"\n\r file read error. \n\r");
 				  break;
 				}else
 				{
-					p2 += s2;
-					if (cnt != s2) break;  					                					
+					p2 += s2;	 					                					
 			
-					// Envia os dados para a porta serial
+					// Imprime dados no terminal
 					for(i=0;i<cnt;i++)
 					{
-					  ReadDataHandle(USE_USB, Buff[i]);
+					  putchar_terminal(Buff[i]);
 					}
+					
+					//if (cnt != s2) break; 
 				}
 			} // end while
 				
@@ -525,8 +514,7 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
 	}
 	else
 	{
-		PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-		PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_NOT_PRESENT);
+		SDCard_PrintStatus(TRUE, SD_CARD_NOT_PRESENT);
 		return SD_FAT_ERROR;
 	}
 }
@@ -534,8 +522,7 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
 
 INT8U ChangeDir(CHAR8 *FileName, INT8U verbose)
 {
-  INT8U   sd_status = 0;
-  
+ 
   if (GetCardInit())
   {
     #if (SD_FAT_MUTEX_EN == 1)
@@ -567,15 +554,13 @@ INT8U ChangeDir(CHAR8 *FileName, INT8U verbose)
   }
   else
   {
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_NOT_PRESENT);
+	  SDCard_PrintStatus(TRUE, SD_CARD_NOT_PRESENT);
       return SD_FAT_ERROR;
   }
 }
 
 INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
 {
-  INT8U   sd_status = 0;
   
   if (GetCardInit())
   {
@@ -613,8 +598,7 @@ INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
   }
   else
   {
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_NOT_PRESENT);
+	  SDCard_PrintStatus(TRUE, SD_CARD_NOT_PRESENT);
       return SD_FAT_ERROR;
   }
 }
@@ -622,7 +606,6 @@ INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
 
 INT8U CreateDir(CHAR8 *FileName, INT8U verbose)
 {
-  INT8U   sd_status = 0;
   
   if (GetCardInit())
   {
@@ -660,8 +643,7 @@ INT8U CreateDir(CHAR8 *FileName, INT8U verbose)
   }
   else
   {
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_NOT_PRESENT);
+	  SDCard_PrintStatus(TRUE, SD_CARD_NOT_PRESENT);
       return SD_FAT_ERROR;
   }
 }
@@ -709,8 +691,7 @@ INT8U DeleteFile(CHAR8 *FileName, INT8U verbose)
   }
   else
   {
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-      PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_NOT_PRESENT);
+	  SDCard_PrintStatus(TRUE, SD_CARD_NOT_PRESENT);
       return SD_FAT_ERROR;
   }
 }
@@ -749,9 +730,7 @@ INT8U RenameFile(CHAR8 *OldFileName,CHAR8 *NewFileName, INT8U verbose)
   }
   else
   {
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-	  PRINT((verbose == VERBOSE_ON), (CHAR8*)SD_API_CARD_NOT_PRESENT);
-	  
+	  SDCard_PrintStatus(TRUE, SD_CARD_NOT_PRESENT);
 	  return SD_FAT_ERROR;
   }
 }
@@ -763,9 +742,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
   INT32U  p1, p2, s1, s2;
   CHAR8   *NewDstName, *CopyName;
   INT8U   f_res = 0;
-  //FIL      file_obj2;
   FIL      file_obj2;
-  INT8U    Buff[512];  // Read/Write Buffer
   
   if (GetCardInit())
   {  
@@ -845,7 +822,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
       
             
        GetFatTimer(&p2);                                   
-       PRINT((verbose == VERBOSE_ON),"\n\r%u bytes copied with %u bytes/sec.\n\r", p1, p2 ? (p1 * 100 / p2) : 0);    
+       PRINT((verbose == VERBOSE_ON),"\n\r%l bytes copied with %l bytes/sec.\n\r", p1, p2 ? (p1 * 100 / p2) : 0);    
       
       #if (SD_FAT_MUTEX_EN == 1)
         OSMutexRelease(SDCardResource);
@@ -855,8 +832,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
   }
   else
   {
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-	  PRINT((verbose == VERBOSE_ON),(CHAR8*)SD_API_CARD_NOT_PRESENT);
+	  SDCard_PrintStatus(TRUE, SD_CARD_NOT_PRESENT);
       return SD_FAT_ERROR;
   }  
 }
@@ -866,7 +842,6 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
 
 INT8U WriteUptimeLog(INT8U verbose)
 {
-  INT8U   sd_status = 0;
   OSTime Uptime;
   OSDate UpDate;   
   
@@ -901,8 +876,7 @@ INT8U WriteUptimeLog(INT8U verbose)
   }
   else
   {
-	  PRINT((verbose == VERBOSE_ON), SD_API_CARD);
-	  PRINT((verbose == VERBOSE_ON),(CHAR8*)SD_API_CARD_NOT_PRESENT);
+	  SDCard_PrintStatus(TRUE, SD_CARD_NOT_PRESENT);
       return SD_FAT_ERROR;
   }
 }
@@ -1049,6 +1023,7 @@ INT8U WriteFile(FIL* fp,  const char* filename, INT8U *ptr_data, INT8U length)
   }
   else
   {
+	  SDCard_PrintStatus(TRUE, SD_CARD_NOT_PRESENT);
       return SD_FAT_ERROR;
   }
 }
@@ -1106,682 +1081,3 @@ INT8U GetLastCreatedFileName(char fileName[])
 	
 	return ret;
 }
-
-
-
-#if (SD_BMP == 1)
-INT8U OpenBmp(D4D_POINT* ppt, const D4D_BMP* pBmp, D4D_BOOL greyScale)
-{
-  INT32U           p1, p2, s2;
-  INT16U           cnt = 0;
-  INT16U           i = 0;
-  INT8U            sd_status = 0;
-  D4D_BMP_states   bmp_state = BMP_HEADER;  
-  CHAR8            *FileName;
-  
-  FileName = (CHAR8*)pBmp->pParam;
-  
-  if (GetCardInit())
-  {
-    #if (SD_FAT_MUTEX_EN == 1)
-      OSMutexAcquire(SDCardResource);
-    #endif
-    
-    if (sd_command == SD_INACTIVE)
-    {    
-      sd_command = SD_FILE_READING;
-      
-      if (f_open(&file_obj, FileName, 	FA_READ) == FR_OK)
-      {  
-				p2 = 0;
-				p1 = f_size(&file_obj);
-        
-				while (p1) 
-				{
-					if (p1 >= sizeof(Buff))	
-					{
-					  cnt = sizeof(Buff);
-					  p1 -= sizeof(Buff);
-					}
-					else 			
-					{
-					  cnt = (INT16U)p1;
-					  p1 = 0;
-					}
-					if (f_read(&file_obj, Buff, cnt, (UINT*)&s2) != FR_OK)
-					{
-					  break;
-					}else
-					{
-						p2 += s2;
-						if (cnt != s2) break;
-  					                					
-						// Align problem on kinetis MCU						
-						BmpFile = *(BMP_FILE*)Buff;
-							
-						#if PSP_ENDIAN == BRTOS_LITTLE_ENDIAN
-              // The values are in little endian
-						#else
-							BmpFile.bfsize          = LWordSwap(BmpFile.bfsize);
-							BmpFile.bfoffsetbits    = LWordSwap(BmpFile.bfoffsetbits);
-							BmpFile.size            = LWordSwap(BmpFile.size);
-							BmpFile.width           = LWordSwap(BmpFile.width);
-							BmpFile.height          = LWordSwap(BmpFile.height);
-							BmpFile.planes          = ByteSwap(BmpFile.planes);
-							BmpFile.bitcount        = ByteSwap(BmpFile.bitcount);
-							BmpFile.compression     = LWordSwap(BmpFile.compression);
-							BmpFile.sizeimage       = LWordSwap(BmpFile.sizeimage);
-							BmpFile.colorsused      = LWordSwap(BmpFile.colorsused);
-							BmpFile.colorsimportant = LWordSwap(BmpFile.colorsimportant);						
-						#endif
-											
-						break;
-					}
-				}
-				
-				f_close(&file_obj);
-        
-				D4D_DrawBmpFromFileSystem(ppt, pBmp, greyScale, &BmpFile, Buff);
-        
-        //Sets these variables to inactive states
-        sd_command = SD_INACTIVE;                
-        
-        #if (SD_FAT_MUTEX_EN == 1)
-          OSMutexRelease(SDCardResource);
-        #endif        
-        
-        return SD_FILE_READ;
-      } 
-      else
-      {               
-        sd_command = SD_INACTIVE;
-      
-        #if (SD_FAT_MUTEX_EN == 1)
-          OSMutexRelease(SDCardResource);
-        #endif        
-        
-        return SD_FILE_NOT_FOUND;
-      }
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif      
-
-      return SD_BUSY;
-    }
-  }
-  else
-  {
-      return SD_FAT_ERROR;
-  }
-}
-
-CopyCalibValue(INT16U *calib, INT16U *index, INT8U value)
-{
-	INT16U i = 0;
-	switch(*index)
-	{
-		case 0:
-			if ((value >= 48) && (value <= 57))
-			{
-				i = 10000 * (value-48);
-			}
-			break;			
-		case 1:
-			if ((value >= 48) && (value <= 57))
-			{			
-				i = 1000 * (value-48);
-			}
-			break;
-		case 2:
-			if ((value >= 48) && (value <= 57))
-			{			
-				i = 100 * (value-48);
-			}
-			break;
-		case 3:
-			if ((value >= 48) && (value <= 57))
-			{			
-				i = 10 * (value-48);
-			}
-			break;
-			
-		case 4:
-			if ((value >= 48) && (value <= 57))
-			{			
-				i = (value-48);
-			}
-			break;			
-	}
-	
-	*calib += i;
-}
-
-
-INT8U ReadCalibrationFile(CHAR8 *FileName, D4D_TOUCHSCREEN_CALIB *d4d_tch)
-{
-	INT32U  p1, p2, s2;
-	INT16U  cnt = 0;
-	INT16U  i = 0;
-	INT16U  j = 0;
-	INT16U  k = 0;
-	INT16U  value = 0;
-    INT8U   sd_status = 0;
-  
-  if (GetCardInit())
-  {
-    #if (SD_FAT_MUTEX_EN == 1)
-      OSMutexAcquire(SDCardResource);
-    #endif
-    
-    if (sd_command == SD_INACTIVE)
-    {    
-      sd_command = SD_FILE_READING;
-      
-      if (f_open(&file_obj, (CHAR8*)FileName, 	FA_READ) == FR_OK)
-      {          
-		p2 = 0;  			     
-		p1 = f_size(&file_obj);
-        
-		while (p1) 
-		{
-			if (p1 >= sizeof(Buff))	
-			{ 
-			  cnt = sizeof(Buff);
-			  p1 -= sizeof(Buff);
-			}
-			else 			
-			{
-			  cnt = (INT16U)p1;
-			  p1 = 0;
-			}
-			if (f_read(&file_obj, (CHAR8*)Buff, cnt, (UINT*)&s2) != FR_OK)
-			{
-			  break;
-			}else
-			{
-			p2 += s2;
-			if (cnt != s2) break;			
-								
-			for(i=0;i<cnt;i++)
-			{
-				if (Buff[i] == ',')
-				{
-					j++;
-					k = 0;
-				}else
-				{
-					switch(j)
-					{
-						case 0:
-							CopyCalibValue(&d4d_tch->TouchScreenXoffset, &k, Buff[i]);
-							k++;
-							break;
-							
-						case 1:
-							CopyCalibValue(&d4d_tch->TouchScreenYoffset, &k, Buff[i]);
-							k++;
-							break;
-							
-						case 2:
-							CopyCalibValue(&d4d_tch->TouchScreenXBitsPerPixelx16, &k, Buff[i]);
-							k++;
-							break;						
-						
-						case 3:
-							CopyCalibValue(&d4d_tch->TouchScreenYBitsPerPixelx16, &k, Buff[i]);
-							k++;
-							break;
-							
-						default:
-							break;						
-					}
-				}
-			}
-		 }
-		}
-		
-        f_close(&file_obj);
-        
-        //Sets these variables to inactive states
-        sd_command = SD_INACTIVE;                       
-        
-        #if (SD_FAT_MUTEX_EN == 1)
-          OSMutexRelease(SDCardResource);
-        #endif        
-        
-        if (k <= 5)
-        {
-          return SD_FILE_READ;
-        }else
-        {
-          return SD_FILE_NOT_FOUND;	
-        }
-      } 
-      else
-      {               
-        sd_command = SD_INACTIVE;
-        
-        #if (SD_FAT_MUTEX_EN == 1)
-          OSMutexRelease(SDCardResource);
-        #endif
-        
-        return SD_FILE_NOT_FOUND;
-      }
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif                        
-      
-      return SD_BUSY;      
-    }
-  }
-  else
-  {
-      return SD_FAT_ERROR;
-  }
-}
-
-
-INT8U WriteCalibrationFile(D4D_TOUCHSCREEN_CALIB *d4d_tch)
-{
-  INT8U  sd_status = 0;   
-  
-  if (GetCardInit())
-  {
-    #if (SD_FAT_MUTEX_EN == 1)
-      OSMutexAcquire(SDCardResource);
-    #endif
-
-    if (sd_command == SD_INACTIVE)
-    {    
-        sd_command = SD_FILE_WRITING;
-        
-        if (f_open(&file_obj, "calib.txt", 	FA_WRITE) == FR_NO_FILE)
-        {     
-          f_open(&file_obj, "calib.txt", 	FA_CREATE_NEW); 
-          f_open(&file_obj, "calib.txt", 	FA_WRITE);
-        }
-        f_lseek(&file_obj,f_size(&file_obj));        
-        
-        f_printf(&file_obj, "%05u,%05u,%05u,%05u", d4d_tch->TouchScreenXoffset, d4d_tch->TouchScreenYoffset, d4d_tch->TouchScreenXBitsPerPixelx16,d4d_tch->TouchScreenYBitsPerPixelx16);  
-        f_close(&file_obj);
-        
-        sd_command = SD_INACTIVE;
-        
-        #if (SD_FAT_MUTEX_EN == 1)
-          OSMutexRelease(SDCardResource);
-        #endif                
-        
-        return SD_FILE_WRITTEN;
-    }
-    else
-    {
-      #if (SD_FAT_MUTEX_EN == 1)
-        OSMutexRelease(SDCardResource);
-      #endif      
-
-      return SD_BUSY;
-    }
-  }
-  else
-  {
-      return SD_FAT_ERROR;
-  }
-}
-
-
-#endif
-
-
-
-
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-/*	 																	*/
-/*	 					Wave API functions								*/
-/*	 																	*/
-/*----------------------------------------------------------------------*/
-/*----------------------------------------------------------------------*/
-#if (SD_WAVE == 1)
-
-
-/*----------------------------------------------------------------------*/
-/*  Null Buffer Error function											*/
-/*----------------------------------------------------------------------*/
-static
-void Wave_NullBufferError(void)
-{
-	WaveBuff.Buff 		= NULL;
-	WaveBuff.BitRate	= 0;
-	WaveBuff.Size		= 0;
-	(void)OSMboxPost(SendWaveBuffer,(void *)&WaveBuff); //Mail Box	
-}
-
-/*----------------------------------------------------------------------*/
-/*  Test File Support function											*/
-/*----------------------------------------------------------------------*/
-static
-INT8U Wave_TestFileSupport(void)
-{
-	//"RIFF" in little-endian form	
-	if(WaveFile.ChunkID	!= 0x46464952) //Or 1179011410, but tested with hex in order to avoid big-endian files
-	{return SD_FILE_NOT_SUPPORTED;}
-
-	//"WAVE"
-	else if(WaveFile.Format	!= 1163280727)
-	{return SD_FILE_NOT_SUPPORTED;}
-
-	//"fmt"
-	else if(WaveFile.Subchunk1ID	!= 544501094)
-	{return SD_FILE_NOT_SUPPORTED;}
-
-	//1 = Linear quantization; Others = compression
-	else if(WaveFile.AudioFormat != 1)
-	{return SD_FILE_NOT_SUPPORTED;}
-
-	//1=mono, 2=Stereo, ...	
-	else if(WaveFile.NumChannels >= 3)
-	{return SD_FILE_NOT_SUPPORTED;}
-
-	//8.000, 11.025, 22.050 or 44.100kHz
-	else if((WaveFile.SampleRate == 8000) || (WaveFile.SampleRate == 11025) || (WaveFile.SampleRate	== 22050)  || (WaveFile.SampleRate	== 44100)/* || (WaveFile.SampleRate	== 48000)*/)
-	{}else
-	{return SD_FILE_NOT_SUPPORTED;}
-
-	//8 or 16
-	if((WaveFile.BitsPerSamples == 8) || (WaveFile.BitsPerSamples == 16) )
-	{}else
-	{return SD_FILE_NOT_SUPPORTED;}
-
-	//"data"
-	if(WaveFile.Subchunk2ID	!= 1635017060)
-	{return SD_FILE_NOT_SUPPORTED;}
-
-	//All tests Ok
-	else
-	{return SD_FILE_SUPPORTED;}
-	
-}
-
-
-/*----------------------------------------------------------------------*/
-/* Open/Read wave file function											*/
-/*----------------------------------------------------------------------*/
-extern INT8U		PlayState;
-INT8U Wave_ReadFile(CHAR8 *FileName, INT8U* Buffer0, INT8U* Buffer1)
-{
-  INT32U           	p1, p2, s2;
-  INT16U           	cnt = 0;
-  INT16U           	i = 0;
-  INT16U			j = 0;
-  INT16U			ReadBytes;
-  INT8U				*pData;
-  INT8U            	sd_status = 0;
-  INT8U				SelectBuffer = 0;	//Select Buffer 0 or 1
-  INT8U				playstate = 0;
-
-  
-  if ((GetCardStat() & STA_NOINIT) != STA_NOINIT)
-  {
-    #if (SD_FAT_MUTEX_EN == 1)
-      OSMutexAcquire(SDCardResource);
-    #endif
-    
-    if (sd_command == SD_INACTIVE)
-    {    
-      sd_command = SD_FILE_READING;
-      
-      if (f_open(&file_obj, FileName, 	FA_READ) == FR_OK)
-      {  
-		p2 = 0;
-		p1 = f_size(&file_obj);
-
-		while (p1)	//Read file
-		{
-			if (p1 >= sizeof(Buff))		//SD card buffer	
-			{
-			  cnt = sizeof(Buff);		//SD card buffer
-			  p1 -= sizeof(Buff);		//SD card buffer
-			}
-			else 			
-			{
-			  cnt = (INT16U)p1;
-			  p1 = 0;
-			}
-
-			if (SelectBuffer == 0) //Seleciona buffer de armazenamento
-			{
-				pData = Buffer0;
-			}
-			else
-			{
-				pData = Buffer1;
-			}
-			
-			//Lê arquivo:
-			if (f_read(&file_obj, pData, cnt, (UINT*)&s2) != FR_OK)	//Error test
-			{
-			  break;
-			}
-			else
-			{
-				p2 += s2;
-				if (cnt != s2) break;	//Error test
-												
-				if (j == 0)	//1ºbloco = header
-				{
-					// Align problem on kinetis MCU						
-					WaveFile = *(WAVE_FILE*)pData;
-					
-					#if PSP_ENDIAN != BRTOS_LITTLE_ENDIAN					
-					   WaveFile.ChunkID         = LWordSwap(WaveFile.ChunkID);
-					   WaveFile.ChunkSize       = LWordSwap(WaveFile.ChunkSize);
-					   WaveFile.Format			= LWordSwap(WaveFile.Format);
-					   WaveFile.Subchunk1ID		= LWordSwap(WaveFile.Subchunk1ID);
-					   WaveFile.Subchunk1Size	= LWordSwap(WaveFile.Subchunk1Size);
-					   WaveFile.AudioFormat		= ByteSwap(WaveFile.AudioFormat);
-					   WaveFile.NumChannels		= ByteSwap(WaveFile.NumChannels);
-					   WaveFile.SampleRate		= LWordSwap(WaveFile.SampleRate);
-					   WaveFile.ByteRate		= LWordSwap(WaveFile.ByteRate);
-					   WaveFile.BlockAlign		= ByteSwap(WaveFile.BlockAlign);
-					   WaveFile.BitsPerSamples	= ByteSwap(WaveFile.BitsPerSamples);
-					   WaveFile.Subchunk2ID		= LWordSwap(WaveFile.Subchunk2ID);
-					   WaveFile.Subchunk2Size	= LWordSwap(WaveFile.Subchunk2Size);
-					#endif
-	
-					pData += 44;			//Header wave size
-					ReadBytes = (s2 - 44);	//Armazena do buffer passado para tarefa de Play
-
-					
-					// Test File support
-				#if (TestWaveFileSuport == 1) 
-					if(Wave_TestFileSupport() != SD_FILE_SUPPORTED)
-					{
-						(void)Wave_NullBufferError(); //EOF - end of file: Return Error (NULL) Buffer
-						
-						//File Close
-						f_close(&file_obj);
-
-				        //Sets these variables to inactive states
-				        sd_command = SD_INACTIVE;				        
-				        
-				        #if (SD_FAT_MUTEX_EN == 1)
-				          OSMutexRelease(SDCardResource);
-				        #endif
-						return SD_FILE_NOT_SUPPORTED;
-					}
-				#endif
-					
-					//Preencher dados:
-					WaveBuff.SampleRate	= WaveFile.SampleRate;
-					WaveBuff.BitRate	= WaveFile.BitsPerSamples;
-					WaveBuff.NumChannels= WaveFile.NumChannels;
-				
-				}
-				else
-				{
-					ReadBytes = s2;			//Armazena do buffer passado para tarefa de Play		
-				}
-				
-				if (WaveFile.BitsPerSamples == 16) //
-				{
-					ReadBytes = ReadBytes >>1;
-				}
-			}
-
-			//Lê dados do wave
-			
-			//Troca de buffer:
-			if(SelectBuffer)
-			{
-				SelectBuffer = 0;
-			}
-			else
-			{
-				SelectBuffer = 1;
-			}
-			
-			// Se o 2 buffer estao cheios, espera o "play" de um deles:
-			if (j)
-			{
-				OSSemPend(SyncWaveBuffer,0);
-			}
-			
-			UserEnterCritical();
-			playstate = PlayState;
-			UserExitCritical();
-			// Se o estado é de reproduzindo um arquivo de som
-			if (playstate == PLAYING)
-			{
-				//Acorda tarefa PlayWaveSound:					
-				WaveBuff.Buff 		= pData;
-				WaveBuff.Size		= ReadBytes;
-				(void)OSMboxPost(SendWaveBuffer,(void *)&WaveBuff); //Mail Box
-				j++;	//Número de buffers cheios
-			}
-			else
-			{
-				// Senão finaliza a leitura do arquivo e consequentemente a sua reprodução
-				break;
-			}
-		}
-
-		if (playstate == PLAYING)
-		{
-			OSSemPend(SyncWaveBuffer,0);
-		}
-		
-		(void)Wave_NullBufferError(); //EOF - end of file: Return Error (NULL) Buffer
-		
-		//File Close
-		f_close(&file_obj);
-
-        //Sets these variables to inactive states
-        sd_command = SD_INACTIVE;                
-        
-        #if (SD_FAT_MUTEX_EN == 1)
-          OSMutexRelease(SDCardResource);
-        #endif        
-        
-        return SD_FILE_READ;
-      } 
-      else
-      {               
-        sd_command = SD_INACTIVE;
-      
-        #if (SD_FAT_MUTEX_EN == 1)
-          OSMutexRelease(SDCardResource);
-        #endif        
-
-        (void)Wave_NullBufferError(); //No sound in buffer to play: Return Error (NULL) Buffer
-          
-        return SD_FILE_NOT_FOUND;
-      }
-    }
-    else
-    {
-		#if (SD_FAT_MUTEX_EN == 1)
-			OSMutexRelease(SDCardResource);
-		#endif      
-		
-        (void)Wave_NullBufferError(); //No sound in buffer to play: Return Error (NULL) Buffer
-
-        return SD_BUSY;
-    }
-  }
-  else
-  {
-	  (void)Wave_NullBufferError(); //EOF - end of file: Return Error (NULL) Buffer
-	  return SD_FAT_ERROR;
-  }
-}
-
-
-
-/*----------------------------------------------------------------------*/
-/* Install Play Wave file Components  function							*/
-/*----------------------------------------------------------------------*/
-void InstallPlayComponents(void)
-{
-	if (OSSemCreate(0,&SyncWaveBuffer) != ALLOC_EVENT_OK)
-	{
-		while(1)
-		{
-			DelayTask(1000);
-			//Colocar Block Task:
-			//(void)BlockTask(TaskID);
-		}
-	}
-	
-	if (OSMboxCreate(&SendWaveBuffer,NULL) != ALLOC_EVENT_OK)
-	{
-		while(1)
-		{
-			DelayTask(1000);
-			//Colocar Block Task:
-			//(void)BlockTask(TaskID);
-		}
-	}	
-}
-
-
-void Wave_SetSampleRate(INT16U WaveSampleRate)
-{
-
-	/*
-	 * Timer Clock Source = configCPU_CLOCK_HZ (with USB = 24000000)
-	 */
-
-	switch (WaveSampleRate)
-	  {
-	    case 8000:		// 8kHz:
-	    	Timer2ChangeModule(((configCPU_CLOCK_HZ / 8000) - 1));	//Reconfigure timer
-	    	break;
-	    case 11025:		// 11.025kHz:
-	    	Timer2ChangeModule(((configCPU_CLOCK_HZ / 11025) - 1));	//Reconfigure timer
-	    	break;
-	    case 22050:		// 22.050kHz:
-	    	Timer2ChangeModule(((configCPU_CLOCK_HZ / 22050) - 1));	//Reconfigure timer
-	    	break;
-	    case 44100:		// 44.1kHz:
-	    	Timer2ChangeModule(((configCPU_CLOCK_HZ / 44100) - 1));	//Reconfigure timer
-	    	break;
-	    case 48000:		// 48kHz:
-	    	Timer2ChangeModule(((configCPU_CLOCK_HZ / 48000) - 1));	//Reconfigure timer
-	    	break;
-	    default:
-	    	break;    
-	  }	
-}
-
-	
-
-#endif
-
-
-
