@@ -212,7 +212,7 @@ void term_cmd_temp(char *param)
   PrintDecimal(temp, string);
   newline();
   printf_terminal((CHAR8*)&string[3]);
-  printf_terminal(" degrees");
+  printf_terminal_P(PSTR(" degrees"));
 }
 
 CONST command_t temp_cmd = {
@@ -493,9 +493,9 @@ void term_cmd_rm(char *param)
 
 	newline();
 	if (fr) {		
-		printf_terminal( (CHAR8*)SD_API_CARD_ERROR);
+		SDCard_PrintStatus(VERBOSE_ON, SD_CARD_ERROR);
 	} else {
-		printf_terminal( (CHAR8*)SD_API_FILE_REMOVED);
+		SDCard_PrintStatus(VERBOSE_ON, FILE_REMOVED);
 	}	
 	newline();
   }
@@ -678,14 +678,14 @@ void term_cmd_echo_out(char *param)
 			{
 				stdin_q = Serial2;
 			}
-			printf_terminal( "STDOUT = ");
+			printf_terminal_P(PSTR("STDOUT = "));
 			putchar_terminal( (CHAR8)param[0]);
 			newline();
 			return;
 		}
 	}
 
-	printf_terminal( "INVALID STDOUT");
+	printf_terminal_P(PSTR("INVALID STDOUT"));
 	newline();
 }
 
@@ -935,7 +935,7 @@ void term_cmd_modbus(char *param)
 				
 			}else
 			{
-				printf_terminal("Modbus erro");
+				printf_terminal_P(PSTR("Modbus erro"));
 				newline();
 			}
 			break;

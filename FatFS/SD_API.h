@@ -77,7 +77,6 @@ void SDCard_PrintStatus(INT8U verbose, INT8U status);
 #if 0
 INT8U WriteFile(INT8U *FileName, void (*fill_buffer)(void),INT8U verbose);
 INT8U FormatDisk(INT8U verbose);
-INT8U cmd_verify_zeros(INT8U *pfile, INT8U num);
 #endif
 
 #if 0
@@ -122,6 +121,20 @@ typedef enum
  VERBOSE_ON,
  VERBOSE_OFF
 } SD_STATE;
+
+enum
+{
+	SD_CARD_STATUS = 0,
+	FILE_NOT_FOUND,
+	FILE_INVALID,
+	SD_CARD_NOT_PRESENT,
+	FILE_REMOVED,
+	SD_CARD_ERROR,
+	SD_CARD_MOUNTED,
+	SD_CARD_DETECTED,
+	SD_CARD_MOUNT_FAILURE,
+	SD_CARD_INIT_FAILURE
+};
 
 
 enum   

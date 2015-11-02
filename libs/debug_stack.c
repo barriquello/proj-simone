@@ -216,10 +216,10 @@ void Transmite_CPU_Load(INT8U Comm)
 
 void Reason_of_Reset(INT8U Comm)
 {  
-  INT8U reason = 0;
-  CHAR8  string[5];
   
 #if COLDUINO
+  INT8U reason = 0; 
+  CHAR8  string[5];
   reason = SRS;
   DPRINTF(Comm, "Reset caused by ");
   switch(reason)

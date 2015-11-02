@@ -705,7 +705,7 @@ m590_ret_t at_m590_server(void)
 {
 	
 	int timeout = 0;
-	INT8U c,idx;
+	INT8U c;
 	
 	if(m590_state != M590_OPEN)
 	{
@@ -723,7 +723,6 @@ m590_ret_t at_m590_server(void)
 		
 		while(1)
 		{			
-			idx = 0;
 			while((c=m590_getchar()) != (CHAR8)-1)
 			{			
 				putcharSer(USE_USB,c); 			

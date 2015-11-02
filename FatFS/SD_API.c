@@ -36,12 +36,15 @@
 #if SD_PRINT
 #if ARDUINO
 #define PRINT(a,...)	if(a) {	printf_lib(__VA_ARGS__); }
+#define PRINT_P(a,...)	if(a) {	printf_terminal_P(__VA_ARGS__); }
 //#define PRINT(a,...) if(a) {printf_lib(__VA_ARGS__);}
 #else
 #define PRINT(a,...) if(a) { printf_lib(__VA_ARGS__);}
+#define PRINT_P(a,...)	if(a) {	printf_lib(__VA_ARGS__); }
 #endif
 #else
 #define PRINT(a,...)
+#define PRINT_P(a,...)
 #endif
 
 #if COLDUINO || ARDUINO
@@ -63,7 +66,6 @@ static FATFS FATFS_Obj;
 
 // File object
 FIL      file_obj;
-INT8U    Buff[512];  // Read/Write Buffer
 
 #if _USE_LFN
 CHAR8 Lfname[256];
@@ -98,20 +100,6 @@ CONST CHAR8 SD_API_CARD_MOUNTED[] PROGMEM =SD_API_CARD_MOUNTED_DEF;
 CONST CHAR8 SD_API_CARD_DETECTED[] PROGMEM =SD_API_CARD_DETECTED_DEF;
 CONST CHAR8 SD_API_CARD_MOUNT_FAILURE[] PROGMEM =SD_API_CARD_MOUNT_FAILURE_DEF;
 CONST CHAR8 SD_API_CARD_INIT_FAILURE[] PROGMEM =SD_API_CARD_INIT_FAILURE_DEF;
-
-enum
-{
-	SD_CARD_STATUS = 0,
-	FILE_NOT_FOUND,
-	FILE_INVALID,
-	SD_CARD_NOT_PRESENT,
-	FILE_REMOVED,
-	SD_CARD_ERROR,
-	SD_CARD_MOUNTED,
-	SD_CARD_DETECTED,
-	SD_CARD_MOUNT_FAILURE,
-	SD_CARD_INIT_FAILURE
-};
 
 PGM_P CONST SDCard_StringTable[] PROGMEM =
 {
@@ -214,23 +202,23 @@ INT8U SDCard_Init(INT8U verbose)
 				  switch(GetCardType())
 				  {
 					case CT_MMC:
-                		PRINT((verbose == VERBOSE_ON)," MMC v3");
+                		PRINT_P((verbose == VERBOSE_ON),PSTR(" MMC v3"));
 					  break;
 
 					case CT_SD1:
-                		PRINT((verbose == VERBOSE_ON), " SD v1");
+                		PRINT_P((verbose == VERBOSE_ON), PSTR(" SD v1"));
 					  break;
                   
 					case CT_SD2:
-                		PRINT((verbose == VERBOSE_ON)," SD v2");
+                		PRINT_P((verbose == VERBOSE_ON),PSTR(" SD v2"));
 					  break;
                   
 					case CT_SDC:
-                		PRINT((verbose == VERBOSE_ON)," SDHC");
+                		PRINT_P((verbose == VERBOSE_ON),PSTR(" SDHC"));
 					  break;
                   
 					default:
-                		PRINT((verbose == VERBOSE_ON)," Unknown");
+                		PRINT_P((verbose == VERBOSE_ON),PSTR(" Unknown"));
 					  break;
 				  }
 				  #endif
@@ -263,7 +251,7 @@ INT8U SDCard_SafeRemove(INT8U verbose)
         OSMutexRelease(SDCardResource);
       #endif    
 	    
-      PRINT((verbose == VERBOSE_ON), " is safe to remove!\n\r");
+      PRINT_P((verbose == VERBOSE_ON), PSTR(" is safe to remove!\n\r") );
       return SD_OK;
   }
   else
@@ -290,7 +278,7 @@ void ListFiles(CHAR8 *pname1)
     if (GetCardInit())
     {      
 			// list files
-			PRINT(TRUE, "\n\r");
+			PRINT_P(TRUE, PSTR("\n\r"));
       		if (pname1 == NULL)
       		{
       		  ptr = ".";
@@ -336,7 +324,7 @@ void ListFiles(CHAR8 *pname1)
 				#if _USE_LFN
   					PRINT(TRUE,"  %s", Lfname);					
 				#endif
-  					PRINT(TRUE, "\n\r");
+  					PRINT_P(TRUE, PSTR("\n\r"));
 				
   				}
 			}
@@ -447,9 +435,10 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
 	INT32U  p1, p2, s2;
 	INT16U  cnt = 0;
 	INT16U  i = 0;
+	INT8U    Buff[16];  // Read/Write Buffer
 	  
-  if (GetCardInit())
-  {
+	if (GetCardInit())
+	{
 
 		#if (SD_FAT_MUTEX_EN == 1)
 		OSMutexAcquire(SDCardResource);
@@ -457,20 +446,22 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
       
 		  if (f_open(&file_obj, (CHAR8*)FileName, 	FA_READ) == FR_OK)
 		  {  
-			PRINT((verbose == VERBOSE_ON),"\n\r");
+			PRINT_P((verbose == VERBOSE_ON),PSTR("\n\r"));
         
 			p2 = 0;  			
 			SetFatTimer((INT32U)0);     
 			p1 = f_size(&file_obj);
         
-			PRINT(TRUE,"file size: %u bytes.\n\r", p1);
+			PRINT_P(TRUE,PSTR("file size:"));
+			PRINT(TRUE,"%u", p1); 
+			PRINT_P(TRUE, PSTR("bytes.\n\r"));
 			while (p1) 
 			{
 				cnt = MIN(p1,sizeof(Buff));
 				p1 -= cnt;
 				if (f_read(&file_obj, (CHAR8*)Buff, cnt, (UINT*)&s2) != FR_OK)
 				{
-				  PRINT(TRUE,"\n\r file read error. \n\r");
+				  PRINT_P(TRUE,PSTR("\n\r file read error. \n\r"));
 				  break;
 				}else
 				{
@@ -489,8 +480,10 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
 			GetFatTimer(&s2);
 			f_close(&file_obj);
         
-			PRINT(TRUE,"\n\r%u bytes read with %u bytes/sec.\n\r", p2, s2 ? (p2 * 100 / s2) : 0);        
-			PRINT(TRUE, "\n\r");
+			PRINT(TRUE,"\n\r%u", p2);
+			PRINT_P(TRUE, PSTR("bytes read with"));  			  
+			PRINT(TRUE,"%u", s2 ? (p2 * 100 / s2) : 0); 
+			PRINT_P(TRUE,PSTR("bytes/sec.\n\r"));   
         
 			#if (SD_FAT_MUTEX_EN == 1)
 			  OSMutexRelease(SDCardResource);
@@ -501,9 +494,9 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
 		else
 		{       
         
-			PRINT((verbose == VERBOSE_ON), "\n\r");
+			PRINT_P((verbose == VERBOSE_ON),PSTR("\n\r"));
 			PRINT((verbose == VERBOSE_ON), (CHAR8*)FileName);
-			PRINT((verbose == VERBOSE_ON), " not found.\n\r");
+			PRINT_P((verbose == VERBOSE_ON), PSTR(" not found.\n\r"));
 			
 			#if (SD_FAT_MUTEX_EN == 1)
 			OSMutexRelease(SDCardResource);
@@ -536,7 +529,7 @@ INT8U ChangeDir(CHAR8 *FileName, INT8U verbose)
           OSMutexRelease(SDCardResource);
         #endif        
         
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)"\n\r");        
+        PRINT_P((verbose == VERBOSE_ON),PSTR("\n\r"));    
         return SD_OPEN_DIR_OK;
       }
       else
@@ -545,9 +538,9 @@ INT8U ChangeDir(CHAR8 *FileName, INT8U verbose)
           OSMutexRelease(SDCardResource);
         #endif        
         
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)"\n\rDirectory ");
+        PRINT_P((verbose == VERBOSE_ON), PSTR("\n\rDirectory "));
         PRINT((verbose == VERBOSE_ON), (CHAR8*)FileName);
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)" does not exist !\n\r");
+        PRINT_P((verbose == VERBOSE_ON), PSTR(" does not exist !\n\r"));
         
         return SD_OPEN_DIR_FAILURE;
       }
@@ -576,9 +569,9 @@ INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
           OSMutexRelease(SDCardResource);
         #endif        
         
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)"\n\r");
+        PRINT_P((verbose == VERBOSE_ON), PSTR("\n\r"));
         PRINT((verbose == VERBOSE_ON), (CHAR8*)FileName);
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)" was created successfully.\n\r");
+        PRINT_P((verbose == VERBOSE_ON), PSTR(" was created successfully.\n\r"));
         
         return SD_CREATE_FILE_OK;
       }
@@ -589,9 +582,9 @@ INT8U CreateFile(CHAR8 *FileName, INT8U verbose)
           OSMutexRelease(SDCardResource);
         #endif        
         
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)"\n\r");
+        PRINT_P((verbose == VERBOSE_ON),PSTR("\n\r"));
         PRINT((verbose == VERBOSE_ON), (CHAR8*)FileName);
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)" was not created.\n\r");        
+        PRINT((verbose == VERBOSE_ON), PSTR(" was not created.\n\r"));        
         return SD_CREATE_FILE_FAILURE;
       }
     
@@ -613,7 +606,7 @@ INT8U CreateDir(CHAR8 *FileName, INT8U verbose)
       OSMutexAcquire(SDCardResource);
     #endif    
   
-      
+      PRINT_P((verbose == VERBOSE_ON), PSTR("\n\rDirectory "));
       if (f_mkdir( FileName) == FR_OK)
       {  
         
@@ -621,9 +614,9 @@ INT8U CreateDir(CHAR8 *FileName, INT8U verbose)
           OSMutexRelease(SDCardResource);
         #endif        
         
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)"\n\rDirectory ");
+        
         PRINT((verbose == VERBOSE_ON), (CHAR8*)FileName);
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)" was created successfully.\n\r");
+        PRINT_P((verbose == VERBOSE_ON), PSTR(" was created successfully.\n\r"));
         
         return SD_CREATE_DIR_OK;
       }
@@ -634,9 +627,8 @@ INT8U CreateDir(CHAR8 *FileName, INT8U verbose)
           OSMutexRelease(SDCardResource);
         #endif        
         
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)"\n\rDirectory ");
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)FileName);
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)" was not created.\n\r");
+		PRINT((verbose == VERBOSE_ON), (CHAR8*)FileName);
+        PRINT_P((verbose == VERBOSE_ON), PSTR(" was not created.\n\r"));
         
         return SD_CREATE_DIR_FAILURE;
       }    
@@ -668,18 +660,17 @@ INT8U DeleteFile(CHAR8 *FileName, INT8U verbose)
       if (sd_status == FR_OK)
       {
 
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)"\n\r");                       
+        PRINT_P((verbose == VERBOSE_ON), PSTR("\n\r"));                       
         PRINT((verbose == VERBOSE_ON), (CHAR8*)FileName);
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)" deleted! \n\r");
-      
+        PRINT_P((verbose == VERBOSE_ON), PSTR(" deleted! \n\r"));      
         return SD_FILE_DELETED;
       }
       else
       {
         if (sd_status == FR_DENIED)
         {
-           PRINT((verbose == VERBOSE_ON), (CHAR8*)"\n\rDelete file or directory denied.\n\r");
-           PRINT((verbose == VERBOSE_ON), (CHAR8*)"Directory is not empty or file is write-protected.\n\r");        
+           PRINT_P((verbose == VERBOSE_ON), PSTR("\n\rDelete file or directory denied.\n\r"));
+           PRINT_P((verbose == VERBOSE_ON), PSTR("Directory is not empty or file is write-protected.\n\r"));        
            return SD_DELETE_FILE_DENIED;
         }
         else
@@ -716,7 +707,7 @@ INT8U RenameFile(CHAR8 *OldFileName,CHAR8 *NewFileName, INT8U verbose)
       
       if(sd_status == FR_OK)
       {
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)"\n\rFile found and renamed !\n\r");      
+        PRINT_P((verbose == VERBOSE_ON), PSTR("\n\rFile found and renamed !\n\r"));      
         
         return SD_FILE_RENAMED;
       }
@@ -743,6 +734,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
   CHAR8   *NewDstName, *CopyName;
   INT8U   f_res = 0;
   FIL      file_obj2;
+  INT8U    Buff[16];  // Read/Write Buffer
   
   if (GetCardInit())
   {  
@@ -758,7 +750,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
           OSMutexRelease(SDCardResource);
         #endif        
         
-        PRINT((verbose == VERBOSE_ON), (CHAR8*)"\n\rSource file does not exist !\n\r");      
+        PRINT_P((verbose == VERBOSE_ON), PSTR("\n\rSource file does not exist !\n\r"));      
         
         return SD_COPY_FILE_FAILURE;      
       }
@@ -794,7 +786,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
             OSMutexRelease(SDCardResource);
           #endif          
           
-          PRINT((verbose == VERBOSE_ON), (CHAR8*)"\n\rDestination file could not be created or already exist !\n\r");       
+          PRINT_P((verbose == VERBOSE_ON), PSTR("\n\rDestination file could not be created or already exist !\n\r"));       
           
             
           f_close(&file_obj);
@@ -802,7 +794,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
         }
       }
 
-      PRINT((verbose == VERBOSE_ON), (CHAR8*)"\n\rCopying file\n\r");
+      PRINT_P((verbose == VERBOSE_ON), PSTR("\n\rCopying file\n\r"));
      
       
 	  SetFatTimer((INT32U)0);  
@@ -822,7 +814,10 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
       
             
        GetFatTimer(&p2);                                   
-       PRINT((verbose == VERBOSE_ON),"\n\r%l bytes copied with %l bytes/sec.\n\r", p1, p2 ? (p1 * 100 / p2) : 0);    
+       PRINT((verbose == VERBOSE_ON),"\n\r%l", p1);    
+	   PRINT_P((verbose == VERBOSE_ON),PSTR("bytes copied with"));    
+	   PRINT((verbose == VERBOSE_ON),"%l", p2 ? (p1 * 100 / p2) : 0);    
+	   PRINT_P((verbose == VERBOSE_ON),PSTR(" bytes/sec.\n\r"));    
       
       #if (SD_FAT_MUTEX_EN == 1)
         OSMutexRelease(SDCardResource);
@@ -853,8 +848,7 @@ INT8U WriteUptimeLog(INT8U verbose)
         
         if (f_open(&file_obj, "uptime.txt", 	FA_WRITE) == FR_NO_FILE)
         {     
-          f_open(&file_obj, "uptime.txt", 	FA_CREATE_NEW); 
-          f_open(&file_obj, "uptime.txt", 	FA_WRITE);
+          f_open(&file_obj, "uptime.txt", 	FA_CREATE_NEW | FA_WRITE);
         }
         f_lseek(&file_obj,f_size(&file_obj));
         
@@ -870,7 +864,7 @@ INT8U WriteUptimeLog(INT8U verbose)
           OSMutexRelease(SDCardResource);
         #endif        
         
-        PRINT((verbose == VERBOSE_ON),(CHAR8*)"\n\rUptime written !\n\r");  
+        PRINT_P((verbose == VERBOSE_ON),PSTR("\n\rUptime written !\n\r"));  
         
         return SD_FILE_WRITTEN;   
   }

@@ -6,6 +6,7 @@
 /////                                                     /////
 ///////////////////////////////////////////////////////////////
 
+#define SIMULATION			0
 #define SD_PRESENTE         1 
 #define RTC_PRESENTE  		0
 #define MODEM_PRESENTE		0

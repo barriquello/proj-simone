@@ -123,9 +123,7 @@ uint8_t null_modem_set_ip(char* _ip)
 uint8_t null_modem_send(uint8_t * dados, uint16_t tam)
 {
 	
-	uint8_t retries = 0;
-	uint8_t result_ok = FALSE;
-	
+
 	if(dados == NULL) return MODEM_ERR;	
 	*(dados+tam) = '\0'; // null terminate
 	ip[15] ='\0';

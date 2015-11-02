@@ -152,7 +152,7 @@ void Terminal_Task(void)
 #ifdef TERM_UART		
 	uart_init(TERM_UART,BAUD(TERM_BAUDRATE),TERM_BUFSIZE,TERM_MUTEX,TERM_MUTEX_PRIO);
 	
-#if 1
+#if !SIMULATION
 	terminal_set_output(TERM_OUTPUT);
 #endif
 
@@ -206,11 +206,4 @@ void Terminal_Task(void)
 	}
 }
 
-
-#if 0
-void BRTOS_TimerHook(void)
-{
-
-}
-#endif
 
