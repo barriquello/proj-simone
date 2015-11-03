@@ -75,7 +75,7 @@ static const command_t term_help_cmd = {
 };
 
 static char			SilentMode = 0; 
-static char 		term_cmd_line[32];
+static char 		term_cmd_line[CONSOLE_BUFFER_SIZE];
 static uint8_t 		term_cmd_line_ndx;
 
 static uint8_t 		term_n_cmd;
@@ -134,7 +134,7 @@ void printf_terminal_P(const char *s)
 {
 		
 	char c;
-		terminal_acquire();
+		//terminal_acquire();
 
 		while((c=pgm_read_byte(s)) != 0)
 		{
@@ -142,7 +142,7 @@ void printf_terminal_P(const char *s)
 			s++;
 		}
 
-		terminal_release();	
+		//terminal_release();	
 }
 #endif
 /*****************************************************************************
@@ -160,7 +160,7 @@ void printf_terminal_P(const char *s)
  *****************************************************************************/
 void printf_terminal(char *s)
 {
-  terminal_acquire();
+  //terminal_acquire();
   while(*s)
   {
 #if 0	  
@@ -170,7 +170,7 @@ void printf_terminal(char *s)
 #endif		
       s++;
   }
-  terminal_release();
+  //terminal_release();
 }
 
 
@@ -287,24 +287,24 @@ static void term_cmd_help(char *param)
   char *name;
 
   (void)param;
-  newline();
+  terminal_newline();
   printf_terminal_P(PSTR("Supported commands:"));
-  newline();
+  terminal_newline();
 
   for(x=0; x < term_n_cmd; x++)
   {
-    printf_terminal_P(PSTR("  "));
+    putchar_terminal(' ');
     name = (char*)term_cmds[x]->txt;
     y = (int)strlen(name);
 	printf_terminal((char *)name);
     for(;y<MAX_CMD_SIZE;y++)
     {
-      printf_terminal(" ");
+      putchar_terminal(' ');
     }
     printf_terminal_P(term_cmds[x]->help_txt);
-    newline();
+    terminal_newline();
   }
-  newline();
+  terminal_newline();
 }
 
 
@@ -325,8 +325,8 @@ static void term_cmd_help(char *param)
 *****************************************************************************/
 static void term_print_prompt(void)
 {
-  newline();
-  printf_terminal_P(PSTR(">"));
+  terminal_newline();
+  putchar_terminal('>');
 }
 
 /*****************************************************************************
@@ -346,8 +346,8 @@ static void term_print_prompt(void)
 *****************************************************************************/
 static void term_print_greeting(void)
 {
-	printf_terminal("Digite um comando:");
-	newline();
+	printf_terminal_P(PSTR("Digite um comando:"));
+	terminal_newline();
 }
 
 /*****************************************************************************
@@ -443,7 +443,9 @@ void terminal_process(void)
 	  {
 		  if(c != DEL || term_cmd_line_ndx)
 		  {			  
+			  terminal_acquire();
 			  putchar_terminal(c);
+			  terminal_release();
 		  }			  
 	  }
 	} 
@@ -468,9 +470,9 @@ void terminal_process(void)
       /* Command not found. */
       if (term_x == -1)
       {    	
-		newline();
+		terminal_newline();
     	printf_terminal_P(PSTR("Unknown command!"));
-		newline();
+		terminal_newline();
       }
       else
       {

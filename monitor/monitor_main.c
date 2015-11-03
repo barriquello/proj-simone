@@ -174,7 +174,7 @@ monitor_config_ok_t config_check;
 #endif
 
 #if ARDUINO
-extern char BufferText[];
+char BufferText[32];
 const char monitor_error_msg0[] PROGMEM = "\r\nConfig erro: faltando ";
 const char monitor_error_msg1[] PROGMEM = "\r\nMonitor erro: %d ";
 PGM_P CONST monitor_error_msg[] PROGMEM =

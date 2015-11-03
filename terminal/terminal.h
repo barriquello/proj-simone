@@ -38,8 +38,8 @@ typedef void (cmd_func)(char *params);
 /*****************************************************************************
  * Macro definitions
  *****************************************************************************/
-#define MAX_CMDS		12
-#define MAX_CMD_SIZE	8
+#define MAX_CMDS			  12
+#define MAX_CMD_SIZE		  8
 #define CONSOLE_BUFFER_SIZE  (32)
 
 #ifndef CONST
@@ -83,6 +83,7 @@ void putchar_terminal(char c);
 void getchar_terminal(char *c);
 void terminal_acquire(void);
 void terminal_release(void);
+void terminal_newline(void);
 
 void printf_terminal_P(const char *s);
 

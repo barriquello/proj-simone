@@ -96,7 +96,7 @@ const CHAR8 *version=                            ///< Informs BRTOS version
 
 
 #if ((PROCESSOR == ATMEGA) || (PROCESSOR == PIC18))
-CHAR8 BufferText[TEXT_BUFFER_SIZE];
+//CHAR8 BufferText[TEXT_BUFFER_SIZE];
 #endif
                      
 INT8U PriorityVector[configMAX_TASK_INSTALL];   ///< Allocate task priorities

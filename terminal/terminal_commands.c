@@ -143,24 +143,24 @@ const char Modbus_HelpText_str[] PROGMEM = Modbus_HelpText_def;
 
 #endif
 
-char entradas[CONSOLE_BUFFER_SIZE]; //vetor para a entrada de dados
-
-void newline(void)
+void terminal_newline(void)
 {
 	printf_terminal_P(PSTR("\n\r"));	
+	//putchar_terminal('\n');
+	//putchar_terminal('\r');
 }
 
 // BRTOS version Command
 void term_cmd_ver(char *param)
 {
   (void)*param;
-  newline();
+  terminal_newline();
 #if COLDUINO  
   printf_terminal((CHAR8*)version);
 #elif ARDUINO    
   printf_terminal_P((CHAR8*)pgm_read_word(&(BRTOSStringTable[0])));
 #endif  
-  newline();
+  terminal_newline();
 }
 
 
@@ -173,7 +173,7 @@ CONST command_t ver_cmd =
 void term_cmd_top(char *param)
 {
   (void)*param;
-  newline();
+  terminal_newline();
   Transmite_CPU_Load(USE_USB);
   Transmite_Uptime(USE_USB);
   Transmite_RAM_Ocupada(USE_USB);
@@ -189,7 +189,7 @@ CONST command_t top_cmd = {
 void term_cmd_rst(char *param)
 {
   (void)*param;
-  newline();
+  terminal_newline();
   Reason_of_Reset(USE_USB);
 }
 
@@ -210,7 +210,7 @@ void term_cmd_temp(char *param)
   UserExitCritical();
   
   PrintDecimal(temp, string);
-  newline();
+  terminal_newline();
   printf_terminal((CHAR8*)&string[3]);
   printf_terminal_P(PSTR(" degrees"));
 }
@@ -331,7 +331,7 @@ time_format_error:
 #endif	
 		
 	INT8S cmp = CompareDateTime(&rtc,&datetime);
-	newline();
+	terminal_newline();
 	if( cmp == 0 || cmp == -1)
 	{				
 		if (cmp == 0)		
@@ -352,7 +352,7 @@ time_format_error:
 print_date:
 				
 	/* print current Date & Time */
-	newline();
+	terminal_newline();
 	
 	/* day */
 	Print2Digits(datetime.Day, ZEROS_ALIGN, string);
@@ -382,7 +382,7 @@ print_date:
 	/* seconds */
 	Print2Digits(datetime.Sec, ZEROS_ALIGN, string);
 	printf_terminal((CHAR8*)string);	
-	newline();
+	terminal_newline();
 
 #else	
 	print_date:
@@ -393,9 +393,9 @@ print_date:
 		PrintDateTime(&timestamp, string);
 				
 		/* print current Date & Time */
-		newline();
+		terminal_newline();
 		printf_terminal((CHAR8*)string);
-		newline();
+		terminal_newline();
 #endif		
 	
 }
@@ -409,9 +409,8 @@ CONST command_t setget_time_cmd = {
 void term_cmd_cat(char *param)
 {  
   
-  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);  
+  char entradas[CONSOLE_BUFFER_SIZE];
   strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1); 
- 
   (void)ReadFile(entradas,VERBOSE_ON);
   
 }
@@ -426,8 +425,8 @@ void term_cmd_ls(char *param)
 {  
   
   (void)*param;
-  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
-  (void)ListFiles((INT8U*)entradas);
+  char entradas[CONSOLE_BUFFER_SIZE];
+  (void)ListFiles(entradas);
   
 }
 
@@ -439,9 +438,8 @@ CONST command_t ls_cmd = {
 void term_cmd_cd(char *param)
 {  
   
-  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);  
-  strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1); 
-  
+  char entradas[CONSOLE_BUFFER_SIZE]; 
+  strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1);   
   (void)ChangeDir(entradas,VERBOSE_ON);
 
 }
@@ -481,7 +479,7 @@ CONST command_t sr_cmd = {
 void term_cmd_rm(char *param)
 {  
 
-  memset(entradas,0x00,CONSOLE_BUFFER_SIZE); 
+  char entradas[CONSOLE_BUFFER_SIZE];
   strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1);
   
   if (entradas[0] == '*') // remove all
@@ -491,13 +489,13 @@ void term_cmd_rm(char *param)
 	strncpy(entradas, "/", sizeof(entradas));  /* Directory to be emptied */
 	fr = empty_directory(entradas);
 
-	newline();
+	terminal_newline();
 	if (fr) {		
 		SDCard_PrintStatus(VERBOSE_ON, SD_CARD_ERROR);
 	} else {
 		SDCard_PrintStatus(VERBOSE_ON, FILE_REMOVED);
 	}	
-	newline();
+	terminal_newline();
   }
   else
   {	 
@@ -515,6 +513,7 @@ void term_cmd_rn(char *param)
 {  
 
   char *p;
+  char entradas[CONSOLE_BUFFER_SIZE];
   CHAR8 name[(CONSOLE_BUFFER_SIZE)]; //vetor para a leitura dos nomes dos arquivos  
   
   memset(name,0x00,CONSOLE_BUFFER_SIZE);  
@@ -539,7 +538,7 @@ CONST command_t rn_cmd = {
 void term_cmd_cr(char *param)
 {  
   
-  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);  
+  char entradas[CONSOLE_BUFFER_SIZE];
   strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1); 
  
   (void)CreateFile(entradas,VERBOSE_ON);
@@ -553,8 +552,7 @@ CONST command_t cr_cmd = {
 // Make Dir Command
 void term_cmd_mkdir(char *param)
 {  
-     
-  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
+  char entradas[CONSOLE_BUFFER_SIZE];  
   strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1); 
   (void)CreateDir(entradas,VERBOSE_ON);
 }
@@ -569,9 +567,7 @@ void term_cmd_cp(char *param)
 {  
   char *p;
   CHAR8 name[(CONSOLE_BUFFER_SIZE)]; //vetor para a leitura dos nomes dos arquivos
-  
-  memset(name,0x00,CONSOLE_BUFFER_SIZE);
-  memset(entradas,0x00,CONSOLE_BUFFER_SIZE);
+  char entradas[CONSOLE_BUFFER_SIZE];
   
   if ((p = strrchr(param, ' ')))
   {
@@ -592,7 +588,6 @@ CONST command_t cp_cmd = {
 // Write File Test Command
 void term_cmd_wt(char *param)
 {    
- strncpy(entradas, param,CONSOLE_BUFFER_SIZE-1);   
  (void)WriteUptimeLog(VERBOSE_ON);
  
 }
@@ -613,7 +608,7 @@ void term_cmd_echo(char *param)
 {
 	INT8U caracter;
 	if(param == NULL) return;
-	newline();
+	terminal_newline();
 
 #if UART1_MUTEX
 	if(stdout == USE_UART1)
@@ -663,7 +658,7 @@ CONST command_t echo_cmd = {
 void term_cmd_echo_out(char *param)
 {	
 	INT8U std_output;
-	newline();
+	terminal_newline();
 	if(param != NULL)
 	{		
 		std_output = (INT8U)(param[0]-'0');
@@ -680,13 +675,13 @@ void term_cmd_echo_out(char *param)
 			}
 			printf_terminal_P(PSTR("STDOUT = "));
 			putchar_terminal( (CHAR8)param[0]);
-			newline();
+			terminal_newline();
 			return;
 		}
 	}
 
 	printf_terminal_P(PSTR("INVALID STDOUT"));
-	newline();
+	terminal_newline();
 }
 
 CONST command_t echo_stdout_cmd = {
@@ -746,7 +741,7 @@ CONST char cmd_esp_help[] PROGMEM = {
 };
 void term_cmd_esp(char *param)
 {	
-	newline();
+	terminal_newline();
 	switch (param[0])
 	{
 		case '1': at_esp_init();
@@ -792,7 +787,8 @@ CONST char cmd_m590_help[] PROGMEM = {
 
 void term_cmd_m590(char *param)
 {
-	newline();
+	char entradas[CONSOLE_BUFFER_SIZE];
+	terminal_newline();
 	switch (param[0])
 	{
 		case 'i': at_m590_init();
@@ -843,7 +839,8 @@ CONST char cmd_null_modem_help[] PROGMEM = {
 
 void term_cmd_null_modem(char *param)
 {	
-	newline();
+	char entradas[CONSOLE_BUFFER_SIZE];
+	terminal_newline();
 	switch (param[0])
 	{
 		case 'i': at_null_modem_init();
@@ -898,7 +895,7 @@ void term_cmd_modbus(char *param)
 	int input;
 	uint8_t k = 0;
 	
-	newline();
+	terminal_newline();
 	switch (param[0])
 	{
 		case 'a': 
@@ -936,7 +933,7 @@ void term_cmd_modbus(char *param)
 			}else
 			{
 				printf_terminal_P(PSTR("Modbus erro"));
-				newline();
+				terminal_newline();
 			}
 			break;
 		default:

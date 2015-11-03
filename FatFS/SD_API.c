@@ -64,8 +64,9 @@
   
 static FATFS FATFS_Obj;
 
-// File object
-FIL      file_obj;
+
+FIL      file_obj;  // File object
+DIR		 Dir;	 // Directory object
 
 #if _USE_LFN
 CHAR8 Lfname[256];
@@ -261,15 +262,14 @@ INT8U SDCard_SafeRemove(INT8U verbose)
   }    
 }
 
-
-void ListFiles(CHAR8 *pname1)
+	  
+void ListFiles(CHAR8 *ptr)
 {
 	 FRESULT f_res;
 	 INT32U  p1, s1, s2;
-	 CHAR8   *ptr;
-	 FATFS   *fs;	// Pointer to file system object*/
-	 FILINFO Finfo;  // File Info object	 
-	 DIR     Dir; // Directory object
+	 FILINFO Finfo;  // File Info object
+	 FATFS   *fs;	 // Pointer to file system object*/
+	 CHAR8 _dir[] = ".";
     
     #if (SD_FAT_MUTEX_EN == 1)
       OSMutexAcquire(SDCardResource);
@@ -278,14 +278,9 @@ void ListFiles(CHAR8 *pname1)
     if (GetCardInit())
     {      
 			// list files
-			PRINT_P(TRUE, PSTR("\n\r"));
-      		if (pname1 == NULL)
-      		{
-      		  ptr = ".";
-      		}else
-      		{
-      		  ptr = pname1;
-      		}
+			terminal_newline();
+      		if (ptr == NULL) ptr = _dir;
+      		
       		p1 = s1 = s2 = 0;
 			f_res = f_opendir(&Dir, ptr);
 				
@@ -324,7 +319,7 @@ void ListFiles(CHAR8 *pname1)
 				#if _USE_LFN
   					PRINT(TRUE,"  %s", Lfname);					
 				#endif
-  					PRINT_P(TRUE, PSTR("\n\r"));
+  					terminal_newline();
 				
   				}
 			}

@@ -44,6 +44,8 @@
 
 #define DEBUG_MONITOR 1
 
+char BufferText[32];
+
 #if DEBUG_MONITOR
 #if COLDUINO
 #define PSTR(x)				(x)

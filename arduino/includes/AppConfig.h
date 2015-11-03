@@ -6,7 +6,7 @@
 /////                                                     /////
 ///////////////////////////////////////////////////////////////
 
-#define SIMULATION			0
+#define SIMULATION			1
 #define SD_PRESENTE         1 
 #define RTC_PRESENTE  		0
 #define MODEM_PRESENTE		0
@@ -47,8 +47,8 @@
 
 #elif ARDUINO
 #define TASK_STACKSIZE_SYSTEM_TIME		(64)
-#define TASK_STACKSIZE_MONITORS			(1024*2+512)
-#define TASK_STACKSIZE_TERMINAL			(448)
+#define TASK_STACKSIZE_MONITORS			(1024)
+#define TASK_STACKSIZE_TERMINAL			(1024)
 
 #define TASK_PRIORITY_SYSTEM_TIME		7
 #define TASK_PRIORITY_MONITORS			3

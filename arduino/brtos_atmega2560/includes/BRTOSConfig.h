@@ -72,7 +72,7 @@
 #define BRTOS_MAX_MBOX         0
 
 // Define o número máximo de filas (limita a alocação de memória p/ filas)
-#define BRTOS_MAX_QUEUE        3
+#define BRTOS_MAX_QUEUE        2
 
 // TickTimer Defines
 #define configCPU_CLOCK_HZ            (INT32U)16000000
@@ -84,7 +84,7 @@
 
 //Stack Defines
 // P/ ATMEGA2560 com 8kB de RAM, configurado com 4kB p/ STACK Virtual
-#define HEAP_SIZE				 128*32
+#define HEAP_SIZE				 70*32
 
 // Queue heap defines
 #define QUEUE_HEAP_SIZE			 (2*32 + 3*32)

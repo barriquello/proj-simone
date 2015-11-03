@@ -1208,7 +1208,7 @@ extern const CHAR8 *version;
 #endif
 
 #if ((PROCESSOR == ATMEGA) || (PROCESSOR == PIC18))
-extern CHAR8 BufferText[32];
+//extern CHAR8 BufferText[32];
 #endif
 
 #if (SP_SIZE == 32)
