@@ -158,7 +158,7 @@ void printf_terminal_P(const char *s)
  * Assumptions:
  *
  *****************************************************************************/
-void printf_terminal(char *s)
+void printf_terminal(const char *s)
 {
   //terminal_acquire();
   while(*s)

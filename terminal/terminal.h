@@ -78,7 +78,7 @@ int term_cmp_str(char *a, char *b);
 void SetSilentMode(char mode);
 unsigned char TerminalBackup(char *backup);
 
-void printf_terminal(char *s);
+void printf_terminal(const char *s);
 void putchar_terminal(char c);
 void getchar_terminal(char *c);
 void terminal_acquire(void);

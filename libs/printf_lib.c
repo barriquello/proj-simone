@@ -24,7 +24,6 @@
 	replace outbyte(c) by your own function call.
 
 */
-#pragma warn_implicitconv off
 
 #include <stdarg.h>
 
@@ -33,6 +32,10 @@
 #define PUTCHAR(x)		putchar_terminal(x)
 #else
 #define PUTCHAR(x)		putchar(x)
+#endif
+
+#if COLDUINO
+#pragma warn_implicitconv off
 #endif
 
 #include "printf_lib.h"
@@ -56,7 +59,8 @@ static void printchar(char **str, uint8_t c)
 
 static uint16_t prints(char **out, const char *string, uint8_t width, uint8_t pad)
 {
-	REGISTER uint16_t pc = 0, padchar = ' ';
+	REGISTER uint16_t pc = 0;
+	REGISTER uint8_t padchar = ' ';
 
 	if (width > 0) {
 		REGISTER uint8_t len = 0;

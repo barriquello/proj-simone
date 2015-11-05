@@ -121,6 +121,17 @@
 #endif
 
 
+#ifndef PROGMEM
+#define PROGMEM
+#endif
+
+#ifndef PGM_P
+#define PGM_P const char *
+#endif
+
+#ifndef pgm_read_word
+#define pgm_read_word(x) 	(x)
+#endif
 
 
 
