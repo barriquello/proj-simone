@@ -120,7 +120,7 @@ void main_app(void)
 		sleep_forever();
 	};
 	
-#if 0	
+#if 1	
 	if (InstallTask(&main_monitor, TaskName_Monitors, TASK_STACKSIZE_MONITORS, TASK_PRIORITY_MONITORS, NULL) != OK)
 	{
 		sleep_forever();

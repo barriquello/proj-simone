@@ -655,7 +655,7 @@ void main_monitor(void)
 	fflush(stdout);
 #endif
 
-#ifndef _WIN32		
+#if (COLDUINO || ARDUINO) && !SIMULATION
 		/* Detect and init the SD card */
 		while(SDCard_ResourceInit(SDCARD_MUTEX_PRIORITY) == NULL)
 		{
