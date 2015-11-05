@@ -201,8 +201,12 @@ void Terminal_Task(void)
 	printf_terminal_P(PSTR("Terminal started\r\n"));
 	while (1)
 	{
-		/* process incoming terminal commands */
-		terminal_process();
+		#if !SIMULATION
+			/* process incoming terminal commands */
+			terminal_process();
+		#else
+			DelayTask(1000);
+		#endif		
 	}
 }
 

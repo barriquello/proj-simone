@@ -33,18 +33,24 @@
 
 #define SD_PRINT 1
 
+/* print configuration */
 #if SD_PRINT
 #if ARDUINO
 #define PRINT(a,...)	if(a) {	printf_lib(__VA_ARGS__); }
+#define PRINTA(...)		do{printf_lib(__VA_ARGS__); }while(0);
 #define PRINT_P(a,...)	if(a) {	printf_terminal_P(__VA_ARGS__); }
-//#define PRINT(a,...) if(a) {printf_lib(__VA_ARGS__);}
+#define PRINTA_P(...)	do{printf_terminal_P(__VA_ARGS__); }while(0);
 #else
-#define PRINT(a,...) if(a) { printf_lib(__VA_ARGS__);}
+#define PRINT(a,...)	if(a) { printf_lib(__VA_ARGS__);}
+#define PRINTA(...)		do{printf_lib(__VA_ARGS__); }while(0);
 #define PRINT_P(a,...)	if(a) {	printf_lib(__VA_ARGS__); }
+#define PRINTA_P(...)	do{printf_lib(__VA_ARGS__); }while(0);
 #endif
 #else
 #define PRINT(a,...)
+#define PRINTA(...)	
 #define PRINT_P(a,...)
+#define PRINTA_P(...)	
 #endif
 
 #if COLDUINO || ARDUINO
@@ -73,7 +79,7 @@ CHAR8 Lfname[256];
 #endif
 
 
-//Mensagens padrão da API do SD
+/* Mensagens padrão da API do SD */
 #define SD_API_FILE_NOT_FOUND_DEF		"File or directory not found.\n\r"
 #define SD_API_FILE_INVALID_DEF			"Invalid file or directory name.\n\r"
 #define SD_API_CARD_DEF					"\r\nSD card "
@@ -199,7 +205,6 @@ INT8U SDCard_Init(INT8U verbose)
 				  return MOUNT_SD_FAILS;
 				}else
 				{     
-				  #if 1	  
 				  switch(GetCardType())
 				  {
 					case CT_MMC:
@@ -222,7 +227,6 @@ INT8U SDCard_Init(INT8U verbose)
                 		PRINT_P((verbose == VERBOSE_ON),PSTR(" Unknown"));
 					  break;
 				  }
-				  #endif
 				  SDCard_PrintStatus(verbose, SD_CARD_MOUNTED);	
 			  return SD_OK;
 			}
@@ -302,9 +306,7 @@ void ListFiles(CHAR8 *ptr)
   							s1++;
   							p1 += Finfo.fsize;
   						}
-#if 0
-  					 
-#else
+
 					PRINT(TRUE,"%c%c%c%c%c %u/%02u/%02u %02u:%02u %9l  %s",
 					(Finfo.fattrib & AM_DIR) ? 'D' : '-',
 					(Finfo.fattrib & AM_RDO) ? 'R' : '-',
@@ -314,7 +316,7 @@ void ListFiles(CHAR8 *ptr)
 					(Finfo.fdate >> 9) + 1980, (Finfo.fdate >> 5) & 15, Finfo.fdate & 31,
 					(Finfo.ftime >> 11), (Finfo.ftime >> 5) & 63,
 					Finfo.fsize, &(Finfo.fname[0]));
-#endif						 
+										 
                 Finfo.fname[0] = 0;
 				#if _USE_LFN
   					PRINT(TRUE,"  %s", Lfname);					
@@ -324,11 +326,12 @@ void ListFiles(CHAR8 *ptr)
   				}
 			}
 
-			PRINT(TRUE,"%4l File(s), %l bytes total \n\r%4l Dir(s)", s1, p1, s2);
+			PRINTA("%4l File(s), %l bytes total \n\r%4l Dir(s)", s1, p1, s2);
 
 			if (f_getfree(ptr, (DWORD*)&p1, &fs) == FR_OK)
-			{
-				PRINT(TRUE,", %l bytes free \n\r", (uint32_t)(p1 * fs->csize * 512));
+			{				
+				PRINTA(", %l", (uint32_t)(p1 * fs->csize * 512));
+				PRINTA_P(PSTR("bytes free \n\r"));
 			}     
 	}
 	else
@@ -447,16 +450,14 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
 			SetFatTimer((INT32U)0);     
 			p1 = f_size(&file_obj);
         
-			PRINT_P(TRUE,PSTR("file size:"));
-			PRINT(TRUE,"%u", p1); 
-			PRINT_P(TRUE, PSTR("bytes.\n\r"));
+			PRINTA_P(PSTR("file size: ")); PRINTA("%u", p1); PRINTA_P(PSTR(" bytes.\n\r"));
 			while (p1) 
 			{
 				cnt = MIN(p1,sizeof(Buff));
 				p1 -= cnt;
 				if (f_read(&file_obj, (CHAR8*)Buff, cnt, (UINT*)&s2) != FR_OK)
 				{
-				  PRINT_P(TRUE,PSTR("\n\r file read error. \n\r"));
+				  PRINTA_P(PSTR("\n\r file read error. \n\r"));
 				  break;
 				}else
 				{
@@ -475,10 +476,8 @@ INT8U ReadFile(CHAR8 *FileName, INT8U verbose)
 			GetFatTimer(&s2);
 			f_close(&file_obj);
         
-			PRINT(TRUE,"\n\r%u", p2);
-			PRINT_P(TRUE, PSTR("bytes read with"));  			  
-			PRINT(TRUE,"%u", s2 ? (p2 * 100 / s2) : 0); 
-			PRINT_P(TRUE,PSTR("bytes/sec.\n\r"));   
+			PRINTA("\n\r%u", p2);PRINTA_P(PSTR(" bytes read with "));  			  
+			PRINTA("%u", s2 ? (p2 * 100 / s2) : 0); PRINTA_P(PSTR(" bytes/sec.\n\r"));   
         
 			#if (SD_FAT_MUTEX_EN == 1)
 			  OSMutexRelease(SDCardResource);
@@ -810,7 +809,7 @@ INT8U CopyFile(CHAR8 *SrcFileName,CHAR8 *DstFileName, INT8U verbose)
             
        GetFatTimer(&p2);                                   
        PRINT((verbose == VERBOSE_ON),"\n\r%l", p1);    
-	   PRINT_P((verbose == VERBOSE_ON),PSTR("bytes copied with"));    
+	   PRINT_P((verbose == VERBOSE_ON),PSTR(" bytes copied with "));    
 	   PRINT((verbose == VERBOSE_ON),"%l", p2 ? (p1 * 100 / p2) : 0);    
 	   PRINT_P((verbose == VERBOSE_ON),PSTR(" bytes/sec.\n\r"));    
       
@@ -841,7 +840,7 @@ INT8U WriteUptimeLog(INT8U verbose)
       OSMutexAcquire(SDCardResource);
     #endif
         
-        if (f_open(&file_obj, "uptime.txt", 	FA_WRITE) == FR_NO_FILE)
+        if (f_open(&file_obj, "uptime.txt", FA_WRITE) == FR_NO_FILE)
         {     
           f_open(&file_obj, "uptime.txt", 	FA_CREATE_NEW | FA_WRITE);
         }

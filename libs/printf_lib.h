@@ -34,7 +34,7 @@ int vsprintf_lib(char *out, const char *format, ...);
 #ifdef __AVR__
 #include "hardware.h"
 #define SNPRINTF(a,b,c,...) 	snprintf_P(a,b,(PGM_P)pgm_read_word(c),__VA_ARGS__)
-#define VSPRINTF(a,b,...)		vsprintf_P(a,(PGM_P)pgm_read_word(b),__VA_ARGS__)
+#define VSPRINTF(...)			vsprintf_lib(__VA_ARGS__); //vsprintf_P(a,(PGM_P)pgm_read_word(b),__VA_ARGS__)
 #define STRCPY(a,b)				strncpy_P(a,(PGM_P)pgm_read_word(b), SIZEARRAY(a))
 #define STRCPY_P(a,b)			strncpy_P(a,b, SIZEARRAY(a))
 #else

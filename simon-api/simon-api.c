@@ -82,6 +82,7 @@ uint8_t simon_init(const modem_driver_t* _modem)
 	if(modem->init() == FALSE)
 	{
 		PRINTF("modem not ok");
+		//return MODEM_ERR;
 	}
 	in = modem->receive;
 	out = modem->send;

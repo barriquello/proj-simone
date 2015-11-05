@@ -111,7 +111,7 @@ void getchar_terminal(char *c)
 	INT8U data;	
 	(void)OSQueuePend(USB, &data, 0);
 	*c=(char)data;
-#elif ARDUINO	
+#elif ARDUINO 	
 	while(1)
 	{			
 			if(getchar_uart0(c, 10) == TRUE)
@@ -126,7 +126,11 @@ void getchar_terminal(char *c)
 
 void putchar_terminal(char c)
 {
-	putch(c);
+	if(putch != NULL)
+	{
+		putch(c);
+	}
+	
 }
 
 #if ARDUINO

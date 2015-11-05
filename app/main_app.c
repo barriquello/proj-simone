@@ -95,10 +95,9 @@ char check_ints(void)
 void main_app(void)
 {
 	
-#if !SIMULATION
+
 	/* init the MCU system */
 	System_Init();
-#endif
 
 	if(check_ints() == 0)
 	{

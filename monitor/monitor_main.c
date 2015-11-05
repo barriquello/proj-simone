@@ -141,8 +141,13 @@ static uint8_t 	monitores_em_uso = 0;
 monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 monitor_config_ok_t config_check;
 
+#if SIMULATION
+#define TICKS2MSEC(x)	(x/500)
+#else
+#define TICKS2MSEC(x)	(x)
+#endif
 
-#define DEBUG_MONITOR 0
+#define DEBUG_MONITOR	1
 
 #if DEBUG_MONITOR
 #if _WIN32
@@ -152,11 +157,13 @@ monitor_config_ok_t config_check;
 #define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
 #elif ARDUINO 
 #define PRINTF(...)			printf_lib(__VA_ARGS__);
+#define PRINT(...)			do{printf_terminal_P(__VA_ARGS__);}while(0);
 #define DPRINTF(...)		print_erro(__VA_ARGS__);
 #define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
 #else
 #define PSTR(x)			(x)
 #define PRINTF(...) 	printf_lib(__VA_ARGS__);
+#define PRINT(...)		printf_lib(__VA_ARGS__);
 #define DPRINTF(...) 	print_erro(__VA_ARGS__);
 #define PRINT_ERRO(...) print_erro(__VA_ARGS__);
 #endif
@@ -165,6 +172,7 @@ monitor_config_ok_t config_check;
 #define PSTR(x)		(x)
 #endif
 #define PRINTF(...)
+#define PRINT(...)
 #define DPRINTF(...)
 #define PRINT_ERRO(...)
 #endif
@@ -173,10 +181,12 @@ monitor_config_ok_t config_check;
 #define CONST const
 #endif
 
+#define monitor_error_msg0_def		"\r\nConfig erro: faltando "
+#define monitor_error_msg1_def		"\r\nMonitor erro: %d "
 #if ARDUINO
 char BufferText[32];
-const char monitor_error_msg0[] PROGMEM = "\r\nConfig erro: faltando ";
-const char monitor_error_msg1[] PROGMEM = "\r\nMonitor erro: %d ";
+const char monitor_error_msg0[] PROGMEM = monitor_error_msg0_def;
+const char monitor_error_msg1[] PROGMEM = monitor_error_msg1_def;
 PGM_P CONST monitor_error_msg[] PROGMEM =
 {
 	monitor_error_msg0,
@@ -185,8 +195,8 @@ PGM_P CONST monitor_error_msg[] PROGMEM =
 #else
 const char* monitor_error_msg[] =
 {
-	"\r\nConfig erro: faltando ",
-	"\r\nMonitor erro: %d "
+	monitor_error_msg0_def,
+	monitor_error_msg1_def
 };
 #endif
 /*---------------------------------------------------------------------------*/
@@ -276,12 +286,6 @@ static char getchar_timeout(int timeout)
 {(void)timeout; return 0;}
 #endif
 
-#if 0
-static struct pt monitor_input_pt;
-static char set_input = 0;
-mon_timer_t input_timer;
-#endif
-
 volatile uint8_t monitor_running = 1;
 volatile uint8_t monitor_uploading = 1;
 volatile uint8_t monitor_is_connected = 1;
@@ -291,6 +295,10 @@ CONST char config_inifile[] = "config.ini";
 /*---------------------------------------------------------------------------*/
 
 #ifdef _WIN32
+static struct pt monitor_input_pt;
+static char set_input = 0;
+mon_timer_t input_timer;
+
 static
 PT_THREAD(monitor_set_input(struct pt *pt))
 {
@@ -385,40 +393,6 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 #endif
 
 
-//#define API_KEY  "90a004390f3530d0ba10199ac2b1ac3d"
-//#define SERVER_NAME "emon-gpsnetcms.rhcloud.com"
-
-#if 0
-#define END_STRING "HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n"
-#define SEND_STRING "GET /input/post.json?json={p:3}&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n"
-#define SEND_STRING1 "GET /input/post.json?json={"
-#define SEND_STRING2 ("}&apikey=" API_KEY " HTTP/1.1\r\nHost: " SERVER_NAME "\r\n\r\n\r\n")
-#define SEND_STRING3 "}&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n"
-#endif
-
-#if 0
-uint8_t build_data_vector(char* ptr_data, uint8_t *data, uint8_t len)
-{
-	uint16_t offset = 0;
-	uint16_t max_len = 4*len;
-
-	while(len > 0)
-	{
-		len--;
-		offset = SNPRINTF(ptr_data, max_len,"%d,", *data);
-		if(offset < 0 || offset >= max_len)
-		{
-			return 1;
-		}
-		data++;
-		ptr_data+= offset;
-	}
-	*(--ptr_data) = '\0'; // null terminate string
-	return 0;
-}
-#endif
-
-
 #define StringToInteger(value) strtoul(value,NULL,0);
 
 static int mon_cnt = 0;
@@ -440,7 +414,7 @@ static int callback_inifile(const char *section, const char *key, const char *va
 			if(num_monitores > MAX_NUM_OF_MONITORES)
 			{
 				#if ARDUINO
-				strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]), sizeof(BufferText));
+				strncpy_P(BufferText, (PGM_P)pgm_read_word(&(monitor_error_msg[0])), sizeof(BufferText));
 				PRINT_ERRO(BufferText);
 				#else
 				PRINT_ERRO(monitor_error_msg[0]);
@@ -541,13 +515,13 @@ static void config_check_erro(void)
 	{
 		
 		#if ARDUINO
-		strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]), sizeof(BufferText));
-		PRINT_ERRO(BufferText);
+			STRCPY_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]));
+			PRINT_ERRO(BufferText);
 		#else
-		PRINT_ERRO(monitor_error_msg[0]);
+			PRINT_ERRO(monitor_error_msg[0]);
 		#endif
-		PRINT_ERRO(PSTR("simon server \n\r."));
-		erro++;
+			PRINT_ERRO(PSTR("simon server \n\r."));
+			erro++;
 	}
 	if(config_check.bit.ip_ok == 0)
 	{
@@ -621,29 +595,37 @@ void main_monitor(void)
 #endif	
 	  
 #if _WIN32
-	extern const modem_driver_t win_http;
-	if(simon_init(&win_http) != MODEM_OK)
-	{
-		PRINT_ERRO (PSTR("Simon init error\r\n"));
-	}
+#define modem_driver	win_http
+#elif MODEM_PRESENTE
+#define modem_driver	m590_driver
 #else
-#if MODEM_PRESENTE
-	/* modem gprs driver */
-	extern const modem_driver_t m590_driver;
-	if(simon_init(&m590_driver) != MODEM_OK)
-	{
-		PRINT_ERRO(PSTR("Simon init error\r\n"));
-	}
-#else
-	/* null modem driver */
-	extern const modem_driver_t null_modem_driver;
-	if(simon_init(&null_modem_driver) != MODEM_OK)
-	{
-		PRINT_ERRO(PSTR("Simon init error\r\n"));
-	}
-#endif
+#define modem_driver	null_modem_driver
 #endif
 
+	/* modem gprs driver */
+	extern const modem_driver_t modem_driver;
+	
+	DelayTask(TICKS2MSEC(1000));
+	PRINT(PSTR("Simon init: "));
+		
+	if(simon_init(&(modem_driver)) != MODEM_OK)
+	{
+		PRINT(PSTR(" error\r\n"));
+		//terminal_release();	
+		#if 0	
+		#if ARDUINO
+			STRCPY(BufferText,PSTR("Simon init error\r\n"));
+			PRINT_ERRO(BufferText);
+		#else
+			PRINT_ERRO("Simon init error\r\n");
+		#endif
+		#endif
+			sleep_forever();
+	}
+
+	PRINT(PSTR(" ok\r\n"));
+	//terminal_release();
+		
 #if _WIN32	
 	PT_INIT(&monitor_input_pt);
 	PRINTF("help:\r\nq-quit\r\np-stop logger\r\nc-continue logger\r\ns-synch\r\nu-start upload\r\nv-stop upload\r\n");
@@ -673,7 +655,8 @@ void main_monitor(void)
 	ini_browse(callback_inifile, NULL, config_inifile);
 	config_check_erro();
 
-	DPRINTF(PSTR("Config OK\r\n"));
+	PRINT(PSTR("Config OK\r\n"));
+	//DPRINTF(PSTR("Config OK\r\n"));
 	
 #if COLDUINO || ARDUINO
 	DelayTask(5000);	
