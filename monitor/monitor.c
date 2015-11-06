@@ -51,18 +51,22 @@ char BufferText[32];
 #define PSTR(x)				(x)
 #define PRINTF(...)			printf_lib(__VA_ARGS__);
 #define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
+#define PRINT(...)			printf_lib(__VA_ARGS__);
 #elif ARDUINO
 #define PRINTF(...)			printf_lib(__VA_ARGS__);
 #define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
+#define PRINT(...)			do{printf_terminal_P(__VA_ARGS__);}while(0);
 #else
 #define PSTR(x)				(x)
 #define PRINTF(...) 		printf(__VA_ARGS__);
+#define PRINT(...)			printf(__VA_ARGS__);
 #define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
 #endif
 #else
 #define PSTR(x)			(x)
 #define PRINTF(...)
 #define PRINT_ERRO(...)
+#define PRINT(...)
 #endif
 
 #define MONITOR_TESTS	0
@@ -92,12 +96,12 @@ CONST modbus_slave_t * modbus_slaves_all[MODBUS_NUM_SLAVES] =
 
 
 #include <stdarg.h>
+#define error_file		"erro.txt"
 /*-----------------------------------------------------------------------------------*/
 void print_erro(const char *format, ...)
 {
-	
-	LOG_FILETYPE stderr_f;
-	#define error_file		"erro.txt"
+		
+	LOG_FILETYPE stderr_f;	
 	
   va_list argptr;
   va_start(argptr, format);
@@ -115,6 +119,25 @@ void print_erro(const char *format, ...)
   (void)monitor_seek_end(&stderr_f);
   (void)monitor_write(monitor_char_buffer,&stderr_f);
   (void)monitor_close(&stderr_f);
+}
+
+void prints_erro(const char *string)
+{
+	 LOG_FILETYPE stderr_f;
+		
+	 if(!monitor_openappend(error_file,&stderr_f))
+	 {
+		 PRINT(PSTR("open file error \r\n"));
+		 if(!monitor_openwrite(error_file,&stderr_f))
+		 {
+			 PRINT(PSTR("create file error \r\n"));
+			 return;
+		 }
+	 }
+	 /* log error */
+	 (void)monitor_seek_end(&stderr_f);
+	 (void)monitor_write(string,&stderr_f);
+	 (void)monitor_close(&stderr_f);
 }
 
 #if 0

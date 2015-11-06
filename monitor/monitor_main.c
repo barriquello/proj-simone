@@ -160,6 +160,7 @@ monitor_config_ok_t config_check;
 #define PRINT(...)			do{printf_terminal_P(__VA_ARGS__);}while(0);
 #define DPRINTF(...)		print_erro(__VA_ARGS__);
 #define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
+#define PRINTS_ERRO(s)		prints_erro(s);
 #else
 #define PSTR(x)			(x)
 #define PRINTF(...) 	printf_lib(__VA_ARGS__);
@@ -414,12 +415,12 @@ static int callback_inifile(const char *section, const char *key, const char *va
 			if(num_monitores > MAX_NUM_OF_MONITORES)
 			{
 				#if ARDUINO
-				strncpy_P(BufferText, (PGM_P)pgm_read_word(&(monitor_error_msg[0])), sizeof(BufferText));
-				PRINT_ERRO(BufferText);
+					STRCPY(BufferText, monitor_error_msg[0]); PRINT_ERRO(BufferText);
+					STRCPY(BufferText, PSTR("num_monitores superior ao suportado\n\r.")); PRINT_ERRO(BufferText);
 				#else
-				PRINT_ERRO(monitor_error_msg[0]);
-				#endif
-				PRINT_ERRO(PSTR("num_monitores superior ao suportado\n\r."));
+					PRINT_ERRO(monitor_error_msg[0]);
+					PRINT_ERRO("num_monitores superior ao suportado\n\r.");
+				#endif					
 			}else
 			{
 				config_check.bit.num_mon_ok=1;
@@ -592,8 +593,23 @@ void main_monitor(void)
 	uint16_t diff;
 #else
 	uint8_t status = 0;
-#endif	
-	  
+#endif	  
+
+	DelayTask(TICKS2MSEC(1000));
+	
+	#if (COLDUINO || ARDUINO) && !SIMULATION
+	/* Detect and init the SD card */
+	while(SDCard_ResourceInit(SDCARD_MUTEX_PRIORITY) == NULL)
+	{
+		DelayTask(1000);
+	}
+	do
+	{
+		status = SDCard_Init(VERBOSE_OFF);
+		DelayTask(1000);
+	} while (status != SD_OK);
+	#endif
+	
 #if _WIN32
 #define modem_driver	win_http
 #elif MODEM_PRESENTE
@@ -601,30 +617,29 @@ void main_monitor(void)
 #else
 #define modem_driver	null_modem_driver
 #endif
-
+	
 	/* modem gprs driver */
 	extern const modem_driver_t modem_driver;
-	
-	DelayTask(TICKS2MSEC(1000));
+		
+	terminal_acquire();
 	PRINT(PSTR("Simon init: "));
 		
 	if(simon_init(&(modem_driver)) != MODEM_OK)
-	{
+	{		
 		PRINT(PSTR(" error\r\n"));
-		//terminal_release();	
-		#if 0	
+			
 		#if ARDUINO
-			STRCPY(BufferText,PSTR("Simon init error\r\n"));
-			PRINT_ERRO(BufferText);
-		#else
+			STRCPY_P(BufferText,PSTR("Simon init error\r\n")); PRINTF(BufferText); PRINTS_ERRO(BufferText);
+		#else		
 			PRINT_ERRO("Simon init error\r\n");
-		#endif
-		#endif
-			sleep_forever();
+		#endif	
+		
+		terminal_release();
+		sleep_forever();
 	}
 
 	PRINT(PSTR(" ok\r\n"));
-	//terminal_release();
+	terminal_release();
 		
 #if _WIN32	
 	PT_INIT(&monitor_input_pt);
@@ -636,19 +651,6 @@ void main_monitor(void)
 	printf ("Current local time and date: %s", asctime(&t));
 	fflush(stdout);
 #endif
-
-#if (COLDUINO || ARDUINO) && !SIMULATION
-		/* Detect and init the SD card */
-		while(SDCard_ResourceInit(SDCARD_MUTEX_PRIORITY) == NULL)
-		{
-			DelayTask(1000);
-		}
-		do
-		{
-			status = SDCard_Init(VERBOSE_OFF);
-			DelayTask(1000);
-		} while (status != SD_OK);
-#endif		
 		
 	/* Read config.ini file and check configuration */
 	config_check.byte = 0;

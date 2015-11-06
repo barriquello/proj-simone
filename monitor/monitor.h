@@ -136,6 +136,7 @@ static int monitor_rename(TCHAR *source, const TCHAR *dest)
 #endif
 
 void print_erro(const char *format, ...);
+void prints_erro(const char *string);
 
 #if 0
 void print_debug(const char *format, ...);

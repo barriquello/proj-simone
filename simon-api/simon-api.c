@@ -52,15 +52,18 @@ uint8_t get_server_confirmation(char* _server_reply);
 static input in = NULL;
 static output out = NULL;
 
-#define DEBUG_SIMON 0
+#define DEBUG_SIMON 1
 #if DEBUG_SIMON
 #ifndef _WIN32
+#define PRINT(...)	do{printf_terminal_P(__VA_ARGS__);}while(0);
 #define PRINTF(...) printf_lib(__VA_ARGS__);
 #else
 #define PRINTF(...) printf(__VA_ARGS__);
+#define PRINT(...)	printf(__VA_ARGS__);
 #endif
 #else
 #define PRINTF(...)
+#define PRINT(...)	
 #endif
 
 char simon_hostname[MAX_HOSTNAME_LEN];
@@ -78,19 +81,28 @@ modem_driver_t* modem = NULL;
 uint8_t simon_init(const modem_driver_t* _modem)
 {
 	if(_modem == NULL) return MODEM_ERR;
-	modem = (modem_driver_t*)_modem;
-	if(modem->init() == FALSE)
-	{
-		PRINTF("modem not ok");
-		//return MODEM_ERR;
-	}
+	modem = (modem_driver_t*)_modem;	
 	in = modem->receive;
 	out = modem->send;
 	simon_set_apikey(API_KEY);		/* set a default key */
 	simon_set_hostname(SERVER_NAME); /* set a default server */
 	modem->sethost(hostname);
 	modem->setip("54.173.137.93"); /* set a default ip */
-	return MODEM_OK;
+	
+#if 1	
+	if(modem->init() == FALSE)
+	{
+		PRINT(PSTR("modem not ok"));
+		return MODEM_ERR;
+	}else
+	{
+		return MODEM_OK;
+	}
+#else
+	PRINT(PSTR("modem not ok"));
+	return MODEM_ERR;
+#endif
+	
 }
 
 uint8_t simon_check_connection(void)
