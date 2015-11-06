@@ -50,17 +50,18 @@ char BufferText[32];
 #if COLDUINO
 #define PSTR(x)				(x)
 #define PRINTF(...)			printf_lib(__VA_ARGS__);
-#define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
+#define PRINT_ERRO(...)		//print_erro(__VA_ARGS__);
 #define PRINT(...)			printf_lib(__VA_ARGS__);
 #elif ARDUINO
 #define PRINTF(...)			printf_lib(__VA_ARGS__);
-#define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
-#define PRINT(...)			do{printf_terminal_P(__VA_ARGS__);}while(0);
+#define PRINT_ERRO(...)		//print_erro(__VA_ARGS__);
+#define PRINT(s)			do{printf_terminal_P(s);}while(0);
+#define PRINTF_P(a,...)		snprintf_lib((a),sizeof(a)__VA_ARGS__); PRINT(a);
 #else
 #define PSTR(x)				(x)
 #define PRINTF(...) 		printf(__VA_ARGS__);
 #define PRINT(...)			printf(__VA_ARGS__);
-#define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
+#define PRINT_ERRO(...)		//print_erro(__VA_ARGS__);
 #endif
 #else
 #define PSTR(x)			(x)
@@ -96,7 +97,125 @@ CONST modbus_slave_t * modbus_slaves_all[MODBUS_NUM_SLAVES] =
 
 
 #include <stdarg.h>
+#include <stdio.h>
 #define error_file		"erro.txt"
+
+/**------------------------------------------------------**/
+void print_R(char* out, const char *format, ...)
+{
+	
+	LOG_FILETYPE stderr_f;
+	char buffer[32];
+	
+	va_list argptr;
+	va_start(argptr, format);
+	vsprintf_lib(buffer, format, argptr);
+	va_end(argptr);
+
+	if(out == NULL)
+	{
+		printf_terminal(buffer);
+	}else
+	{
+		if(!monitor_openappend(out,&stderr_f))
+		{
+			if(!monitor_openwrite(out,&stderr_f))
+			{
+				return;
+			}
+		}
+		/* print to file */
+		(void)monitor_seek_end(&stderr_f);
+		(void)monitor_write(buffer,&stderr_f);
+		(void)monitor_close(&stderr_f);
+	}
+	
+}
+
+void print_P(char* out, const char *format, ...)
+{
+	
+	LOG_FILETYPE stderr_f;
+	char buffer[32];
+	
+	va_list argptr;
+	va_start(argptr, format);
+	vsprintf_P(buffer, format, argptr);
+	va_end(argptr);
+
+	if(out == NULL)
+	{
+		printf_terminal(buffer);
+	}else
+	{
+		if(!monitor_openappend(out,&stderr_f))
+		{
+			if(!monitor_openwrite(out,&stderr_f))
+			{
+				return;
+			}
+		}
+		/* print to file */
+		(void)monitor_seek_end(&stderr_f);
+		(void)monitor_write(buffer,&stderr_f);
+		(void)monitor_close(&stderr_f);
+	}
+}
+
+/**------------------------------------------------------**/
+void prints_R(char* out, const char *string)
+{
+	
+	LOG_FILETYPE stderr_f;
+	
+	if(out == NULL)
+	{
+		printf_terminal(string);
+	}else
+	{
+		if(!monitor_openappend(out,&stderr_f))
+		{
+			if(!monitor_openwrite(out,&stderr_f))
+			{
+				return;
+			}
+		}
+		/* print to file */
+		(void)monitor_seek_end(&stderr_f);
+		(void)monitor_write(string,&stderr_f);
+		(void)monitor_close(&stderr_f);
+	}
+	
+}
+
+void prints_P(char* out, const char *string)
+{
+	char buffer[32];
+	LOG_FILETYPE stderr_f;
+
+	if(out == NULL)
+	{
+		printf_terminal_P(string);
+	}else
+	{
+		STRCPY_P(buffer,string);
+		if(!monitor_openappend(out,&stderr_f))
+		{
+			if(!monitor_openwrite(out,&stderr_f))
+			{
+				return;
+			}
+		}
+		/* print to file */
+		(void)monitor_seek_end(&stderr_f);
+		(void)monitor_write(buffer,&stderr_f);
+		(void)monitor_close(&stderr_f);
+	}
+}
+
+
+/**------------------------------------------------------**/
+#if 0
 /*-----------------------------------------------------------------------------------*/
 void print_erro(const char *format, ...)
 {
@@ -121,6 +240,29 @@ void print_erro(const char *format, ...)
   (void)monitor_close(&stderr_f);
 }
 
+void print_erro_p(const char *format, ...)
+{
+	
+	LOG_FILETYPE stderr_f;
+	
+	va_list argptr;
+	va_start(argptr, format);
+	vsnprintf_P(monitor_char_buffer, sizeof(monitor_char_buffer), format, argptr);
+	va_end(argptr);
+
+	if(!monitor_openappend(error_file,&stderr_f))
+	{
+		if(!monitor_openwrite(error_file,&stderr_f))
+		{
+			return;
+		}
+	}
+	/* log error */
+	(void)monitor_seek_end(&stderr_f);
+	(void)monitor_write(monitor_char_buffer,&stderr_f);
+	(void)monitor_close(&stderr_f);
+}
+
 void prints_erro(const char *string)
 {
 	 LOG_FILETYPE stderr_f;
@@ -140,17 +282,33 @@ void prints_erro(const char *string)
 	 (void)monitor_close(&stderr_f);
 }
 
-#if 0
+void prints_erro_p(const char *string)
+{
+	LOG_FILETYPE stderr_f;
+	char buffer[32];
+	
+	if(!monitor_openappend(error_file,&stderr_f))
+	{
+		PRINT(PSTR("open file error \r\n"));
+		if(!monitor_openwrite(error_file,&stderr_f))
+		{
+			PRINT(PSTR("create file error \r\n"));
+			return;
+		}
+	}
+	STRCPY_P(buffer, string);
+	/* log error */
+	(void)monitor_seek_end(&stderr_f);
+	(void)monitor_write(buffer,&stderr_f);
+	(void)monitor_close(&stderr_f);
+}
+
 /*-----------------------------------------------------------------------------------*/
-void print_debug(const char *format, ...)
+void print_debug_p(const char *string)
 {
 	LOG_FILETYPE debug_f;
+	char buffer[32];
 	#define debug_file		"debug.txt"
-
-  va_list argptr;
-  va_start(argptr, format);
-  VSPRINTF(monitor_char_buffer, format, argptr);  
-  va_end(argptr);
 
   if(!monitor_openappend(debug_file,&debug_f))
   {
@@ -159,12 +317,15 @@ void print_debug(const char *format, ...)
 		  return;
 	  }
   }
-  /* log error */
+  /* log debug */
+  STRCPY_P(buffer, string);
   (void)monitor_seek_end(&debug_f);
-  (void)monitor_write(monitor_char_buffer,&debug_f);
+  (void)monitor_write(buffer,&debug_f);
   (void)monitor_close(&debug_f);
 }
 #endif
+
+
 
 
 void monitor_createentry(char* buffer, uint16_t *dados, uint8_t len)
@@ -759,15 +920,15 @@ uint8_t monitor_init(uint8_t monitor_num)
 	  }else
 	  {
 		  print_erro_and_exit:
-		  PRINT_ERRO(PSTR("Log init erro: %d"), monitor_num);
-		  PRINTF(PSTR("Log init erro: %d"), monitor_num);
+		  PRINT_ERRO_P(PSTR("Log init erro: %d"), monitor_num);
+		  PRINT(PSTR("Log init erro")); PRINTC(monitor_num + '0');
 		  return FALSE;
 	  }
 	  
 	 /* check buffer size */
 	if(monitor_state[monitor_num].config_h.entry_size > LOG_MAX_DATA_BUF_SIZE)
 	{		
-		PRINT_ERRO(PSTR("buffer too small \r\n"));
+		PRINTS_ERRO_P(PSTR("buffer too small \r\n"));
 		goto print_erro_and_exit;
 	}
 
@@ -918,17 +1079,18 @@ void monitor_writer(uint8_t monitor_num)
 		PRINT_ERRO(PSTR("write failed\r\n"));
 
 		#if ARDUINO
-			strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[1]), sizeof(BufferText));
-			PRINTF(BufferText, monitor_num);
+			STRCPY(BufferText, monitor_error_msg[1]); PRINTF(BufferText, monitor_num);
 		#else
 			PRINTF(monitor_error_msg[1],(uint8_t) monitor_num);
 		#endif		
-		PRINTF(PSTR("write failed\r\n"));		
+		PRINT(PSTR("write failed\r\n"));		
 		PRINTF(PSTR("\r\nMissed entries %d\r\n"), missing_entries);
 	}else
 	{
-		PRINTF(PSTR("\r\nMon %d, Entry %d: "), monitor_num, cnt);
-		PRINTF(PSTR("%s\r\n"), monitor_char_buffer);
+		PRINT(PSTR("\r\n"));
+		PRINTF(PSTR("Mon %d, Entry %d: "), monitor_num, cnt);
+		PRINTF(monitor_char_buffer);
+		PRINT(PSTR("\r\n"));
 	}
 
 	/* change to parent dir */

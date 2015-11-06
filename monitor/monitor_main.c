@@ -127,7 +127,7 @@ T20150101073300S ->
 //#include "SD_API.h"
 #endif
 
-#if COLDUINO
+#if COLDUINO || ARDUINO
 #include "printf_lib.h"
 #endif
 
@@ -153,20 +153,16 @@ monitor_config_ok_t config_check;
 #if _WIN32
 #define PSTR(x)				(x)
 #define PRINTF(...)			printf(__VA_ARGS__);
-#define DPRINTF(...)		print_erro(__VA_ARGS__);
-#define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
+#define DPRINTF(...)		//print_erro(__VA_ARGS__);
+#define PRINT_ERRO(...)		//print_erro(__VA_ARGS__);
 #elif ARDUINO 
-#define PRINTF(...)			printf_lib(__VA_ARGS__);
-#define PRINT(...)			do{printf_terminal_P(__VA_ARGS__);}while(0);
-#define DPRINTF(...)		print_erro(__VA_ARGS__);
-#define PRINT_ERRO(...)		print_erro(__VA_ARGS__);
-#define PRINTS_ERRO(s)		prints_erro(s);
+
 #else
 #define PSTR(x)			(x)
 #define PRINTF(...) 	printf_lib(__VA_ARGS__);
 #define PRINT(...)		printf_lib(__VA_ARGS__);
-#define DPRINTF(...) 	print_erro(__VA_ARGS__);
-#define PRINT_ERRO(...) print_erro(__VA_ARGS__);
+#define DPRINTF(...) 	//print_erro(__VA_ARGS__);
+#define PRINT_ERRO(...) //print_erro(__VA_ARGS__);
 #endif
 #else
 #ifndef PSTR
@@ -503,57 +499,55 @@ static void config_check_erro(void)
 	int erro = 0;
 	if(config_check.bit.num_mon_ok == 0)
 	{
-		#if ARDUINO
-		strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]), sizeof(BufferText));
-		PRINT_ERRO(BufferText);
-		#else
-		PRINT_ERRO(monitor_error_msg[0]);
-		#endif
-		PRINT_ERRO(PSTR("num_monitores ou maior que %d \n\r."), MAX_NUM_OF_MONITORES);
+		PRINTS_ERRO_PP(monitor_error_msg[0]);
+		PRINT_ERRO_P(PSTR("num_monitores ou maior que %d \n\r."), MAX_NUM_OF_MONITORES);
 		erro++;
 	}
 	if(config_check.bit.server_ok == 0)
 	{
 		
 		#if ARDUINO
-			STRCPY_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]));
-			PRINT_ERRO(BufferText);
+			PRINTS_ERRO_PP(monitor_error_msg[0]);
+			PRINTS_ERRO_P(PSTR("simon server \n\r."));
 		#else
 			PRINT_ERRO(monitor_error_msg[0]);
-		#endif
 			PRINT_ERRO(PSTR("simon server \n\r."));
+		#endif
+			
 			erro++;
 	}
 	if(config_check.bit.ip_ok == 0)
 	{
 		#if ARDUINO
-		strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]), sizeof(BufferText));
-		PRINT_ERRO(BufferText);
+			PRINTS_ERRO_PP(monitor_error_msg[0]);
+			PRINTS_ERRO_P(PSTR("simon ip \n\r."));
 		#else
-		PRINT_ERRO(monitor_error_msg[0]);
+			PRINT_ERRO(monitor_error_msg[0]);
+			PRINT_ERRO(PSTR("simon ip \n\r."));
 		#endif
-		PRINT_ERRO(PSTR("simon ip \n\r."));
+		
 	}
 	if(config_check.bit.key_ok == 0)
 	{
 		#if ARDUINO
-		strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]), sizeof(BufferText));
-		PRINT_ERRO(BufferText);
+			PRINTS_ERRO_PP(monitor_error_msg[0]);
+			PRINTS_ERRO_P(PSTR("apikey \n\r."));
 		#else
-		PRINT_ERRO(monitor_error_msg[0]);
-		#endif
-		PRINT_ERRO(PSTR("apikey \n\r."));
+			PRINT_ERRO(monitor_error_msg[0]);
+			PRINT_ERRO(PSTR("apikey \n\r."));
+		#endif		
 		erro++;
 	}
 	if(config_check.bit.gprs_apn_ok == 0)
 	{
 		#if ARDUINO
-		strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[0]), sizeof(BufferText));
-		PRINT_ERRO(BufferText);
+			PRINTS_ERRO_PP(monitor_error_msg[0]);
+			PRINTS_ERRO_P(PSTR("gprs server\n\r."));
 		#else
-		PRINT_ERRO(monitor_error_msg[0]);
+			PRINT_ERRO(monitor_error_msg[0]);
+			PRINT_ERRO("gprs server\n\r.");
 		#endif
-		PRINT_ERRO(PSTR("gprs server\n\r."));		
+			
 	}
 	if (erro)
 	{
@@ -622,23 +616,15 @@ void main_monitor(void)
 	extern const modem_driver_t modem_driver;
 		
 	terminal_acquire();
-	PRINT(PSTR("Simon init: "));
 		
 	if(simon_init(&(modem_driver)) != MODEM_OK)
-	{		
-		PRINT(PSTR(" error\r\n"));
-			
-		#if ARDUINO
-			STRCPY_P(BufferText,PSTR("Simon init error\r\n")); PRINTF(BufferText); PRINTS_ERRO(BufferText);
-		#else		
-			PRINT_ERRO("Simon init error\r\n");
-		#endif	
-		
+	{			
+		PRINTS_ERRO_P(PSTR("Simon init error\r\n"));
 		terminal_release();
 		sleep_forever();
 	}
 
-	PRINT(PSTR(" ok\r\n"));
+	PRINTS_ERRO_P(PSTR("Simon init ok\r\n"));
 	terminal_release();
 		
 #if _WIN32	
@@ -657,8 +643,8 @@ void main_monitor(void)
 	ini_browse(callback_inifile, NULL, config_inifile);
 	config_check_erro();
 
-	PRINT(PSTR("Config OK\r\n"));
-	//DPRINTF(PSTR("Config OK\r\n"));
+	PRINTS_P(PSTR("Config OK\r\n"));
+	DPRINTS_P(PSTR("Config OK\r\n"));
 	
 #if COLDUINO || ARDUINO
 	DelayTask(5000);	
@@ -671,7 +657,7 @@ void main_monitor(void)
 		if(monitor_state[monitor_num].state != IN_USE			
 			|| monitor_init(monitor_num) != TRUE)
 		{
-			PRINT_ERRO(monitor_error_msg[1], monitor_num);
+			PRINT_ERRO_P(monitor_error_msg[1], monitor_num);
 			sleep_forever();
 		}
 		
@@ -686,12 +672,13 @@ void main_monitor(void)
 		{
 			modbus_slave_erro:	
 			#if ARDUINO				
-				strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[1]), sizeof(BufferText));
-				PRINT_ERRO(BufferText, monitor_num);
+				PRINT_ERRO_P(monitor_error_msg[1], monitor_num);
+				PRINTS_ERRO_P(PSTR("modbus slave nao suportado \r\n"));
 			#else
 				PRINT_ERRO(monitor_error_msg[1], monitor_num);
+				PRINT_ERRO(PSTR("modbus slave nao suportado \r\n"));
 			#endif			
-			PRINT_ERRO(PSTR("modbus slave nao suportado \r\n"));
+		
 			sleep_forever();
 		}		
 		

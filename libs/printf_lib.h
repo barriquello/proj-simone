@@ -37,6 +37,16 @@ int vsprintf_lib(char *out, const char *format, ...);
 #define VSPRINTF(...)			vsprintf_lib(__VA_ARGS__); //vsprintf_P(a,(PGM_P)pgm_read_word(b),__VA_ARGS__)
 #define STRCPY(a,b)				strncpy_P(a,(PGM_P)pgm_read_word(b), SIZEARRAY(a))
 #define STRCPY_P(a,b)			strncpy_P(a,b, SIZEARRAY(a))
+#define PRINTF(...)			printf_lib(__VA_ARGS__);
+#define PRINTS_P(s)			do{printf_terminal_P(s);}while(0);
+#define PRINTC(c)			do{putchar_terminal(c);}while(0);
+#define DPRINTS_P(s)		prints_P("debug.txt", s);
+#define PRINT_ERRO(...)		print_R("erro.txt",__VA_ARGS__);
+#define PRINT_ERRO_P(...)	print_P("erro.txt", __VA_ARGS__);
+#define PRINT_ERRO_PP(s,...) prints_P("erro.txt",(PGM_P)pgm_read_word(&(s)), __VA_ARGS__);
+#define PRINTS_ERRO(s)		prints_R("erro.txt",s);
+#define PRINTS_ERRO_P(s)	prints_P("erro.txt",s); PRINTS_P(s);
+#define PRINTS_ERRO_PP(s)	prints_P("erro.txt",(PGM_P)pgm_read_word(&(s))); PRINTS_P(s);
 #else
 #define SNPRINTF(...) 	snprintf(__VA_ARGS__)
 #define VSPRINTF(...)	vsprintf(__VA_ARGS__)

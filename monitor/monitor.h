@@ -135,12 +135,10 @@ static int monitor_rename(TCHAR *source, const TCHAR *dest)
 #define NULL  (void*)0
 #endif
 
-void print_erro(const char *format, ...);
-void prints_erro(const char *string);
-
-#if 0
-void print_debug(const char *format, ...);
-#endif
+void print_R(char* out, const char *format, ...);
+void print_P(char* out, const char *format, ...);
+void prints_R(char* out, const char *string);
+void prints_P(char* out, const char *string);
 
 #define LOG_HEADER_LEN		 50
 #define LOG_MAX_ENTRY_SIZE   256
