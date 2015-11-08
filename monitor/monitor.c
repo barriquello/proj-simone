@@ -34,7 +34,6 @@
 #include "simon-api.h"
 #include "printf_lib.h"
 
-
 #ifdef _WIN32
 #include "stdio.h"
 #include "http_client.h"
@@ -42,33 +41,16 @@
 #include "AppConfig.h"
 #endif
 
-#define DEBUG_MONITOR 1
-
-char BufferText[32];
+#define DEBUG_MONITOR		1
+#undef PRINTS_ENABLED
 
 #if DEBUG_MONITOR
-#if COLDUINO
-#define PSTR(x)				(x)
-#define PRINTF(...)			printf_lib(__VA_ARGS__);
-#define PRINT_ERRO(...)		//print_erro(__VA_ARGS__);
-#define PRINT(...)			printf_lib(__VA_ARGS__);
-#elif ARDUINO
-#define PRINTF(...)			printf_lib(__VA_ARGS__);
-#define PRINT_ERRO(...)		//print_erro(__VA_ARGS__);
-#define PRINT(s)			do{printf_terminal_P(s);}while(0);
-#define PRINTF_P(a,...)		snprintf_lib((a),sizeof(a)__VA_ARGS__); PRINT(a);
+#define PRINTS_ENABLED  1
+char BufferText[32];
 #else
-#define PSTR(x)				(x)
-#define PRINTF(...) 		printf(__VA_ARGS__);
-#define PRINT(...)			printf(__VA_ARGS__);
-#define PRINT_ERRO(...)		//print_erro(__VA_ARGS__);
+#define PRINTS_ENABLED  0
 #endif
-#else
-#define PSTR(x)			(x)
-#define PRINTF(...)
-#define PRINT_ERRO(...)
-#define PRINT(...)
-#endif
+#include "prints_def.h"
 
 #define MONITOR_TESTS	0
 
@@ -94,239 +76,16 @@ CONST modbus_slave_t * modbus_slaves_all[MODBUS_NUM_SLAVES] =
 		&slave_T500,
 };
 
-
-
-#include <stdarg.h>
-#include <stdio.h>
-#define error_file		"erro.txt"
-
-/**------------------------------------------------------**/
-void print_R(char* out, const char *format, ...)
+#if FATFS_ENABLE
+#include "string.h"
+static int monitor_rename(TCHAR *source, const TCHAR *dest)
 {
-	
-	LOG_FILETYPE stderr_f;
-	char buffer[32];
-	
-	va_list argptr;
-	va_start(argptr, format);
-	vsprintf_lib(buffer, format, argptr);
-	va_end(argptr);
-
-	if(out == NULL)
-	{
-		printf_terminal(buffer);
-	}else
-	{
-		if(!monitor_openappend(out,&stderr_f))
-		{
-			if(!monitor_openwrite(out,&stderr_f))
-			{
-				return;
-			}
-		}
-		/* print to file */
-		(void)monitor_seek_end(&stderr_f);
-		(void)monitor_write(buffer,&stderr_f);
-		(void)monitor_close(&stderr_f);
-	}
-	
-}
-
-void print_P(char* out, const char *format, ...)
-{
-	
-	LOG_FILETYPE stderr_f;
-	char buffer[32];
-	
-	va_list argptr;
-	va_start(argptr, format);
-	vsprintf_P(buffer, format, argptr);
-	va_end(argptr);
-
-	if(out == NULL)
-	{
-		printf_terminal(buffer);
-	}else
-	{
-		if(!monitor_openappend(out,&stderr_f))
-		{
-			if(!monitor_openwrite(out,&stderr_f))
-			{
-				return;
-			}
-		}
-		/* print to file */
-		(void)monitor_seek_end(&stderr_f);
-		(void)monitor_write(buffer,&stderr_f);
-		(void)monitor_close(&stderr_f);
-	}
-}
-
-/**------------------------------------------------------**/
-void prints_R(char* out, const char *string)
-{
-	
-	LOG_FILETYPE stderr_f;
-	
-	if(out == NULL)
-	{
-		printf_terminal(string);
-	}else
-	{
-		if(!monitor_openappend(out,&stderr_f))
-		{
-			if(!monitor_openwrite(out,&stderr_f))
-			{
-				return;
-			}
-		}
-		/* print to file */
-		(void)monitor_seek_end(&stderr_f);
-		(void)monitor_write(string,&stderr_f);
-		(void)monitor_close(&stderr_f);
-	}
-	
-}
-
-void prints_P(char* out, const char *string)
-{
-	char buffer[32];
-	LOG_FILETYPE stderr_f;
-
-	if(out == NULL)
-	{
-		printf_terminal_P(string);
-	}else
-	{
-		STRCPY_P(buffer,string);
-		if(!monitor_openappend(out,&stderr_f))
-		{
-			if(!monitor_openwrite(out,&stderr_f))
-			{
-				return;
-			}
-		}
-		/* print to file */
-		(void)monitor_seek_end(&stderr_f);
-		(void)monitor_write(buffer,&stderr_f);
-		(void)monitor_close(&stderr_f);
-	}
-}
-
-
-/**------------------------------------------------------**/
-#if 0
-/*-----------------------------------------------------------------------------------*/
-void print_erro(const char *format, ...)
-{
-		
-	LOG_FILETYPE stderr_f;	
-	
-  va_list argptr;
-  va_start(argptr, format);
-  VSPRINTF(monitor_char_buffer, format, argptr);  
-  va_end(argptr);
-
-  if(!monitor_openappend(error_file,&stderr_f))
-  {
-	  if(!monitor_openwrite(error_file,&stderr_f))
-	  {
-		  return;
-	  }
-  }
-  /* log error */
-  (void)monitor_seek_end(&stderr_f);
-  (void)monitor_write(monitor_char_buffer,&stderr_f);
-  (void)monitor_close(&stderr_f);
-}
-
-void print_erro_p(const char *format, ...)
-{
-	
-	LOG_FILETYPE stderr_f;
-	
-	va_list argptr;
-	va_start(argptr, format);
-	vsnprintf_P(monitor_char_buffer, sizeof(monitor_char_buffer), format, argptr);
-	va_end(argptr);
-
-	if(!monitor_openappend(error_file,&stderr_f))
-	{
-		if(!monitor_openwrite(error_file,&stderr_f))
-		{
-			return;
-		}
-	}
-	/* log error */
-	(void)monitor_seek_end(&stderr_f);
-	(void)monitor_write(monitor_char_buffer,&stderr_f);
-	(void)monitor_close(&stderr_f);
-}
-
-void prints_erro(const char *string)
-{
-	 LOG_FILETYPE stderr_f;
-		
-	 if(!monitor_openappend(error_file,&stderr_f))
-	 {
-		 PRINT(PSTR("open file error \r\n"));
-		 if(!monitor_openwrite(error_file,&stderr_f))
-		 {
-			 PRINT(PSTR("create file error \r\n"));
-			 return;
-		 }
-	 }
-	 /* log error */
-	 (void)monitor_seek_end(&stderr_f);
-	 (void)monitor_write(string,&stderr_f);
-	 (void)monitor_close(&stderr_f);
-}
-
-void prints_erro_p(const char *string)
-{
-	LOG_FILETYPE stderr_f;
-	char buffer[32];
-	
-	if(!monitor_openappend(error_file,&stderr_f))
-	{
-		PRINT(PSTR("open file error \r\n"));
-		if(!monitor_openwrite(error_file,&stderr_f))
-		{
-			PRINT(PSTR("create file error \r\n"));
-			return;
-		}
-	}
-	STRCPY_P(buffer, string);
-	/* log error */
-	(void)monitor_seek_end(&stderr_f);
-	(void)monitor_write(buffer,&stderr_f);
-	(void)monitor_close(&stderr_f);
-}
-
-/*-----------------------------------------------------------------------------------*/
-void print_debug_p(const char *string)
-{
-	LOG_FILETYPE debug_f;
-	char buffer[32];
-	#define debug_file		"debug.txt"
-
-  if(!monitor_openappend(debug_file,&debug_f))
-  {
-	  if(!monitor_openwrite(debug_file,&debug_f))
-	  {
-		  return;
-	  }
-  }
-  /* log debug */
-  STRCPY_P(buffer, string);
-  (void)monitor_seek_end(&debug_f);
-  (void)monitor_write(buffer,&debug_f);
-  (void)monitor_close(&debug_f);
+	/* Function f_rename() does not allow drive letters in the destination file */
+	const char *drive = strchr(dest, ':');
+	drive = (drive == NULL) ? dest : drive + 1;
+	return (f_rename(source, drive) == FR_OK);
 }
 #endif
-
-
-
 
 void monitor_createentry(char* buffer, uint16_t *dados, uint8_t len)
 {
@@ -613,13 +372,13 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 			/* rename file */
 			strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
 
-			PRINTF(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
+			PRINTF_P(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
 			ret = monitor_rename((char*)filename, (const char*)new_filename);
 
 			/* if rename failed, try other name */
 			while(!ret)
 			{
-				PRINTF(PSTR("\r\n rename failed \r\n"));
+				PRINTS_P(PSTR("\r\n rename failed \r\n"));
 				time_t time_now = mktime(&ts);
 				time_now +=3600;
 				ts = *localtime(&(time_t){time_now});
@@ -627,7 +386,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 
 				monitor_setheader((const char*)filename, &h);
 
-				PRINTF(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
+				PRINTF_P(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
 				ret = monitor_rename((char*)filename, (const char*)new_filename);
 
 			}
@@ -635,7 +394,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 			/* log is reading the same file ? */
 			if(strcmp(monitor_state[monitor_num].monitor_name_reading, monitor_state[monitor_num].monitor_name_writing) == 0)
 			{
-				PRINTF(PSTR("\r\n reading the same file that we renamed! \r\n"));
+				PRINTS_P(PSTR("\r\n reading the same file that we renamed! \r\n"));
 
 				strcpy(monitor_state[monitor_num].monitor_name_reading,new_filename);
 
@@ -673,7 +432,7 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 		   monitor_setheader(filename, &h);
 		}else
 		{
-			PRINT_ERRO("Erro: open file %s\r\n", filename);
+			PRINT_ERRO_P(PSTR("Erro: open file %s\r\n"), filename);
 			return 0; // tratar este erro!!!
 		}
 		
@@ -702,7 +461,7 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 			 }		
 		 }
 		 
-		 PRINT_ERRO("Erro: new header", monitor_num);
+		 PRINT_ERRO_P(PSTR("Erro: new header"), monitor_num);
 		
 	}
 
@@ -808,7 +567,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 
 			if(monitor_seek(&fp,&pos))
 			{
-			   (void)monitor_read(entry->values,entry_size,&fp);
+			   (void)monitor_read((char*)entry->values,entry_size,&fp);
 			   (void)monitor_close(&fp);
 
 			   /* try to send */
@@ -837,7 +596,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
 				  
 				   
-				   PRINTF(PSTR("Mon %d, entry: %d of %d, delay: %d - avg: %d"), 
+				   PRINTF_P(PSTR("Mon %d, entry: %d of %d, delay: %d - avg: %d"), 
 						   monitor_num,
 						   h.last_idx, h.count,
 						   monitor_state[monitor_num].time_to_send,
@@ -921,7 +680,7 @@ uint8_t monitor_init(uint8_t monitor_num)
 	  {
 		  print_erro_and_exit:
 		  PRINT_ERRO_P(PSTR("Log init erro: %d"), monitor_num);
-		  PRINT(PSTR("Log init erro")); PRINTC(monitor_num + '0');
+		  PRINTS_P(PSTR("Log init erro")); PRINTC(monitor_num + '0');
 		  return FALSE;
 	  }
 	  
@@ -1049,10 +808,12 @@ void monitor_writer(uint8_t monitor_num)
 	/* read data */
 	if(monitor_state[monitor_num].read_data(monitor_state[monitor_num].slave_addr,(uint8_t*)monitor_data_buffer,(uint8_t)monitor_state[monitor_num].config_h.entry_size) == 0)
 	{
-		PRINT_ERRO(monitor_error_msg[1], monitor_num);
-		PRINT_ERRO("read failed\r\n");
+		PRINT_ERRO_PP(monitor_error_msg[1], monitor_num);
+		PRINTS_ERRO_P(PSTR("read failed\r\n"));
 		return;
 	}
+	PRINT_ERRO_PP(monitor_error_msg[2], monitor_num);
+	PRINTS_ERRO_P(PSTR("read slave ok\r\n"));
 	
 	/* convert data to hex char */
 	monitor_createentry(monitor_char_buffer,(uint16_t*)monitor_data_buffer,(uint8_t)(monitor_state[monitor_num].config_h.entry_size/2));
@@ -1068,29 +829,14 @@ void monitor_writer(uint8_t monitor_num)
 	if(cnt == 0)
 	{
 		missing_entries++; /* count missing entries */
-		
-		#if ARDUINO
-		strncpy_P(BufferText, (PGM_P)pgm_read_word(monitor_error_msg[1]), sizeof(BufferText));
-		PRINT_ERRO(BufferText, monitor_num);
-		#else
-		PRINT_ERRO(monitor_error_msg[1], (uint8_t) monitor_num);
-		#endif				
-		
-		PRINT_ERRO(PSTR("write failed\r\n"));
-
-		#if ARDUINO
-			STRCPY(BufferText, monitor_error_msg[1]); PRINTF(BufferText, monitor_num);
-		#else
-			PRINTF(monitor_error_msg[1],(uint8_t) monitor_num);
-		#endif		
-		PRINT(PSTR("write failed\r\n"));		
-		PRINTF(PSTR("\r\nMissed entries %d\r\n"), missing_entries);
+		PRINT_ERRO_PP(monitor_error_msg[1], (uint8_t) monitor_num);		
+		PRINTS_ERRO_P(PSTR("write failed\r\n"));
+		PRINT_ERRO_P(PSTR("\r\nMissed entries %d\r\n"), missing_entries);
 	}else
 	{
-		PRINT(PSTR("\r\n"));
-		PRINTF(PSTR("Mon %d, Entry %d: "), monitor_num, cnt);
+		PRINTF_P(PSTR("\r\nMon %d, Entry %d: "), monitor_num, cnt);
 		PRINTF(monitor_char_buffer);
-		PRINT(PSTR("\r\n"));
+		PRINTS_P(PSTR("\r\n"));
 	}
 
 	/* change to parent dir */

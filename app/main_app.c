@@ -167,21 +167,6 @@ void main_app(void)
 	};
 #endif
 
-
-#if 0
-	if(InstallTask(&HMI,"Human-Machine Interface task",416,1,NULL) != OK)
-	{
-		while(1)
-		{};
-	};
-
-	if(InstallTask(&Keyboard_Handler,"Keyboard handler task",416,2,NULL) != OK)
-	{
-		while(1)
-		{};
-	};
-#endif
-
 	/* Start Task Scheduler */
 	if (BRTOSStart() != OK)
 	{
@@ -195,9 +180,14 @@ void main_app(void)
 #include "led_onboard.h"
 #endif
 
+#undef PRINTS_ENABLED
+#define PRINTS_ENABLED  1
+#include "prints_def.h"
+
 void sleep_forever(void)
 {
 
+	PRINTS_ERRO_P(PSTR("Sleeping forever ..."));
 	while(1)
 	{
 		#if COLDUINO || ARDUINO

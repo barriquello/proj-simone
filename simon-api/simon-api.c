@@ -52,19 +52,17 @@ uint8_t get_server_confirmation(char* _server_reply);
 static input in = NULL;
 static output out = NULL;
 
-#define DEBUG_SIMON 1
+#define DEBUG_SIMON		1
+#undef PRINTS_ENABLED
+
 #if DEBUG_SIMON
-#ifndef _WIN32
-#define PRINT(...)	do{printf_terminal_P(__VA_ARGS__);}while(0);
-#define PRINTF(...) printf_lib(__VA_ARGS__);
+#define PRINTS_ENABLED  1
 #else
-#define PRINTF(...) printf(__VA_ARGS__);
-#define PRINT(...)	printf(__VA_ARGS__);
+#define PRINTS_ENABLED  0
 #endif
-#else
-#define PRINTF(...)
-#define PRINT(...)	
-#endif
+
+#include "prints_def.h"
+
 
 char simon_hostname[MAX_HOSTNAME_LEN];
 char simon_hostip[MAX_HOSTIP_LEN];
@@ -92,14 +90,14 @@ uint8_t simon_init(const modem_driver_t* _modem)
 #if 1	
 	if(modem->init() == FALSE)
 	{
-		PRINT(PSTR("modem not ok"));
+		PRINTS_P(PSTR("modem not ok"));
 		return MODEM_ERR;
 	}else
 	{
 		return MODEM_OK;
 	}
 #else
-	PRINT(PSTR("modem not ok"));
+	PRINTS_P(PSTR("modem not ok"));
 	return MODEM_ERR;
 #endif
 	

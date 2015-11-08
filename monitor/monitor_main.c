@@ -147,32 +147,16 @@ monitor_config_ok_t config_check;
 #define TICKS2MSEC(x)	(x)
 #endif
 
-#define DEBUG_MONITOR	1
+#define DEBUG_MONITOR		1
+#undef PRINTS_ENABLED
 
 #if DEBUG_MONITOR
-#if _WIN32
-#define PSTR(x)				(x)
-#define PRINTF(...)			printf(__VA_ARGS__);
-#define DPRINTF(...)		//print_erro(__VA_ARGS__);
-#define PRINT_ERRO(...)		//print_erro(__VA_ARGS__);
-#elif ARDUINO 
-
+#define PRINTS_ENABLED  1
+char BufferText[32];
 #else
-#define PSTR(x)			(x)
-#define PRINTF(...) 	printf_lib(__VA_ARGS__);
-#define PRINT(...)		printf_lib(__VA_ARGS__);
-#define DPRINTF(...) 	//print_erro(__VA_ARGS__);
-#define PRINT_ERRO(...) //print_erro(__VA_ARGS__);
+#define PRINTS_ENABLED  0
 #endif
-#else
-#ifndef PSTR
-#define PSTR(x)		(x)
-#endif
-#define PRINTF(...)
-#define PRINT(...)
-#define DPRINTF(...)
-#define PRINT_ERRO(...)
-#endif
+#include "prints_def.h"
 
 #ifndef CONST
 #define CONST const
@@ -180,20 +164,24 @@ monitor_config_ok_t config_check;
 
 #define monitor_error_msg0_def		"\r\nConfig erro: faltando "
 #define monitor_error_msg1_def		"\r\nMonitor erro: %d "
+#define monitor_error_msg2_def		"\r\nMonitor %d started "
 #if ARDUINO
 char BufferText[32];
 const char monitor_error_msg0[] PROGMEM = monitor_error_msg0_def;
 const char monitor_error_msg1[] PROGMEM = monitor_error_msg1_def;
+const char monitor_error_msg2[] PROGMEM = monitor_error_msg2_def;
 PGM_P CONST monitor_error_msg[] PROGMEM =
 {
 	monitor_error_msg0,
-	monitor_error_msg1
+	monitor_error_msg1,
+	monitor_error_msg2	
 };
 #else
 const char* monitor_error_msg[] =
 {
 	monitor_error_msg0_def,
-	monitor_error_msg1_def
+	monitor_error_msg1_def,
+	monitor_error_msg2_def
 };
 #endif
 /*---------------------------------------------------------------------------*/
@@ -228,6 +216,7 @@ clock_t clock_time(void)
   OSEnterCritical();
   	  local = my_clock;
   OSExitCritical();
+  //PRINTF_P(PSTR("\r\nClock now: %d \r\n"), local);
   return local;
 }
 
@@ -237,8 +226,8 @@ void BRTOS_TimerHook(void)
 }
 #endif /* _WIN32 */
 
-static clock_t timer_expired(mon_timer_t *t)
-{ return (clock_t)(clock_time() - t->start) >= (clock_t)t->interval; }
+static uint8_t timer_expired(mon_timer_t *t)
+{ return (uint8_t)((clock_time() - t->start) >= (clock_t)t->interval);}
 
 static void timer_set(mon_timer_t *t, uint32_t interval)
 { t->interval = interval; t->start = clock_time(); }
@@ -330,6 +319,7 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
   
   while(1)
   {		
+		PRINTF_P(PSTR("\r\nThread W %d, timer: %d "), _monitor, period);
 		PT_WAIT_UNTIL(pt, monitor_running && timer_expired(timer));
 		
 		time_elapsed = (uint16_t)timer_elapsed(timer);	
@@ -343,13 +333,13 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 			timer_set(timer, (uint32_t)period/10);
 		}
 		time_before = clock_time();
-		PRINTF(PSTR("M %d W start @%d\r\n"), _monitor, (uint32_t)(time_before & MASK32));
+		PRINTF_P(PSTR("M %d W start @%d\r\n"), _monitor, (uint32_t)(time_before & MASK32));
 		
 		monitor_writer(_monitor);
 		
 		time_now = clock_time();
 		time_elapsed = (uint32_t)(time_now-time_before);
-		PRINTF(PSTR("M %d W end @%d, diff %d\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
+		PRINTF_P(PSTR("M %d W end @%d, diff %d\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
   }
   PT_END(pt);
 }
@@ -369,17 +359,19 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
   while(1)
   {		
 	  	timer_set(timer, TIMER_READER_MS);
+		
+		PRINTF_P(PSTR("\r\nThread R %d"), _monitor);
 		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));
 		
 		time_before = clock_time();
-		PRINTF(PSTR("M %d R start @%d\r\n"), _monitor, (uint32_t)(time_before & MASK32));
+		PRINTF_P(PSTR("M %d R start @%d\r\n"), _monitor, (uint32_t)(time_before & MASK32));
 		
 		monitor_reader(_monitor);
 		
 		time_now = clock_time();
 		
 		time_elapsed = (uint32_t)(time_now-time_before);
-		PRINTF(PSTR("M %d R end @%d, diff %d\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
+		PRINTF_P(PSTR("M %d R end @%d, diff %d\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
   }
   PT_END(pt);
 }
@@ -388,7 +380,6 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 #ifdef _WIN32
 #include <stdio.h> /* SNPRINTF */
 #endif
-
 
 #define StringToInteger(value) strtoul(value,NULL,0);
 
@@ -410,13 +401,9 @@ static int callback_inifile(const char *section, const char *key, const char *va
 			
 			if(num_monitores > MAX_NUM_OF_MONITORES)
 			{
-				#if ARDUINO
-					STRCPY(BufferText, monitor_error_msg[0]); PRINT_ERRO(BufferText);
-					STRCPY(BufferText, PSTR("num_monitores superior ao suportado\n\r.")); PRINT_ERRO(BufferText);
-				#else
-					PRINT_ERRO(monitor_error_msg[0]);
-					PRINT_ERRO("num_monitores superior ao suportado\n\r.");
-				#endif					
+				PRINTS_ERRO_PP(monitor_error_msg[0]);
+				PRINTS_ERRO_P(PSTR("num_monitores superior ao suportado\n\r."));
+					
 			}else
 			{
 				config_check.bit.num_mon_ok=1;
@@ -505,49 +492,26 @@ static void config_check_erro(void)
 	}
 	if(config_check.bit.server_ok == 0)
 	{
-		
-		#if ARDUINO
-			PRINTS_ERRO_PP(monitor_error_msg[0]);
-			PRINTS_ERRO_P(PSTR("simon server \n\r."));
-		#else
-			PRINT_ERRO(monitor_error_msg[0]);
-			PRINT_ERRO(PSTR("simon server \n\r."));
-		#endif
-			
-			erro++;
+		PRINTS_ERRO_PP(monitor_error_msg[0]);
+		PRINTS_ERRO_P(PSTR("simon server \n\r."));
+		erro++;
 	}
 	if(config_check.bit.ip_ok == 0)
 	{
-		#if ARDUINO
-			PRINTS_ERRO_PP(monitor_error_msg[0]);
-			PRINTS_ERRO_P(PSTR("simon ip \n\r."));
-		#else
-			PRINT_ERRO(monitor_error_msg[0]);
-			PRINT_ERRO(PSTR("simon ip \n\r."));
-		#endif
-		
+		PRINTS_ERRO_PP(monitor_error_msg[0]);
+		PRINTS_ERRO_P(PSTR("simon ip \n\r."));		
 	}
 	if(config_check.bit.key_ok == 0)
 	{
-		#if ARDUINO
-			PRINTS_ERRO_PP(monitor_error_msg[0]);
-			PRINTS_ERRO_P(PSTR("apikey \n\r."));
-		#else
-			PRINT_ERRO(monitor_error_msg[0]);
-			PRINT_ERRO(PSTR("apikey \n\r."));
-		#endif		
+
+		PRINTS_ERRO_PP(monitor_error_msg[0]);
+		PRINTS_ERRO_P(PSTR("apikey \n\r."));		
 		erro++;
 	}
 	if(config_check.bit.gprs_apn_ok == 0)
 	{
-		#if ARDUINO
-			PRINTS_ERRO_PP(monitor_error_msg[0]);
-			PRINTS_ERRO_P(PSTR("gprs server\n\r."));
-		#else
-			PRINT_ERRO(monitor_error_msg[0]);
-			PRINT_ERRO("gprs server\n\r.");
-		#endif
-			
+		PRINTS_ERRO_PP(monitor_error_msg[0]);
+		PRINTS_ERRO_P(PSTR("gprs server\n\r."));			
 	}
 	if (erro)
 	{
@@ -604,28 +568,25 @@ void main_monitor(void)
 	} while (status != SD_OK);
 	#endif
 	
+	/* modem gprs driver */
+	
 #if _WIN32
 #define modem_driver	win_http
 #elif MODEM_PRESENTE
 #define modem_driver	m590_driver
 #else
 #define modem_driver	null_modem_driver
-#endif
+#endif	
 	
-	/* modem gprs driver */
 	extern const modem_driver_t modem_driver;
-		
-	terminal_acquire();
 		
 	if(simon_init(&(modem_driver)) != MODEM_OK)
 	{			
 		PRINTS_ERRO_P(PSTR("Simon init error\r\n"));
-		terminal_release();
 		sleep_forever();
 	}
 
-	PRINTS_ERRO_P(PSTR("Simon init ok\r\n"));
-	terminal_release();
+	PRINTS_ERRO_P(PSTR("Simon init OK\r\n"));	
 		
 #if _WIN32	
 	PT_INIT(&monitor_input_pt);
@@ -643,8 +604,10 @@ void main_monitor(void)
 	ini_browse(callback_inifile, NULL, config_inifile);
 	config_check_erro();
 
-	PRINTS_P(PSTR("Config OK\r\n"));
-	DPRINTS_P(PSTR("Config OK\r\n"));
+	terminal_acquire();	
+		PRINTS_P(PSTR("Config OK\r\n"));
+		DPRINTS_P(PSTR("Config OK\r\n"));
+	terminal_release();	
 	
 #if COLDUINO || ARDUINO
 	DelayTask(5000);	
@@ -657,12 +620,11 @@ void main_monitor(void)
 		if(monitor_state[monitor_num].state != IN_USE			
 			|| monitor_init(monitor_num) != TRUE)
 		{
-			PRINT_ERRO_P(monitor_error_msg[1], monitor_num);
+			PRINT_ERRO_PP(monitor_error_msg[1], monitor_num);
 			sleep_forever();
 		}
 		
-		/* monitor MODBUS? */
-	
+		/* configura monitor MODBUS */	
 		if(monitor_state[monitor_num].codigo < MODBUS_NUM_SLAVES)
 		{
 			if(modbus_slaves_all[monitor_state[monitor_num].codigo] == NULL) goto modbus_slave_erro;
@@ -670,18 +632,13 @@ void main_monitor(void)
 			monitor_state[monitor_num].read_data = modbus_slaves_all[monitor_state[monitor_num].codigo]->slave_reader;			
 		}else
 		{
-			modbus_slave_erro:	
-			#if ARDUINO				
-				PRINT_ERRO_P(monitor_error_msg[1], monitor_num);
-				PRINTS_ERRO_P(PSTR("modbus slave nao suportado \r\n"));
-			#else
-				PRINT_ERRO(monitor_error_msg[1], monitor_num);
-				PRINT_ERRO(PSTR("modbus slave nao suportado \r\n"));
-			#endif			
-		
+			modbus_slave_erro:			
+			PRINT_ERRO_PP(monitor_error_msg[1], monitor_num);
+			PRINTS_ERRO_P(PSTR("modbus slave nao suportado \r\n"));		
 			sleep_forever();
 		}		
 		
+		PRINT_ERRO_PP(monitor_error_msg[2], monitor_num);
 		monitores_em_uso++;
 		
 		/* Inicializa as threads deste monitor */
@@ -740,7 +697,7 @@ void main_monitor(void)
 #endif		
 		
 		#ifndef _WIN32
-			DelayTask(1000); // executa a cada 1000ms
+			DelayTask(1000); // executa a cada 1000ms			
 		#endif
 		
 	}

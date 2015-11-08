@@ -59,25 +59,26 @@ static INT8U gReceiveBuffer[256];
 #define DEBUG_PRINT 0
 
 #if DEBUG_PRINT
-#define PRINT(...) 		printSer(USE_USB,__VA_ARGS__);
-#define PRINT_BUF(...)  //printSer(USE_USB,__VA_ARGS__);
-#define PRINT_REPLY(...)  printSer(USE_USB,__VA_ARGS__);
+#define PRINT(...) 			printSer(USE_USB,__VA_ARGS__);
+#define PRINT_BUF(...)		//printSer(USE_USB,__VA_ARGS__);
+#define PRINT_REPLY(...)	printSer(USE_USB,__VA_ARGS__);
 #else
 #define PRINT(...)
 #define PRINT_BUF(...)
 #define PRINT_REPLY(...)  
 #endif
 
-#define UNUSED(x)   (void)x;
-#define MAX_RETRIES		2
-
 #define DEBUG_PUTCHAR	0
 
 #if DEBUG_PUTCHAR
 #define DPUTCHAR(x)		putcharSer(USE_USB,x);
 #else
-#define DPUTCHAR(x)		
+#define DPUTCHAR(x)
 #endif
+
+#define UNUSED(x)   (void)x;
+#define MAX_RETRIES		2
+
 
 typedef enum
 {

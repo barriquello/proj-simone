@@ -250,6 +250,25 @@ INT8U OSSchedule(void)
 	
   Priority = SAScheduler(OSReadyList & OSBlockedList);
   TaskSelect = PriorityVector[Priority];
+  #define CHECK_STACK_OVERFLOW 1
+  #if CHECK_STACK_OVERFLOW
+  #include "terminal.h"
+  do{
+	  char *p = ContextTask[TaskSelect].StackInit;
+	  if(*++p != 'T') {
+		  if(*++p != 'S') {
+			  if(*++p != 'K') {
+				  printf_terminal_P(PSTR("Stack overflow!\r\n"));
+				  while(1)
+				  {
+					  
+				  }
+			  }
+		  }
+	  }
+	  
+  }while(0);
+  #endif
   
 	return TaskSelect;
 }

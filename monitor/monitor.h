@@ -108,15 +108,6 @@
 #define monitor_seek(file,pos)            (f_lseek((file), *(pos)) == FR_OK)
 #define monitor_seek_end(file)            (f_lseek((file), f_size((file))) == FR_OK)
 
-#include "string.h"
-static int monitor_rename(TCHAR *source, const TCHAR *dest)
-{
-  /* Function f_rename() does not allow drive letters in the destination file */
-  const char *drive = strchr(dest, ':');
-  drive = (drive == NULL) ? dest : drive + 1;
-  return (f_rename(source, drive) == FR_OK);
-}
-
 #define LOG_DIRTYPE                   DIR
 #define LOG_DIRINFO 				  FILINFO
 #define LOG_FILEINFO 				  FILINFO
@@ -129,16 +120,9 @@ static int monitor_rename(TCHAR *source, const TCHAR *dest)
 
 #endif
 
-
-
 #ifndef NULL
 #define NULL  (void*)0
 #endif
-
-void print_R(char* out, const char *format, ...);
-void print_P(char* out, const char *format, ...);
-void prints_R(char* out, const char *string);
-void prints_P(char* out, const char *string);
 
 #define LOG_HEADER_LEN		 50
 #define LOG_MAX_ENTRY_SIZE   256
@@ -209,7 +193,9 @@ typedef enum{
 	IN_USE = 1
 } monitor_used_t;
 
-#if (COLDUINO && !__GNUC__) || ARDUINO
+#if (COLDUINO && !__GNUC__)
+typedef unsigned long long clock_t;
+#elif ARDUINO
 typedef unsigned long long clock_t;
 #endif
 
