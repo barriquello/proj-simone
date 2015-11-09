@@ -36,7 +36,8 @@ static uint8_t ModbusMaster_state;
 
 #if MB_RS485
 #include "rs485.h"
-#define RS485_BAUDRATE			19200
+#define	MODBUSMASTER_LOCK()		rs485_acquire();
+#define	MODBUSMASTER_UNLOCK()	rs485_release();
 #define MODBUSMASTER_PUTCHAR(x) rs485_putchar(x)
 #define RS485_TIMEOUT_RX		10
 #else
@@ -44,6 +45,8 @@ static uint8_t ModbusMaster_state;
 OS_QUEUE ModbusMaster_InBuffer;
 BRTOS_Queue *qModbusMaster_In;
 #define MODBUSMASTER_PUTCHAR(x)
+#define	MODBUSMASTER_LOCK()		
+#define	MODBUSMASTER_UNLOCK()	
 #define RS485_TIMEOUT_RX		10
 #endif
 
@@ -60,8 +63,8 @@ static uint8_t ModbusMasterRxData(uint8_t * _pData, uint16_t timeout)
 
 static void ModbusMasterTxData(const uint8_t * const _pData, const uint32_t _dataLen) 
 {
-	 
-#if MB_RS485	
+	 DelayTask(2);
+#if MB_RS485	    
 	rs485_tx(_pData,(uint16_t)_dataLen);	 
 #else
 	uint8_t k; 
@@ -169,7 +172,7 @@ uint8_t Modbus_init(void)
 {
 
 #if MB_RS485 
-	rs485_init(RS485_BAUDRATE,FALSE,0);	
+	rs485_init();	
 #else	
 	if(qModbusMaster_In != NULL && qModbusMaster_In->OSEventAllocated == TRUE) return TRUE;
 		
@@ -191,6 +194,8 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 	CHAR  ucByteRx;							// received byte	
 	
 	sint32_t err = MODBUS_ERROR;
+	
+	MODBUSMASTER_LOCK();
 	
 	// open Modbus Master
 	if (ModbusMaster_open(slave, func, queryBuffer, &master_query) == MODBUS_ERROR)
@@ -219,7 +224,7 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 	// Send query
 	ModbusMasterTxData(master_query.pQuery, master_query.queryLen);	
 	   
-	/* wait 1 sec for the response */
+	/* wait 10 msec for the response */
 	DelayTask(10);	
 	
 	if(ModbusMasterRxData((uint8_t*)&ucByteRx,RS485_TIMEOUT_RX))
@@ -247,7 +252,10 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 	
 	exit:
 	ModbusMaster_close();
-	ModbusMasterRxFlush();				
+	ModbusMasterRxFlush();	
+	
+	MODBUSMASTER_UNLOCK();
+				
 	return err;
 }
 

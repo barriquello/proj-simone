@@ -164,7 +164,7 @@ char BufferText[32];
 
 #define monitor_error_msg0_def		"\r\nConfig erro: faltando "
 #define monitor_error_msg1_def		"\r\nMonitor erro: %d "
-#define monitor_error_msg2_def		"\r\nMonitor %d started "
+#define monitor_error_msg2_def		"\r\nMonitor %d"
 #if ARDUINO
 char BufferText[32];
 const char monitor_error_msg0[] PROGMEM = monitor_error_msg0_def;
@@ -319,7 +319,7 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
   
   while(1)
   {		
-		PRINTF_P(PSTR("\r\nThread W %d, timer: %d "), _monitor, period);
+		//PRINTF_P(PSTR("\r\nThread W %d, timer: %d \r\n"), _monitor, period);
 		PT_WAIT_UNTIL(pt, monitor_running && timer_expired(timer));
 		
 		time_elapsed = (uint16_t)timer_elapsed(timer);	
@@ -333,13 +333,13 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 			timer_set(timer, (uint32_t)period/10);
 		}
 		time_before = clock_time();
-		PRINTF_P(PSTR("M %d W start @%d\r\n"), _monitor, (uint32_t)(time_before & MASK32));
+		PRINTF_P(PSTR("M %u W start @%lu\r\n"), _monitor, (uint32_t)(time_before & MASK32));
 		
 		monitor_writer(_monitor);
 		
 		time_now = clock_time();
-		time_elapsed = (uint32_t)(time_now-time_before);
-		PRINTF_P(PSTR("M %d W end @%d, diff %d\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
+		time_elapsed = (uint16_t)(time_now-time_before);
+		PRINTF_P(PSTR("M %u W end @%lu, diff %lu\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
   }
   PT_END(pt);
 }
@@ -360,18 +360,18 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
   {		
 	  	timer_set(timer, TIMER_READER_MS);
 		
-		PRINTF_P(PSTR("\r\nThread R %d"), _monitor);
+		//PRINTF_P(PSTR("\r\nThread R %d \r\n"), _monitor);
 		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));
 		
-		time_before = clock_time();
-		PRINTF_P(PSTR("M %d R start @%d\r\n"), _monitor, (uint32_t)(time_before & MASK32));
+		time_before = clock_time();		
 		
-		monitor_reader(_monitor);
-		
-		time_now = clock_time();
-		
-		time_elapsed = (uint32_t)(time_now-time_before);
-		PRINTF_P(PSTR("M %d R end @%d, diff %d\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
+		if(monitor_reader(_monitor) < MAX_NUM_OF_ENTRIES)
+		{
+			PRINTF_P(PSTR("M %u R start @%lu\r\n"), _monitor, (uint32_t)(time_before & MASK32));
+			time_now = clock_time();			
+			time_elapsed = (uint32_t)(time_now-time_before);
+			PRINTF_P(PSTR("M %u R end @%lu, diff %lu\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
+		}				
   }
   PT_END(pt);
 }
@@ -638,7 +638,7 @@ void main_monitor(void)
 			sleep_forever();
 		}		
 		
-		PRINT_ERRO_PP(monitor_error_msg[2], monitor_num);
+		PRINT_ERRO_PP(monitor_error_msg[2], monitor_num); PRINTS_ERRO(PSTR(" started\r\n"));
 		monitores_em_uso++;
 		
 		/* Inicializa as threads deste monitor */

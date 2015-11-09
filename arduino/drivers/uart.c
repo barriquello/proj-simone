@@ -88,6 +88,7 @@ void _putchar_uart0(CHAR8 data)
     UCSR0A = 0x20;
 	// Put data into buffer, sends the data */
     UDR0 = data;
+	while (!(UCSR0A & 0x20)){}
 }
 
 void _putchar_uart1(CHAR8 data)
@@ -143,8 +144,8 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 	}
 #endif	
 
-		// Configure UART 0
-		#if (ENABLE_UART0 == TRUE)
+// Configure UART 0
+#if (ENABLE_UART0 == TRUE)
 		if (uart == 0)
 		{			
 			uart0_init(baudrate);			
@@ -167,9 +168,9 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 				while (1){};
 			}
 		}
-		#endif
+#endif
 			
-		// Configure UART 1
+// Configure UART 1
 #if (ENABLE_UART1 == TRUE)
 		if (uart == 1)
 		{
@@ -196,7 +197,7 @@ void uart_init(INT8U uart, INT16U baudrate, INT16U buffersize, INT8U mutex, INT8
 		}		
 #endif
 
-		// Configure UART 2
+// Configure UART 2
 #if (ENABLE_UART2 == TRUE)
 		if (uart == 2)
 		{
@@ -253,9 +254,7 @@ void uart0_tx(void)
 INT8U getchar_uart0(CHAR8* caracter, INT16U timeout)
 {
 	INT8U ret;
-	uart0_acquire();
-		ret = OSQueuePend(Serial0, (INT8U*)caracter, timeout);
-	uart0_release();
+	ret = OSQueuePend(Serial0, (INT8U*)caracter, timeout);
 	return (ret != TIMEOUT) ? TRUE:FALSE;
 }
 
@@ -278,14 +277,30 @@ void uart0_release(void)
 #endif	
 }
 
+void uart0_RxEnable(void)
+{
+	/* Enable receiver.*/
+	UCSR0B = UCSR0B | (1<<RXEN0);
+}
+
+void uart0_RxDisable(void)
+{	
+	/* Disable RX.*/
+	UCSR0B = UCSR0B & ~(1 << RXEN0);
+}
+
 void uart0_RxEnableISR(void)
 {
-	
+	/* Enable RX interrupt */
+	UCSR0B = UCSR0B | (1 << RXCIE0);
 }
 
 void uart0_RxDisableISR(void)
 {
 	
+	/* Disable RX interrupt */	
+	UCSR0B = UCSR0B & ~(1 << RXCIE0);	
+
 }
 
 

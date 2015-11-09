@@ -809,11 +809,11 @@ void monitor_writer(uint8_t monitor_num)
 	if(monitor_state[monitor_num].read_data(monitor_state[monitor_num].slave_addr,(uint8_t*)monitor_data_buffer,(uint8_t)monitor_state[monitor_num].config_h.entry_size) == 0)
 	{
 		PRINT_ERRO_PP(monitor_error_msg[1], monitor_num);
-		PRINTS_ERRO_P(PSTR("read failed\r\n"));
+		PRINT_ERRO_P(PSTR("read slave %d failed\r\n"), monitor_state[monitor_num].slave_addr);
 		return;
 	}
-	PRINT_ERRO_PP(monitor_error_msg[2], monitor_num);
-	PRINTS_ERRO_P(PSTR("read slave ok\r\n"));
+	PRINTF_PP(monitor_error_msg[2], monitor_num);
+	PRINTF_P(PSTR(" read slave %d ok\r\n"), monitor_state[monitor_num].slave_addr);
 	
 	/* convert data to hex char */
 	monitor_createentry(monitor_char_buffer,(uint16_t*)monitor_data_buffer,(uint8_t)(monitor_state[monitor_num].config_h.entry_size/2));
@@ -844,10 +844,10 @@ void monitor_writer(uint8_t monitor_num)
 	
 }
 
-void monitor_reader(uint8_t monitor_num)
+uint16_t monitor_reader(uint8_t monitor_num)
 {
 	monitor_entry_t entry;
-	uint32_t nread;
+	uint16_t nread;
 	char buffer[sizeof(long)*8+1];
 
 	char* fname = monitor_getfilename_to_read(monitor_num);
@@ -873,6 +873,8 @@ void monitor_reader(uint8_t monitor_num)
 
 	/* change to parent dir */
 	monitor_chdir("..");
+	
+	return nread;
 
 }
 

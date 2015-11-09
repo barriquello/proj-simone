@@ -127,7 +127,7 @@ void Mass_Storage_Device_Task(void)
 #define TERM_UART			0
 #endif
 
-#define TERM_BUFSIZE		32
+#define TERM_BUFSIZE		36
 #define TERM_MUTEX			TRUE
 #define TERM_BAUDRATE		19200
 

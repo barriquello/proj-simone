@@ -92,7 +92,7 @@ void terminal_acquire(void)
 }
 void terminal_release(void)
 {
-		uart0_release();
+	uart0_release();
 }
 #elif COLDUINO
 void terminal_acquire(void)
@@ -105,21 +105,15 @@ void terminal_release(void)
 }
 #endif
 
-void getchar_terminal(char *c)
+int getchar_terminal(char *c)
 {    	
 #if COLDUINO
 	INT8U data;	
 	(void)OSQueuePend(USB, &data, 0);
 	*c=(char)data;
+	return TRUE;
 #elif ARDUINO 	
-	while(1)
-	{			
-			if(getchar_uart0(c, 10) == TRUE)
-			{
-				return;
-			}
-			DelayTask(1000);
-	}	
+	return getchar_uart0(c, 500);		
 #endif	
 	
 }
@@ -439,7 +433,13 @@ void terminal_process(void)
   while(1)
   {
 	
-	getchar_terminal(&c);
+	terminal_acquire();
+	
+	if(getchar_terminal(&c) == FALSE)
+	{		
+		terminal_release();
+		DelayTask(1000);
+	}
 
 	if (SilentMode == FALSE)
 	{
@@ -447,9 +447,9 @@ void terminal_process(void)
 	  {
 		  if(c != DEL || term_cmd_line_ndx)
 		  {			  
-			  terminal_acquire();
+			  //terminal_acquire();
 			  putchar_terminal(c);
-			  terminal_release();
+			  //terminal_release();
 		  }			  
 	  }
 	} 
@@ -480,14 +480,15 @@ void terminal_process(void)
       }
       else
       {
-		terminal_acquire();
-			(*term_cmds[term_x]->func)(term_cmd_line+term_end+1);
-		terminal_release();
+		//terminal_acquire();
+		(*term_cmds[term_x]->func)(term_cmd_line+term_end+1);		
       }
       exit:
       term_cmd_line_ndx=0;
       term_print_prompt();      
       SetSilentMode((char)FALSE);
+	  
+	  terminal_release();
     }
     else
     { /* Put character to term_cmd_line. */

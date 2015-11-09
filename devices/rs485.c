@@ -34,9 +34,11 @@
 #include "uart.h"
 #include "rs485.h"
 
-#define RS485_BUFSIZE		(36) /* enough to read up to 2 regs of 16 bits each */
+#define RS485_BUFSIZE		36 /* enough to read up to 2 regs of 16 bits each */
 #define RS485_TX_STATE 		1
 #define RS485_RX_STATE 		0
+#define RS485_MUTEX			TRUE
+#define RS485_BAUDRATE		19200
 
 #if COLDUINO
 	#if !__GNUC__
@@ -80,6 +82,9 @@
 #define RS485_RX_DISABLE()	uart0_RxDisable();uart0_RxDisableISR();
 extern BRTOS_Queue 			*Serial0;
 #define RS485_QUEUE 		Serial0
+#define RS485_MUTEX_PRIO	UART0_MUTEX_PRIO
+#define RS485_ACQUIRE()		uart0_acquire();
+#define	RS485_RELEASE()		uart0_release();
 #elif UART_RS485 == UART1
 #define RS485_PUTCHAR(x) 	putchar_uart1(x)
 #define RS485_PRINTF(x)		printf_uart1(x)
@@ -87,6 +92,9 @@ extern BRTOS_Queue 			*Serial0;
 #define RS485_RX_DISABLE()	uart1_RxDisable();uart1_RxDisableISR();
 extern BRTOS_Queue 			*Serial1;
 #define RS485_QUEUE 		Serial1
+#define RS485_MUTEX_PRIO	UART1_MUTEX_PRIO
+#define RS485_ACQUIRE()		uart1_acquire();
+#define	RS485_RELEASE()		uart1_release();
 #elif UART_RS485 == UART2
 #define RS485_PUTCHAR(x) 	putchar_uart2(x)
 #define RS485_PRINTF(x)		printf_uart2(x)
@@ -94,24 +102,28 @@ extern BRTOS_Queue 			*Serial1;
 #define RS485_RX_DISABLE()	uart2_RxDisableISR()
 extern BRTOS_Queue 			*Serial2;
 #define RS485_QUEUE 		Serial2
+#define RS485_MUTEX_PRIO	UART2_MUTEX_PRIO
+#define RS485_ACQUIRE()		uart2_acquire();
+#define	RS485_RELEASE()		uart2_release();
 #endif
 
 
-void rs485_init(INT16U baudrate, INT8U mutex, INT8U priority)
-{
-	
+void rs485_init(void)
+{	
 	RS485_RX();
 	RS485_TXRX_ENABLE();
-	
-#if UART_RS485 == UART0
-	uart_init(0,baudrate,RS485_BUFSIZE,mutex,priority);	
-#elif UART_RS485 == UART1
-	uart_init(1,baudrate,RS485_BUFSIZE,mutex,priority);
-#elif UART_RS485 == UART2	
-	uart_init(2,baudrate,RS485_BUFSIZE,mutex,priority);
-#endif	
+	uart_init(UART_RS485,BAUD(RS485_BAUDRATE),RS485_BUFSIZE,RS485_MUTEX,RS485_MUTEX_PRIO);	
 }
 
+void rs485_acquire(void)
+{
+	RS485_ACQUIRE();
+}
+
+void rs485_release(void)
+{
+	RS485_RELEASE();	
+}
 void rs485_putchar(uint8_t caracter)
 {
 	RS485_TX();
@@ -140,9 +152,11 @@ void rs485_tx(const INT8U *data, const INT16U _len)
 		RS485_PUTCHAR((*data));
 		data++;		
 		len--;
-	}
-	RS485_RX();
+	}		
 	RS485_RX_ENABLE();
+	DelayTask(2);
+	RS485_RX();
+	
 }
 
 INT8U rs485_rx(CHAR8* caracter, INT16U timeout)

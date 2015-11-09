@@ -268,7 +268,7 @@ char* monitor_getfilename_to_write(uint8_t monitor_num);
 char* monitor_getfilename_to_read(uint8_t monitor_num);
 
 void main_monitor(void);
-void monitor_reader(uint8_t monitor_num);
+uint16_t monitor_reader(uint8_t monitor_num);
 void monitor_writer(uint8_t monitor_num);
 
 clock_t clock_time(void);

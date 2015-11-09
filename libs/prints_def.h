@@ -17,7 +17,7 @@ void prints_P(char* out, const char *string);
 #define PRINT_ERRO(...)		print_R("erro.txt",__VA_ARGS__);
 #define PRINT_ERRO_P(...)	 PRINTF_P(__VA_ARGS__); print_P("erro.txt", __VA_ARGS__);
 #define PRINT_ERRO_PP(s,...) PRINTF_PP((s),__VA_ARGS__); print_P("erro.txt",(PGM_P)pgm_read_word(&(s)), __VA_ARGS__);
-#define PRINTS_ERRO(s)		prints_R("erro.txt",s);
+#define PRINTS_ERRO(s)		PRINTS_P(s); prints_R("erro.txt",s);
 #define PRINTS_ERRO_P(s)	PRINTS_P(s); prints_P("erro.txt",s); 
 #define PRINTS_ERRO_PP(s)	PRINTS_P(s); prints_P("erro.txt",(PGM_P)pgm_read_word(&(s))); 
 #elif COLDUINO
