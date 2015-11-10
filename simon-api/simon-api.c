@@ -178,7 +178,7 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 		     "Host: %s\r\n"
 		     "\r\n\r\n", message, hostname);
 
-#if 0	
+#if 1	
 	PRINTF(server_reply);
 #endif	
 

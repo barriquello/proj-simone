@@ -60,4 +60,7 @@ INT8U rs485_rx(CHAR8* caracter, INT16U timeout);
 void rs485_tx(const INT8U *data, const INT16U len);
 void rs485_rx_flush(void);
 
+void rs485_enable_rx(void);
+void rs485_enable_tx(void);
+
 

@@ -198,7 +198,10 @@ void Terminal_Task(void)
 	(*term_cmds[6]->func)(" name1 name2");
 	#endif
 	
+	terminal_acquire();
 	printf_terminal_P(PSTR("Terminal started\r\n"));
+	terminal_release();
+	
 	while (1)
 	{
 		#if !SIMULATION

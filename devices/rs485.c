@@ -171,4 +171,15 @@ void rs485_rx_flush(void)
 	OSCleanQueue(RS485_QUEUE);
 }
 
+void rs485_enable_rx(void)
+{
+	RS485_RX();
+}
+
+void rs485_enable_tx(void)
+{
+	RS485_TX();
+}
+
+
 #endif

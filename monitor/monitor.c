@@ -505,9 +505,9 @@ static int monitor_entry_send(uint8_t mon_id, monitor_entry_t* entry, uint16_t l
 	cnt = build_entry_to_send(data_vector,entry->values,len);
 
 #if 0	
-	PRINTF(PSTR("\r\n"));
+	PRINTF_P(PSTR("\r\n"));
 	PRINTF(data_vector);
-	PRINTF(PSTR("\r\n"));
+	PRINTF_P(PSTR("\r\n"));
 #endif	
 	
 #ifdef _WIN32	

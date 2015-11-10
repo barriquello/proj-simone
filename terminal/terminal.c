@@ -105,7 +105,7 @@ void terminal_release(void)
 }
 #endif
 
-int getchar_terminal(char *c)
+int getchar_terminal(char *c, int timeout)
 {    	
 #if COLDUINO
 	INT8U data;	
@@ -113,7 +113,7 @@ int getchar_terminal(char *c)
 	*c=(char)data;
 	return TRUE;
 #elif ARDUINO 	
-	return getchar_uart0(c, 500);		
+	return getchar_uart0(c, timeout);
 #endif	
 	
 }
@@ -425,6 +425,7 @@ void terminal_init(void (*putch_)(char))
 * Assumptions:
 *    --
 *****************************************************************************/
+#include "rs485.h"
 void terminal_process(void)
 {
   char c;
@@ -432,28 +433,45 @@ void terminal_process(void)
   
   while(1)
   {
-	
-	terminal_acquire();
-	
-	if(getchar_terminal(&c) == FALSE)
-	{		
+	  terminal_acquire();
+	  
+	  rs485_enable_rx();
+	  putchar_terminal('*');
+	  rs485_enable_tx();
+	  if(getchar_terminal(&c, 1000) == TRUE)
+	  {
+		  if(c=='\r' || c=='\n')
+		  {
+			  rs485_enable_rx();
+			  putchar_terminal('>');
+			  rs485_enable_tx();
+			  break;
+		  }		  
+	  }
+	  
+		rs485_enable_rx();
 		terminal_release();
-		DelayTask(1000);
-	}
+		DelayTask(5000);
+	  
+  }
+    
+  while(1)
+  {		
+	rs485_enable_tx(); 
+	getchar_terminal(&c, 0);		
 
 	if (SilentMode == FALSE)
 	{
 	  if(c !='\n' && c!='\r')
 	  {
 		  if(c != DEL || term_cmd_line_ndx)
-		  {			  
-			  //terminal_acquire();
+		  {			
+			  rs485_enable_rx();   
 			  putchar_terminal(c);
-			  //terminal_release();
+			  rs485_enable_tx();
 		  }			  
 	  }
-	} 
-        
+	}         
     
     /* Execute command if enter is received, or term_cmd_line is full. */
     if ((c=='\r') || (term_cmd_line_ndx == sizeof(term_cmd_line)-2))
@@ -480,15 +498,14 @@ void terminal_process(void)
       }
       else
       {
-		//terminal_acquire();
 		(*term_cmds[term_x]->func)(term_cmd_line+term_end+1);		
       }
       exit:
       term_cmd_line_ndx=0;
       term_print_prompt();      
-      SetSilentMode((char)FALSE);
-	  
+      SetSilentMode((char)FALSE);	  
 	  terminal_release();
+	  return;
     }
     else
     { /* Put character to term_cmd_line. */

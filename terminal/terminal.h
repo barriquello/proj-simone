@@ -80,7 +80,7 @@ unsigned char TerminalBackup(char *backup);
 
 void printf_terminal(const char *s);
 void putchar_terminal(char c);
-int getchar_terminal(char *c);
+int getchar_terminal(char *c, int timeout);
 void terminal_acquire(void);
 void terminal_release(void);
 void terminal_newline(void);
