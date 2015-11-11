@@ -105,6 +105,7 @@ void terminal_release(void)
 }
 #endif
 
+/* portable function for terminal input char */
 int getchar_terminal(char *c, int timeout)
 {    	
 #if COLDUINO
@@ -112,8 +113,13 @@ int getchar_terminal(char *c, int timeout)
 	(void)OSQueuePend(USB, &data, 0);
 	*c=(char)data;
 	return TRUE;
-#elif ARDUINO 	
-	return getchar_uart0(c, timeout);
+#elif ARDUINO 
+	#include "rs485.h"
+	int	ret = 0;
+	rs485_enable_tx();
+	ret = getchar_uart0(c, timeout);
+	rs485_enable_rx();
+	return ret;
 #endif	
 	
 }
@@ -425,7 +431,6 @@ void terminal_init(void (*putch_)(char))
 * Assumptions:
 *    --
 *****************************************************************************/
-#include "rs485.h"
 void terminal_process(void)
 {
   char c;
@@ -433,31 +438,23 @@ void terminal_process(void)
   
   while(1)
   {
-	  terminal_acquire();
-	  
-	  rs485_enable_rx();
+	  terminal_acquire();	  
 	  putchar_terminal('*');
-	  rs485_enable_tx();
 	  if(getchar_terminal(&c, 1000) == TRUE)
 	  {
 		  if(c=='\r' || c=='\n')
 		  {
-			  rs485_enable_rx();
 			  putchar_terminal('>');
-			  rs485_enable_tx();
 			  break;
 		  }		  
 	  }
 	  
-		rs485_enable_rx();
-		terminal_release();
-		DelayTask(5000);
-	  
+	 terminal_release();
+	 DelayTask(5000);	  
   }
     
   while(1)
   {		
-	rs485_enable_tx(); 
 	getchar_terminal(&c, 0);		
 
 	if (SilentMode == FALSE)
@@ -465,10 +462,8 @@ void terminal_process(void)
 	  if(c !='\n' && c!='\r')
 	  {
 		  if(c != DEL || term_cmd_line_ndx)
-		  {			
-			  rs485_enable_rx();   
+		  {			  
 			  putchar_terminal(c);
-			  rs485_enable_tx();
 		  }			  
 	  }
 	}         
