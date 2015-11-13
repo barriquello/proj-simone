@@ -112,19 +112,9 @@ T20150101073300S ->
 #include <stdlib.h>
 #include <string.h>
 
-#if ARDUINO
-//#include "time_lib.h"
-#else
-#include <time.h>
-#endif
-
-
-
 #ifdef _WIN32
 #include <stdio.h>
 #include "http_client.h"
-#else
-//#include "SD_API.h"
 #endif
 
 #if COLDUINO || ARDUINO
@@ -147,6 +137,7 @@ monitor_config_ok_t config_check;
 #define TICKS2MSEC(x)	(x)
 #endif
 
+/* print output */
 #define DEBUG_MONITOR		1
 #undef PRINTS_ENABLED
 
@@ -162,9 +153,11 @@ char BufferText[32];
 #define CONST const
 #endif
 
+/* Debug strings */
 #define monitor_error_msg0_def		"\r\nConfig erro: faltando "
 #define monitor_error_msg1_def		"\r\nMonitor erro: %d "
 #define monitor_error_msg2_def		"\r\nMonitor %d"
+
 #if ARDUINO
 char BufferText[32];
 const char monitor_error_msg0[] PROGMEM = monitor_error_msg0_def;
@@ -285,6 +278,7 @@ static struct pt monitor_input_pt;
 static char set_input = 0;
 mon_timer_t input_timer;
 
+/* Input thread */
 static
 PT_THREAD(monitor_set_input(struct pt *pt))
 {
@@ -302,6 +296,7 @@ PT_THREAD(monitor_set_input(struct pt *pt))
 
 #define MASK32  ((uint32_t)(-1))
 
+/* Monitor writer thread */
 static
 PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 {
@@ -332,18 +327,22 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 		{
 			timer_set(timer, (uint32_t)period/10);
 		}
+		
 		time_before = clock_time();
-		PRINTF_P(PSTR("M %u W start @%lu\r\n"), _monitor, (uint32_t)(time_before & MASK32));
-		
-		monitor_writer(_monitor);
-		
-		time_now = clock_time();
+		monitor_writer(_monitor);		
+		time_now = clock_time();		
 		time_elapsed = (uint16_t)(time_now-time_before);
-		PRINTF_P(PSTR("M %u W end @%lu, diff %lu\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
+		
+		if(is_terminal_idle())
+		{
+			PRINTF_P(PSTR("M %u W start @%lu\r\n"), _monitor, (uint32_t)(time_before & MASK32));
+			PRINTF_P(PSTR("M %u W end @%lu, diff %lu\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
+		}
   }
   PT_END(pt);
 }
 
+/* Monitor reader thread */
 static
 PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 {
@@ -366,11 +365,15 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 		time_before = clock_time();		
 		
 		if(monitor_reader(_monitor) < MAX_NUM_OF_ENTRIES)
-		{
-			PRINTF_P(PSTR("M %u R start @%lu\r\n"), _monitor, (uint32_t)(time_before & MASK32));
+		{			
 			time_now = clock_time();			
 			time_elapsed = (uint32_t)(time_now-time_before);
-			PRINTF_P(PSTR("M %u R end @%lu, diff %lu\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
+			
+			if(is_terminal_idle())
+			{
+				PRINTF_P(PSTR("M %u R start @%lu\r\n"), _monitor, (uint32_t)(time_before & MASK32));
+				PRINTF_P(PSTR("M %u R end @%lu, diff %lu\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
+			}
 		}				
   }
   PT_END(pt);
@@ -606,8 +609,9 @@ void main_monitor(void)
 
 	terminal_acquire();	
 		PRINTS_P(PSTR("Config OK\r\n"));
-		DPRINTS_P(PSTR("Config OK\r\n"));
 	terminal_release();	
+	
+	DPRINTS_P(PSTR("Config OK\r\n"));
 	
 #if COLDUINO || ARDUINO
 	DelayTask(5000);	
@@ -655,7 +659,7 @@ void main_monitor(void)
 	DelayTask(5000);
 #endif	
 
-
+	/* run forever */
 	while(1)
 	{
 
@@ -669,7 +673,7 @@ void main_monitor(void)
 		monitor_set_input(&monitor_input_pt);
 #endif		
 
-#if 0
+#ifdef _WIN32
 		char c;
 		
 		c=getchar_timeout(1);

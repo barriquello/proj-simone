@@ -38,7 +38,7 @@ typedef void (cmd_func)(char *params);
 /*****************************************************************************
  * Macro definitions
  *****************************************************************************/
-#define MAX_CMDS			  12
+#define MAX_CMDS			  16
 #define MAX_CMD_SIZE		  8
 #define CONSOLE_BUFFER_SIZE  (32)
 
@@ -84,6 +84,7 @@ int getchar_terminal(char *c, int timeout);
 void terminal_acquire(void);
 void terminal_release(void);
 void terminal_newline(void);
+int is_terminal_idle(void);
 
 void printf_terminal_P(const char *s);
 

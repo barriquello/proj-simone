@@ -256,13 +256,10 @@ INT8U OSSchedule(void)
   do{
 	  char *p = ContextTask[TaskSelect].StackInit;
 	  if(*++p != 'T') {
+		  printf_terminal_P(PSTR("Stack overflow!\r\n"));
 		  if(*++p != 'S') {
 			  if(*++p != 'K') {
-				  printf_terminal_P(PSTR("Stack overflow!\r\n"));
-				  while(1)
-				  {
-					  
-				  }
+				  printf_terminal_P(PSTR("Stack overflow!\r\n"));				 
 			  }
 		  }
 	  }

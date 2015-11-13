@@ -80,6 +80,7 @@ static uint8_t 		term_cmd_line_ndx;
 
 static uint8_t 		term_n_cmd;
 command_t 	*term_cmds[MAX_CMDS];
+volatile char terminal_idle;
 
 static void (*putch)(char);
 static void (*getch)(char *);
@@ -87,12 +88,14 @@ static void (*getch)(char *);
 #if ARDUINO
 #include "uart.h"
 void terminal_acquire(void)	
-{
+{	
 	uart0_acquire();
+	terminal_idle = FALSE;
 }
 void terminal_release(void)
 {
-	uart0_release();
+	terminal_idle = TRUE;
+	uart0_release();	
 }
 #elif COLDUINO
 void terminal_acquire(void)
@@ -131,6 +134,11 @@ void putchar_terminal(char c)
 		putch(c);
 	}
 	
+}
+
+int is_terminal_idle(void)
+{
+	return (terminal_idle==TRUE);
 }
 
 #if ARDUINO
@@ -450,7 +458,7 @@ void terminal_process(void)
 	  }
 	  
 	 terminal_release();
-	 DelayTask(5000);	  
+	 DelayTask(6000);	  
   }
     
   while(1)

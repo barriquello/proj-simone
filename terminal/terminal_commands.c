@@ -143,11 +143,14 @@ const char Modbus_HelpText_str[] PROGMEM = Modbus_HelpText_def;
 
 #endif
 
+/* print outputs */
+#undef PRINTS_ENABLED
+#define PRINTS_ENABLED  1
+#include "prints_def.h"
+
 void terminal_newline(void)
 {
-	printf_terminal_P(PSTR("\n\r"));	
-	//putchar_terminal('\n');
-	//putchar_terminal('\r');
+	printf_terminal_P(PSTR("\n\r"));
 }
 
 // BRTOS version Command
@@ -876,7 +879,16 @@ CONST command_t null_modem_cmd = {
 
 
 
-#if 0
+#if 1
+
+#define cmd_modbus_help_def			\
+	"\r\n usage:\r\n"				\
+	"i - read input regs \r\n"	    \
+	"h - read holding regs \r\n"    \
+	"p - print answer \r\n"         \
+	"a - set slave address \r\n"    \
+	"s - start reg address \r\n"    \
+	"n - num of regs \r\n"          \
 
 static uint16_t start_addr = 0;
 static uint8_t slave_addr = 1;
@@ -932,11 +944,15 @@ void term_cmd_modbus(char *param)
 				
 			}else
 			{
-				printf_terminal_P(PSTR("Modbus erro"));
+				PRINTS_P(PSTR("Modbus erro"));
 				terminal_newline();
 			}
 			break;
 		default:
+			PRINTS_P(PSTR(cmd_modbus_help_def));
+			terminal_newline();
+			PRINTF_P(PSTR("MB: slave %u, fun %u, "), slave_addr, func);
+			PRINTF_P(PSTR("start %u, n_regs %u\r\n"),start_addr, num_regs);
 			break;
 			
 	}
@@ -944,6 +960,6 @@ void term_cmd_modbus(char *param)
 }
 
 CONST command_t modbus_cmd = {
-  "modbus", term_cmd_modbus, Modbus_HelpText
+  "mb", term_cmd_modbus, Modbus_HelpText
 };
 #endif

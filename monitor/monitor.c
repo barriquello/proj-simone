@@ -310,7 +310,7 @@ uint8_t monitor_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 #define SERVER_TIME 1
 #if SERVER_TIME
 	struct tm t;
-	//http_get_time(&t);
+
 	if(simon_get_time(&t) == MODEM_ERR)
 	{
 		return MODEM_ERR;
@@ -372,13 +372,17 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 			/* rename file */
 			strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
 
-			PRINTF_P(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
+			if(is_terminal_idle())
+			{
+				PRINTF_P(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
+			}
+			
 			ret = monitor_rename((char*)filename, (const char*)new_filename);
 
 			/* if rename failed, try other name */
 			while(!ret)
 			{
-				PRINTS_P(PSTR("\r\n rename failed \r\n"));
+				PRINTS_ERRO_P(PSTR("\r\n rename failed \r\n"));
 				time_t time_now = mktime(&ts);
 				time_now +=3600;
 				ts = *localtime(&(time_t){time_now});
@@ -386,7 +390,12 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 
 				monitor_setheader((const char*)filename, &h);
 
-				PRINTF_P(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
+				if(is_terminal_idle())
+				{
+					PRINTS_P(PSTR("\r\n rename failed \r\n"));
+					PRINTF_P(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
+				}
+				
 				ret = monitor_rename((char*)filename, (const char*)new_filename);
 
 			}
@@ -394,7 +403,10 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 			/* log is reading the same file ? */
 			if(strcmp(monitor_state[monitor_num].monitor_name_reading, monitor_state[monitor_num].monitor_name_writing) == 0)
 			{
-				PRINTS_P(PSTR("\r\n reading the same file that we renamed! \r\n"));
+				if(is_terminal_idle())
+				{
+					PRINTS_P(PSTR("\r\n reading the same file that we renamed! \r\n"));
+				}				
 
 				strcpy(monitor_state[monitor_num].monitor_name_reading,new_filename);
 
@@ -812,8 +824,13 @@ void monitor_writer(uint8_t monitor_num)
 		PRINT_ERRO_P(PSTR("read slave %d failed\r\n"), monitor_state[monitor_num].slave_addr);
 		return;
 	}
-	PRINTF_PP(monitor_error_msg[2], monitor_num);
-	PRINTF_P(PSTR(" read slave %d ok\r\n"), monitor_state[monitor_num].slave_addr);
+	
+	if(is_terminal_idle())
+	{
+		PRINTF_PP(monitor_error_msg[2], monitor_num);
+		PRINTF_P(PSTR(" read slave %d ok\r\n"), monitor_state[monitor_num].slave_addr);
+	}
+
 	
 	/* convert data to hex char */
 	monitor_createentry(monitor_char_buffer,(uint16_t*)monitor_data_buffer,(uint8_t)(monitor_state[monitor_num].config_h.entry_size/2));
@@ -834,9 +851,12 @@ void monitor_writer(uint8_t monitor_num)
 		PRINT_ERRO_P(PSTR("\r\nMissed entries %d\r\n"), missing_entries);
 	}else
 	{
-		PRINTF_P(PSTR("\r\nMon %d, Entry %d: "), monitor_num, cnt);
-		PRINTF(monitor_char_buffer);
-		PRINTS_P(PSTR("\r\n"));
+		if(is_terminal_idle())
+		{
+			PRINTF_P(PSTR("\r\nMon %d, Entry %d: "), monitor_num, cnt);
+			PRINTF(monitor_char_buffer);
+			PRINTS_P(PSTR("\r\n"));		
+		}
 	}
 
 	/* change to parent dir */

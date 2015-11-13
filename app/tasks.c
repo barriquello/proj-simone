@@ -186,12 +186,13 @@ void Terminal_Task(void)
 	(void) terminal_add_cmd((command_t*) &mkdir_cmd);
 	(void) terminal_add_cmd((command_t*) &cp_cmd);
 	//(void) terminal_add_cmd((command_t*) &wt_cmd);
-	// (void) terminal_add_cmd((command_t*) &echo_cmd);
-	// (void) terminal_add_cmd((command_t*) &echo_stdout_cmd);
+	//(void) terminal_add_cmd((command_t*) &echo_cmd);
+	//(void) terminal_add_cmd((command_t*) &echo_stdout_cmd);
 	//(void) terminal_add_cmd((command_t*) &esp_cmd);
 	//(void) terminal_add_cmd((command_t*) &m590_cmd);	
 	//(void) terminal_add_cmd((command_t*) &null_modem_cmd);	
-	//(void) terminal_add_cmd((command_t*) &modbus_cmd);	
+	(void) terminal_add_cmd((command_t*) &modbus_cmd);	
+	
 	#if 0
 	extern command_t *term_cmds[];
 	(*term_cmds[6]->func)("name1 name2");
