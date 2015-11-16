@@ -395,10 +395,10 @@ static int callback_inifile(const char *section, const char *key, const char *va
     (void)userdata;
 
     /* configura monitores */
-    if(strcmp(section,"Config") == 0)
+    if(strcmp_P(section,PSTR("Config")) == 0)
     {
 
-		if(strcmp(key,"num_monitores") == 0)
+		if(strcmp_P(key,PSTR("num_monitores")) == 0)
 		{
 			num_monitores = (uint8_t)StringToInteger((char*)value);
 			
@@ -413,30 +413,30 @@ static int callback_inifile(const char *section, const char *key, const char *va
 			}
 		}
 
-		if(strcmp(key,"simon_server") == 0)
+		if(strcmp_P(key,PSTR("simon_server")) == 0)
 		{
 			simon_set_hostname(value);
 			config_check.bit.server_ok = 1;
 		}
 
-		if(strcmp(key,"simon_ip") == 0)
+		if(strcmp_P(key,PSTR("simon_ip")) == 0)
 		{
 			simon_set_hostip(value);
 			config_check.bit.ip_ok = 1;
 		}
-		if(strcmp(key,"api_key") == 0)
+		if(strcmp_P(key,PSTR("api_key")) == 0)
 		{
 			simon_set_apikey(value);
 			config_check.bit.key_ok = 1;
 		}
-		if(strcmp(key,"gprs_apn") == 0)
+		if(strcmp_P(key,PSTR("gprs_apn")) == 0)
 		{
 			//simon_set_apikey(value);
 			config_check.bit.gprs_apn_ok = 1;
 		}
     }
 
-  	if(strcmp(section,"Monitor") == 0)
+  	if(strcmp_P(section,PSTR("Monitor")) == 0)
 	{
   	    if(mon_cnt >= num_monitores)
   	    {
@@ -444,30 +444,30 @@ static int callback_inifile(const char *section, const char *key, const char *va
   	    }
 
   	   /* configura monitores */
-  	   if(strcmp(key,"slave") == 0)
+  	   if(strcmp_P(key,PSTR("slave")) == 0)
   	   {
   	  			monitor_state[mon_cnt].slave_addr =  (uint8_t)StringToInteger((char*)value);
   	  			++field_cnt;
   	    }
   	  		
-		if(strcmp(key,"codigo") == 0)
+		if(strcmp_P(key,PSTR("codigo")) == 0)
 		{
 			monitor_state[mon_cnt].codigo =  (uint8_t)StringToInteger((char*)value);
 			monitor_state[mon_cnt].config_h.mon_id = monitor_state[mon_cnt].codigo;
 			++field_cnt;
 		}
-		if(strcmp(key,"nome") == 0)
+		if(strcmp_P(key,PSTR("nome")) == 0)
 		{
 			strncpy(monitor_state[mon_cnt].monitor_dir_name, value, SIZEARRAY(monitor_state[mon_cnt].monitor_dir_name));
 			++field_cnt;
 		}
-		if(strcmp(key,"intervalo") == 0)
+		if(strcmp_P(key,PSTR("intervalo")) == 0)
 		{
 			monitor_state[mon_cnt].config_h.time_interv = (uint16_t)StringToInteger((char*)value);
 			++field_cnt;
 		}
 
-		if(strcmp(key,"tamanho") == 0)
+		if(strcmp_P(key,PSTR("tamanho")) == 0)
 		{
 			monitor_state[mon_cnt].config_h.entry_size = (uint16_t)StringToInteger((char*)value);
 			++field_cnt;

@@ -92,10 +92,12 @@ char check_ints(void)
 	
 	return 1;
 }
+
+char str[] = "Config";
+
 void main_app(void)
 {
 	
-
 	/* init the MCU system */
 	System_Init();
 
