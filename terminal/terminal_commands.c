@@ -883,10 +883,12 @@ CONST command_t null_modem_cmd = {
 
 #define cmd_modbus_help_def			\
 	"\r\n usage:\r\n"				\
+	"a - set slave address \r\n"    \
+	"d - set device code \r\n"		\
 	"i - read input regs \r\n"	    \
 	"h - read holding regs \r\n"    \
-	"p - print answer \r\n"         \
-	"a - set slave address \r\n"    \
+	"p - print answer \r\n"         \	
+	"r - read device regs \r\n"     \
 	"s - start reg address \r\n"    \
 	"n - num of regs \r\n"          \
 
@@ -894,12 +896,16 @@ static uint16_t start_addr = 0;
 static uint8_t slave_addr = 1;
 static uint8_t num_regs = 1;
 static uint8_t func = 3;
+static uint8_t device = 0;
 
 static uint16_t modbus_buf[16];
 
 #include "modbus.h"
+#include "modbus_slaves.h"
 #include "printf_lib.h"
 #include "stdio.h"
+
+extern CONST modbus_slave_t * modbus_slaves_all[];
 
 void term_cmd_modbus(char *param)
 {	
@@ -916,6 +922,20 @@ void term_cmd_modbus(char *param)
 					slave_addr = (uint8_t)input;
 				}
 				break;
+		case 'd':
+				if(sscanf(&param[2], "%x", &input) == 1)
+				{
+					if((uint8_t)input < MODBUS_NUM_SLAVES)
+					{
+						device = (uint8_t)input;
+					}else
+					{
+						PRINTS_P(PSTR("Modbus erro: device not supported!"));
+						terminal_newline();
+					}
+					
+				}
+				break;	
 		case 's': 
 			    if(sscanf(&param[2], "%d", &input) == 1)
 				{
@@ -935,7 +955,7 @@ void term_cmd_modbus(char *param)
 		case 'p': 		
 			memset(modbus_buf,0x00,SIZEARRAY(modbus_buf));
 			if(Modbus_GetData(slave_addr, func, (uint8_t*)modbus_buf, start_addr, num_regs) == MODBUS_OK)
-			{
+			{				
 				for(k=0;k<num_regs;k++)
 				{
 					printf_lib("%02X-",modbus_buf[k]);
@@ -947,6 +967,17 @@ void term_cmd_modbus(char *param)
 				PRINTS_P(PSTR("Modbus erro"));
 				terminal_newline();
 			}
+			break;
+		case 'r':
+			memset(modbus_buf,0x00,SIZEARRAY(modbus_buf));
+			modbus_slaves_all[device]->slave_reader(slave_addr,modbus_buf, sizeof(modbus_buf));
+			terminal_acquire();
+			for(k=0;k<sizeof(modbus_buf)/2;k++)
+			{
+				printf_lib("%02X-",modbus_buf[k]);
+			}
+			putchar_terminal(DEL);
+			terminal_release();
 			break;
 		default:
 			PRINTS_P(PSTR(cmd_modbus_help_def));

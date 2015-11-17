@@ -120,8 +120,8 @@ typedef union
 		//uint16_t Unused3;
 		uint16_t Error_Bitmap;  /* */
 		//uint16_t offset[4];
-		uint16_t Thermal_Demand_Interval; /* Minutes — 1 to 60 */
-		uint16_t Power_Block_Demand_Interval; /* Minutes — 1 to 60 */
+		uint16_t Thermal_Demand_Interval; /* Minutes - 1 to 60 */
+		uint16_t Power_Block_Demand_Interval; /* Minutes - 1 to 60 */
 		uint16_t Power_Block_Demand_Sub_Intervals; /* 0 to 60 */
 		uint16_t CT_Ratio_Primary;
 		uint16_t CT_Ratio_Secondary;

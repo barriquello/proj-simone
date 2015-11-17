@@ -31,10 +31,9 @@
 #include "printf_lib.h"
 #include "terminal.h"
 #include "terminal_commands.h"
-#endif
-
-#if COLDUINO
-#include "virtual_com.h"
+	#if COLDUINO
+	#include "virtual_com.h"
+	#endif
 #endif
 
 #include "led_onboard.h"
@@ -191,14 +190,8 @@ void Terminal_Task(void)
 	//(void) terminal_add_cmd((command_t*) &esp_cmd);
 	//(void) terminal_add_cmd((command_t*) &m590_cmd);	
 	//(void) terminal_add_cmd((command_t*) &null_modem_cmd);	
-	(void) terminal_add_cmd((command_t*) &modbus_cmd);	
-	
-	#if 0
-	extern command_t *term_cmds[];
-	(*term_cmds[6]->func)("name1 name2");
-	(*term_cmds[6]->func)(" name1 name2");
-	#endif
-	
+	(void) terminal_add_cmd((command_t*) &modbus_cmd);		
+		
 	terminal_acquire();
 	printf_terminal_P(PSTR("Terminal started\r\n"));
 	terminal_release();

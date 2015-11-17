@@ -77,6 +77,11 @@ uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 
 uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 {
+			/* limit number of registers to the max. available */
+			if(max_len > sizeof(modbus_null_input_register_list))
+			{
+				max_len = sizeof(modbus_null_input_register_list);
+			}
 		
 #if MODBUS_NULL_SLAVE_SIMULATION == 0				
 			/* Detecta equipamentos de medição e faz a leitura dos dados */	
@@ -96,14 +101,7 @@ uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 
 		
 			/* get and set timestamp of reading and device id */
-			SetModbusHeader(slave_addr, NULL_IRList.Regs8);
-			
-			/* limit number of registers to the max. available */
-			if(max_len > sizeof(modbus_null_input_register_list)) 
-			{
-				max_len = sizeof(modbus_null_input_register_list);
-			}
-			
+			SetModbusHeader(slave_addr, NULL_IRList.Regs8);	
 			memcpy(buf,NULL_IRList.Regs8,max_len);						
 			return (max_len);			
 }
