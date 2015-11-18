@@ -898,8 +898,6 @@ static uint8_t num_regs = 1;
 static uint8_t func = 3;
 static uint8_t device = 0;
 
-static uint16_t modbus_buf[16];
-
 #include "modbus.h"
 #include "modbus_slaves.h"
 #include "printf_lib.h"
@@ -912,6 +910,8 @@ void term_cmd_modbus(char *param)
 
 	int input;
 	uint8_t k = 0;
+	uint8_t cnt = 0;
+	uint16_t modbus_buf[16];
 	
 	terminal_newline();
 	switch (param[0])
@@ -946,6 +946,10 @@ void term_cmd_modbus(char *param)
 				if(sscanf(&param[2], "%d", &input) == 1)
 				{
 					num_regs = (uint8_t)input;
+					if(num_regs > SIZEARRAY(modbus_buf))
+					{
+						num_regs = SIZEARRAY(modbus_buf);
+					}
 				}
 				break;
 		case 'h': func = 3; /* read holding regs */
@@ -953,12 +957,13 @@ void term_cmd_modbus(char *param)
 		case 'i': func = 4; /* read input regs */
 			break;
 		case 'p': 		
-			memset(modbus_buf,0x00,SIZEARRAY(modbus_buf));
+			memset(modbus_buf,0x00,SIZEARRAY(modbus_buf));			
 			if(Modbus_GetData(slave_addr, func, (uint8_t*)modbus_buf, start_addr, num_regs) == MODBUS_OK)
-			{				
+			{			
+				terminal_newline();	
 				for(k=0;k<num_regs;k++)
 				{
-					printf_lib("%02X-",modbus_buf[k]);
+					printf_lib("%04X-",modbus_buf[k]);
 				}
 				putchar_terminal(DEL);
 				
@@ -968,13 +973,15 @@ void term_cmd_modbus(char *param)
 				terminal_newline();
 			}
 			break;
-		case 'r':
+		case 'r':		    
 			memset(modbus_buf,0x00,SIZEARRAY(modbus_buf));
-			modbus_slaves_all[device]->slave_reader(slave_addr,modbus_buf, sizeof(modbus_buf));
+			cnt = modbus_slaves_all[device]->slave_reader(slave_addr,modbus_buf, sizeof(modbus_buf));
+			if(cnt > sizeof(modbus_buf)) cnt = sizeof(modbus_buf);
 			terminal_acquire();
-			for(k=0;k<sizeof(modbus_buf)/2;k++)
+			terminal_newline();
+			for(k=0;k<cnt/2;k++)
 			{
-				printf_lib("%02X-",modbus_buf[k]);
+				printf_lib("%04X-",modbus_buf[k]);
 			}
 			putchar_terminal(DEL);
 			terminal_release();
@@ -983,7 +990,8 @@ void term_cmd_modbus(char *param)
 			PRINTS_P(PSTR(cmd_modbus_help_def));
 			terminal_newline();
 			PRINTF_P(PSTR("MB: slave %u, fun %u, "), slave_addr, func);
-			PRINTF_P(PSTR("start %u, n_regs %u\r\n"),start_addr, num_regs);
+			PRINTF_P(PSTR("start %u, n_regs %u, "),start_addr, num_regs);
+			PRINTF_P(PSTR("device %u\r\n"),device);
 			break;
 			
 	}

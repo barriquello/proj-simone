@@ -15,7 +15,7 @@ void print_R(char* out, const char *format, ...)
 	
 	va_list argptr;
 	va_start(argptr, format);
-	vsprintf_lib(buffer, format, argptr);
+	VSNPRINTF(buffer, format, argptr);
 	va_end(argptr);
 
 	if(out == NULL)
@@ -46,7 +46,7 @@ void print_P(char* out, const char *format, ...)
 	
 	va_list argptr;
 	va_start(argptr, format);
-	vsnprintf_P(buffer, sizeof(buffer)-1, format, argptr);
+	VSNPRINTF_P(buffer, format, argptr);
 	va_end(argptr);
 
 	if(out == NULL)

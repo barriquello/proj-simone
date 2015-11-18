@@ -169,11 +169,11 @@ static uint16_t print( char **out, const char *format, va_list args )
 				continue;
 			}
 			if( *format == 'x' ) {
-				pc += printi (out, va_arg( args, int ), 16, 0, width, pad, 'a');
+				pc += printi (out, va_arg( args, unsigned int ), 16, 0, width, pad, 'a');
 				continue;
 			}
 			if( *format == 'X' ) {
-				pc += printi (out, va_arg( args, int ), 16, 0, width, pad, 'A');
+				pc += printi (out, va_arg( args, unsigned int ), 16, 0, width, pad, 'A');
 				continue;
 			}
 			if( *format == 'u' ) {
