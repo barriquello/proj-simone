@@ -36,6 +36,7 @@
 #include "terminal_commands.h"
 #include "string.h"
 
+#include "at_commands.h"
 #include "simon-api.h"
 
 #ifdef _WIN32
@@ -78,83 +79,9 @@ static INT8U gReceiveBuffer[256];
 
 #define UNUSED(x)   (void)x;
 #define MAX_RETRIES		2
-
-
-typedef enum
-{
-	AT = 0,
-	CREG,
-	XISP,
-	XIIC1,
-	XIIC,
-	IPSTAT,
-	CLK,
-	CLOSE0,
-	CLOSE1,
-	CGDCONT,
-	XGAUTH
-}m590_enum_cmd;
-
-#define AT_def		"AT\r\n"
-#define	CREG_def	"AT+CREG?\r\n"
-#define	XISP_def	"AT+XISP=0\r\n"
-#define XIIC1_def	"AT+XIIC=1\r\n"
-#define	XIIC_def	"AT+XIIC?\r\n"
-#define IPSTAT_def  "AT+IPSTATUS=0\r"
-#define	CLK_def		"AT+CCLK?\r\n"
-#define	CLOSE0_def	"AT+TCPCLOSE=0\r\n"
-#define	CLOSE1_def  "AT+TCPCLOSE=1\r\n"
-#define	CGDCONT_def  ("AT+CGDCONT=1,\"IP\",\"" M590_APN "\"\r\n")
-#define	XGAUTH_def	 ("AT+XGAUTH=1,1,\"" M590_PWD "\",\"" M590_PWD "\"\r\n")
 	
 #define CONST const	
-		
-#if ARDUINO
-CONST char AT_str[]    PROGMEM = AT_def;
-CONST char CREG_str[]  PROGMEM = CREG_def;
-CONST char XISP_str[]	PROGMEM = XISP_def;
-CONST char XIIC1_str[]	PROGMEM = XIIC1_def;
-CONST char XIIC_str[]	PROGMEM = XIIC_def;
-CONST char IPSTAT_str[] PROGMEM = IPSTAT_def;
-CONST char CLK_str[]	PROGMEM = CLK_def;
-CONST char CLOSE0_str[] PROGMEM = CLOSE0_def;
-CONST char CLOSE1_str[] PROGMEM = CLOSE1_def;
-CONST char CGDCONT_str[] PROGMEM = CGDCONT_def;
-CONST char XGAUTH_str[] PROGMEM = XGAUTH_def;
 
-CONST char * const m590_init_cmd[] PROGMEM =
-{
-	AT_str,
-	CREG_str,
-	XISP_str,
-	XIIC1_str,
-	XIIC_str,
-	IPSTAT_str,
-	CLK_str,
-	CLOSE0_str,
-	CLOSE1_str,
-	CGDCONT_str,
-	XGAUTH_str
-};
-
-#elif COLDUINO
-#define PROGMEM
-CONST char *m590_init_cmd[] = 
-{
-	AT_def,
-	CREG_def,
-	XISP_def,
-	XIIC1_def,
-	XIIC_def,
-	IPSTAT_def,
-	CLK_def,
-	CLOSE0_def,
-	CLOSE1_def,
-	CGDCONT_def,
-	XGAUTH_def
-};
-
-#endif
 
 static void at_m590_print_reply(void)
 {
@@ -187,7 +114,7 @@ INT8U is_m590_ok(void)
 {
 	INT8U ok = FALSE;
 	m590_acquire();	
-		m590_print(m590_init_cmd[AT]);
+		m590_print(modem_init_cmd[AT]);
 		DelayTask(50);
 		m590_get_reply(gReceiveBuffer,sizeof(gReceiveBuffer));	
 		if(strstr(gReceiveBuffer, "OK"))
@@ -254,7 +181,7 @@ INT8U CreatePPP(void)
 	m590_acquire();
 	do
 	{  	
-		m590_print(m590_init_cmd[XIIC1]);
+		m590_print(modem_init_cmd[XIIC1]);
 		wait_m590_get_reply(100);   // wait 100ms // era 200ms
 				
 		if(strstr((char *)gReceiveBuffer,(char *)"OK"))
@@ -303,10 +230,10 @@ uint8_t CreateSingleTCPLink(uint8_t iLinkNum,char *strServerIP,char *strPort)
 	
 	if(iLinkNum == 0)
 	{
-		m590_print(m590_init_cmd[CLOSE0]);
+		m590_print(modem_init_cmd[CLOSE0]);
 	}else
 	{
-		m590_print(m590_init_cmd[CLOSE1]);
+		m590_print(modem_init_cmd[CLOSE1]);
 	}	
 	GET_REPLY_PRINT();
 	
@@ -333,7 +260,7 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 	uint8_t *send;
 
 	length = (uint16_t) tam;		
-	m590_print(m590_init_cmd[IPSTAT]);
+	m590_print(modem_init_cmd[IPSTAT]);
 	wait_m590_get_reply(100); // wait 100ms;
 	PRINT_BUF(gReceiveBuffer);
 	
@@ -373,7 +300,7 @@ uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
 					{
 						PRINT("\r\nsend ok\r\n");
 						
-						m590_print(m590_init_cmd[IPSTAT]);				
+						m590_print(modem_init_cmd[IPSTAT]);				
 						timeout = 0;
 						do
 						{							
@@ -424,7 +351,7 @@ uint8_t m590_init(void)
 		
 		/* setup */
 		m590_acquire();			
-			m590_print(m590_init_cmd[CREG]);
+			m590_print(modem_init_cmd[CREG]);
 			GET_REPLY_PRINT();	
 		m590_release();	
 	}
@@ -436,20 +363,20 @@ uint8_t m590_init(void)
 
 	m590_acquire();	
 
-	m590_print(m590_init_cmd[XISP]);
+	m590_print(modem_init_cmd[XISP]);
 	GET_REPLY_PRINT();
 	
-	m590_print(m590_init_cmd[CGDCONT]);
+	m590_print(modem_init_cmd[CGDCONT]);
 	GET_REPLY_PRINT();
 
-	m590_print(m590_init_cmd[XGAUTH]);
+	m590_print(modem_init_cmd[XGAUTH]);
 	GET_REPLY_PRINT();
 
-	m590_print(m590_init_cmd[XIIC1]);
+	m590_print(modem_init_cmd[XIIC1]);
 	GET_REPLY_PRINT();
 	
 #if 0	
-	m590_print(m590_init_cmd[XIIC]);
+	m590_print(modem_init_cmd[XIIC]);
 	GET_REPLY_PRINT();
 #endif	
 	
@@ -483,7 +410,7 @@ uint8_t CheckPPP(void)
 	m590_acquire();	
 	do
 	{   	
-		m590_print(m590_init_cmd[XIIC]);  	
+		m590_print(modem_init_cmd[XIIC]);  	
 		wait_m590_get_reply(100);	// 100ms	// era 500ms
 		PRINT_REPLY(gReceiveBuffer);
 
@@ -649,7 +576,7 @@ m590_ret_t at_m590_receive(CHAR8* buff, INT8U len)
 uint8_t m590_close(void)
 {
 	m590_acquire();	
-		m590_print(m590_init_cmd[CLOSE0]);	
+		m590_print(modem_init_cmd[CLOSE0]);	
 		GET_REPLY_PRINT();
 		//m590_print("AT+TCPCLOSE=1\r\n");	
 		//GET_REPLY_PRINT();
@@ -747,7 +674,7 @@ uint8_t m590_get_time(void)
 	IS_M590_OK();
 	
 	m590_acquire();	
-		m590_print(m590_init_cmd[CLK]);	
+		m590_print(modem_init_cmd[CLK]);	
 		GET_REPLY_PRINT();
 	m590_release();		
 	

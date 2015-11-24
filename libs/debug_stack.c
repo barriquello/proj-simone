@@ -85,12 +85,12 @@ PGM_P CONST DebugStringTable[] PROGMEM =
 	TaskName_str
 };
 
-#define UptimeText		(&(DebugStringTable[0]))
-#define CPULoadText		(&(DebugStringTable[1]))
-#define TaskStackText	(&(DebugStringTable[2]))
-#define MemoryText		(&(DebugStringTable[3]))
-#define MemoryTextOf	(&(DebugStringTable[4]))
-#define TaskNameText	(&(DebugStringTable[5]))
+#define UptimeText		((DebugStringTable[0]))
+#define CPULoadText		((DebugStringTable[1]))
+#define TaskStackText	((DebugStringTable[2]))
+#define MemoryText		((DebugStringTable[3]))
+#define MemoryTextOf	((DebugStringTable[4]))
+#define TaskNameText	((DebugStringTable[5]))
 
 #elif COLDUINO
 #define UptimeText		UptimeText_def
@@ -114,7 +114,7 @@ void Transmite_Uptime(INT8U Comm)
    	   UpDate = OSUpDate();
    UserExitCritical();
    
-   SNPRINTF_P(string,SIZEARRAY(string),UptimeText,
+   SNPRINTF_PP(string,SIZEARRAY(string),UptimeText,
 		   UpDate.RTC_Day,Uptime.RTC_Hour,Uptime.RTC_Minute,Uptime.RTC_Second);   
    DPRINTF(Comm,string);
 }
@@ -129,7 +129,7 @@ void Transmite_RAM_Ocupada(INT8U Comm)
     	SPAddress = iStackAddress * sizeof(OS_CPU_TYPE);
     UserExitCritical();    
     
-    SNPRINTF_P(string,SIZEARRAY(string),MemoryText,SPAddress,HEAP_SIZE);
+    SNPRINTF_PP(string,SIZEARRAY(string),MemoryText,SPAddress,HEAP_SIZE);
     DPRINTF(Comm, string);
 }
 
@@ -164,7 +164,7 @@ void Transmite_Task_Stacks(INT8U Comm)
 		k = j-1;
 	 }
 	 
-     SNPRINTF_P(string,SIZEARRAY(string),TaskNameText,j);
+     SNPRINTF_PP(string,SIZEARRAY(string),TaskNameText,j);
 	 DPRINTF(Comm, string);
 	 STRCPY_P(string,(ContextTask[j].TaskName));
 	 DPRINTF(Comm, string);     
@@ -187,7 +187,7 @@ void Transmite_Task_Stacks(INT8U Comm)
       while(*p++ == 0 && p<i){}         
       
 	  i = (sp_t*)ContextTask[j].StackInit;
-      SNPRINTF_P(string,SIZEARRAY(string),MemoryTextOf,(i - p)*sizeof(sp_t), (i - x)*sizeof(sp_t));      
+      SNPRINTF_PP(string,SIZEARRAY(string),MemoryTextOf,(i - p)*sizeof(sp_t), (i - x)*sizeof(sp_t));      
       DPRINTF(Comm, string);
     } while(j < NUMBER_OF_TASKS+1);	
 }
@@ -208,7 +208,7 @@ void Transmite_CPU_Load(INT8U Comm)
     	percent = 1000; 
     }    
     
-    SNPRINTF_P(string,SIZEARRAY(string),CPULoadText,percent/10,percent%10);
+    SNPRINTF_PP(string,SIZEARRAY(string),CPULoadText,percent/10,percent%10);
     DPRINTF(Comm, string);
 
 }

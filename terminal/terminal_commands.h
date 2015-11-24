@@ -122,6 +122,10 @@ extern CONST command_t null_modem_cmd;
 void term_cmd_m590(char *param);
 extern CONST command_t m590_cmd;
 
+// Control null_modem
+void term_cmd_modem(char *param);
+extern CONST command_t modem_cmd;
+
 // Modbus master
 void term_cmd_modbus(char *param);
 extern CONST command_t modbus_cmd;

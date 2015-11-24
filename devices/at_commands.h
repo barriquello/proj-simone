@@ -22,55 +22,50 @@
 
 */
 /*
- * null_modem_at.h
+ * gc864_modem.h
  *
  *  Created on: Aug 7, 2015
  *      Author: UFSM
  */
 
-#ifndef NULL_MODEM_H_
-#define NULL_MODEM_H_
+#ifndef AT_COMMANDS_H_
+#define AT_COMMANDS_H_
 
 #include "OS_types.h"
-#include "UART.h"
-#include "terminal_io.h"
-#include "stdint.h"
 #include "AppConfig.h"
 
-// configuration 
-#define NULL_MODEM_UART_BUFSIZE		32
-#define NULL_MODEM_UART_TIMEOUT		10
-#define NULL_MODEM_MUTEX			FALSE
-#define NULL_MODEM_MUTEX_PRIO		0
-#define null_modem_acquire()
-#define null_modem_release()
-		
-#include "modem.h"
+typedef enum
+{
+	AT = 0,
+	CREG,
+	XISP,
+	GPRS1,
+	XIIC1,
+	XIIC,
+	IPSTAT,
+	CLK,
+	CLOSE0,
+	CLOSE1,
+	CGDCONT,
+	XGAUTH
+}at_enum_cmd;
 
-modem_ret_t at_null_modem_init(void);
-modem_ret_t at_null_modem_open(void);
-modem_ret_t at_null_modem_send(INT8U* dados);
-modem_ret_t at_null_modem_receive(CHAR8* buff, INT8U len);
-modem_ret_t at_null_modem_close(void);
-modem_ret_t at_null_modem_server(void);
-modem_ret_t at_null_modem_dns(char* param);
-modem_ret_t at_null_modem_time(void);
+#define MODEM_APN		 "tim.br"
+#define MODEM_PWD		 "tim"
 
+#define AT_def		"AT\r\n"
+#define	CREG_def	"AT+CREG?\r\n"
+#define XISP_def	"AT+XISP=0\r\n"
+#define GPRS1_def	"AT#GPRS=1\r\n"
+#define XIIC1_def	"AT+XIIC=1\r\n"
+#define	XIIC_def	"AT+XIIC?\r\n"
+#define IPSTAT_def  "AT+IPSTATUS=0\r"
+#define	CLK_def		"AT+CCLK?\r\n"
+#define	CLOSE0_def	"AT+TCPCLOSE=0\r\n"
+#define	CLOSE1_def  "AT+TCPCLOSE=1\r\n"
+#define	CGDCONT_def  ("AT+CGDCONT=1,\"IP\",\"" MODEM_APN "\"\r\n")
+#define	XGAUTH_def	 ("AT+XGAUTH=1,1,\"" MODEM_PWD "\",\"" MODEM_PWD "\"\r\n")
 
-CHAR8 null_modem_getchar(void);
-uint8_t null_modem_init(void);
-uint8_t null_modem_open(void);
-uint8_t null_modem_close(void);
+extern const char * const modem_init_cmd[];
 
-uint8_t null_modem_get_time(void);
-uint8_t null_modem_receive(uint8_t* buff, uint16_t* len);
-uint8_t null_modem_send(uint8_t * dados, uint16_t tam);
-uint8_t null_modem_set_ip(char* _ip);
-char* null_modem_get_ip(void);
-uint8_t null_modem_set_hostname(char *host);
-char* null_modem_get_hostname(void);
-uint8_t null_modem_host_ip(void);
-uint8_t null_modem_check_connection(void);
-
-
-#endif /* NULL_MODEM_AT_H_ */
+#endif /* AT_COMMANDS_H_ */

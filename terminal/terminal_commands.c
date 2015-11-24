@@ -60,6 +60,7 @@
 #define Esp_HelpText_def "Control ESP8266"
 #define m590_HelpText_def "Control m590 modem"
 #define null_modem_HelpText_def "Control null_modem modem"
+#define modem_HelpText_def "Control modem"
 #define Modbus_HelpText_def "Control Modbus"
 
 #if COLDUINO
@@ -86,6 +87,7 @@
 #define  Esp_HelpText Esp_HelpText_def
 #define  m590_HelpText m590_HelpText_def
 #define  null_modem_HelpText null_modem_HelpText_def
+#define  modem_HelpText modem_HelpText_def
 #define  Modbus_HelpText Modbus_HelpText_def
 #elif ARDUINO
 
@@ -116,6 +118,7 @@ const char EchoOut_HelpText_str[] PROGMEM =  EchoOut_HelpText_def;
 const char Esp_HelpText_str[] PROGMEM = Esp_HelpText_def;
 const char m590_HelpText_str[] PROGMEM = m590_HelpText_def;
 const char null_modem_HelpText_str[] PROGMEM = null_modem_HelpText_def;
+const char modem_HelpText_str[] PROGMEM = modem_HelpText_def;
 const char Modbus_HelpText_str[] PROGMEM = Modbus_HelpText_def;
 
 #define  Ver_HelpText Ver_HelpText_str
@@ -139,6 +142,7 @@ const char Modbus_HelpText_str[] PROGMEM = Modbus_HelpText_def;
 #define  Esp_HelpText Esp_HelpText_str
 #define  m590_HelpText m590_HelpText_str
 #define  null_modem_HelpText null_modem_HelpText_str
+#define  modem_HelpText modem_HelpText_str
 #define  Modbus_HelpText Modbus_HelpText_str
 
 #endif
@@ -877,6 +881,56 @@ CONST command_t null_modem_cmd = {
   "null_modem", term_cmd_null_modem, null_modem_HelpText
 };
 
+
+#include "gc864_modem.h"
+
+#define cmd_modem_help_def      \
+	"\r\n usage:\r\n"           \ 
+	"i - init \r\n"             \
+	"o - open \r\n"             \
+	"s - send \r\n"             \
+	"r - receive \r\n"          \
+	"c - close \r\n"            \
+	"a - init, open, send \r\n" \
+	"e - server \r\n"           \
+	"d - dns \r\n"              \
+	"t - time \r\n"             \
+
+	
+void term_cmd_modem(char *param)
+{
+	char entradas[CONSOLE_BUFFER_SIZE];
+	char host[]  = "www.ufsm.br";
+	char request[] = "GET / HTTP/1.1\r\n Host:www.ufsm.br\r\n\r\n\r\n";
+
+	terminal_newline();
+	switch (param[0])
+	{
+		case 'i': at_modem_init();
+		break;
+		case 'o': at_modem_open(1,host);
+		break;
+		case 's': at_modem_send(request);
+		break;
+		case 'r': at_modem_receive(entradas,SIZEARRAY(entradas));
+		break;
+		case 'c': at_modem_close();
+		break;
+		case 'a':
+		at_modem_init();
+		at_modem_open(1,host);
+		at_modem_send(request);
+		break;		
+		default:
+		PRINTS_P(PSTR(cmd_modem_help_def));
+		terminal_newline();
+	}
+	param[0] = 0;
+}
+
+CONST command_t modem_cmd = {
+	"mod", term_cmd_modem, modem_HelpText
+};
 
 
 #if 1

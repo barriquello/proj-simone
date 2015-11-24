@@ -101,9 +101,10 @@ void main_app(void)
 	/* init the MCU system */
 	System_Init();
 
+	/* check type sizes */
 	if(check_ints() == 0)
 	{
-		while(1){}
+		sleep_forever();
 	}
 
 	/* Init BRTOS system */
@@ -127,37 +128,11 @@ void main_app(void)
 		sleep_forever();
 	};
 #endif	
-	
-#if TESTE_MODBUS
 
-	if (InstallTask(&Task_modbus_slave, "MB slave", 256, 5, NULL) != OK)
-	{
-		while (1){}
-	}
-	
-
-	if (InstallTask(&Task_modbus_slave_test, "MB slave test", 256, 6, NULL) != OK)
-	{
-		while (1){}
-	}
-	
-#if TESTE_MODBUS_SLAVE
-#if (TESTE_MODBUS_MASTER == 1)	
-	
-	if (InstallTask(&Task_modbus_master_test, "MB master test", (384+64), 5, NULL) != OK)
-	{
-		while (1){}
-	}
-#endif
-#endif	
-	
-#endif	
-	
 #if USB_DEVICE_ENABLED && (USB_CLASS_TYPE == BRTOS_USB_MSD)
 	if(InstallTask(&Mass_Storage_Device_Task,"Mass Storage Device Task",TASK_STACKSIZE_MSD,TASK_PRIORITY_TERMINAL,NULL) != OK)
 	{
-		while(1)
-		{};
+		sleep_forever();
 	};
 #endif
 

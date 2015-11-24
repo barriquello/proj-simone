@@ -30,19 +30,18 @@
 #define OSTRACE 0
 
 #if (OSTRACE == 1)  
-  #include "debug_info.h"
+  #include "debug_stack.h"
 #endif
 
 // Define the number of Task to be Installed
 // must always be equal or higher to NumberOfInstalledTasks
-#define NUMBER_OF_TASKS		4
+#define NUMBER_OF_TASKS		3
 
 /// Define if TimerHook function is active
 #define TIMER_HOOK_EN		1
 
 /// Define if IdleHook function is active
 #define IDLE_HOOK_EN		0
-
 
 // Habilita o serviço de semáforo do sistema
 #define BRTOS_SEM_EN           1
@@ -91,5 +90,5 @@
 
 
 // Stack Size of the Idle Task
-#define IDLE_STACK_SIZE          2*32
+#define IDLE_STACK_SIZE          3*16
 

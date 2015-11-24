@@ -98,8 +98,6 @@ void Transmite_Uptime(void)
    Serial_Envia_Caracter(13);
 }
 
-
-
 void Transmite_RAM_Ocupada(void)
 {
     INT8U caracter = 0;

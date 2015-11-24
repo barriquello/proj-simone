@@ -73,13 +73,13 @@
 #define UART1_MUTEX_PRIO 	10
 #define UART2_MUTEX_PRIO 	11
 #elif ARDUINO
-#define MODEM_UART			2
+#define MODEM_UART			1
 #define UART0_MUTEX 		1
 #define UART1_MUTEX 		0
 #define UART2_MUTEX 		0
 #define UART0_MUTEX_PRIO 	4
-#define UART1_MUTEX_PRIO 	
-#define UART2_MUTEX_PRIO 	
+#define UART1_MUTEX_PRIO 	5
+#define UART2_MUTEX_PRIO 	6
 #endif
 
 #include "BRTOSConfig.h"
