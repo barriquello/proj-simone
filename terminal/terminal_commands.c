@@ -777,6 +777,7 @@ CONST command_t esp_cmd = {
 
 #endif
 
+#if 0
 #include "m590_at.h"
 
 CONST char cmd_m590_help[] PROGMEM = {
@@ -828,6 +829,7 @@ void term_cmd_m590(char *param)
 CONST command_t m590_cmd = {
 	"m590", term_cmd_m590, m590_HelpText
 };
+#endif
 
 #include "null_modem.h"
 
@@ -872,7 +874,7 @@ void term_cmd_null_modem(char *param)
 		case 't': at_null_modem_time();
 			break;	
 		default:
-			printf_terminal_P((PGM_P)pgm_read_word(cmd_null_modem_help));
+			break;//printf_terminal_P((PGM_P)pgm_read_word(cmd_null_modem_help));
 	}
 	param[0] = 0;
 }

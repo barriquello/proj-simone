@@ -65,7 +65,7 @@ CONST char * const modem_init_cmd[] PROGMEM =
 };
 #elif COLDUINO
 #define PROGMEM
-CONST char *modem_init_cmd[] =
+CONST char * const modem_init_cmd[] =
 {
 	AT_def,
 	CREG_def,

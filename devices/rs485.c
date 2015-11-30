@@ -41,6 +41,7 @@
 #define RS485_BAUDRATE		19200
 
 #if COLDUINO
+	#define BAUD(x)			(x)
 	#if !__GNUC__
 	#pragma warn_implicitconv off
 	#define RS485_TXRX_PIN 		PTFD_PTFD2

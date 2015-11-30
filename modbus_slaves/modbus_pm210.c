@@ -40,7 +40,7 @@
 #include "AppConfig.h"
 #include "modbus_pm210.h"
 
-#if COLDUINO
+#if 0
 /* Input registers */
 // 10 bytes
 CONST uint16_t Real_Energy_Consumption_H 			= 4000; /* kWh, scale = reg 4108 */
@@ -187,6 +187,9 @@ register 7001. If the value for register 7001 is 12345, then the 0x03 data would
 #if !__GNUC__
 #pragma warn_implicitconv off
 #endif
+#define PGM_READ_BYTE(x)   (x)
+#elif ARDUINO
+#define PGM_READ_BYTE(x)   pgm_read_byte(&(x))
 #endif
 
 /* ----------------------- CONSTants ------------------------------------------*/
@@ -252,7 +255,7 @@ uint8_t pm210_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 		nregs++;
 #else
 		if(Modbus_GetData(slave_addr, FC_READ_INPUT_REGISTERS, (uint8_t*)&PM210_IRList1.Regs16[nregs + PM210_REG_OFFSET],
-		pgm_read_byte(&(PM210_modbus_map_regs[nregs])) + PM210_REGLIST1_INPUT_START, 1) == MODBUS_OK)
+			PGM_READ_BYTE(PM210_modbus_map_regs[nregs]) + PM210_REGLIST1_INPUT_START, 1) == MODBUS_OK)
 		{
 			nregs++;
 		}

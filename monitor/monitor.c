@@ -853,7 +853,7 @@ void monitor_writer(uint8_t monitor_num)
 	{
 		if(is_terminal_idle())
 		{
-			PRINTF_P(PSTR("\r\nMon %d, Entry %d: "), monitor_num, cnt);
+			PRINTF_P(PSTR("\r\nMon %d, Entry %u: "), monitor_num, cnt);
 			PRINTF(monitor_char_buffer);
 			PRINTS_P(PSTR("\r\n"));		
 		}
@@ -872,7 +872,7 @@ uint16_t monitor_reader(uint8_t monitor_num)
 
 	char* fname = monitor_getfilename_to_read(monitor_num);
 	
-	if(*fname == '\0') return;
+	if(*fname == '\0') return 0;
 	
 	memset(monitor_char_buffer,0x00,sizeof(monitor_char_buffer));
 	entry.values = (uint8_t*)monitor_char_buffer;

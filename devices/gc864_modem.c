@@ -127,7 +127,7 @@ INT8U is_modem_ok(void)
 	INT8U ok = FALSE;
 	modem_acquire();
 	modem_printP(modem_init_cmd[AT]);
-	DelayTask(50);
+	DelayTask(100);
 	MODEM_GET_REPLY(modem_RxBuffer);
 	if(strstr(modem_RxBuffer, "OK"))
 	{
@@ -158,22 +158,25 @@ uint8_t gc864_modem_init(void)
 	if(modem_state == SETUP)
 	{
 		/* init MODEM_UART */
+		#if COLDUINO
+		#define BAUD(x)			(x)
+		#endif
 		uart_init(MODEM_UART,BAUD(MODEM_BAUD),MODEM_UART_BUFSIZE,MODEM_MUTEX,MODEM_MUTEX_PRIO);
-	
-		/* setup */
-		modem_acquire();
-			modem_printP(modem_init_cmd[CREG]);
-			MODEM_GET_REPLY_PRINT();
-		modem_release();
 	}
 
-	if(!is_modem_ok_retry(2))
+	if(!is_modem_ok_retry(1))
 	{
 		return FALSE;
 	}
 
+    PRINT_P(PSTR("Modem setup\r\n"));
+	
 	modem_acquire();
-
+	
+    /* setup */
+	modem_printP(modem_init_cmd[CREG]);
+	MODEM_GET_REPLY_PRINT();
+	
 	modem_printP(modem_init_cmd[CGDCONT]);
 	MODEM_GET_REPLY_PRINT();
 
@@ -230,7 +233,6 @@ uint8_t gc864_modem_send(uint8_t * dados, uint16_t tam)
 	ip[15] ='\0';
 
 	PRINT_P(PSTR("Modem Send: \r\n"));
-	PRINT(dados);
 	
 	if(hostname == NULL) return FALSE;
 
@@ -238,15 +240,19 @@ uint8_t gc864_modem_send(uint8_t * dados, uint16_t tam)
 	PRINT(modem_TxBuffer);
     modem_printR(modem_TxBuffer);
 
+    // prepare buffer to send
+	memcpy(modem_TxBuffer,dados,SIZEARRAY(modem_TxBuffer));
+	PRINT(modem_TxBuffer);
+		
 	wait_modem_get_reply(100); // wait 100ms;
 	PRINT_BUF(modem_RxBuffer);
 
 	if(strstr((char *)modem_RxBuffer,"CONNECT"))
 	{
-		memcpy(modem_TxBuffer,dados,SIZEARRAY(modem_TxBuffer));	
 		modem_printR(modem_TxBuffer);		
-		wait_modem_get_reply(1000);
+		wait_modem_get_reply(100);
 		PRINT_BUF(modem_RxBuffer);
+		PRINT_P(PSTR("\r\nSend ok\r\n"));
 		return TRUE;
 	}
 	return FALSE;
@@ -263,6 +269,7 @@ uint8_t gc864_modem_receive(uint8_t* buff, uint16_t* len)
 
 	if(size)
 	{				
+		    modem_acquire();
 		    if(modem_RxBuffer[0] !='\0')
 		    {		
 		    	ret = TRUE;
@@ -271,10 +278,10 @@ uint8_t gc864_modem_receive(uint8_t* buff, uint16_t* len)
 				{
 					memcpy(modem_RxBuffer,&modem_RxBuffer[size],SIZEARRAY(modem_RxBuffer)-size);				
 				}
-			
+				modem_get_reply(&modem_RxBuffer[SIZEARRAY(modem_RxBuffer)-size],size);
 				* len = size;
-		    }	    
-			
+		    }    
+			modem_release();			
 	}
 	
 	return (uint8_t)ret;
@@ -338,7 +345,7 @@ modem_ret_t at_modem_receive(CHAR8* buff, INT8U len)
 	if(buff == NULL)	return MODEM_ERR;
 	
 	/* try to receive */
-	if((size = gc864_modem_receive(buff,&size)) > 0)
+	if(gc864_modem_receive(buff,&size) == TRUE)
 	{
 		*(buff+(size)) = '\0'; // null terminate
 		PRINT_BUF(buff);

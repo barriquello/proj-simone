@@ -561,7 +561,7 @@ m590_ret_t at_m590_receive(CHAR8* buff, INT8U len)
 	if(buff == NULL)	return M590_ERR;
 	
 	/* try to receive */
-	if((size = m590_receive(buff,&size)) > 0)
+	if(m590_receive(buff,&size) == MODEM_OK)
 	{
 		*(buff+(size)) = '\0'; // null terminate
 		PRINT_BUF(buff);

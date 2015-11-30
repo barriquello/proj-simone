@@ -75,10 +75,13 @@ CONST	uint16_t T500_Frequency = 82; /* Hz */
 
 /* ----------------------- Modbus includes ----------------------------------*/
 #if COLDUINO
-#pragma warn_unusedarg off
+#if !__GNUC__
+#pragma warn_implicitconv off
+#endif
+#define PGM_READ_BYTE(x)   (x)
 #define PROGMEM
-//#include "mb.h"
-//#include "mbport.h"
+#elif ARDUINO
+#define PGM_READ_BYTE(x)   pgm_read_byte(&(x))
 #endif
 
 #include "modbus.h"
@@ -131,7 +134,7 @@ uint8_t t500_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 				nregs++;
 #else				
 				if(Modbus_GetData(slave_addr, FC_READ_INPUT_REGISTERS, (uint8_t*)&T500_IRList1.Regs32[nregs + (T500_REG_OFFSET/2)],
-						pgm_read_byte(&(T500_modbus_map_regs[nregs])), 2) == MODBUS_OK)
+						PGM_READ_BYTE(T500_modbus_map_regs[nregs]), 2) == MODBUS_OK)
 				{
 					nregs++;
 				}

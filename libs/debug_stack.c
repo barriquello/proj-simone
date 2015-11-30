@@ -149,7 +149,7 @@ void Transmite_Task_Stacks(INT8U Comm)
     sp_t *i = 0; 
     sp_t *p = 0; 
    
-    STRCPY(string,TaskStackText);
+    STRCPY_PP(string,TaskStackText);
     DPRINTF(Comm, string);  
     
 	j = 0;      

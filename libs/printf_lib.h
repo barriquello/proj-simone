@@ -9,8 +9,9 @@
 #define PRINTF_LIB_H_
 
 #include "AppConfig.h"
+#include "stdarg.h"
 
-int printf_lib(const char *format, ...);
+//int printf_lib(const char *format, ...);
 int sprintf_lib(char *out, const char *format, ...);
 int snprintf_lib( char *buf, unsigned int count, const char *format, ... );
 int vsprintf_lib(char *out, const char *format, ...);
@@ -34,8 +35,9 @@ int vsprintf_lib(char *out, const char *format, ...);
 #define VSNPRINTF(...)		vsprintf_lib(__VA_ARGS__)
 #define VSNPRINTF_P(...)	vsprintf_lib(__VA_ARGS__)
 #define VSNPRINTF_PP(...)	vsprintf_lib(__VA_ARGS__)
-#define STRCPY(a,b)		strncpy(a,b, SIZEARRAY(a))
-#define STRCPY_P(a,b)	strncpy(a,b, SIZEARRAY(a))
+#define STRCPY(a,b)			strncpy(a,b, SIZEARRAY(a))
+#define STRCPY_P(a,b)		strncpy(a,b, SIZEARRAY(a))
+#define STRCPY_PP(a,b)		strncpy(a,b, SIZEARRAY(a))
 #else
 #include "stdio.h"
 #ifdef __AVR__
@@ -49,8 +51,9 @@ int vsprintf_lib(char *out, const char *format, ...);
 #define VSNPRINTF(a,b,c)		vsnprintf(a,sizeof(a)-1,b,c)
 #define VSNPRINTF_P(a,b,c)		vsnprintf_P(a,sizeof(a)-1,b,c)
 #define VSNPRINTF_PP(a,b,c)		vsnprintf_P(a,sizeof(a)-1,(PGM_P)pgm_read_word(&(b)),c)
-#define STRCPY(a,b)				strncpy_P(a,(PGM_P)pgm_read_word(b), SIZEARRAY(a))
+#define STRCPY(a,b)				strncpy_P(a,b, SIZEARRAY(a))
 #define STRCPY_P(a,b)			strncpy_P(a,b, SIZEARRAY(a))
+#define STRCPY_PP(a,b)			strncpy_P(a,(PGM_P)pgm_read_word(&(b)), SIZEARRAY(a))
 #else
 #define SNPRINTF(...) 			snprintf(__VA_ARGS__)
 #define SNPRINTF_P(...)			snprintf(__VA_ARGS__)
@@ -63,6 +66,7 @@ int vsprintf_lib(char *out, const char *format, ...);
 #define VSNPRINTF_PP(...)		vsprintf(__VA_ARGS__)
 #define STRCPY(a,b)				strncpy(a,b, SIZEARRAY(a))
 #define STRCPY_P(a,b)			strncpy(a,b, SIZEARRAY(a))
+#define STRCPY_PP(a,b)			strncpy(a,b, SIZEARRAY(a))
 #endif
 
 #endif

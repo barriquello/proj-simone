@@ -389,6 +389,10 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 static int mon_cnt = 0;
 static int field_cnt = 0;
 
+#if COLDUINO
+#define strcmp_P		strcmp
+#endif
+
 static int callback_inifile(const char *section, const char *key, const char *value, const void *userdata)
 {
      

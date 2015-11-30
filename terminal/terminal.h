@@ -88,6 +88,7 @@ int is_terminal_idle(void);
 
 void printf_terminal_P(const char *s);
 
+#include "AppConfig.h"
 #if COLDUINO
 #define printf_terminal_P	printf_terminal
 #ifndef PSTR

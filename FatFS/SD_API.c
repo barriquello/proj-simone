@@ -22,6 +22,7 @@
 
 */
 #include "BRTOS.h"
+#include "AppConfig.h"
 #include "debug_stack.h"
 #include "SD_API.h"
 #include "printf_lib.h"
@@ -91,11 +92,6 @@ CHAR8 Lfname[256];
 #define SD_API_CARD_DETECTED_DEF		"detected!\n\r"
 #define SD_API_CARD_MOUNT_FAILURE_DEF   " failed to mount!\n\r"
 #define SD_API_CARD_INIT_FAILURE_DEF    " failed to initialize!\n\r"
-
-#if COLDUINO
-#define PROGMEM
-#define PGM_P const char*
-#endif
 
 CONST CHAR8 SD_API_CARD[] PROGMEM =SD_API_CARD_DEF;
 CONST CHAR8 SD_API_FILE_NOT_FOUND[] PROGMEM =SD_API_FILE_NOT_FOUND_DEF;

@@ -21,7 +21,10 @@ void prints_P(char* out, const char *string);
 #define PRINTS_ERRO_P(s)	PRINTS_P(s); prints_P("erro.txt",s); 
 #define PRINTS_ERRO_PP(s)	PRINTS_P(s); prints_P("erro.txt",(PGM_P)pgm_read_word(&(s))); 
 #elif COLDUINO
+#include "printf_lib.h"
 #define PRINTF(...)			printf_lib(__VA_ARGS__);
+#define PRINTF_P(...)		printf_lib(__VA_ARGS__);
+#define PRINTF_PP(...)		printf_lib(__VA_ARGS__);
 #define PRINTS_P(s)			printf_lib(s);
 #define PRINTC(c)			do{putchar_terminal(c);}while(0);
 #define DPRINTS_P(s)		prints_P("debug.txt", s);

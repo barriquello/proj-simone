@@ -75,6 +75,60 @@
 #define COLDUINO_GCC 	1
 #endif
 
+#if COLDUINO
+#define PGM_P				const char *
+#define PGM_READ_WORD(x)    (x)
+#define PGM_READ_BYTE(x)    (x)
+#define PROGMEM
+#elif ARDUINO
+#define PGM_READ_BYTE(x)    pgm_read_byte(&(x))
+#define PGM_READ_WORD(x)    pgm_read_word(&(x))
+#endif
+
+#ifndef PROGMEM
+#define PROGMEM
+#endif
+
+#ifndef PGM_P
+
+#endif
+
+#if COLDUINO
+#define MODEM_UART			2
+#define UART0_MUTEX 		1
+#define UART1_MUTEX 		0
+#define UART2_MUTEX 		0
+#define UART0_MUTEX_PRIO 	9
+#define UART1_MUTEX_PRIO 	10
+#define UART2_MUTEX_PRIO 	11
+#elif ARDUINO
+#define MODEM_UART			1
+#define UART0_MUTEX 		1
+#define UART1_MUTEX 		0
+#define UART2_MUTEX 		0
+#define UART0_MUTEX_PRIO 	4
+#define UART1_MUTEX_PRIO 	5
+#define UART2_MUTEX_PRIO 	6
+#endif
+
+#if COLDUINO
+#define TASK_STACKSIZE_SYSTEM_TIME		(256+64)
+#define TASK_STACKSIZE_MONITORS			(1024*2+512)
+#define TASK_STACKSIZE_TERMINAL			(1024)
+
+#define TASK_PRIORITY_SYSTEM_TIME		15
+#define TASK_PRIORITY_MONITORS			10
+#define TASK_PRIORITY_TERMINAL			5
+
+#elif ARDUINO
+#define TASK_STACKSIZE_SYSTEM_TIME		(64)
+#define TASK_STACKSIZE_MONITORS			(1024)
+#define TASK_STACKSIZE_TERMINAL			(512)
+
+#define TASK_PRIORITY_SYSTEM_TIME		7
+#define TASK_PRIORITY_MONITORS			3
+#define TASK_PRIORITY_TERMINAL			2
+#endif
 
 
 
