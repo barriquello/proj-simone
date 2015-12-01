@@ -80,7 +80,7 @@ static uint8_t 		term_cmd_line_ndx;
 
 static uint8_t 		term_n_cmd;
 command_t 	*term_cmds[MAX_CMDS];
-volatile char terminal_idle;
+volatile char terminal_idle = TRUE;
 
 static void (*putch)(char);
 static void (*getch)(char *);
@@ -444,6 +444,7 @@ void terminal_process(void)
   char c;
   static char skip_mode = 0;
   
+#if ARDUINO
   while(1)
   {
 	  terminal_acquire();	  
@@ -460,7 +461,8 @@ void terminal_process(void)
 	 terminal_release();
 	 DelayTask(6000);	  
   }
-    
+#endif
+
   while(1)
   {		
 	getchar_terminal(&c, 0);		
@@ -469,7 +471,7 @@ void terminal_process(void)
 	{
 	  if(c !='\n' && c!='\r')
 	  {
-		  if(c != DEL || term_cmd_line_ndx)
+		  if((c != DEL) || term_cmd_line_ndx)
 		  {			  
 			  putchar_terminal(c);
 		  }			  
@@ -506,8 +508,10 @@ void terminal_process(void)
       exit:
       term_cmd_line_ndx=0;
       term_print_prompt();      
-      SetSilentMode((char)FALSE);	  
-	  terminal_release();
+      SetSilentMode((char)FALSE);
+	  #if ARDUINO
+	  	  terminal_release();
+	  #endif
 	  return;
     }
     else

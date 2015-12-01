@@ -125,9 +125,10 @@ void Transmite_RAM_Ocupada(INT8U Comm)
     INT16U SPAddress = 0;
     CHAR8  string[32]; 
     
-    UserEnterCritical();
+    OS_SR_SAVE_VAR;
+    OSEnterCritical();
     	SPAddress = iStackAddress * sizeof(OS_CPU_TYPE);
-    UserExitCritical();    
+    OSExitCritical();
     
     SNPRINTF_PP(string,SIZEARRAY(string),MemoryText,SPAddress,HEAP_SIZE);
     DPRINTF(Comm, string);
@@ -148,6 +149,7 @@ void Transmite_Task_Stacks(INT8U Comm)
     sp_t *x = 0;
     sp_t *i = 0; 
     sp_t *p = 0; 
+    OS_SR_SAVE_VAR;
    
     STRCPY_PP(string,TaskStackText);
     DPRINTF(Comm, string);  
@@ -169,7 +171,7 @@ void Transmite_Task_Stacks(INT8U Comm)
 	 STRCPY_P(string,(ContextTask[j].TaskName));
 	 DPRINTF(Comm, string);     
       
-      UserEnterCritical();
+      OSEnterCritical();
       i = (sp_t*)ContextTask[j].StackPoint;
       if (j == 1)
       {
@@ -178,7 +180,7 @@ void Transmite_Task_Stacks(INT8U Comm)
       {		  
 		x = (sp_t*)ContextTask[k].StackInit;    	  
       }
-      UserExitCritical();  
+      OSExitCritical();
       
       p = x;      
 	  #if (STACK_MARK && ARDUINO)

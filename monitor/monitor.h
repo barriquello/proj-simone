@@ -134,7 +134,7 @@
 #define NUM_OF_FIELDS        5
 
 /* type verification code */
-static union
+union
 {
     char            int8_t_incorrect[sizeof( int8_t ) == 1];
     char            uint8_t_incorrect[sizeof( uint8_t ) == 1];

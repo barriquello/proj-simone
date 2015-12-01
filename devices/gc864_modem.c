@@ -40,6 +40,7 @@
 #include "at_commands.h"
 
 #include "simon-api.h"
+#include "modem.h"
 
 #ifdef _WIN32
 #include <stdio.h>
@@ -56,8 +57,8 @@ static INT8U modem_TxBuffer[32];
 
 #if DEBUG_PRINT
 #define PRINT_P(...)      printf_terminal_P(__VA_ARGS__);
-#define PRINT(...) 		  printf_terminal(__VA_ARGS__);
-#define PRINT_BUF(...)    printf_terminal(__VA_ARGS__);
+#define PRINT(s) 		  printf_terminal((char*)(s));
+#define PRINT_BUF(s)      printf_terminal((char*)(s));
 #define PRINT_REPLY(...)  printf_terminal(__VA_ARGS__);
 #else
 #define PRINT_P(...)      
@@ -250,7 +251,19 @@ uint8_t gc864_modem_send(uint8_t * dados, uint16_t tam)
 	if(strstr((char *)modem_RxBuffer,"CONNECT"))
 	{
 		modem_printR(modem_TxBuffer);		
-		wait_modem_get_reply(100);
+		int timeout = 0;
+		do
+		{
+			wait_modem_get_reply(10);
+			PRINT_BUF(modem_RxBuffer);
+			if(strstr((char *)modem_RxBuffer,"OK"))
+			{
+				PRINT("reply ok\r\n");
+				return TRUE;
+			}
+			DelayTask(100);
+		}while(++timeout < 20); /* espera ate 2 segundos */		
+		
 		PRINT_BUF(modem_RxBuffer);
 		PRINT_P(PSTR("\r\nSend ok\r\n"));
 		return TRUE;
@@ -332,7 +345,7 @@ modem_ret_t at_modem_open(INT8U host, INT8U* dados)
 }
 modem_ret_t at_modem_send(INT8U* dados)
 {
-	strcpy(modem_TxBuffer,dados);
+	STRCPY(modem_TxBuffer,dados);
 	if(gc864_modem_send(modem_TxBuffer, sizeof(modem_TxBuffer)-1) == FALSE)
 	{
 		return MODEM_ERR;

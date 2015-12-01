@@ -389,10 +389,6 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 static int mon_cnt = 0;
 static int field_cnt = 0;
 
-#if COLDUINO
-#define strcmp_P		strcmp
-#endif
-
 static int callback_inifile(const char *section, const char *key, const char *value, const void *userdata)
 {
      
@@ -675,7 +671,7 @@ void main_monitor(void)
 
 #ifdef _WIN32			
 		monitor_set_input(&monitor_input_pt);
-#endif		
+#endif
 
 #ifdef _WIN32
 		char c;

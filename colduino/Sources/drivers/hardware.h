@@ -54,13 +54,15 @@
 #ifndef __GNUC__
 #include <hidef.h>               /* for EnableInterrupts macro */
 #else
-#define EnableInterrupts 	__asm__ volatile("MOVE.W %SR,%D0 		\n\t" \
-										 	 "ANDI.L #0xF8FF,%D0 	\n\t" \
-											 "MOVE.W %D0,%SR 		\n\t" )
+/* !!!! unsafe !!! can cause a bug if reg d7 is used in the same part of the code
+ * use OSEnterCritical/OSExitCritical instead */
+#define EnableInterrupts 	__asm__ volatile("MOVE.W %sr,%d7 		\n\t" \
+										 	 "ANDI.L #0xF8FF,%d7 	\n\t" \
+											 "MOVE.W %d7,%sr 		\n\t" )
 
-#define DisableInterrupts 	__asm__ volatile("MOVE.W %SR,%D0 		\n\t" \
-										 	 "ORI.L #0x0700,%D0 	\n\t" \
-											 "MOVE.W %D0,%SR 		\n\t" )
+#define DisableInterrupts 	__asm__ volatile("MOVE.W %sr,%d7 		\n\t" \
+										 	 "ORI.L #0x0700,%d7 	\n\t" \
+											 "MOVE.W %d7,%sr		\n\t" )
 #endif
 
 #include "derivative.h"          /* include peripheral declarations */

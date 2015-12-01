@@ -95,7 +95,6 @@ void SerialReset(INT8U Comm);
 
 // UART1 functions
 #if (ENABLE_UART0 == TRUE)
-extern BRTOS_Queue *Serial0;
 void uart0_acquire(void);
 void uart0_release(void);
 INT8U putchar_uart0(INT8U caracter);
@@ -117,7 +116,6 @@ void uart0_TxDisableISR(void);
 
 // UART1 functions
 #if (ENABLE_UART1 == TRUE)
-extern BRTOS_Queue *Serial1;
 void uart1_acquire(void);
 void uart1_release(void);
 INT8U putchar_uart1(INT8U caracter);
@@ -138,7 +136,6 @@ void uart1_TxDisableISR(void);
 
 // UART2 functions
 #if (ENABLE_UART2 == TRUE)
-extern BRTOS_Queue *Serial2;
 void uart2_acquire(void);
 void uart2_release(void);
 INT8U putchar_uart2(INT8U caracter);

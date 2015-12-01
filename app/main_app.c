@@ -117,12 +117,12 @@ void main_app(void)
 #endif	
 
 	/* Install task for keeping system clock, date and time */
-	if (InstallTask(&System_Time, TaskName_SystemTime, TASK_STACKSIZE_SYSTEM_TIME, TASK_PRIORITY_SYSTEM_TIME, NULL) != OK)
+	if (InstallTask(&System_Time, TaskName_SystemTime, TASK_STACKSIZE_SYSTEM_TIME, TASK_PRIORITY_SYSTEM_TIME, NULL) != (INT8U) OK)
 	{
 		sleep_forever();
 	};
 	
-#if 1	
+#if 1
 	if (InstallTask(&main_monitor, TaskName_Monitors, TASK_STACKSIZE_MONITORS, TASK_PRIORITY_MONITORS, NULL) != OK)
 	{
 		sleep_forever();

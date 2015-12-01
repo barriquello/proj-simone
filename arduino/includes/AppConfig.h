@@ -32,6 +32,11 @@
 
 #define PLATAFORMA  ARDUINO
 
+#if ARDUINO
+#define PGM_READ_BYTE(x)    pgm_read_byte(&(x))
+#define PGM_READ_WORD(x)    pgm_read_word(&(x))
+#endif
+
 #ifndef CONST
 #define CONST const
 #endif

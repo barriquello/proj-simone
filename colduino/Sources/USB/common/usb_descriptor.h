@@ -44,7 +44,7 @@
 #define CIC_NOTIF_ELEM_SUPPORT           (TRUE) /* Mandatory */
 #define DIC_ISOCHRONOUS_SETTING          (FALSE)
 
-#define IMPLEMENT_QUEUING                (TRUE)
+#define IMPLEMENT_QUEUING                (FALSE)
 
 /* Communication Class SubClass Codes */
 #define DIRECT_LINE_CONTROL_MODEL           (0x01)

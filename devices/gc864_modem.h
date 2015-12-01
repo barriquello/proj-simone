@@ -51,7 +51,7 @@
 #define modem_release()			uart1_release()
 
 #if ARDUINO
-#define modem_printP(x)			printSer_P(USE_UART1,pgm_read_word(&(x)));
+#define modem_printP(x)			printSer_P(USE_UART1,(PGM_P)pgm_read_word(&(x)));
 #define modem_printR(x)			printSer(USE_UART1,(x));
 #else
 #define modem_printP(x)			printSer(USE_UART1,(char*)x);

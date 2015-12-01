@@ -887,7 +887,7 @@ CONST command_t null_modem_cmd = {
 #include "gc864_modem.h"
 
 #define cmd_modem_help_def      \
-	"\r\n usage:\r\n"           \ 
+	"\r\n usage:\r\n"           \
 	"i - init \r\n"             \
 	"o - open \r\n"             \
 	"s - send \r\n"             \

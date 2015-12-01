@@ -80,6 +80,7 @@
 #define PGM_READ_WORD(x)    (x)
 #define PGM_READ_BYTE(x)    (x)
 #define PROGMEM
+#define strcmp_P		strcmp
 #elif ARDUINO
 #define PGM_READ_BYTE(x)    pgm_read_byte(&(x))
 #define PGM_READ_WORD(x)    pgm_read_word(&(x))
@@ -117,7 +118,7 @@
 #define TASK_STACKSIZE_TERMINAL			(1024)
 
 #define TASK_PRIORITY_SYSTEM_TIME		15
-#define TASK_PRIORITY_MONITORS			10
+#define TASK_PRIORITY_MONITORS			8
 #define TASK_PRIORITY_TERMINAL			5
 
 #elif ARDUINO

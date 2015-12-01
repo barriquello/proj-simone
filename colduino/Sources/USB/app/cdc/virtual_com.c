@@ -162,27 +162,27 @@ void cdc_process(void)
     static uint_8 status 	 = 0;
     uint_8 		  sem_status = 0;
 	uint_8 size;
+	OS_SR_SAVE_VAR;
 
 	size = g_send_size;
-	
 	g_send_size = 0;
-	
+
     /*check whether enumeration is complete or not */
      if((start_app==TRUE) && (start_transactions==TRUE))
      {	
 		
-		UserEnterCritical();
+		OSEnterCritical();
 			is_message_sent = 1;
-		UserExitCritical();
+		OSExitCritical();
 		
 		status = USB_Class_CDC_Interface_DIC_Send_Data(CONTROLLER_ID, g_curr_send_buf,size);
 		sem_status = OSSemPend(USB_Sem,500);	   
 		
 		if (sem_status != OK)
 		{
-			UserEnterCritical();
+			OSEnterCritical();
 				is_message_sent = 0;
-			UserExitCritical();
+			OSExitCritical();
 		}
 		
         if(status != USB_OK)
@@ -200,6 +200,8 @@ void cdc_process(void)
     	  }
      }
 #endif     
+
+
 }
 
 unsigned char GetStart_transactions(void)

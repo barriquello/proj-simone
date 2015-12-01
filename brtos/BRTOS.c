@@ -253,18 +253,34 @@ INT8U OSSchedule(void)
   #define CHECK_STACK_OVERFLOW 1
   #if CHECK_STACK_OVERFLOW
   #include "terminal.h"
-  do{
-	  char *p = ContextTask[TaskSelect].StackInit;
-	  if(*++p != 'T') {
-		  printf_terminal_P(PSTR("Stack overflow!\r\n"));
-		  if(*++p != 'S') {
-			  if(*++p != 'K') {
-				  printf_terminal_P(PSTR("Stack overflow!\r\n"));				 
+	#if ARDUINO
+	  do{
+		  char *p = ContextTask[TaskSelect].StackInit;
+		  if(*++p != 'T') {
+			  printf_terminal_P(PSTR("Stack overflow!\r\n"));
+			  if(*++p != 'S') {
+				  if(*++p != 'K') {
+					  printf_terminal_P(PSTR("Stack overflow!\r\n"));
+				  }
 			  }
 		  }
-	  }
-	  
-  }while(0);
+
+	  }while(0);
+	#elif COLUINO
+	  do{
+	 		  char *p = ContextTask[TaskSelect].StackInit;
+	 		  p-=4;
+	 		  if(*++p != 'T') {
+	 			  printf_terminal_P(PSTR("Stack overflow!\r\n"));
+	 			  if(*++p != 'S') {
+	 				  if(*++p != 'K') {
+	 					  printf_terminal_P(PSTR("Stack overflow!\r\n"));
+	 				  }
+	 			  }
+	 		  }
+
+	 	  }while(0);
+	#endif
   #endif
   
 	return TaskSelect;
