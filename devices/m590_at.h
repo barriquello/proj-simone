@@ -151,8 +151,8 @@ typedef enum
 
 m590_ret_t at_m590_init(void);
 m590_ret_t at_m590_open(void);
-m590_ret_t at_m590_send(INT8U* dados);
-m590_ret_t at_m590_receive(CHAR8* buff, INT8U len);
+m590_ret_t at_m590_send(char* dados);
+m590_ret_t at_m590_receive(char* buff, uint16_t len);
 m590_ret_t at_m590_close(void);
 m590_ret_t at_m590_server(void);
 m590_ret_t at_m590_dns(char* param);
@@ -165,8 +165,8 @@ uint8_t m590_open(void);
 uint8_t m590_close(void);
 
 uint8_t m590_get_time(void);
-uint8_t m590_receive(uint8_t* buff, uint16_t* len);
-uint8_t m590_send(uint8_t * dados, uint16_t tam);
+uint8_t m590_receive(char* buff, uint16_t* len);
+uint8_t m590_send(char * dados, uint16_t tam);
 uint8_t m590_set_ip(char* _ip);
 char* m590_get_ip(void);
 uint8_t m590_set_hostname(char *host);

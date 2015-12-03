@@ -227,6 +227,7 @@ typedef struct
 	pt_t write_pt;
 	uint8_t slave_addr;
 	uint8_t codigo;
+	uint8_t sinc;
 	data_reader read_data;
 	uint32_t time_to_send;
 	uint32_t avg_time_to_send;

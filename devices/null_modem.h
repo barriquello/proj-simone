@@ -49,8 +49,8 @@
 
 modem_ret_t at_null_modem_init(void);
 modem_ret_t at_null_modem_open(void);
-modem_ret_t at_null_modem_send(INT8U* dados);
-modem_ret_t at_null_modem_receive(CHAR8* buff, INT8U len);
+modem_ret_t at_null_modem_send(char* dados);
+modem_ret_t at_null_modem_receive(char* buff, uint16_t len);
 modem_ret_t at_null_modem_close(void);
 modem_ret_t at_null_modem_server(void);
 modem_ret_t at_null_modem_dns(char* param);
@@ -63,8 +63,8 @@ uint8_t null_modem_open(void);
 uint8_t null_modem_close(void);
 
 uint8_t null_modem_get_time(void);
-uint8_t null_modem_receive(uint8_t* buff, uint16_t* len);
-uint8_t null_modem_send(uint8_t * dados, uint16_t tam);
+uint8_t null_modem_receive(char* buff, uint16_t* len);
+uint8_t null_modem_send(char * dados, uint16_t tam);
 uint8_t null_modem_set_ip(char* _ip);
 char* null_modem_get_ip(void);
 uint8_t null_modem_set_hostname(char *host);

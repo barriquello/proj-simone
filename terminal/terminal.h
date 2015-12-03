@@ -38,7 +38,7 @@ typedef void (cmd_func)(char *params);
 /*****************************************************************************
  * Macro definitions
  *****************************************************************************/
-#define MAX_CMDS			  16
+#define MAX_CMDS			  20
 #define MAX_CMD_SIZE		  8
 #define CONSOLE_BUFFER_SIZE  (32)
 

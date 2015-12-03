@@ -120,7 +120,7 @@ uint8_t null_modem_set_ip(char* _ip)
 	return MODEM_OK;
 }
 
-uint8_t null_modem_send(uint8_t * dados, uint16_t tam)
+uint8_t null_modem_send(char * dados, uint16_t tam)
 {
 	
 
@@ -142,7 +142,7 @@ uint8_t null_modem_send(uint8_t * dados, uint16_t tam)
 }
 
 
-uint8_t null_modem_receive(uint8_t* buff, uint16_t* len)
+uint8_t null_modem_receive(char* buff, uint16_t* len)
 {
 
 	uint8_t ret = MODEM_ERR;

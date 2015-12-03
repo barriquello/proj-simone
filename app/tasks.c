@@ -191,7 +191,8 @@ void Terminal_Task(void)
 	//(void) terminal_add_cmd((command_t*) &m590_cmd);	
 	//(void) terminal_add_cmd((command_t*) &null_modem_cmd);	
 	(void) terminal_add_cmd((command_t*) &modem_cmd);
-	(void) terminal_add_cmd((command_t*) &modbus_cmd);		
+	(void) terminal_add_cmd((command_t*) &modbus_cmd);
+	(void) terminal_add_cmd((command_t*) &monitor_cmd);
 		
 	terminal_acquire();
 	printf_terminal_P(PSTR("Terminal started\r\n"));

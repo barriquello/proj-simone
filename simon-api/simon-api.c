@@ -63,18 +63,18 @@ static output out = NULL;
 
 #include "prints_def.h"
 
-
 char simon_hostname[MAX_HOSTNAME_LEN];
 char simon_hostip[MAX_HOSTIP_LEN];
 char simon_apikey[MAX_APIKEY_LEN];
 
-static char message[128];
-static char server_reply[256];
+static char server_reply[512];
 
 static char* hostname = simon_hostname;
 uint16_t recv_size;
 
 modem_driver_t* modem = NULL;
+
+extern uint8_t mon_verbosity;
 
 uint8_t simon_init(const modem_driver_t* _modem)
 {
@@ -85,10 +85,10 @@ uint8_t simon_init(const modem_driver_t* _modem)
 	simon_set_apikey(API_KEY);		/* set a default key */
 	simon_set_hostname(SERVER_NAME); /* set a default server */
 	modem->sethost(hostname);
-	modem->setip("54.173.137.93"); /* set a default ip */
+	modem->setip(simon_hostip); /* set a default ip */ //"54.173.137.93"
 	
 #if 1	
-	if(modem->init() == FALSE)
+	if(modem->init() == MODEM_ERR)
 	{
 		PRINTS_P(PSTR("modem not ok"));
 		return MODEM_ERR;
@@ -105,35 +105,25 @@ uint8_t simon_init(const modem_driver_t* _modem)
 
 uint8_t simon_check_connection(void)
 {
-
-	if(modem->is_connected())
-	{
-		return TRUE;
-	}
-	
-	return FALSE;
+	return modem->is_connected();
 }
 
 uint8_t simon_get_time(struct tm * t)
 {
-	char* get_time_request = "GET /time/local&apikey=%s";
-	//char* get_time_request = "GET /";
 	uint8_t ret = MODEM_ERR;
 	
-	SNPRINTF(message, SIZEARRAY(message), get_time_request, (char*)simon_apikey);
-	
 	SNPRINTF(server_reply, SIZEARRAY(server_reply),
-		     "%s HTTP/1.1\r\n"
-		     "Host: %s\r\n"
-		     "\r\n\r\n", message, hostname);
+		     "GET /time/local&apikey=%s "
+		     "HTTP/1.1\r\nHost: %s\r\n\r\n\r\n", (char*)simon_apikey, hostname);
 	
-	//PRINTF(message);
+	if(mon_verbosity > 2)
+		PRINTF(server_reply);
 	
 	if(out == NULL || in == NULL)
 	{
 		return MODEM_ERR;
 	}
-	if(out((uint8_t*)server_reply , (uint16_t)strlen(server_reply)) != MODEM_OK)
+	if(out(server_reply , (uint16_t)strlen(server_reply)) != MODEM_OK)
 	{
 		return MODEM_ERR;
 	}
@@ -141,7 +131,7 @@ uint8_t simon_get_time(struct tm * t)
 	do
 	{
 		recv_size = SIZEARRAY(server_reply);
-		if(in((uint8_t*)server_reply, (uint16_t*) &recv_size) != MODEM_OK)
+		if(in(server_reply, (uint16_t*) &recv_size) != MODEM_OK)
 		{
 			break;
 		}
@@ -164,23 +154,22 @@ uint8_t simon_get_time(struct tm * t)
 
 uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 {
-	char* send_monitor = "GET /monitor/set.json?monitorid=%d&time=%d&data=%s&apikey=%s";
-	
+
 	uint8_t ret = MODEM_ERR;
 	
-	if(len > SIZEARRAY(message)) return MODEM_ERR;
-	
-	SNPRINTF(message, SIZEARRAY(message), send_monitor, mon_id, time, buf, (char*)simon_apikey);
+	if(len > SIZEARRAY(server_reply)) return MODEM_ERR;
 	
 	/// Form request
 	SNPRINTF(server_reply, SIZEARRAY(server_reply),
-		     "%s HTTP/1.1\r\n"
+			 "GET /monitor/set.json?monitorid=%d&time=%d&data=%s&apikey=%s "
+		     "HTTP/1.1\r\n"
 		     "Host: %s\r\n"
-		     "\r\n\r\n", message, hostname);
+		     "\r\n\r\n", mon_id, time, buf, (char*)simon_apikey, hostname);
 
-#if 1	
-	PRINTF(server_reply);
-#endif	
+	if(mon_verbosity > 2)
+	{
+		PRINTF(server_reply);
+	}
 
 #define SIMON_SKIP_SEND 0
 #if SIMON_SKIP_SEND
@@ -192,7 +181,7 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 		return MODEM_ERR;
 	}
 	
-	if(out((uint8_t*)server_reply, (uint16_t)strlen(server_reply)) != MODEM_OK)
+	if(out(server_reply, (uint16_t)strlen(server_reply)) != MODEM_OK)
 	{
 		return MODEM_ERR;
 	}
@@ -200,7 +189,7 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 	do
 	{
 		recv_size = SIZEARRAY(server_reply);
-		if(in((uint8_t*)server_reply, (uint16_t*) &recv_size) != MODEM_OK)
+		if(in(server_reply, (uint16_t*) &recv_size) != MODEM_OK)
 		{
 			break;
 		}

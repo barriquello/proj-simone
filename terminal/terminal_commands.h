@@ -130,4 +130,8 @@ extern CONST command_t modem_cmd;
 void term_cmd_modbus(char *param);
 extern CONST command_t modbus_cmd;
 
+// Monitor control
+void term_cmd_monitor(char *param);
+extern CONST command_t monitor_cmd;
+
 #endif /* _TERMINAL_COMMANDS_H_ */

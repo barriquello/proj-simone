@@ -62,8 +62,8 @@
 #define MAX_APIKEY_LEN	 	 (32+1)
 
 typedef uint8_t (*initialize)(void);
-typedef uint8_t (*input)(uint8_t *, uint16_t*);
-typedef uint8_t (*output)(uint8_t *, uint16_t);
+typedef uint8_t (*input)(char *, uint16_t*);
+typedef uint8_t (*output)(char *, uint16_t);
 typedef uint8_t (*set_host)(char *);
 typedef uint8_t (*set_ip)(char *);
 typedef uint8_t (*get_connect)(void);

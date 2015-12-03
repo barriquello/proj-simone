@@ -83,8 +83,9 @@ INT8U esp_get_ip(void)
 	esp_print("\"\r\n");
 	at_esp_get_reply(ip,16);
 	//at_esp_print_reply();
-	esp_release();		
+	esp_release();
 	
+	return OK;
 	
 }
 

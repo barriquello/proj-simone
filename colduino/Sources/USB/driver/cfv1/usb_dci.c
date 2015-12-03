@@ -1574,7 +1574,7 @@ void USB_ISR(void)
 	  
 	  // Interrupt handling  
 	  #if (NESTING_INT == 1)
-	  OS_ENABLE_NESTING();
+	  	  OS_ENABLE_NESTING();
 	  #endif   
 	    
 	  // ************************

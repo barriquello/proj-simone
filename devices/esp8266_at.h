@@ -111,12 +111,9 @@
 #endif
 #endif
 
-typedef enum 
-{
-	INIT,
-	OPEN,
-	CLOSE
-}esp_state_t;
+#include "modem.h"
+
+typedef state_t	esp_state_t;
 
 typedef enum 
 {

@@ -53,12 +53,18 @@ char BufferText[32];
 #include "prints_def.h"
 
 #define MONITOR_TESTS	0
+#define ASSERT(x)	//assert
 
 extern monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
+extern uint8_t mon_verbosity;
+extern volatile uint8_t monitor_is_connected;
 
 #define LOG_MAX_DATA_BUF_SIZE  (LOG_MAX_ENTRY_SIZE/2)
 uint16_t monitor_data_buffer[LOG_MAX_ENTRY_SIZE];
 char monitor_char_buffer[LOG_MAX_ENTRY_SIZE];
+
+char data_vector[256*4];
+char monitor_header[LOG_HEADER_LEN+2];
 
 #define CONST const
 
@@ -139,8 +145,6 @@ void monitor_makeheader(char monitor_header[], monitor_header_t * h)
    monitor_header[50] = '\0';
 }
 
-char monitor_header[LOG_HEADER_LEN+2];
-
 uint8_t monitor_setheader(const char* filename, monitor_header_t * h)
 {
    LOG_FILETYPE fp;  
@@ -167,8 +171,6 @@ uint8_t monitor_setheader(const char* filename, monitor_header_t * h)
    return FALSE;
 
 }
-
-#define ASSERT(x)	//assert
 
 uint8_t monitor_getheader(const char* filename, monitor_header_t * h)
 {
@@ -334,6 +336,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 	struct tm ts;
 	char new_filename[8+5]={"00000000.txt"};
 	int ret;
+	uint16_t retries = 0;
 
 	if(!monitor_getheader((const char*)filename, &h)) return;
 
@@ -342,10 +345,12 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 	{
 		time_elapsed_s = (uint32_t)((h.h1.time_interv)*(h.count));
 		
-		if(monitor_gettimestamp(&ts, time_elapsed_s) == MODEM_ERR)
+		do
 		{
-			return;
-		}
+			if(++retries > 3) return;
+			DelayTask(100);
+			ret = monitor_gettimestamp(&ts, time_elapsed_s);
+		}while(ret == MODEM_ERR);
 
 		h.h2.year = (uint16_t)(ts.tm_year + 1900);
 		h.h2.mon = (uint8_t)(ts.tm_mon + 1);
@@ -354,6 +359,8 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 		h.h2.min = (uint8_t)ts.tm_min;
 		h.h2.sec = (uint8_t)ts.tm_sec;
 		h.h2.synched = 1;
+
+		monitor_state[monitor_num].sinc = 1;
 
 #if 0
 #if _WIN32
@@ -372,7 +379,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 			/* rename file */
 			strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
 
-			if(is_terminal_idle())
+			if(is_terminal_idle() && mon_verbosity > 3)
 			{
 				PRINTF_P(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
 			}
@@ -390,7 +397,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 
 				monitor_setheader((const char*)filename, &h);
 
-				if(is_terminal_idle())
+				if(is_terminal_idle() && mon_verbosity > 3)
 				{
 					PRINTS_P(PSTR("\r\n rename failed \r\n"));
 					PRINTF_P(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
@@ -403,7 +410,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 			/* log is reading the same file ? */
 			if(strcmp(monitor_state[monitor_num].monitor_name_reading, monitor_state[monitor_num].monitor_name_writing) == 0)
 			{
-				if(is_terminal_idle())
+				if(is_terminal_idle() && mon_verbosity > 3)
 				{
 					PRINTS_P(PSTR("\r\n reading the same file that we renamed! \r\n"));
 				}				
@@ -421,9 +428,6 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 			strcpy(monitor_state[monitor_num].monitor_name_writing,new_filename);
 	}
 }
-
-
-extern volatile uint8_t monitor_is_connected;
 
 uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_num)
 {
@@ -452,10 +456,7 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 		/* if file is not synched, try to synch */
 		if(h.h2.synched == 0)
 		{
-			if(monitor_is_connected == 1)	 
-			{
-				monitor_sync(monitor_num, filename);
-			}
+			monitor_sync(monitor_num, filename);
 		}
 	
 	}else
@@ -507,8 +508,6 @@ static uint16_t build_entry_to_send(char* ptr_data, uint8_t *data, uint16_t len)
 	*(--ptr_data) = '\0'; // null terminate string
 	return cnt;
 }
-
-char data_vector[256*4];
 
 static int monitor_entry_send(uint8_t mon_id, monitor_entry_t* entry, uint16_t len)
 {
@@ -607,17 +606,19 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   {
 				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
 				  
-				   
-				   PRINTF_P(PSTR("Mon %d, entry: %d of %d, delay: %d - avg: %d"), 
-						   monitor_num,
-						   h.last_idx, h.count,
-						   monitor_state[monitor_num].time_to_send,
-						   monitor_state[monitor_num].avg_time_to_send);
-				   
-					char timestamp[32];
-					ts = *localtime(&(time_t){unix_time});
-					strftime(timestamp,SIZEARRAY(timestamp)," @%Y|%m|%d %H:%M:%S\r\n",&ts);
-					PRINTF(timestamp);
+				   if (mon_verbosity > 2)
+				   {
+					   PRINTF_P(PSTR("Mon %d, entry: %d of %d, delay: %d - avg: %d"),
+							   monitor_num,
+							   h.last_idx, h.count,
+							   monitor_state[monitor_num].time_to_send,
+							   monitor_state[monitor_num].avg_time_to_send);
+
+						char timestamp[32];
+						ts = *localtime(&(time_t){unix_time});
+						strftime(timestamp,SIZEARRAY(timestamp)," @%Y|%m|%d %H:%M:%S\r\n",&ts);
+						PRINTF(timestamp);
+				   }
 				   
 				   monitor_state[monitor_num].time_to_send = 0;
 			   }			   
@@ -794,15 +795,16 @@ void monitor_writer(uint8_t monitor_num)
 	extern const char* monitor_error_msg[];
 	
 	static uint32_t missing_entries = 0;
-	
-	/* check modem connection */
-	if(simon_check_connection() == TRUE)
+
+#if 0  /* check modem connection */
+	if(simon_check_connection() == MODEM_OK)
 	{
 		monitor_is_connected = 1;
 	}else
 	{
 		monitor_is_connected = 0;
 	}
+#endif
 	
 #if MONITOR_TESTS
 	uint16_t vetor_dados[3]={0x1111,0x2222,0x3333};	
@@ -825,7 +827,7 @@ void monitor_writer(uint8_t monitor_num)
 		return;
 	}
 	
-	if(is_terminal_idle())
+	if(is_terminal_idle() && mon_verbosity > 2)
 	{
 		PRINTF_PP(monitor_error_msg[2], monitor_num);
 		PRINTF_P(PSTR(" read slave %d ok\r\n"), monitor_state[monitor_num].slave_addr);
@@ -851,9 +853,9 @@ void monitor_writer(uint8_t monitor_num)
 		PRINT_ERRO_P(PSTR("\r\nMissed entries %d\r\n"), missing_entries);
 	}else
 	{
-		if(is_terminal_idle())
+		if(is_terminal_idle() && mon_verbosity > 2)
 		{
-			PRINTF_P(PSTR("\r\nMon %d, Entry %u: "), monitor_num, cnt);
+			PRINTF_P(PSTR("\r\nM %d, Entry %u: "), monitor_num, cnt);
 			PRINTF(monitor_char_buffer);
 			PRINTS_P(PSTR("\r\n"));		
 		}
@@ -868,7 +870,6 @@ uint16_t monitor_reader(uint8_t monitor_num)
 {
 	monitor_entry_t entry;
 	uint16_t nread;
-	char buffer[sizeof(long)*8+1];
 
 	char* fname = monitor_getfilename_to_read(monitor_num);
 	
@@ -883,6 +884,7 @@ uint16_t monitor_reader(uint8_t monitor_num)
 	if((nread = monitor_readentry(monitor_num, fname, &entry)) != 0)
 	{
 #if 0		
+		char buffer[sizeof(long)*8+1];
 		if( nread < MAX_NUM_OF_ENTRIES)
 		{			
 			PRINTF((char*)entry.values);

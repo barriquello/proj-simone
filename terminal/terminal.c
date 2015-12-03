@@ -59,7 +59,6 @@ extern "C" {
 /*****************************************************************************
  * Function predefinitions.
  *****************************************************************************/
-static void term_print_greeting(void);
 static void term_cmd_help(char *param);
 static void term_print_prompt(void);
 static int  term_find_command(char *name);
@@ -83,7 +82,7 @@ command_t 	*term_cmds[MAX_CMDS];
 volatile char terminal_idle = TRUE;
 
 static void (*putch)(char);
-static void (*getch)(char *);
+//static void (*getch)(char *);
 
 #if ARDUINO
 #include "uart.h"
@@ -317,6 +316,8 @@ static void term_cmd_help(char *param)
     terminal_newline();
   }
   terminal_newline();
+  term_print_prompt();
+
 }
 
 
@@ -356,12 +357,13 @@ static void term_print_prompt(void)
 * Assumptions:
 *    --
 *****************************************************************************/
+#if 0
 static void term_print_greeting(void)
 {
-	printf_terminal_P(PSTR("Digite um comando:"));
+	printf_terminal_P(PSTR("Digite um comando: \r\n"));
 	terminal_newline();
 }
-
+#endif
 /*****************************************************************************
 * Name:
 *    find_command
@@ -442,7 +444,6 @@ void terminal_init(void (*putch_)(char))
 void terminal_process(void)
 {
   char c;
-  static char skip_mode = 0;
   
 #if ARDUINO
   while(1)

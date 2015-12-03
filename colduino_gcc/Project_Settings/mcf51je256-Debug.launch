@@ -80,5 +80,5 @@
 </mapAttribute>
 <stringAttribute key="org.eclipse.dsf.launch.MEMORY_BLOCKS" value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot; standalone=&quot;no&quot;?&gt;&#13;&#10;&lt;memoryBlockExpressionList context=&quot;reserved-for-future-use&quot;/&gt;&#13;&#10;"/>
 <stringAttribute key="process_factory_id" value="org.eclipse.cdt.dsf.gdb.GdbProcessFactory"/>
-<stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="0x80096b,0x800975,0x802c64,stack,0x802bd8,0x802c7c,0x802c74,0x802c70,0x802c7F,0x802c8c,0x802c5c,0x802c58,0x802c4c,0x80171a,0x80172e"/>
+<stringAttribute key="saved_expressions&lt;seperator&gt;Unknown" value="0x803b22,0x803b0e,0x803b06,0x803b20,0x803b28,0x803af4,&amp;ISR_STACK[128],&amp;ISR_STACK[0],ISR_STACK,0x8017da,STACK,0x800834,modem_BufferTxRx,0x8026ce,0x8026de"/>
 </launchConfiguration>

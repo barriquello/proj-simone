@@ -37,6 +37,7 @@
 #include "debug_stack.h"
 #include "tasks.h"
 #include "string.h"
+//#include "stdio.h"
 
 #define Help_HelpText_def "Help of commands"
 #define Ver_HelpText_def "BRTOS Version"
@@ -62,6 +63,7 @@
 #define null_modem_HelpText_def "Control null_modem modem"
 #define modem_HelpText_def "Control modem"
 #define Modbus_HelpText_def "Control Modbus"
+#define monitor_HelpText_def   "Control Monitor"
 
 #if COLDUINO
 #include "virtual_com.h"
@@ -89,6 +91,8 @@
 #define  null_modem_HelpText null_modem_HelpText_def
 #define  modem_HelpText modem_HelpText_def
 #define  Modbus_HelpText Modbus_HelpText_def
+#define  monitor_HelpText monitor_HelpText_def
+
 #elif ARDUINO
 
 typedef enum
@@ -120,6 +124,7 @@ const char m590_HelpText_str[] PROGMEM = m590_HelpText_def;
 const char null_modem_HelpText_str[] PROGMEM = null_modem_HelpText_def;
 const char modem_HelpText_str[] PROGMEM = modem_HelpText_def;
 const char Modbus_HelpText_str[] PROGMEM = Modbus_HelpText_def;
+const char monitor_HelpText_str[] PROGMEM = monitor_HelpText_def;
 
 #define  Ver_HelpText Ver_HelpText_str
 #define  Top_HelpText Top_HelpText_str
@@ -144,6 +149,7 @@ const char Modbus_HelpText_str[] PROGMEM = Modbus_HelpText_def;
 #define  null_modem_HelpText null_modem_HelpText_str
 #define  modem_HelpText modem_HelpText_str
 #define  Modbus_HelpText Modbus_HelpText_str
+#define  monitor_HelpText monitor_HelpText_str
 
 #endif
 
@@ -596,7 +602,6 @@ CONST command_t cp_cmd = {
 void term_cmd_wt(char *param)
 {    
  (void)WriteUptimeLog(VERBOSE_ON);
- 
 }
 
 CONST command_t wt_cmd = {
@@ -733,6 +738,8 @@ void echo (char *string, char Terminalbackup)
     	echo_post(backup,backup_cnt);    	
     }
 }
+
+#include "stdio.h"
 
 #if 0
 
@@ -899,30 +906,36 @@ CONST command_t null_modem_cmd = {
 	"t - time \r\n"             \
 
 	
+char host[32];
 void term_cmd_modem(char *param)
 {
-	char entradas[CONSOLE_BUFFER_SIZE];
-	char host[]  = "www.ufsm.br";
-	char request[] = "GET / HTTP/1.1\r\n Host:www.ufsm.br\r\n\r\n\r\n";
+	char entradas[2*CONSOLE_BUFFER_SIZE];
 
 	terminal_newline();
 	switch (param[0])
 	{
 		case 'i': at_modem_init();
-		break;
-		case 'o': at_modem_open(1,host);
-		break;
-		case 's': at_modem_send(request);
-		break;
+			break;
+		case 'o':
+		    if(sscanf(&param[2], "%s", host) == 1)
+			{
+		    	at_modem_open(1,host);
+			}
+		    break;
+		case 's':
+		    SNPRINTF_P(entradas,sizeof(entradas)-1,PSTR("GET / HTTP/1.1\r\nHost:%s\r\n\r\n\r\n"), host);
+			at_modem_send(entradas);
+			break;
 		case 'r': at_modem_receive(entradas,SIZEARRAY(entradas));
-		break;
+			break;
 		case 'c': at_modem_close();
-		break;
+			break;
 		case 'a':
-		at_modem_init();
-		at_modem_open(1,host);
-		at_modem_send(request);
-		break;		
+		    SNPRINTF_P(entradas,sizeof(entradas)-1,PSTR("GET / HTTP/1.1\r\nHost:%s\r\n\r\n\r\n"), host);
+			at_modem_init();
+			at_modem_open(1,(char*)host);
+			at_modem_send(entradas);
+			break;
 		default:
 		PRINTS_P(PSTR(cmd_modem_help_def));
 		terminal_newline();
@@ -943,7 +956,7 @@ CONST command_t modem_cmd = {
 	"d - set device code \r\n"		\
 	"i - read input regs \r\n"	    \
 	"h - read holding regs \r\n"    \
-	"p - print answer \r\n"         \	
+	"p - print answer \r\n"         \
 	"r - read device regs \r\n"     \
 	"s - start reg address \r\n"    \
 	"n - num of regs \r\n"          \
@@ -1031,7 +1044,7 @@ void term_cmd_modbus(char *param)
 			break;
 		case 'r':		    
 			memset(modbus_buf,0x00,SIZEARRAY(modbus_buf));
-			cnt = modbus_slaves_all[device]->slave_reader(slave_addr,modbus_buf, sizeof(modbus_buf));
+			cnt = modbus_slaves_all[device]->slave_reader(slave_addr,(uint8_t*)modbus_buf, sizeof(modbus_buf));
 			if(cnt > sizeof(modbus_buf)) cnt = sizeof(modbus_buf);
 			terminal_acquire();
 			terminal_newline();
@@ -1058,3 +1071,72 @@ CONST command_t modbus_cmd = {
   "mb", term_cmd_modbus, Modbus_HelpText
 };
 #endif
+
+
+/* monitor status */
+#include "monitor.h"
+
+#define cmd_monitor_help_def      \
+	"\r\n usage:\r\n"           \
+	"s - status \r\n"           \
+	"r - reboot \r\n"           \
+	"c - clean \r\n"            \
+	"t - time \r\n"             \
+	"v - verbosity \r\n"        \
+
+
+void term_cmd_monitor(char *param)
+{
+	//char entradas[CONSOLE_BUFFER_SIZE];
+    uint8_t mon = 0;
+    uint8_t verb = 0;
+    int input;
+
+    extern monitor_state_t monitor_state[];
+    extern uint8_t mon_verbosity;
+
+	terminal_newline();
+	switch (param[0])
+	{
+		case 's':
+			for (mon= 0; mon < MAX_NUM_OF_MONITORES; mon++)
+			{
+				if(monitor_state[mon].state == IN_USE)
+				{
+					PRINTF_P(PSTR("M: %u, Cod: %u, Slave: %u, Sinc: %c \r\n"), mon,
+							monitor_state[mon].codigo,
+							monitor_state[mon].slave_addr,
+							(monitor_state[mon].sinc==1?'S':'N'));
+					PRINTF_P(PSTR("Config: Id= %u, Period = %u, Entry size = %u \r\n"),
+												monitor_state[mon].config_h.mon_id,
+												monitor_state[mon].config_h.time_interv,
+												monitor_state[mon].config_h.entry_size);
+					PRINTF_P(PSTR("Avg time to send: %u\r\n"), monitor_state[mon].avg_time_to_send);
+				}
+			}
+			break;
+		case 'r':
+			break;
+		case 'c':
+			break;
+		case 't':
+			break;
+		case 'v':
+			if(sscanf(&param[2], "%d", &input) == 1)
+			{
+				verb = (uint8_t)input;
+				if(verb > 5) verb = 5;
+				mon_verbosity = verb;
+			}
+			PRINTF_P(PSTR("Verbosity level = %u \r\n"), mon_verbosity);
+			break;
+		default:
+			PRINTS_P(PSTR(cmd_monitor_help_def));
+			terminal_newline();
+	}
+	param[0] = 0;
+}
+
+CONST command_t monitor_cmd = {
+	"mon", term_cmd_monitor, monitor_HelpText
+};

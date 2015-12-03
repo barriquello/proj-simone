@@ -48,14 +48,14 @@ uint8_t CheckPPP(void);
 uint8_t CreatePPP(void);
 uint8_t CreateTCPLink(char *linkStr);
 uint8_t CreateSingleTCPLink(unsigned char iLinkNum,char *strServerIP,char *strPort);
-uint8_t TCPIP_SendData(uint8_t * dados, uint16_t tam);
+uint8_t TCPIP_SendData(char * dados, uint16_t tam);
 uint8_t is_m590_ok(void);
 uint8_t is_m590_ok_retry(uint8_t retries);
 
 static m590_state_t m590_state = M590_SETUP;
 static char ip[16];
 static char *hostname = NULL;
-static INT8U gReceiveBuffer[256];
+static char gReceiveBuffer[256];
 
 #define DEBUG_PRINT 0
 
@@ -82,7 +82,7 @@ static INT8U gReceiveBuffer[256];
 	
 #define CONST const	
 
-
+#if 0
 static void at_m590_print_reply(void)
 {
 	INT8U c;
@@ -91,8 +91,9 @@ static void at_m590_print_reply(void)
 		putcharSer(USE_USB,c);
 	}
 }
+#endif
 
-static INT8U m590_get_reply(INT8U *buf, INT16U max_len)
+static INT8U m590_get_reply(char *buf, INT16U max_len)
 {
 	INT8U c;
 	INT8U len = 0;
@@ -250,14 +251,14 @@ uint8_t CreateSingleTCPLink(uint8_t iLinkNum,char *strServerIP,char *strPort)
 /****************************************************************************************
 * TCP IP Send Data
 *****************************************************************************************/
-uint8_t TCPIP_SendData(uint8_t *dados, uint16_t tam)
+uint8_t TCPIP_SendData(char *dados, uint16_t tam)
 {
 	uint16_t timeout=0;
 	uint16_t retries=0;
 	
 	uint8_t  c;
 	uint16_t  length, len;	
-	uint8_t *send;
+	char *send;
 
 	length = (uint16_t) tam;		
 	m590_print(modem_init_cmd[IPSTAT]);
@@ -489,7 +490,7 @@ CONST char M590_SEND_STRING[] = "GET /input/post.json?json={p:3}&apikey=90a00439
 CONST char M590_SEND_STRING2[] = "GET /monitor/set.json?monitorid=10&data=20,20,20,20&apikey=90a004390f3530d0ba10199ac2b1ac3d HTTP/1.1\r\nHost: emon-gpsnetcms.rhcloud.com\r\n\r\n\r\n";
 #endif
 
-m590_ret_t at_m590_send(INT8U* dados)
+m590_ret_t at_m590_send(char* dados)
 {
 	INT8U result_ok=FALSE;
 	
@@ -513,7 +514,7 @@ m590_ret_t at_m590_send(INT8U* dados)
 #if M590_TESTE						
 		result_ok = TCPIP_SendData(M590_SEND_STRING);		
 #else				
-		result_ok = TCPIP_SendData(dados,(uint8_t)strlen(dados));
+		result_ok = TCPIP_SendData(dados,(uint16_t)strlen(dados));
 	
 #endif
 	}
@@ -555,7 +556,7 @@ m590_ret_t at_m590_send(INT8U* dados)
 	}
 }
 
-m590_ret_t at_m590_receive(CHAR8* buff, INT8U len)
+m590_ret_t at_m590_receive(char* buff, uint16_t len)
 {
 	uint16_t size = len;
 	if(buff == NULL)	return M590_ERR;
@@ -731,7 +732,7 @@ uint8_t m590_set_ip(char* _ip)
 	return MODEM_OK;
 }
 
-uint8_t m590_send(uint8_t * dados, uint16_t tam)
+uint8_t m590_send(char * dados, uint16_t tam)
 {
 	
 	uint8_t retries = 0;
@@ -805,7 +806,7 @@ uint8_t m590_send(uint8_t * dados, uint16_t tam)
 }
 
 
-uint8_t m590_receive(uint8_t* buff, uint16_t* len)
+uint8_t m590_receive(char* buff, uint16_t* len)
 {
 
 	uint8_t ret = MODEM_ERR;

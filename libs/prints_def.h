@@ -7,6 +7,8 @@ void prints_R(char* out, const char *string);
 void prints_P(char* out, const char *string);
 
 #if	PRINTS_ENABLED
+extern uint8_t mon_verbosity;
+
 #if ARDUINO
 #define PRINTF(...)			printf_lib(__VA_ARGS__);
 #define PRINTF_P(...)		print_P(NULL, __VA_ARGS__);
@@ -32,8 +34,8 @@ void prints_P(char* out, const char *string);
 #define PRINT_ERRO_P(...)	print_P("erro.txt", __VA_ARGS__);
 #define PRINT_ERRO_PP(s,...)  print_P("erro.txt", (s), __VA_ARGS__);
 #define PRINTS_ERRO(s)		prints_R("erro.txt",s);
-#define PRINTS_ERRO_P(s)	prints_P("erro.txt",s); PRINTS_P(s);
-#define PRINTS_ERRO_PP(s)	prints_P("erro.txt",s); PRINTS_P(s);
+#define PRINTS_ERRO_P(s)	prints_P("erro.txt",s); if(mon_verbosity > 0) PRINTS_P(s);
+#define PRINTS_ERRO_PP(s)	prints_P("erro.txt",s); if(mon_verbosity > 0) PRINTS_P(s);
 #else /* WIN32*/
 #define PRINTF(...)			printf(__VA_ARGS__);
 #define PRINTS_P(s)			printf(s);

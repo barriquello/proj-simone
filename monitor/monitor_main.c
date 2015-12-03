@@ -131,6 +131,8 @@ static uint8_t 	monitores_em_uso = 0;
 monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 monitor_config_ok_t config_check;
 
+uint8_t mon_verbosity = 1;
+
 #if SIMULATION
 #define TICKS2MSEC(x)	(x/500)
 #else
@@ -155,8 +157,8 @@ char BufferText[32];
 
 /* Debug strings */
 #define monitor_error_msg0_def		"\r\nConfig erro: faltando "
-#define monitor_error_msg1_def		"\r\nMonitor erro: %d "
-#define monitor_error_msg2_def		"\r\nMonitor %d"
+#define monitor_error_msg1_def		"\r\nMon erro: %d "
+#define monitor_error_msg2_def		"\r\nMon %d"
 
 #if ARDUINO
 char BufferText[32];
@@ -260,9 +262,6 @@ static char getchar_timeout(int timeout)
       return(0);
    }
 }
-#else
-static char getchar_timeout(int timeout)
-{(void)timeout; return 0;}
 #endif
 
 volatile uint8_t monitor_running = 1;
@@ -333,7 +332,7 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 		time_now = clock_time();		
 		time_elapsed = (uint16_t)(time_now-time_before);
 		
-		if(is_terminal_idle())
+		if(is_terminal_idle() && mon_verbosity > 1)
 		{
 			PRINTF_P(PSTR("M %u W start @%lu\r\n"), _monitor, (uint32_t)(time_before & MASK32));
 			PRINTF_P(PSTR("M %u W end @%lu, diff %lu\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
@@ -369,7 +368,7 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 			time_now = clock_time();			
 			time_elapsed = (uint32_t)(time_now-time_before);
 			
-			if(is_terminal_idle())
+			if(is_terminal_idle() && mon_verbosity > 1)
 			{
 				PRINTF_P(PSTR("M %u R start @%lu\r\n"), _monitor, (uint32_t)(time_before & MASK32));
 				PRINTF_P(PSTR("M %u R end @%lu, diff %lu\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
@@ -532,10 +531,9 @@ int main(void)
 }
 #endif
 
+#include "simon-api.h"
 #include "modbus_slaves.h"
 extern CONST modbus_slave_t * modbus_slaves_all[];
-
-#include "simon-api.h"
 
 void main_monitor(void)
 {
@@ -576,7 +574,7 @@ void main_monitor(void)
 #if _WIN32
 #define modem_driver	win_http
 #elif MODEM_PRESENTE
-#define modem_driver	m590_driver
+#define modem_driver	gc864_modem_driver //m590_driver
 #else
 #define modem_driver	null_modem_driver
 #endif	
@@ -607,12 +605,14 @@ void main_monitor(void)
 	ini_browse(callback_inifile, NULL, config_inifile);
 	config_check_erro();
 
+	DPRINTS_P(PSTR("Config OK\r\n"));
+
 	terminal_acquire();	
-		PRINTS_P(PSTR("Config OK\r\n"));
+	PRINTS_P(PSTR("Config OK\r\n"));
 	terminal_release();	
 	
-	DPRINTS_P(PSTR("Config OK\r\n"));
 	
+
 #if COLDUINO || ARDUINO
 	DelayTask(5000);	
 #endif
@@ -642,7 +642,7 @@ void main_monitor(void)
 			sleep_forever();
 		}		
 		
-		PRINT_ERRO_PP(monitor_error_msg[2], monitor_num); PRINTS_ERRO(PSTR(" started\r\n"));
+		PRINT_ERRO_PP(monitor_error_msg[2], (uint8_t)(monitor_num & 0xFF)); PRINTS_ERRO(PSTR(" started\r\n"));
 		monitores_em_uso++;
 		
 		/* Inicializa as threads deste monitor */

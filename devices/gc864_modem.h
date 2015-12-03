@@ -45,27 +45,49 @@
 #define MODEM_BAUD				19200
 
 /* define uart functions*/
+#if ARDUINO
+#define USE_UART_MODEM			USE_UART1
 #define MODEM_MUTEX				FALSE
 #define MODEM_MUTEX_PRIO		UART1_MUTEX_PRIO
-#define modem_acquire()			uart1_acquire()
-#define modem_release()			uart1_release()
-
-#if ARDUINO
-#define modem_printP(x)			printSer_P(USE_UART1,(PGM_P)pgm_read_word(&(x)));
-#define modem_printR(x)			printSer(USE_UART1,(x));
-#else
-#define modem_printP(x)			printSer(USE_UART1,(char*)x);
-#define modem_printR(x)			printSer(USE_UART1,(char*)x);
-#endif
-
-#define modem_putchar(x)		putcharSer(USE_UART1,x)
 extern BRTOS_Queue 				*Serial1;
 #define MODEM_QUEUE				Serial1
+#define modem_printP(x)			printSer_P(USE_UART_MODEM,(PGM_P)pgm_read_word(&(x)));
+#define modem_printR(x)			printSer(USE_UART_MODEM,(x));
+#elif COLDUINO
+#define USE_UART_MODEM			USE_UART2
+#define MODEM_MUTEX				FALSE
+#define MODEM_MUTEX_PRIO		UART2_MUTEX_PRIO
+extern BRTOS_Queue 				*Serial2;
+#define MODEM_QUEUE				Serial2
+#define modem_printP(x)			printSer(USE_UART_MODEM,(char*)x);
+#define modem_printR(x)			printSer(USE_UART_MODEM,(char*)x);
+#else
+#define USE_UART_MODEM			USE_UART1
+#define modem_printP(x)			printSer(USE_UART_MODEM,(char*)x);
+#define modem_printR(x)			printSer(USE_UART_MODEM,(char*)x);
+#endif
+
+#define modem_putchar(x)		putcharSer(USE_UART_MODEM,x)
+
+#if MODEM_MUTEX == TRUE
+#if USE_UART_MODEM	==	USE_UART1
+#define modem_acquire()			uart1_acquire()
+#define modem_release()			uart1_release()
+#elif USE_UART_MODEM ==	USE_UART2
+#define modem_acquire()			uart2_acquire()
+#define modem_release()			uart2_release()
+#else
+#error "Modem UART not defined"
+#endif
+#else
+#define modem_acquire()
+#define modem_release()
+#endif
 
 modem_ret_t at_modem_init(void);
-modem_ret_t at_modem_open(INT8U host_or_ip, INT8U* dados);
-modem_ret_t at_modem_send(INT8U* dados);
-modem_ret_t at_modem_receive(CHAR8* buff, INT8U len);
+modem_ret_t at_modem_open(INT8U host_or_ip, char* dados);
+modem_ret_t at_modem_send(char* dados);
+modem_ret_t at_modem_receive(char* buff, uint16_t len);
 modem_ret_t at_modem_close(void);
 modem_ret_t at_modem_server(void);
 modem_ret_t at_modem_dns(char* param);
@@ -78,8 +100,8 @@ uint8_t gc864_modem_open(void);
 uint8_t gc864_modem_close(void);
 
 uint8_t gc864_modem_get_time(void);
-uint8_t gc864_modem_receive(uint8_t* buff, uint16_t* len);
-uint8_t gc864_modem_send(uint8_t * dados, uint16_t tam);
+uint8_t gc864_modem_receive(char* buff, uint16_t* len);
+uint8_t gc864_modem_send(char * dados, uint16_t tam);
 uint8_t gc864_modem_set_ip(char* _ip);
 char* gc864_modem_get_ip(void);
 uint8_t gc864_modem_set_hostname(char *host);
