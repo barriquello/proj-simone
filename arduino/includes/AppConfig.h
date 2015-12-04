@@ -9,7 +9,7 @@
 #define SIMULATION			0
 #define SD_PRESENTE         1 
 #define RTC_PRESENTE  		0
-#define MODEM_PRESENTE		0
+#define MODEM_PRESENTE		1
 #define PM200_PRESENTE   	0
 #define TS_PRESENTE   		0
 #define NULL_PRESENTE   	1

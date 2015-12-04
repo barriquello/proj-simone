@@ -37,6 +37,7 @@
 #include "debug_stack.h"
 #include "tasks.h"
 #include "string.h"
+#include "printf_lib.h"
 //#include "stdio.h"
 
 #define Help_HelpText_def "Help of commands"
@@ -608,7 +609,7 @@ CONST command_t wt_cmd = {
   "wt", term_cmd_wt, "Write uptime"
 };
 
-static INT8U stdout = USE_USB;
+static INT8U term_stdout = USE_USB;
 BRTOS_Queue *stdin_q = NULL;
 
 extern BRTOS_Queue *Serial1;
@@ -623,14 +624,14 @@ void term_cmd_echo(char *param)
 	terminal_newline();
 
 #if UART1_MUTEX
-	if(stdout == USE_UART1)
+	if(term_stdout == USE_UART1)
 	{
 		uart1_acquire();
 	}
 #endif
 	
 #if UART2_MUTEX
-	if(stdout == USE_UART2)
+	if(term_stdout == USE_UART2)
 	{
 		uart2_acquire();
 	}
@@ -648,14 +649,14 @@ void term_cmd_echo(char *param)
 	}
 	
 #if UART1_MUTEX
-	if(stdout == USE_UART1)
+	if(term_stdout == USE_UART1)
 	{
 		uart1_release();
 	}
 #endif	
 	
 #if UART2_MUTEX
-	if(stdout == USE_UART2)
+	if(term_stdout == USE_UART2)
 	{
 		uart2_release();
 	}
@@ -676,12 +677,12 @@ void term_cmd_echo_out(char *param)
 		std_output = (INT8U)(param[0]-'0');
 		if(std_output >= 0 && std_output <= 9)
 		{
-			stdout = std_output;
-			if (stdout == USE_UART1)
+			term_stdout = std_output;
+			if (term_stdout == USE_UART1)
 			{
 				stdin_q = Serial1;
 			}
-			if (stdout == USE_UART2)
+			if (term_stdout == USE_UART2)
 			{
 				stdin_q = Serial2;
 			}
