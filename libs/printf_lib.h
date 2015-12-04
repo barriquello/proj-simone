@@ -33,7 +33,7 @@ int vsprintf_lib(char *out, const char *format, ...);
 #define VSPRINTF_P(...)		vsprintf_lib(__VA_ARGS__)
 #define VSPRINTF_PP(...)	vsprintf_lib(__VA_ARGS__)
 #define VSNPRINTF(...)		vsprintf_lib(__VA_ARGS__)
-#define VSNPRINTF_P(...)	vsprintf_lib(__VA_ARGS__)
+#define VSNPRINTF_P(...)	vsprintf(__VA_ARGS__)
 #define VSNPRINTF_PP(...)	vsprintf_lib(__VA_ARGS__)
 #define STRCPY(a,b)			strncpy(a,b, SIZEARRAY(a))
 #define STRCPY_P(a,b)		strncpy(a,b, SIZEARRAY(a))

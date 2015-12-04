@@ -1107,11 +1107,15 @@ void term_cmd_monitor(char *param)
 							monitor_state[mon].codigo,
 							monitor_state[mon].slave_addr,
 							(monitor_state[mon].sinc==1?'S':'N'));
-					PRINTF_P(PSTR("Config: Id= %u, Period = %u, Entry size = %u \r\n"),
+					PRINTF_P(PSTR("Config: id = %u, period = %u, entry size = %u \r\n"),
 												monitor_state[mon].config_h.mon_id,
 												monitor_state[mon].config_h.time_interv,
 												monitor_state[mon].config_h.entry_size);
 					PRINTF_P(PSTR("Avg time to send: %u\r\n"), monitor_state[mon].avg_time_to_send);
+					PRINTF_P(PSTR("Total written: %u\r\n"), monitor_state[mon].written_entries);
+					PRINTF_P(PSTR("Total read: %u\r\n"), monitor_state[mon].read_entries);
+					PRINTF_P(PSTR("Total sent: %u\r\n"), monitor_state[mon].sent_entries);
+
 				}
 			}
 			break;

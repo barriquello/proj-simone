@@ -180,7 +180,7 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 	{
 		return MODEM_ERR;
 	}
-	
+
 	if(out(server_reply, (uint16_t)strlen(server_reply)) != MODEM_OK)
 	{
 		return MODEM_ERR;

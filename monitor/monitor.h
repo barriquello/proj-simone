@@ -231,6 +231,9 @@ typedef struct
 	data_reader read_data;
 	uint32_t time_to_send;
 	uint32_t avg_time_to_send;
+	uint32_t written_entries;
+	uint32_t read_entries;
+	uint32_t sent_entries;
 }monitor_state_t;
 
 typedef union

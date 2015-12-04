@@ -446,6 +446,8 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 
 		   h.count++; // incrementa contador de entradas
 		   monitor_setheader(filename, &h);
+
+		   monitor_state[monitor_num].written_entries++;
 		}else
 		{
 			PRINT_ERRO_P(PSTR("Erro: open file %s\r\n"), filename);
@@ -592,6 +594,8 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 				   monitor_state[monitor_num].avg_time_to_send = 0;
 			   }
 			   
+			   monitor_state[monitor_num].read_entries++;
+
 			   if(monitor_entry_send(monitor_num,entry,entry_size-2) == TRUE) // ignore \r\n
 			   {
 				   /* if ok */
@@ -604,6 +608,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   
 			   if(send_ok == 1)
 			   {
+				   monitor_state[monitor_num].sent_entries++;
 				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
 				  
 				   if (mon_verbosity > 2)

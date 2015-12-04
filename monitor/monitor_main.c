@@ -332,7 +332,7 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 		time_now = clock_time();		
 		time_elapsed = (uint16_t)(time_now-time_before);
 		
-		if(is_terminal_idle() && mon_verbosity > 1)
+		if(is_terminal_idle() && mon_verbosity > 3)
 		{
 			PRINTF_P(PSTR("M %u W start @%lu\r\n"), _monitor, (uint32_t)(time_before & MASK32));
 			PRINTF_P(PSTR("M %u W end @%lu, diff %lu\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
@@ -368,7 +368,7 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 			time_now = clock_time();			
 			time_elapsed = (uint32_t)(time_now-time_before);
 			
-			if(is_terminal_idle() && mon_verbosity > 1)
+			if(is_terminal_idle() && mon_verbosity > 3)
 			{
 				PRINTF_P(PSTR("M %u R start @%lu\r\n"), _monitor, (uint32_t)(time_before & MASK32));
 				PRINTF_P(PSTR("M %u R end @%lu, diff %lu\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
@@ -641,7 +641,10 @@ void main_monitor(void)
 			PRINTS_ERRO_P(PSTR("modbus slave nao suportado \r\n"));		
 			sleep_forever();
 		}		
-		
+		if(monitor_num > MAX_NUM_OF_MONITORES)
+		{
+			while(1);
+		}
 		PRINT_ERRO_PP(monitor_error_msg[2], (uint8_t)(monitor_num & 0xFF)); PRINTS_ERRO(PSTR(" started\r\n"));
 		monitores_em_uso++;
 		
@@ -651,6 +654,10 @@ void main_monitor(void)
 				
 		monitor_state[monitor_num].time_to_send = 0;
 		monitor_state[monitor_num].avg_time_to_send = 0;
+		monitor_state[monitor_num].sinc = 0;
+		monitor_state[monitor_num].written_entries = 0;
+		monitor_state[monitor_num].sent_entries = 0;
+		monitor_state[monitor_num].read_entries = 0;
 	}
 	
 #ifdef _WIN32	
@@ -667,6 +674,7 @@ void main_monitor(void)
 		{
 			monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
 			monitor_read_thread(&monitor_state[monitor_num].read_pt, monitor_num);
+			DelayTask(1000); /* wait a second */
 		}
 
 #ifdef _WIN32			
