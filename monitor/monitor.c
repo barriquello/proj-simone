@@ -823,6 +823,8 @@ void monitor_writer(uint8_t monitor_num)
 			(monitor_char_buffer[2+2*4] == '3') && (monitor_char_buffer[3+2*4]== '3'));
 
 #else	
+	
+	PRINTF_P(PSTR("Slave %d reading\r\n"), monitor_state[monitor_num].slave_addr);
 		
 	/* read data */
 	if(monitor_state[monitor_num].read_data(monitor_state[monitor_num].slave_addr,(uint8_t*)monitor_data_buffer,(uint8_t)monitor_state[monitor_num].config_h.entry_size) == 0)

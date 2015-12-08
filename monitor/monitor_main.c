@@ -133,11 +133,8 @@ monitor_config_ok_t config_check;
 
 uint8_t mon_verbosity = 1;
 
-#if SIMULATION
-#define TICKS2MSEC(x)	(x/500)
-#else
 #define TICKS2MSEC(x)	(x)
-#endif
+
 
 /* print output */
 #define DEBUG_MONITOR		1
@@ -313,7 +310,7 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
   
   while(1)
   {		
-		//PRINTF_P(PSTR("\r\nThread W %d, timer: %d \r\n"), _monitor, period);
+		PRINTF_P(PSTR("\r\nThread W %u, timer: %u \r\n"), _monitor, period);
 		PT_WAIT_UNTIL(pt, monitor_running && timer_expired(timer));
 		
 		time_elapsed = (uint16_t)timer_elapsed(timer);	
@@ -325,9 +322,10 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 		}else
 		{
 			timer_set(timer, (uint32_t)period/10);
-		}
+		}				
 		
 		time_before = clock_time();
+		PRINTF_P(PSTR("\r\nThread W %u, time now: %u \r\n"), _monitor, time_before);
 		monitor_writer(_monitor);		
 		time_now = clock_time();		
 		time_elapsed = (uint16_t)(time_now-time_before);
@@ -358,11 +356,12 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
   {		
 	  	timer_set(timer, TIMER_READER_MS);
 		
-		//PRINTF_P(PSTR("\r\nThread R %d \r\n"), _monitor);
+		PRINTF_P(PSTR("\r\nThread R %u \r\n"), _monitor);
 		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));
 		
 		time_before = clock_time();		
 		
+		PRINTF_P(PSTR("\r\nThread R %u, time now: %u \r\n"), _monitor, time_before);
 		if(monitor_reader(_monitor) < MAX_NUM_OF_ENTRIES)
 		{			
 			time_now = clock_time();			
@@ -583,11 +582,11 @@ void main_monitor(void)
 		
 	if(simon_init(&(modem_driver)) != MODEM_OK)
 	{			
-		PRINTS_ERRO_P(PSTR("Simon init error\r\n"));
+		PRINTS_ERRO_P(PSTR("\r\nSimon init error\r\n"));
 		sleep_forever();
 	}
 
-	PRINTS_ERRO_P(PSTR("Simon init OK\r\n"));	
+	PRINTS_ERRO_P(PSTR("\r\nSimon init OK\r\n"));	
 		
 #if _WIN32	
 	PT_INIT(&monitor_input_pt);
@@ -614,7 +613,7 @@ void main_monitor(void)
 	
 
 #if COLDUINO || ARDUINO
-	DelayTask(5000);	
+	DelayTask(1000);	
 #endif
 
 	/* init monitors */
@@ -663,7 +662,7 @@ void main_monitor(void)
 #ifdef _WIN32	
 	fflush(stdout);
 #else
-	DelayTask(5000);
+	DelayTask(1000);
 #endif	
 
 	/* run forever */
@@ -674,7 +673,7 @@ void main_monitor(void)
 		{
 			monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
 			monitor_read_thread(&monitor_state[monitor_num].read_pt, monitor_num);
-			DelayTask(1000); /* wait a second */
+			//DelayTask(1000); /* wait a second */
 		}
 
 #ifdef _WIN32			

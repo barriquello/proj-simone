@@ -81,7 +81,7 @@ uint8_t null_modem_init(void)
 	PRINT_P(PSTR("Modem Init \r\n"));
 	null_modem_state = INIT;
 	
-	return TRUE;
+	return MODEM_OK;
 	
 }
 	
@@ -133,10 +133,10 @@ uint8_t null_modem_send(char * dados, uint16_t tam)
 	memcpy(null_modem_TxBuffer,dados,SIZEARRAY(null_modem_TxBuffer));				
 	if(null_modem_state == INIT)
 	{				
-		return TRUE;		
+		return MODEM_OK;		
 	}else
 	{
-		return FALSE;
+		return MODEM_ERR;
 	}	
 	
 }

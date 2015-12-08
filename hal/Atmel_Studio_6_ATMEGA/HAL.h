@@ -56,7 +56,11 @@ extern INT16U SPvalue;
 /// Defines the tick timer interrupt handler code (clear flag) of the choosen microcontroller
 #define TICKTIMER_INT_HANDLER
 #define TIMER_COUNTER   (INT32U)TCNT0
+#if !SIMULATION
 #define TIMER_MODULE    249
+#else
+#define TIMER_MODULE    2
+#endif
 
 
 //Stack Defines
