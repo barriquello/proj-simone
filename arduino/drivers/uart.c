@@ -315,7 +315,7 @@ void uart0_TxDisableISR(void)
 }
 
 
-INT8U putchar_uart0(INT8U caracter)
+char putchar_uart0(char caracter)
 {
 	_putchar_uart0(caracter);
 	
@@ -491,7 +491,7 @@ void uart1_TxDisableISR(void)
 	
 }
 
-INT8U putchar_uart1(INT8U caracter)
+char putchar_uart1(char caracter)
 {
 	_putchar_uart1(caracter);
 	
@@ -505,7 +505,7 @@ INT8U putchar_uart1(INT8U caracter)
 	return caracter;
 }
 
-void printf_uart1(CHAR8 *string)
+void printf_uart1(char *string)
 {
 
 	while (*string)
@@ -653,7 +653,7 @@ void uart2_TxDisableISR(void)
 }
 
 
-INT8U putchar_uart2(INT8U caracter)
+char putchar_uart2(char caracter)
 {
 	_putchar_uart2(caracter);
 	
@@ -667,7 +667,7 @@ INT8U putchar_uart2(INT8U caracter)
 	return caracter;
 }
 
-void printf_uart2(CHAR8 *string)
+void printf_uart2(char *string)
 {
 
 	while (*string)

@@ -637,8 +637,8 @@ void term_cmd_echo(char *param)
 	}
 #endif
 	
-	printSer(stdout, (CHAR8*)param);
-	printSer(stdout, "\r");
+	printSer(term_stdout, (CHAR8*)param);
+	printSer(term_stdout, "\r");
 		
 	if(stdin_q != NULL)
 	{
@@ -1104,10 +1104,10 @@ void term_cmd_monitor(char *param)
 			{
 				if(monitor_state[mon].state == IN_USE)
 				{
-					PRINTF_P(PSTR("M: %u, Cod: %u, Slave: %u, Sinc: %c \r\n"), mon,
+					PRINTF_P(PSTR("M: %u, Cod: %u, Slave: %u, Sinc: %u \r\n"), mon,
 							monitor_state[mon].codigo,
 							monitor_state[mon].slave_addr,
-							(monitor_state[mon].sinc==1?'S':'N'));
+							monitor_state[mon].sinc);
 					PRINTF_P(PSTR("Config: id = %u, period = %u, entry size = %u \r\n"),
 												monitor_state[mon].config_h.mon_id,
 												monitor_state[mon].config_h.time_interv,

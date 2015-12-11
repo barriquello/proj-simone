@@ -152,7 +152,7 @@ CONST uint16_t SIZEOF_TS_ID_STRING = sizeof(TS_ID_string);
 		
 /* static IR and HR list for TS device */
 static modbus_ts_input_register_list  	  TS_IRList;
-static modbus_ts_holding_register_list    TS_HRList;
+//static modbus_ts_holding_register_list    TS_HRList;
 
 #define MODBUS_SLAVE_TS_SIMULATION 	1
 #if MODBUS_SLAVE_TS_SIMULATION

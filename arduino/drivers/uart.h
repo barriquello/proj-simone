@@ -97,9 +97,9 @@ void SerialReset(INT8U Comm);
 #if (ENABLE_UART0 == TRUE)
 void uart0_acquire(void);
 void uart0_release(void);
-INT8U putchar_uart0(INT8U caracter);
-INT8U getchar_uart0(CHAR8* caracter, INT16U timeout);
-void printf_uart0(CHAR8 *string);
+char putchar_uart0(char caracter);
+INT8U getchar_uart0(char* caracter, INT16U timeout);
+void printf_uart0(char *string);
 void printP_uart0(char const *string);
 void uart0_tx(void);
 void uart0_rx(void);
@@ -118,8 +118,8 @@ void uart0_TxDisableISR(void);
 #if (ENABLE_UART1 == TRUE)
 void uart1_acquire(void);
 void uart1_release(void);
-INT8U putchar_uart1(INT8U caracter);
-void printf_uart1(CHAR8 *string);
+char putchar_uart1(char caracter);
+void printf_uart1(char *string);
 void printP_uart1(char const *string);
 void uart1_tx(void);
 void uart1_rx(void);
@@ -138,8 +138,8 @@ void uart1_TxDisableISR(void);
 #if (ENABLE_UART2 == TRUE)
 void uart2_acquire(void);
 void uart2_release(void);
-INT8U putchar_uart2(INT8U caracter);
-void printf_uart2(CHAR8 *string);
+char putchar_uart2(char caracter);
+void printf_uart2(char *string);
 void printP_uart2(char const *string);
 void uart2_tx(void);
 void uart2_rx(void);

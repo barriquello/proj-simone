@@ -86,6 +86,8 @@ void System_Time(void)
 			OSUpdateUptime();
 			OSUpdateCalendar();
 			
+			led_onboard_toggle();
+			
 			segundos++;
 			if (segundos == 3600)
 			{

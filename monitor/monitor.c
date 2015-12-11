@@ -311,13 +311,13 @@ uint8_t monitor_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 
 #define SERVER_TIME 1
 #if SERVER_TIME
-	struct tm t;
+	struct tm serv_time;
 
-	if(simon_get_time(&t) == MODEM_ERR)
+	if(simon_get_time(&serv_time) == MODEM_ERR)
 	{
 		return MODEM_ERR;
 	}
-	time_now = mktime(&t);
+	time_now = mktime(&serv_time);
 #else
 	time_now = time(NULL);
 #endif
@@ -325,6 +325,7 @@ uint8_t monitor_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 	time_now = time_now - time_elapsed_s;
 	(*timestamp) = *((struct tm *)localtime(&(time_t){time_now}));
 	
+	PRINTS_P(PSTR("\r\nget time OK\r\n"));
 	return MODEM_OK;
 }
 
@@ -349,6 +350,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 		{
 			if(++retries > 3) return;
 			DelayTask(100);
+			PRINTF_P(PSTR("\r\n Mon %d will be synched \r\n"), monitor_num );
 			ret = monitor_gettimestamp(&ts, time_elapsed_s);
 		}while(ret == MODEM_ERR);
 
@@ -360,7 +362,9 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 		h.h2.sec = (uint8_t)ts.tm_sec;
 		h.h2.synched = 1;
 
-		monitor_state[monitor_num].sinc = 1;
+		monitor_state[monitor_num].sinc = 1;	
+		
+		PRINTF_P(PSTR("\r\n Mon %d is synched \r\n"), monitor_num );
 
 #if 0
 #if _WIN32
@@ -824,7 +828,7 @@ void monitor_writer(uint8_t monitor_num)
 
 #else	
 	
-	PRINTF_P(PSTR("Slave %d reading\r\n"), monitor_state[monitor_num].slave_addr);
+	//PRINTF_P(PSTR("Slave %d reading\r\n"), monitor_state[monitor_num].slave_addr);
 		
 	/* read data */
 	if(monitor_state[monitor_num].read_data(monitor_state[monitor_num].slave_addr,(uint8_t*)monitor_data_buffer,(uint8_t)monitor_state[monitor_num].config_h.entry_size) == 0)

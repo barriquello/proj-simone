@@ -136,8 +136,8 @@ static void wait_modem_get_reply(uint16_t time)
 INT8U is_modem_ok(void)
 {
 	INT8U ok = FALSE;
-	modem_acquire();
-		try_again:
+	modem_acquire();	
+		PRINTS_PP(modem_init_cmd[AT]);	
 		modem_printP(modem_init_cmd[AT]);
 		DelayTask(10);
 		MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
@@ -150,10 +150,8 @@ INT8U is_modem_ok(void)
 			{
 				DelayTask(200);
 				OSCleanQueue(MODEM_QUEUE);
-				goto try_again;
 			}
 		}
-
 	modem_release();
 	return ok;
 }
@@ -174,7 +172,7 @@ uint8_t is_modem_ok_retry(uint8_t retries, uint16_t timeout)
 uint8_t gc864_modem_init(void)
 {
 	
-	PRINT_P(PSTR("Modem Init \r\n"));
+	PRINTS_P(PSTR("Modem Init \r\n"));
 	
 	if(modem_state == SETUP)
 	{
@@ -190,7 +188,7 @@ uint8_t gc864_modem_init(void)
 		return MODEM_ERR;
 	}
 
-    PRINT_P(PSTR("Modem setup\r\n"));
+    PRINTS_P(PSTR("Modem setup\r\n"));
 	
 	modem_acquire();
 	
@@ -257,7 +255,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 
 	*(dados+tam-1) = '\0'; // null terminate
 
-	if(mon_verbosity > 2) PRINT_P(PSTR("Modem Send: \r\n"));
+	if(mon_verbosity > 2) PRINTS_P(PSTR("Modem Send: \r\n"));
 
 	/* Flush queue first */
 	OSCleanQueue(MODEM_QUEUE);
@@ -267,7 +265,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 	{
 		if(gc864_modem_init() == MODEM_ERR)
 		{
-			if(mon_verbosity > 2) PRINT_P(PSTR("Modem Init fail \r\n"));
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem Init fail \r\n"));
 			goto exit;
 		}
 	}
@@ -275,15 +273,15 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 	/* check modem init */
 	if(modem_state == INIT)
 	{
-		if(is_modem_ok_retry(3, 500) == FALSE)
+		if(is_modem_ok_retry(5, 10) == FALSE)
 		{
-			if(mon_verbosity > 2) PRINT_P(PSTR("Modem GPRS is busy \r\n"));
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS is busy \r\n"));
 			goto exit; /* retry later */
 		}
 
 		if(Check_Connect_PPP(MAX_RETRIES) == FALSE)
 		{
-			if(mon_verbosity > 2) PRINT_P(PSTR("Modem GPRS connection fail \r\n"));
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS connection fail \r\n"));
 			goto exit;
 		}
 	}
@@ -317,7 +315,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 		}
     }while(++timeout < 20);
 
-    if(mon_verbosity > 2) PRINT_P(PSTR("\r\nConnect fail\r\n"));
+    if(mon_verbosity > 2) PRINTS_P(PSTR("\r\nConnect fail\r\n"));
 
     goto exit;
 
@@ -344,11 +342,11 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 
 		if(send_ok == 1)
 		{
-			if(mon_verbosity > 2) PRINT("\r\nsend ok\r\n");
+			if(mon_verbosity > 2) PRINTS_P(PSTR("\r\nsend ok\r\n"));
 			return MODEM_OK;
 		}else
 		{
-			if(mon_verbosity > 2) PRINT_P(PSTR("\r\nsend fail\r\n"));
+			if(mon_verbosity > 2) PRINTS_P(PSTR("\r\nsend fail\r\n"));
 		}
 
 	exit:

@@ -14,6 +14,7 @@ extern uint8_t mon_verbosity;
 #define PRINTF_P(...)		print_P(NULL, __VA_ARGS__);
 #define PRINTF_PP(s,...)	print_P(NULL,(PGM_P)pgm_read_word(&(s)), __VA_ARGS__);
 #define PRINTS_P(s)			do{printf_terminal_P(s); }while(0);
+#define PRINTS_PP(s)		do{printf_terminal_P((PGM_P)pgm_read_word(&(s))); }while(0);
 #define PRINTC(c)			do{putchar_terminal(c);}while(0);
 #define DPRINTS_P(s)		prints_P("debug.txt", s);
 #define PRINT_ERRO(...)		print_R("erro.txt",__VA_ARGS__);

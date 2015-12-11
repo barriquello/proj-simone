@@ -84,7 +84,7 @@ extern FIL      file_obj;
 #endif
 
 //Mensagens padrão da API do SD
-#if COLDUINO || ARDUINO
+#if (COLDUINO || ARDUINO) && 0
 extern CONST CHAR8 SD_API_CARD[];
 extern CONST CHAR8 SD_API_FILE_NOT_FOUND[];
 extern CONST CHAR8 SD_API_FILE_INVALID[];
@@ -96,7 +96,7 @@ extern CONST CHAR8 SD_API_CARD_ERROR[];
 
 
 /******** COMANDS USED IN THE APPLICATION *************/
-typedef enum
+enum  SD_STATE
 {
  SD_FILE_RENAMED,
  SD_FILE_DELETED, 
@@ -120,7 +120,7 @@ typedef enum
  SD_FAT_ERROR,
  VERBOSE_ON,
  VERBOSE_OFF
-} SD_STATE;
+};
 
 enum
 {

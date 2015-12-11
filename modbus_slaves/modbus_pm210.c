@@ -205,8 +205,8 @@ CONST uint16_t SIZEOF_ID_STRING = sizeof(PM210_ID_string);
 
 /* static IR and HR list for PM210 device */
 static modbus_pm210_input_register_list1  PM210_IRList1;
-static modbus_pm210_input_register_list2  PM210_IRList2;
-static modbus_pm210_holding_register_list PM210_HRList;
+//static modbus_pm210_input_register_list2  PM210_IRList2;
+//static modbus_pm210_holding_register_list PM210_HRList;
 
 #define MODBUS_SLAVE_PM210_SIMULATION 	0
 #if MODBUS_SLAVE_PM210_SIMULATION

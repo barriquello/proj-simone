@@ -255,7 +255,7 @@ INT8U OSSchedule(void)
   #include "terminal.h"
 	#if ARDUINO
 	  do{
-		  char *p = ContextTask[TaskSelect].StackInit;
+		  char *p = (char*)ContextTask[TaskSelect].StackInit;
 		  if(*++p != 'T') {
 			  printf_terminal_P(PSTR("Stack overflow!\r\n"));
 			  if(*++p != 'S') {
@@ -268,7 +268,7 @@ INT8U OSSchedule(void)
 	  }while(0);
 	#elif COLUINO
 	  do{
-	 		  char *p = ContextTask[TaskSelect].StackInit;
+	 		  char *p = (char*)ContextTask[TaskSelect].StackInit;
 	 		  p-=4;
 	 		  if(*++p != 'T') {
 	 			  printf_terminal_P(PSTR("Stack overflow!\r\n"));

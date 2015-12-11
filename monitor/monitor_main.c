@@ -131,7 +131,8 @@ static uint8_t 	monitores_em_uso = 0;
 monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 monitor_config_ok_t config_check;
 
-uint8_t mon_verbosity = 1;
+#define VERBOSE_INIT_VALUE 5
+uint8_t mon_verbosity = VERBOSE_INIT_VALUE;
 
 #define TICKS2MSEC(x)	(x)
 
@@ -310,7 +311,7 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
   
   while(1)
   {		
-		PRINTF_P(PSTR("\r\nThread W %u, timer: %u \r\n"), _monitor, period);
+		//PRINTF_P(PSTR("\r\nThread W %u, timer: %u \r\n"), _monitor, period);
 		PT_WAIT_UNTIL(pt, monitor_running && timer_expired(timer));
 		
 		time_elapsed = (uint16_t)timer_elapsed(timer);	
@@ -325,7 +326,8 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 		}				
 		
 		time_before = clock_time();
-		PRINTF_P(PSTR("\r\nThread W %u, time now: %u \r\n"), _monitor, time_before);
+		//PRINTF_P(PSTR("\r\nThread W %u, time now: %u \r\n"), _monitor, time_before);
+		
 		monitor_writer(_monitor);		
 		time_now = clock_time();		
 		time_elapsed = (uint16_t)(time_now-time_before);
@@ -356,12 +358,12 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
   {		
 	  	timer_set(timer, TIMER_READER_MS);
 		
-		PRINTF_P(PSTR("\r\nThread R %u \r\n"), _monitor);
+		//PRINTF_P(PSTR("\r\nThread R %u \r\n"), _monitor);
 		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));
 		
 		time_before = clock_time();		
 		
-		PRINTF_P(PSTR("\r\nThread R %u, time now: %u \r\n"), _monitor, time_before);
+		//PRINTF_P(PSTR("\r\nThread R %u, time now: %u \r\n"), _monitor, time_before);
 		if(monitor_reader(_monitor) < MAX_NUM_OF_ENTRIES)
 		{			
 			time_now = clock_time();			
@@ -644,7 +646,7 @@ void main_monitor(void)
 		{
 			while(1);
 		}
-		PRINT_ERRO_PP(monitor_error_msg[2], (uint8_t)(monitor_num & 0xFF)); PRINTS_ERRO(PSTR(" started\r\n"));
+		PRINT_ERRO_PP(monitor_error_msg[2], (uint8_t)(monitor_num & 0xFF)); PRINTS_ERRO_P(PSTR(" started\r\n"));
 		monitores_em_uso++;
 		
 		/* Inicializa as threads deste monitor */

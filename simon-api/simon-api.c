@@ -144,12 +144,13 @@ uint8_t simon_get_time(struct tm * t)
 			/* set time */
 			if(get_server_time(server_reply, t) == TRUE)
 			{
-				ret = MODEM_OK;
+				ret = MODEM_OK;				
+				return MODEM_OK;
 			}
 		}
 	}while(recv_size);
 	
-	return MODEM_OK;
+	return ret;
 }
 
 uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
@@ -226,7 +227,7 @@ uint8_t get_server_time(char* _server_reply, struct tm *ts)
 	char *token;
 	int k = 0;
 	char mon[4];
-	struct tm t;
+	struct tm server_time;
 	char delim[2] = " ";
 	
 	ret = strstr(_server_reply, "Date:");
@@ -242,34 +243,36 @@ uint8_t get_server_time(char* _server_reply, struct tm *ts)
 		case 0:
 		case 1:
 			break;
-		case 2: if (1 != sscanf(token,"%d", &t.tm_mday)){;} // day
+		case 2: if (1 != sscanf(token,"%d", &server_time.tm_mday)){;} // day
 			break;
 		case 3:
 			if (1 != sscanf(token,"%s",(char*) mon)){;} // month
-			t.tm_mon = 0;
-			while (strcmp (_months_abbrev[t.tm_mon],mon) != 0)
+			server_time.tm_mon = 0;
+			while (strcmp (_months_abbrev[server_time.tm_mon],mon) != 0)
 			{
-				++t.tm_mon;
+				++server_time.tm_mon;
 			}
 			//t.tm_mon--;
 			break;
 		case 4:
-			if (1 != sscanf(token,"%d", &t.tm_year)){;}
-			t.tm_year -= 1900;
+			if (1 != sscanf(token,"%d", &server_time.tm_year)){;}
+			server_time.tm_year -= 1900;
 			break;
 		case 5:
-			 if (3 != sscanf(token,"%d:%d:%d", &t.tm_hour, &t.tm_min, &t.tm_sec)){;}
+			 if (3 != sscanf(token,"%d:%d:%d", &server_time.tm_hour, &server_time.tm_min, &server_time.tm_sec)){;}
 			break;
 		default:
 			break;
 		}
-		PRINTF( " %s\n", token );
+		PRINTF( " %s", token );
 		token = strtok(NULL, " ");
 	}
 
-	if (mktime(&t) < 0) {return FALSE; }
+	PRINTF("\r\n");
+
+	//if (mktime(&t) < 0) {return FALSE; }
 	
-	(*ts) = t;	
+	(*ts) = server_time;	
 	return TRUE; 
 }
 
