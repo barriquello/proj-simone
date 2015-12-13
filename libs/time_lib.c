@@ -83,8 +83,8 @@ STATIC struct tm *gmtime_r(const time_t *timer, struct tm *tmbuf)
   tmbuf->tm_year = year - YEAR0;
   tmbuf->tm_yday = (int)dayno;
   tmbuf->tm_mon = 0;
-  while (dayno >= (uint32_t) _ytab[LEAPYEAR(year)][tmbuf->tm_mon]) {
-    dayno -= _ytab[LEAPYEAR(year)][tmbuf->tm_mon];
+  while (dayno >= (uint32_t) PGM_READ_BYTE(_ytab[LEAPYEAR(year)][tmbuf->tm_mon])) {
+    dayno -= PGM_READ_BYTE(_ytab[LEAPYEAR(year)][tmbuf->tm_mon]);
     tmbuf->tm_mon++;
   }
   tmbuf->tm_mday = (int)(dayno + 1);
@@ -153,10 +153,10 @@ time_t mktime(struct tm *tmbuf)
       tmbuf->tm_year--;
       tmbuf->tm_mon = 11;
     }
-    day += _ytab[LEAPYEAR(YEAR0 + tmbuf->tm_year)][tmbuf->tm_mon];
+    day += PGM_READ_BYTE(_ytab[LEAPYEAR(YEAR0 + tmbuf->tm_year)][tmbuf->tm_mon]);
   }
-  while (day >= _ytab[LEAPYEAR(YEAR0 + tmbuf->tm_year)][tmbuf->tm_mon]) {
-    day -= _ytab[LEAPYEAR(YEAR0 + tmbuf->tm_year)][tmbuf->tm_mon];
+  while (day >= PGM_READ_BYTE(_ytab[LEAPYEAR(YEAR0 + tmbuf->tm_year)][tmbuf->tm_mon])) {
+    day -= PGM_READ_BYTE(_ytab[LEAPYEAR(YEAR0 + tmbuf->tm_year)][tmbuf->tm_mon]);
     if (++(tmbuf->tm_mon) == 12) {
       tmbuf->tm_mon = 0;
       tmbuf->tm_year++;
@@ -185,7 +185,7 @@ time_t mktime(struct tm *tmbuf)
 
   yday = month = 0;
   while (month < tmbuf->tm_mon) {
-    yday += _ytab[LEAPYEAR(tm_year)][month];
+    yday += PGM_READ_BYTE(_ytab[LEAPYEAR(tm_year)][month]);
     month++;
   }
   yday += (tmbuf->tm_mday - 1);
@@ -314,7 +314,8 @@ CONST char * CONST _months[] PROGMEM= {
 	DECEMBER_str,
 };
 
-CONST char * CONST _months_abbrev[] PROGMEM= {
+CONST char * CONST _months_abbrev[] = 
+{
   "Jan", "Feb", "Mar",
   "Apr", "May", "Jun",
   "Jul", "Aug", "Sep",

@@ -106,7 +106,7 @@ void main_app(void)
 	{
 		sleep_forever();
 	}
-
+	
 	/* Init BRTOS system */
 	BRTOS_Init();	
 	

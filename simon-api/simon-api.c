@@ -248,7 +248,7 @@ uint8_t get_server_time(char* _server_reply, struct tm *ts)
 		case 3:
 			if (1 != sscanf(token,"%s",(char*) mon)){;} // month
 			server_time.tm_mon = 0;
-			while (strcmp (_months_abbrev[server_time.tm_mon],mon) != 0)
+			while (strcmp(_months_abbrev[server_time.tm_mon],mon) != 0)
 			{
 				++server_time.tm_mon;
 			}

@@ -541,12 +541,18 @@ void main_monitor(void)
 
 	uint8_t monitor_num = 0;
 	
-#define TESTES 0	
-#if TESTES		
+	#define TESTES 1
+	#if TESTES
+	#include "time_lib.h"
+	#include "simon-api.h"
 	struct tm ts;
+	struct tm timestamp;
+	time_t time_now;
 	char server_reply_test[]="Date: Wed, 02 Sep 2015 19:01:30 GMT";
 	get_server_time(server_reply_test, &ts);
-#endif
+	time_now = mktime(&ts);
+	timestamp = *((struct tm *)localtime(&(time_t){time_now}));
+	#endif
 	
 #ifdef _WIN32
 	struct timeb start, end;

@@ -527,6 +527,10 @@
       <SubType>compile</SubType>
       <Link>drivers\uart.h</Link>
     </Compile>
+    <Compile Include="..\includes\AppConfig.h">
+      <SubType>compile</SubType>
+      <Link>includes\AppConfig.h</Link>
+    </Compile>
     <Compile Include="..\includes\drivers.h">
       <SubType>compile</SubType>
       <Link>includes\drivers.h</Link>
