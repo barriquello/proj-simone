@@ -546,7 +546,7 @@ void main_monitor(void)
 	#include "time_lib.h"
 	#include "simon-api.h"
 	struct tm ts;
-	struct tm timestamp;
+	static struct tm timestamp;
 	time_t time_now;
 	char server_reply_test[]="Date: Wed, 02 Sep 2015 19:01:30 GMT";
 	get_server_time(server_reply_test, &ts);
