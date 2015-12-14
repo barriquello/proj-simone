@@ -49,8 +49,8 @@
 uint8_t get_server_time(char* _server_reply, struct tm *ts);
 uint8_t get_server_confirmation(char* _server_reply);
 
-static input in = NULL;
-static output out = NULL;
+static input in_modem = NULL;
+static output out_modem = NULL;
 
 #define DEBUG_SIMON		1
 #undef PRINTS_ENABLED
@@ -80,8 +80,8 @@ uint8_t simon_init(const modem_driver_t* _modem)
 {
 	if(_modem == NULL) return MODEM_ERR;
 	modem = (modem_driver_t*)_modem;	
-	in = modem->receive;
-	out = modem->send;
+	in_modem = modem->receive;
+	out_modem = modem->send;
 	simon_set_apikey(API_KEY);		/* set a default key */
 	simon_set_hostname(SERVER_NAME); /* set a default server */
 	modem->sethost(hostname);
@@ -112,18 +112,18 @@ uint8_t simon_get_time(struct tm * t)
 {
 	uint8_t ret = MODEM_ERR;
 	
-	SNPRINTF(server_reply, SIZEARRAY(server_reply),
-		     "GET /time/local&apikey=%s "
-		     "HTTP/1.1\r\nHost: %s\r\n\r\n\r\n", (char*)simon_apikey, hostname);
+	SNPRINTF_P(server_reply, SIZEARRAY(server_reply),
+		     PSTR("GET /time/local&apikey=%s HTTP/1.1\r\nHost: %s\r\n\r\n\r\n"), (char*)simon_apikey, hostname);
 	
-	if(mon_verbosity > 2)
-		PRINTF(server_reply);
+	server_reply[SIZEARRAY(server_reply)-1] = '\0';
 	
-	if(out == NULL || in == NULL)
+	if(mon_verbosity > 2)	PRINTF(server_reply);
+	
+	if(out_modem == NULL || in_modem == NULL)
 	{
 		return MODEM_ERR;
 	}
-	if(out(server_reply , (uint16_t)strlen(server_reply)) != MODEM_OK)
+	if(out_modem(server_reply , (uint16_t)strlen(server_reply)) != MODEM_OK)
 	{
 		return MODEM_ERR;
 	}
@@ -131,7 +131,7 @@ uint8_t simon_get_time(struct tm * t)
 	do
 	{
 		recv_size = SIZEARRAY(server_reply);
-		if(in(server_reply, (uint16_t*) &recv_size) != MODEM_OK)
+		if(in_modem(server_reply, (uint16_t*) &recv_size) != MODEM_OK)
 		{
 			break;
 		}
@@ -153,36 +153,28 @@ uint8_t simon_get_time(struct tm * t)
 	return ret;
 }
 
-uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
+uint8_t simon_send_data(uint8_t *buf, uint16_t length, uint8_t mon_id, time_t time)
 {
 
 	uint8_t ret = MODEM_ERR;
 	
-	if(len > SIZEARRAY(server_reply)) return MODEM_ERR;
+	if(length > SIZEARRAY(server_reply))      return MODEM_ERR;
+	if(out_modem == NULL || in_modem == NULL) return MODEM_ERR;
 	
 	/// Form request
-	SNPRINTF(server_reply, SIZEARRAY(server_reply),
-			 "GET /monitor/set.json?monitorid=%d&time=%d&data=%s&apikey=%s "
-		     "HTTP/1.1\r\n"
-		     "Host: %s\r\n"
-		     "\r\n\r\n", mon_id, time, buf, (char*)simon_apikey, hostname);
-
-	if(mon_verbosity > 2)
-	{
-		PRINTF(server_reply);
-	}
+	SNPRINTF_P(server_reply, SIZEARRAY(server_reply)-1,
+			 PSTR("GET /monitor/set.json?monitorid=%u&time=%lu&data=%s&apikey=%s HTTP/1.1\r\nHost: %s\r\n\r\n\r\n"), 
+			 mon_id, time, buf, (char*)simon_apikey, (char*)hostname);
+	
+	server_reply[SIZEARRAY(server_reply)-1] = '\0';
+	if(mon_verbosity > 2 && is_terminal_idle()) PRINTF(server_reply);
 
 #define SIMON_SKIP_SEND 0
 #if SIMON_SKIP_SEND
 	return MODEM_OK;
 #endif
-	
-	if(out == NULL || in == NULL)
-	{
-		return MODEM_ERR;
-	}
 
-	if(out(server_reply, (uint16_t)strlen(server_reply)) != MODEM_OK)
+	if(out_modem(server_reply, (uint16_t)strlen(server_reply)) != MODEM_OK)
 	{
 		return MODEM_ERR;
 	}
@@ -190,7 +182,7 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time)
 	do
 	{
 		recv_size = SIZEARRAY(server_reply);
-		if(in(server_reply, (uint16_t*) &recv_size) != MODEM_OK)
+		if(in_modem(server_reply, (uint16_t*) &recv_size) != MODEM_OK)
 		{
 			break;
 		}

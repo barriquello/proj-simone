@@ -96,7 +96,7 @@ uint16_t ModbusCrc16(const uint8_t * const _pBuff, uint32_t _len)
 }
 
 /* Fast CRC */
-static uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
+uint16_t crc16(uint8_t *buffer, uint16_t buffer_length)
 {
         uint8_t crc_hi = 0xFF; /* high CRC byte initialized */
         uint8_t crc_lo = 0xFF; /* low CRC byte initialized */

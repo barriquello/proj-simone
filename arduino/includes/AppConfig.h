@@ -6,7 +6,7 @@
 /////                                                     /////
 ///////////////////////////////////////////////////////////////
 
-#define SIMULATION			1
+#define SIMULATION			0
 #define SD_PRESENTE         1 
 #define RTC_PRESENTE  		0
 #define MODEM_PRESENTE		1
@@ -51,8 +51,8 @@
 
 #elif ARDUINO
 #define TASK_STACKSIZE_SYSTEM_TIME		(64)
-#define TASK_STACKSIZE_MONITORS			(1024 + 512)
-#define TASK_STACKSIZE_TERMINAL			(384)
+#define TASK_STACKSIZE_MONITORS			(1024)
+#define TASK_STACKSIZE_TERMINAL			(512)
 
 #define TASK_PRIORITY_SYSTEM_TIME		7
 #define TASK_PRIORITY_MONITORS			1
@@ -83,7 +83,7 @@
 #define UART2_MUTEX 		0
 #define UART0_MUTEX_PRIO 	4
 #define UART1_MUTEX_PRIO 	5
-#define UART2_MUTEX_PRIO 	6
+#define UART2_MUTEX_PRIO 	3
 #endif
 
 #include "BRTOSConfig.h"

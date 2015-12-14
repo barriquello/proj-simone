@@ -121,7 +121,7 @@ static INT8U modem_get_reply(char *buf, uint16_t max_len)
 static void modem_get_reply_print(char *buf, uint16_t max_len)
 {
 	modem_get_reply(buf, max_len);
-	if(mon_verbosity > 1) PRINT_BUF(buf);
+	if(mon_verbosity > 4 && is_terminal_idle()) PRINT_BUF(buf);
 }
 
 static void wait_modem_get_reply(uint16_t time)
@@ -137,7 +137,7 @@ INT8U is_modem_ok(void)
 {
 	INT8U ok = FALSE;
 	modem_acquire();	
-		PRINTS_PP(modem_init_cmd[AT]);	
+		if(mon_verbosity > 4 && is_terminal_idle()) PRINTS_PP(modem_init_cmd[AT]);	
 		modem_printP(modem_init_cmd[AT]);
 		DelayTask(10);
 		MODEM_GET_REPLY_PRINT(modem_BufferTxRx);

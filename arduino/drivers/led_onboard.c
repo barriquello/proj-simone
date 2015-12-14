@@ -32,16 +32,23 @@
 #include "led_onboard.h"
 #include "utils.h"
 
-#define LED_PORT  0
+#if ARDUINO
+#define LED_PORT		1
+#define LED_PORT_DIR	DDRB	
+#define LED_PORT_DATA	PORTB
+#define LED_PIN			7
+#else
+#define LED_PORT		0
 #define LED_PORT_DIR    
 #define LED_PORT_DATA
 #define LED_PIN			
+#endif
 
 void led_onboard_init(void)
 {
 #if LED_PORT
 	BITCLEAR(LED_PORT_DATA,LED_PIN);
-	BITSET(PTBDD,LED_PIN);
+	BITSET(LED_PORT_DIR,LED_PIN);
 #endif
 }
 

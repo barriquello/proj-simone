@@ -11,7 +11,7 @@ void print_R(char* out, const char *format, ...)
 {
 	
 	LOG_FILETYPE stderr_f;
-	char buffer[32];
+	char buffer[64];
 	
 	va_list argptr;
 	va_start(argptr, format);
@@ -42,7 +42,7 @@ void print_P(char* out, const char *format, ...)
 {
 	
 	LOG_FILETYPE stderr_f;
-	char buffer[32];
+	char buffer[64];
 	
 	va_list argptr;
 	va_start(argptr, format);

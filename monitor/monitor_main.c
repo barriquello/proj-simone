@@ -126,12 +126,12 @@ T20150101073300S ->
 #include "monitor.h"
 #include "simon-api.h"
 
-static uint8_t 	num_monitores;
+static int8_t 	num_monitores;
 static uint8_t 	monitores_em_uso = 0;
 monitor_state_t monitor_state[MAX_NUM_OF_MONITORES];
 monitor_config_ok_t config_check;
 
-#define VERBOSE_INIT_VALUE 5
+#define VERBOSE_INIT_VALUE			0
 uint8_t mon_verbosity = VERBOSE_INIT_VALUE;
 
 #define TICKS2MSEC(x)	(x)
@@ -311,7 +311,7 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
   
   while(1)
   {		
-		//PRINTF_P(PSTR("\r\nThread W %u, timer: %u \r\n"), _monitor, period);
+		if(mon_verbosity > 4 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread W %u, timer: %u \r\n"), _monitor, period);
 		PT_WAIT_UNTIL(pt, monitor_running && timer_expired(timer));
 		
 		time_elapsed = (uint16_t)timer_elapsed(timer);	
@@ -326,7 +326,7 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 		}				
 		
 		time_before = clock_time();
-		//PRINTF_P(PSTR("\r\nThread W %u, time now: %u \r\n"), _monitor, time_before);
+		if(mon_verbosity > 4 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread W %u, time now: %u \r\n"), _monitor, time_before);
 		
 		monitor_writer(_monitor);		
 		time_now = clock_time();		
@@ -358,12 +358,12 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
   {		
 	  	timer_set(timer, TIMER_READER_MS);
 		
-		//PRINTF_P(PSTR("\r\nThread R %u \r\n"), _monitor);
+		if(mon_verbosity > 4 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread R %u \r\n"), _monitor);
 		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));
 		
 		time_before = clock_time();		
 		
-		//PRINTF_P(PSTR("\r\nThread R %u, time now: %u \r\n"), _monitor, time_before);
+		if(mon_verbosity > 4 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread R %u, time now: %u \r\n"), _monitor, time_before);
 		if(monitor_reader(_monitor) < MAX_NUM_OF_ENTRIES)
 		{			
 			time_now = clock_time();			
@@ -539,9 +539,9 @@ extern CONST modbus_slave_t * modbus_slaves_all[];
 void main_monitor(void)
 {
 
-	uint8_t monitor_num = 0;
+	int8_t monitor_num = 0;
 	
-	#define TESTES 1
+	#define TESTES 0
 	#if TESTES
 	#include "time_lib.h"
 	#include "simon-api.h"
@@ -648,10 +648,6 @@ void main_monitor(void)
 			PRINTS_ERRO_P(PSTR("modbus slave nao suportado \r\n"));		
 			sleep_forever();
 		}		
-		if(monitor_num > MAX_NUM_OF_MONITORES)
-		{
-			while(1);
-		}
 		PRINT_ERRO_PP(monitor_error_msg[2], (uint8_t)(monitor_num & 0xFF)); PRINTS_ERRO_P(PSTR(" started\r\n"));
 		monitores_em_uso++;
 		
@@ -673,6 +669,7 @@ void main_monitor(void)
 	DelayTask(1000);
 #endif	
 
+	if(mon_verbosity > 3)  PRINTF_P(PSTR("\r\nMonitor threads running with %u monitors... \r\n"), monitores_em_uso);	
 	/* run forever */
 	while(1)
 	{
@@ -681,7 +678,16 @@ void main_monitor(void)
 		{
 			monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
 			monitor_read_thread(&monitor_state[monitor_num].read_pt, monitor_num);
-			//DelayTask(1000); /* wait a second */
+		}
+		
+		#ifndef _WIN32
+			DelayTask(1000); // executa a cada 1000ms
+		#endif
+		
+		for (monitor_num = (monitores_em_uso-1); monitor_num >= 0; monitor_num--)
+		{
+			monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
+			monitor_read_thread(&monitor_state[monitor_num].read_pt, monitor_num);
 		}
 
 #ifdef _WIN32			

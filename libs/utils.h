@@ -35,10 +35,10 @@ void utils_tests(void);
 
 void reverse(char s[]);
 void IntToString(int n , char str[]);
-uint32_t StringToInteger(char p[]);
 char *ltoa(long N, char *str, int base);
 
 #if 0
+uint32_t StringToInteger(char p[]);
 // string.h
 int strlen(char str[]);
 void strcat(char dest[],  char src[]);

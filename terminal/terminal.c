@@ -460,7 +460,7 @@ void terminal_process(void)
 	  }
 	  
 	 terminal_release();
-	 DelayTask(6000);	  
+	 DelayTask(3000);	  
   }
 #endif
 

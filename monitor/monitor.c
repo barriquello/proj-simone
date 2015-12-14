@@ -323,9 +323,7 @@ uint8_t monitor_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 #endif
 
 	time_now = time_now - time_elapsed_s;
-	(*timestamp) = *((struct tm *)localtime(&(time_t){time_now}));
-	
-	PRINTS_P(PSTR("\r\nget time OK\r\n"));
+	(*timestamp) = *((struct tm *)localtime(&(time_t){time_now}));	
 	return MODEM_OK;
 }
 
@@ -338,6 +336,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 	char new_filename[8+5]={"00000000.txt"};
 	int ret;
 	uint16_t retries = 0;
+	LOG_FILETYPE fp;
 
 	if(!monitor_getheader((const char*)filename, &h)) return;
 
@@ -362,9 +361,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 		h.h2.sec = (uint8_t)ts.tm_sec;
 		h.h2.synched = 1;
 
-		monitor_state[monitor_num].sinc = 1;	
-		
-		PRINTF_P(PSTR("\r\n Mon %d is synched \r\n"), monitor_num );
+		monitor_state[monitor_num].sinc = 1;
 
 #if 0
 #if _WIN32
@@ -379,9 +376,11 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 #endif
 
 			monitor_setheader((const char*)filename, &h);
+			
+			PRINTF_P(PSTR("\r\n Mon %d is synched \r\n"), monitor_num );
 
 			/* rename file */
-			strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);
+			strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);	
 
 			if(is_terminal_idle() && mon_verbosity > 3)
 			{
@@ -422,7 +421,6 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 				strcpy(monitor_state[monitor_num].monitor_name_reading,new_filename);
 
 				/* update meta file */
-				LOG_FILETYPE fp;
 				if(monitor_openwrite(LOG_METAFILE,&fp))
 				{
 				   if(monitor_write(monitor_state[monitor_num].monitor_name_reading,&fp)){;}
@@ -521,11 +519,13 @@ static int monitor_entry_send(uint8_t mon_id, monitor_entry_t* entry, uint16_t l
 	uint16_t cnt = 0;
 	cnt = build_entry_to_send(data_vector,entry->values,len);
 
-#if 0	
-	PRINTF_P(PSTR("\r\n"));
-	PRINTF(data_vector);
-	PRINTF_P(PSTR("\r\n"));
-#endif	
+	if(mon_verbosity > 4 && is_terminal_idle())
+	{
+		PRINTF_P(PSTR("\r\n"));
+		PRINTF(data_vector);
+		PRINTF_P(PSTR("\r\n"));
+	}
+
 	
 #ifdef _WIN32	
 	fflush(stdout);
@@ -537,7 +537,13 @@ static int monitor_entry_send(uint8_t mon_id, monitor_entry_t* entry, uint16_t l
 		if(simon_send_data((uint8_t*)data_vector,cnt,mon_id,entry->ts) == MODEM_OK)
 		{
 			return TRUE;
+		}else
+		{			
+			//PRINTS_ERRO_P(PSTR("Erro: modem send failed \r\n"));
 		}
+	}else
+	{
+		PRINTS_ERRO_P(PSTR("Erro: building data vector\r\n"));
 	}
 
 	return FALSE;
@@ -548,7 +554,9 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 	uint16_t entry_size;
 	LOG_FILETYPE fp;
 	LOG_FILEPOS  pos;
-	struct tm ts;
+	struct tm ts;	
+	clock_t  time_init;	
+	uint8_t  send_ok = 0;
 
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 
@@ -558,7 +566,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 
 	entry_size = (h.h1.entry_size)*2 + 2; // x2 pois cada byte está com 2 char, +2 pois inclui \r\n
 
-	/* se o arquivo terminou !!! */
+	/* se o arquivo não terminou !!! */
 	if(h.last_idx < h.count)
 	{
 		ts.tm_year = h.h2.year - 1900;
@@ -588,9 +596,8 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   (void)monitor_close(&fp);
 
 			   /* try to send */
-			   clock_t  time_init = clock_time();
-			   
-			   uint32_t  send_ok = 0;
+			   time_init = clock_time();			   
+			   send_ok = 0;
 			   
 			   if(h.last_idx == 0)
 			   {
@@ -600,6 +607,8 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   
 			   monitor_state[monitor_num].read_entries++;
 
+			   if(mon_verbosity > 4 && is_terminal_idle())  PRINTF_P(PSTR("\r\nThread R %u, read file ok, will send now \r\n"), monitor_num);
+			   
 			   if(monitor_entry_send(monitor_num,entry,entry_size-2) == TRUE) // ignore \r\n
 			   {
 				   /* if ok */
@@ -615,7 +624,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 				   monitor_state[monitor_num].sent_entries++;
 				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
 				  
-				   if (mon_verbosity > 2)
+				   if (mon_verbosity > 2 && is_terminal_idle())
 				   {
 					   PRINTF_P(PSTR("Mon %d, entry: %d of %d, delay: %d - avg: %d"),
 							   monitor_num,
@@ -790,12 +799,12 @@ uint8_t monitor_init(uint8_t monitor_num)
 
 char* monitor_getfilename_to_write(uint8_t monitor_num)
 {
-	return monitor_state[monitor_num].monitor_name_writing;
+	return (char*)monitor_state[monitor_num].monitor_name_writing;
 }
 
 char* monitor_getfilename_to_read(uint8_t monitor_num)
 {
-	return monitor_state[monitor_num].monitor_name_reading;
+	return (char*)monitor_state[monitor_num].monitor_name_reading;
 }
 
 void monitor_writer(uint8_t monitor_num)
@@ -882,7 +891,7 @@ uint16_t monitor_reader(uint8_t monitor_num)
 	monitor_entry_t entry;
 	uint16_t nread;
 
-	char* fname = monitor_getfilename_to_read(monitor_num);
+	char* fname = (char *)monitor_getfilename_to_read(monitor_num);
 	
 	if(*fname == '\0') return 0;
 	
@@ -892,6 +901,8 @@ uint16_t monitor_reader(uint8_t monitor_num)
 	/* change to log dir */
 	monitor_chdir(monitor_state[monitor_num].monitor_dir_name);
 
+	if(mon_verbosity > 4 && is_terminal_idle())  PRINTF_P(PSTR("\r\nThread R %u, read file: %s \r\n"), monitor_num, (char*)fname);
+	
 	if((nread = monitor_readentry(monitor_num, fname, &entry)) != 0)
 	{
 #if 0		

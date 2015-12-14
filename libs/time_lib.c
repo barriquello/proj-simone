@@ -294,7 +294,7 @@ CONST char * CONST _days[] PROGMEM = {
 	SATURDAY_str
 };
 
-CONST char * CONST _days_abbrev[] PROGMEM= {
+CONST char * CONST _days_abbrev[] = {
   "Sun", "Mon", "Tue", "Wed", 
   "Thu", "Fri", "Sat"
 };
