@@ -313,11 +313,19 @@ uint8_t monitor_gettimestamp(struct tm * timestamp, uint32_t time_elapsed_s)
 #if SERVER_TIME
 	struct tm serv_time;
 
-	if(simon_get_time(&serv_time) == MODEM_ERR)
+    if(!is_simon_clock_synched())
 	{
-		return MODEM_ERR;
+		if(simon_get_time(&serv_time) == MODEM_ERR)
+		{
+			return MODEM_ERR;
+		}
+		time_now = mktime(&serv_time);
+		simon_clock_set(time_now);
+	}else
+	{		
+		time_now = simon_clock_get();
 	}
-	time_now = mktime(&serv_time);
+	
 #else
 	time_now = time(NULL);
 #endif

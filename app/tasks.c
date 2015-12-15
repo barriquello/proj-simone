@@ -37,6 +37,7 @@
 #endif
 
 #include "led_onboard.h"
+#include "simon-api.h"
 
 #if ARDUINO
 #define __RESET_WATCHDOG()	wdt_reset()
@@ -85,6 +86,9 @@ void System_Time(void)
 			/* update time and calendar */
 			OSUpdateUptime();
 			OSUpdateCalendar();
+			
+			/* update simon main clock - unix time */
+			simon_clock_update();
 			
 			led_onboard_toggle();
 			

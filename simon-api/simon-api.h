@@ -89,7 +89,10 @@ void simon_set_hostip(const char*);
 uint8_t simon_check_connection(void);
 
 
+void simon_clock_update(void);
+void simon_clock_set(time_t now);
+time_t simon_clock_get(void);
+uint8_t is_simon_clock_synched(void);
 uint8_t get_server_time(char* server_reply, struct tm *ts);
-
 
 #endif /* SIMON_API_H_ */

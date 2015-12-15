@@ -563,8 +563,13 @@ void byte2hex(char *ret, uint8_t c)
 
 void int2hex(char *ret, uint16_t c)
 {
-	byte2hex(ret,(uint8_t)(c>>8)&0xFF);
-	byte2hex(ret+2,(uint8_t)(c)&0xFF);
+	#if BIG_ENDIAN
+		byte2hex(ret,(uint8_t)(c>>8)&0xFF);
+		byte2hex(ret+2,(uint8_t)(c)&0xFF);
+	#else
+		byte2hex(ret,(uint8_t)(c)&0xFF);
+		byte2hex(ret+2,(uint8_t)(c>>8)&0xFF);
+	#endif
 }
 
 void u8tobcd(char *ret, uint8_t c)
@@ -591,5 +596,10 @@ uint8_t hex2byte(char c1, char c2)
 
 uint16_t byte2int(uint8_t c1, uint8_t c2)
 {
-	return (uint16_t)(c1*256 + c2);
+	#if BIG_ENDIAN
+		return (uint16_t)(c1*256 + c2);
+	#else
+		return (uint16_t)(c1 + c2*256);
+	#endif
+	
 }
