@@ -265,6 +265,7 @@ static char getchar_timeout(int timeout)
 volatile uint8_t monitor_running = 1;
 volatile uint8_t monitor_uploading = 1;
 volatile uint8_t monitor_is_connected = 1;
+volatile uint8_t monitor_is_idle = 0;
 
 CONST char config_inifile[] = "config.ini";
 
@@ -588,10 +589,10 @@ void main_monitor(void)
 	
 	extern const modem_driver_t modem_driver;
 		
-	if(simon_init(&(modem_driver)) != MODEM_OK)
+	while(simon_init(&(modem_driver)) != MODEM_OK)
 	{			
 		PRINTS_ERRO_P(PSTR("\r\nSimon init error\r\n"));
-		sleep_forever();
+		DelayTask(TICKS2MSEC(10000));
 	}
 
 	PRINTS_ERRO_P(PSTR("\r\nSimon init OK\r\n"));	
@@ -615,13 +616,11 @@ void main_monitor(void)
 	DPRINTS_P(PSTR("Config OK\r\n"));
 
 	terminal_acquire();	
-	PRINTS_P(PSTR("Config OK\r\n"));
+		PRINTS_P(PSTR("Config OK\r\n"));
 	terminal_release();	
 	
-	
-
 #if COLDUINO || ARDUINO
-	DelayTask(1000);	
+	DelayTask(TICKS2MSEC(1000));	
 #endif
 
 	/* init monitors */
@@ -666,30 +665,34 @@ void main_monitor(void)
 #ifdef _WIN32	
 	fflush(stdout);
 #else
-	DelayTask(1000);
+	DelayTask(TICKS2MSEC(1000));
 #endif	
 
 	if(mon_verbosity > 3)  PRINTF_P(PSTR("\r\nMonitor threads running with %u monitors... \r\n"), monitores_em_uso);	
+	
 	/* run forever */
 	while(1)
 	{
-
+		monitor_is_idle = 0;
 		for (monitor_num = 0; monitor_num < monitores_em_uso; monitor_num++)
 		{
 			monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
 			monitor_read_thread(&monitor_state[monitor_num].read_pt, monitor_num);
 		}
 		
+		monitor_is_idle = 1;
 		#ifndef _WIN32
-			DelayTask(1000); // executa a cada 1000ms
+			DelayTask(TICKS2MSEC(1000)); // executa a cada 1000ms
 		#endif
 		
+		monitor_is_idle = 0;
 		for (monitor_num = (monitores_em_uso-1); monitor_num >= 0; monitor_num--)
 		{
 			monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
 			monitor_read_thread(&monitor_state[monitor_num].read_pt, monitor_num);
 		}
-
+		monitor_is_idle = 1;
+		
 #ifdef _WIN32			
 		monitor_set_input(&monitor_input_pt);
 #endif
@@ -722,7 +725,7 @@ void main_monitor(void)
 #endif		
 		
 		#ifndef _WIN32
-			DelayTask(1000); // executa a cada 1000ms			
+			DelayTask(TICKS2MSEC(1000)); // executa a cada 1000ms			
 		#endif
 		
 	}

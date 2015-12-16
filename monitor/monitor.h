@@ -234,6 +234,8 @@ typedef struct
 	uint32_t written_entries;
 	uint32_t read_entries;
 	uint32_t sent_entries;
+	time_t last_timestamp;
+	time_t sinc_time;
 }monitor_state_t;
 
 typedef union

@@ -309,18 +309,31 @@ static uint8_t simon_clock_synched = 0;
 
 void simon_clock_update(void)
 {	
-	simon_clock++;
+	OS_SR_SAVE_VAR;
+	OSEnterCritical();
+		simon_clock++;
+	OSExitCritical();
 }
 
 void simon_clock_set(time_t now)
 {
-	simon_clock = now;
-	simon_clock_synched = 1;
+	OS_SR_SAVE_VAR;
+	OSEnterCritical();
+		simon_clock = now;
+		simon_clock_synched = 1;
+	OSExitCritical();
 }
 
 time_t simon_clock_get(void)
 {	
-	return simon_clock;
+	time_t clock_copy;
+	
+	OS_SR_SAVE_VAR;
+	OSEnterCritical();
+		clock_copy = simon_clock;
+	OSExitCritical();
+	
+	return clock_copy;
 }
 
 uint8_t is_simon_clock_synched(void)

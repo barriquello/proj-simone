@@ -93,10 +93,13 @@ static int monitor_rename(TCHAR *source, const TCHAR *dest)
 }
 #endif
 
-void monitor_createentry(char* buffer, uint16_t *dados, uint8_t len)
+void monitor_createentry(char* const ptr_buffer, uint16_t * const ptr_dados, uint8_t length)
 {
 
 	uint16_t dado = 0;
+	uint16_t * dados = ptr_dados;
+	char* buffer = ptr_buffer;
+	uint16_t len = length;	
 	do
 	{
 		dado=*dados;
@@ -343,7 +346,6 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 	struct tm ts;
 	char new_filename[8+5]={"00000000.txt"};
 	int ret;
-	uint16_t retries = 0;
 	LOG_FILETYPE fp;
 
 	if(!monitor_getheader((const char*)filename, &h)) return;
@@ -353,13 +355,13 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 	{
 		time_elapsed_s = (uint32_t)((h.h1.time_interv)*(h.count));
 		
-		do
+		
+		PRINTF_P(PSTR("\r\n Mon %d will be synched \r\n"), monitor_num );
+		if( monitor_gettimestamp(&ts, time_elapsed_s) == MODEM_ERR)
 		{
-			if(++retries > 3) return;
-			DelayTask(100);
-			PRINTF_P(PSTR("\r\n Mon %d will be synched \r\n"), monitor_num );
-			ret = monitor_gettimestamp(&ts, time_elapsed_s);
-		}while(ret == MODEM_ERR);
+			PRINTS_P(PSTR("\r\n Synch failed, will try again later \r\n"));
+			return;
+		}		
 
 		h.h2.year = (uint16_t)(ts.tm_year + 1900);
 		h.h2.mon = (uint8_t)(ts.tm_mon + 1);
@@ -370,11 +372,14 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 		h.h2.synched = 1;
 
 		monitor_state[monitor_num].sinc = 1;
+		monitor_state[monitor_num].sinc_time = simon_clock_get() - time_elapsed_s;
+		
 
 #if 0
 #if _WIN32
 			fflush(stdout);
 #endif
+
 			do
 			{
 				char timestamp[20];
@@ -541,13 +546,9 @@ static int monitor_entry_send(uint8_t mon_id, monitor_entry_t* entry, uint16_t l
 
 	if(cnt > 0)
 	{
-		/* corrigir monitor id */
 		if(simon_send_data((uint8_t*)data_vector,cnt,mon_id,entry->ts) == MODEM_OK)
 		{
 			return TRUE;
-		}else
-		{			
-			//PRINTS_ERRO_P(PSTR("Erro: modem send failed \r\n"));
 		}
 	}else
 	{
@@ -572,7 +573,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 
 	if (h.h2.synched == 0) return (MAX_NUM_OF_ENTRIES); /* file not synched */
 
-	entry_size = (h.h1.entry_size)*2 + 2; // x2 pois cada byte está com 2 char, +2 pois inclui \r\n
+	entry_size = (h.h1.entry_size)*2 + 2; // x2 pois cada byte está com 2 char, +2 pois inclui "\r\n"
 
 	/* se o arquivo não terminou !!! */
 	if(h.last_idx < h.count)
@@ -615,7 +616,11 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   
 			   monitor_state[monitor_num].read_entries++;
 
-			   if(mon_verbosity > 4 && is_terminal_idle())  PRINTF_P(PSTR("\r\nThread R %u, read file ok, will send now \r\n"), monitor_num);
+			   if(mon_verbosity > 4 && is_terminal_idle())  
+			   { 
+				   PRINTF_P(PSTR("\r\nThread R %u, read file ok, will send now: \r\n"), monitor_num);
+				   PRINTF("%s\r\n", (char*)entry->values);
+			   }
 			   
 			   if(monitor_entry_send(monitor_num,entry,entry_size-2) == TRUE) // ignore \r\n
 			   {
@@ -631,6 +636,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   {
 				   monitor_state[monitor_num].sent_entries++;
 				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
+				   monitor_state[monitor_num].last_timestamp = unix_time;
 				  
 				   if (mon_verbosity > 2 && is_terminal_idle())
 				   {
@@ -845,7 +851,9 @@ void monitor_writer(uint8_t monitor_num)
 
 #else	
 	
-	//PRINTF_P(PSTR("Slave %d reading\r\n"), monitor_state[monitor_num].slave_addr);
+#if 0
+		PRINTF_P(PSTR("Slave %d reading\r\n"), monitor_state[monitor_num].slave_addr);
+#endif
 		
 	/* read data */
 	if(monitor_state[monitor_num].read_data(monitor_state[monitor_num].slave_addr,(uint8_t*)monitor_data_buffer,(uint8_t)monitor_state[monitor_num].config_h.entry_size) == 0)
@@ -883,7 +891,7 @@ void monitor_writer(uint8_t monitor_num)
 	{
 		if(is_terminal_idle() && mon_verbosity > 2)
 		{
-			PRINTF_P(PSTR("\r\nM %d, Entry %u: "), monitor_num, cnt);
+			PRINTF_P(PSTR("\r\nM %d, Size: %u, Entry %u: "), monitor_num, strlen(monitor_char_buffer), cnt);
 			PRINTF(monitor_char_buffer);
 			PRINTS_P(PSTR("\r\n"));		
 		}

@@ -1076,22 +1076,56 @@ CONST command_t modbus_cmd = {
 
 /* monitor status */
 #include "monitor.h"
+#include "simon-api.h"
 
 #define cmd_monitor_help_def      \
 	"\r\n usage:\r\n"           \
 	"s - status \r\n"           \
-	"r - reboot \r\n"           \
-	"c - clean \r\n"            \
+	"r - reset \r\n"            \
+	"c - clear \r\n"            \
+	"l - list \r\n"             \
 	"t - time \r\n"             \
-	"v - verbosity \r\n"        \
+	"v - verbose \r\n"          \
 
+void monitor_stop(void);
 
+void monitor_stop(void)
+{
+	extern volatile uint8_t monitor_running;
+	extern volatile uint8_t monitor_uploading;
+	extern volatile uint8_t monitor_is_idle;
+	
+	OS_SR_SAVE_VAR;
+	
+	OSEnterCritical();
+	while(1)
+	{
+		if(monitor_is_idle == 1)
+		{
+			monitor_running = 0;
+			monitor_uploading = 0;
+			OSExitCritical();
+			return;
+		}
+		else
+		{
+			OSExitCritical();
+			DelayTask(50);
+		}
+	}
+	
+}
 void term_cmd_monitor(char *param)
 {
-	//char entradas[CONSOLE_BUFFER_SIZE];
     uint8_t mon = 0;
     uint8_t verb = 0;
     int input;
+	char timestamp[24];
+	time_t time_now;
+	struct tm ts_now;
+	
+	LOG_DIRTYPE  d;
+	LOG_DIRINFO  dir;
 
     extern monitor_state_t monitor_state[];
     extern uint8_t mon_verbosity;
@@ -1104,6 +1138,7 @@ void term_cmd_monitor(char *param)
 			{
 				if(monitor_state[mon].state == IN_USE)
 				{
+					PRINTS_P(PSTR("----------------------------------------------\r\n"));
 					PRINTF_P(PSTR("M: %u, Cod: %u, Slave: %u, Sinc: %u \r\n"), mon,
 							monitor_state[mon].codigo,
 							monitor_state[mon].slave_addr,
@@ -1113,19 +1148,47 @@ void term_cmd_monitor(char *param)
 												monitor_state[mon].config_h.time_interv,
 												monitor_state[mon].config_h.entry_size);
 					PRINTF_P(PSTR("Avg time to send: %u\r\n"), monitor_state[mon].avg_time_to_send);
-					PRINTF_P(PSTR("Total written: %u\r\n"), monitor_state[mon].written_entries);
-					PRINTF_P(PSTR("Total read: %u\r\n"), monitor_state[mon].read_entries);
-					PRINTF_P(PSTR("Total sent: %u\r\n"), monitor_state[mon].sent_entries);
-
+					PRINTF_P(PSTR("Total written: %lu\r\n"), monitor_state[mon].written_entries);
+					PRINTF_P(PSTR("Total read: %lu\r\n"), monitor_state[mon].read_entries);
+					PRINTF_P(PSTR("Total sent: %lu\r\n"), monitor_state[mon].sent_entries);
+					PRINTF_P(PSTR("Sinc at: %lu\r\n"), monitor_state[mon].sinc_time);
+					PRINTF_P(PSTR("Last sent at: %lu\r\n"), monitor_state[mon].last_timestamp);
 				}
 			}
 			break;
-		case 'r':
+		case 'r': /* TODO */	
+			monitor_stop();			
 			break;
-		case 'c':
+		case 'c':  /* TODO */
+			monitor_stop();	
 			break;
-		case 't':
+		case 't':	
+		    time_now = simon_clock_get();
+			ts_now = *((struct tm *)localtime(&(time_t){time_now}));	
+			PRINTS_P(PSTR("Time now: "));					
+			strftime(timestamp,24,"%Y-%m-%d %H:%M:%S\r\n",&ts_now);
+			PRINTF(timestamp);
 			break;
+		case 'l':
+			for (mon=0; mon < MAX_NUM_OF_MONITORES; mon++)
+			{
+				if(monitor_state[mon].state == IN_USE)
+				{
+					 if (monitor_opendir(monitor_state[mon].monitor_dir_name, d))
+					 {
+						 while (monitor_readdir(dir,d))
+						 {
+							 #if _WIN32
+								PRINTF("%s\r\n", dir->d_name);
+							 #else
+								PRINTF("%s\r\n", (LOG_DIRINFO*)(&dir)->fname);
+							 #endif
+						 }						 
+						 monitor_closedir(d);
+					}
+				}
+			}
+			break;			
 		case 'v':
 			if(sscanf(&param[2], "%d", &input) == 1)
 			{
@@ -1133,7 +1196,7 @@ void term_cmd_monitor(char *param)
 				if(verb > 5) verb = 5;
 				mon_verbosity = verb;
 			}
-			PRINTF_P(PSTR("Verbosity level = %u \r\n"), mon_verbosity);
+			PRINTF_P(PSTR("Verbose level = %u \r\n"), mon_verbosity);
 			break;
 		default:
 			PRINTS_P(PSTR(cmd_monitor_help_def));
@@ -1142,6 +1205,7 @@ void term_cmd_monitor(char *param)
 	param[0] = 0;
 }
 
-CONST command_t monitor_cmd = {
+CONST command_t monitor_cmd = 
+{
 	"mon", term_cmd_monitor, monitor_HelpText
 };
