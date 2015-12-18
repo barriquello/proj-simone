@@ -41,6 +41,9 @@
 
 #if ARDUINO
 #define __RESET_WATCHDOG()	wdt_reset()
+#define __ENABLE_WATCHDOG()	wdt_enable(WDTO_250MS)
+#else
+#define __ENABLE_WATCHDOG()	
 #endif
 
 /* Task to keep system date and time */
@@ -50,6 +53,10 @@ void System_Time(void)
 	/* task setup */
 	INT16U milis = 0;
 	INT16U segundos = 0;
+	
+	#if (WATCHDOG == 1)	
+		__ENABLE_WATCHDOG();
+	#endif	
 	
 	OSResetTime();
 

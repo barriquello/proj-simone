@@ -23,7 +23,7 @@ void Mcu_Init()
   CLKPR = 0x00;        // 16 MHz clock. Clock division factor = 1
   
   // Disable the watchdog timer
-  wdt_disable();
+  wdt_disable();  
 }
 
 /*****************************************************************************

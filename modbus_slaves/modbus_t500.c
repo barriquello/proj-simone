@@ -123,9 +123,10 @@ uint8_t t500_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 			
 			/* Detecta equipamentos de medição e faz a leitura dos dados */					
 			/* T500 input registers */
-			memset(T500_IRList1.Regs32,0x00,SIZEARRAY(T500_IRList1.Regs32));
+			memset(T500_IRList1.Regs8,0x00,SIZEARRAY(T500_IRList1.Regs8));
 			
-			for(nregs = 0; nregs < T500_REGLIST1_INPUT_NREGS;)
+			nregs = 0;
+			while(nregs < T500_REGLIST1_INPUT_NREGS)
 			{
 				
 #if MODBUS_SLAVE_T500_SIMULATION			
@@ -143,7 +144,7 @@ uint8_t t500_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 					if(--retries == 0)
 					{
 						/* zera tudo e desiste */
-						memset(T500_IRList1.Regs32,0x00,SIZEARRAY(T500_IRList1.Regs32));
+						memset(T500_IRList1.Regs8,0x00,SIZEARRAY(T500_IRList1.Regs8));
 						break;
 					}
 					

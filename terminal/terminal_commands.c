@@ -1085,6 +1085,7 @@ CONST command_t modbus_cmd = {
 	"c - clear \r\n"            \
 	"l - list \r\n"             \
 	"t - time \r\n"             \
+	"k - sinch \r\n"            \
 	"v - verbose \r\n"          \
 
 void monitor_stop(void);
@@ -1112,9 +1113,53 @@ void monitor_stop(void)
 			OSExitCritical();
 			DelayTask(50);
 		}
-	}
-	
+	}	
 }
+
+void mcu_reset(void);
+
+void mcu_reset(void)
+{
+	OS_SR_SAVE_VAR;	
+	OSEnterCritical();
+	while(1)	
+	{		
+		// wait watchdog reset
+	}
+}
+
+time_t str2time(const char *s);
+
+time_t str2time(const char *s)
+{
+	struct tm tm;
+	#define DELIM   ':'
+	
+	memset(&tm, 0, sizeof(tm));
+	if (s) {
+		tm.tm_year = atoi(s) - 1900;
+		if ( (s = strchr(s, DELIM))) {
+			tm.tm_mon = atoi(++s) - 1;
+			if ( (s = strchr(s, DELIM))) {
+				tm.tm_mday = atoi(++s);
+				if ( (s = strchr(s, DELIM))) {
+					tm.tm_hour = atoi(++s);
+					if ( (s = strchr(s, DELIM))) {
+						tm.tm_min = atoi(++s);
+						if ( (s = strchr(s, DELIM))) {
+							tm.tm_sec = atoi(++s);
+						}
+					}
+				}
+			}
+		}
+	}
+	return mktime(&tm);
+
+}
+
+time_t time_for_sinc = 0;
+
 void term_cmd_monitor(char *param)
 {
     uint8_t mon = 0;
@@ -1156,18 +1201,40 @@ void term_cmd_monitor(char *param)
 				}
 			}
 			break;
-		case 'r': /* TODO */	
-			monitor_stop();			
+		case 'r':	
+			monitor_stop();	
+			mcu_reset();		
 			break;
 		case 'c':  /* TODO */
 			monitor_stop();	
+			for (mon=0; mon < MAX_NUM_OF_MONITORES; mon++)
+			{
+				if(monitor_state[mon].state == IN_USE)
+				{
+					empty_directory(monitor_state[mon].monitor_dir_name);
+				}
+			}
 			break;
 		case 't':	
-		    time_now = simon_clock_get();
+		    if(sscanf(&param[2], "%s", (char*)timestamp) == 1)
+			{
+				time_now = str2time(timestamp);
+				time_for_sinc = time_now;
+				
+			}else
+			{
+				time_now = simon_clock_get();
+			}
 			ts_now = *((struct tm *)localtime(&(time_t){time_now}));	
-			PRINTS_P(PSTR("Time now: "));					
-			strftime(timestamp,24,"%Y-%m-%d %H:%M:%S\r\n",&ts_now);
+			PRINTS_P(PSTR("\r\nTime now: "));					
+			strftime(timestamp,24,"%Y:%m:%d:%H:%M:%S\r\n",&ts_now);
 			PRINTF(timestamp);
+			break;
+		case 'k':
+			if(time_for_sinc > 0)
+			{
+				simon_clock_set(time_for_sinc);
+			}			
 			break;
 		case 'l':
 			for (mon=0; mon < MAX_NUM_OF_MONITORES; mon++)
@@ -1193,7 +1260,7 @@ void term_cmd_monitor(char *param)
 			if(sscanf(&param[2], "%d", &input) == 1)
 			{
 				verb = (uint8_t)input;
-				if(verb > 5) verb = 5;
+				if(verb > 10) verb = 10;
 				mon_verbosity = verb;
 			}
 			PRINTF_P(PSTR("Verbose level = %u \r\n"), mon_verbosity);

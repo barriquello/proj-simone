@@ -134,7 +134,7 @@ monitor_config_ok_t config_check;
 #define VERBOSE_INIT_VALUE			0
 uint8_t mon_verbosity = VERBOSE_INIT_VALUE;
 
-#define TICKS2MSEC(x)	(x)
+#define MS2TICKS(x)	(x)
 
 
 /* print output */
@@ -312,7 +312,7 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
   
   while(1)
   {		
-		if(mon_verbosity > 4 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread W %u, timer: %u \r\n"), _monitor, period);
+		if(mon_verbosity > 6 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread W %u, timer: %u \r\n"), _monitor, period);
 		PT_WAIT_UNTIL(pt, monitor_running && timer_expired(timer));
 		
 		time_elapsed = (uint16_t)timer_elapsed(timer);	
@@ -327,7 +327,7 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 		}				
 		
 		time_before = clock_time();
-		if(mon_verbosity > 4 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread W %u, time now: %u \r\n"), _monitor, time_before);
+		if(mon_verbosity > 6 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread W %u, time now: %lu \r\n"), _monitor, time_before);
 		
 		monitor_writer(_monitor);		
 		time_now = clock_time();		
@@ -359,12 +359,12 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
   {		
 	  	timer_set(timer, TIMER_READER_MS);
 		
-		if(mon_verbosity > 4 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread R %u \r\n"), _monitor);
+		if(mon_verbosity > 6 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread R %u \r\n"), _monitor);
 		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));
 		
 		time_before = clock_time();		
 		
-		if(mon_verbosity > 4 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread R %u, time now: %u \r\n"), _monitor, time_before);
+		if(mon_verbosity > 6 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread R %u, time now: %lu \r\n"), _monitor, time_before);
 		if(monitor_reader(_monitor) < MAX_NUM_OF_ENTRIES)
 		{			
 			time_now = clock_time();			
@@ -562,18 +562,18 @@ void main_monitor(void)
 	uint8_t status = 0;
 #endif	  
 
-	DelayTask(TICKS2MSEC(1000));
+	DelayTask(MS2TICKS(1000));
 	
 	#if (COLDUINO || ARDUINO) && !SIMULATION
 	/* Detect and init the SD card */
 	while(SDCard_ResourceInit(SDCARD_MUTEX_PRIORITY) == NULL)
 	{
-		DelayTask(1000);
+		DelayTask(MS2TICKS(1000));
 	}
 	do
 	{
 		status = SDCard_Init(VERBOSE_OFF);
-		DelayTask(1000);
+		DelayTask(MS2TICKS(1000));
 	} while (status != SD_OK);
 	#endif
 	
@@ -592,7 +592,7 @@ void main_monitor(void)
 	while(simon_init(&(modem_driver)) != MODEM_OK)
 	{			
 		PRINTS_ERRO_P(PSTR("\r\nSimon init error\r\n"));
-		DelayTask(TICKS2MSEC(10000));
+		DelayTask(MS2TICKS(10000));
 	}
 
 	PRINTS_ERRO_P(PSTR("\r\nSimon init OK\r\n"));	
@@ -620,7 +620,7 @@ void main_monitor(void)
 	terminal_release();	
 	
 #if COLDUINO || ARDUINO
-	DelayTask(TICKS2MSEC(1000));	
+	DelayTask(MS2TICKS(1000));	
 #endif
 
 	/* init monitors */
@@ -665,7 +665,7 @@ void main_monitor(void)
 #ifdef _WIN32	
 	fflush(stdout);
 #else
-	DelayTask(TICKS2MSEC(1000));
+	DelayTask(MS2TICKS(1000));
 #endif	
 
 	if(mon_verbosity > 3)  PRINTF_P(PSTR("\r\nMonitor threads running with %u monitors... \r\n"), monitores_em_uso);	
@@ -682,7 +682,7 @@ void main_monitor(void)
 		
 		monitor_is_idle = 1;
 		#ifndef _WIN32
-			DelayTask(TICKS2MSEC(1000)); // executa a cada 1000ms
+			DelayTask(MS2TICKS(1000)); // executa a cada 1000ms
 		#endif
 		
 		monitor_is_idle = 0;
@@ -725,7 +725,7 @@ void main_monitor(void)
 #endif		
 		
 		#ifndef _WIN32
-			DelayTask(TICKS2MSEC(1000)); // executa a cada 1000ms			
+			DelayTask(MS2TICKS(1000)); // executa a cada 1000ms			
 		#endif
 		
 	}

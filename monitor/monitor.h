@@ -108,9 +108,9 @@
 #define monitor_seek(file,pos)            (f_lseek((file), *(pos)) == FR_OK)
 #define monitor_seek_end(file)            (f_lseek((file), f_size((file))) == FR_OK)
 
-#define LOG_DIRTYPE                   DIR
-#define LOG_DIRINFO 				  FILINFO
-#define LOG_FILEINFO 				  FILINFO
+#define LOG_DIRTYPE						  DIR
+#define LOG_DIRINFO 					  FILINFO
+#define LOG_FILEINFO 					  FILINFO
 #define monitor_stat(filename, fileinfo)  (f_stat((filename), (fileinfo)) == FR_OK)
 #define monitor_opendir(dirname,dir)	  (f_opendir(&(dir),dirname) == FR_OK)
 #define monitor_closedir(dir)			  f_closedir(&(dir))
@@ -204,11 +204,6 @@ typedef struct timer
 	clock_t start;
 	clock_t interval; 
 }mon_timer_t;
-
-#if 0
-clock_t  timer_expired(mon_timer_t *t);
-void timer_set(mon_timer_t *t, int usecs);
-#endif
 
 typedef struct pt pt_t;
 

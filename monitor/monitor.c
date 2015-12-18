@@ -60,10 +60,10 @@ extern uint8_t mon_verbosity;
 extern volatile uint8_t monitor_is_connected;
 
 #define LOG_MAX_DATA_BUF_SIZE  (LOG_MAX_ENTRY_SIZE/2)
-uint16_t monitor_data_buffer[LOG_MAX_ENTRY_SIZE];
-char monitor_char_buffer[LOG_MAX_ENTRY_SIZE];
+uint16_t monitor_data_buffer[LOG_MAX_DATA_BUF_SIZE];
+char monitor_char_buffer[LOG_MAX_ENTRY_SIZE + 1];
 
-char data_vector[256*4];
+char data_vector[LOG_MAX_ENTRY_SIZE*3];
 char monitor_header[LOG_HEADER_LEN+2];
 
 #define CONST const
@@ -164,7 +164,6 @@ uint8_t monitor_setheader(const char* filename, monitor_header_t * h)
    if(monitor_openread(filename,&fp))
    {
 	   monitor_makeheader(monitor_header,h);
-	   //monitor_seek_begin(&fp);
 	   (void)monitor_write(monitor_header,&fp);
 	   (void)monitor_close(&fp);
 	   return TRUE;
@@ -499,14 +498,16 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 
 }
 
-static uint16_t build_entry_to_send(char* ptr_data, uint8_t *data, uint16_t len)
+static uint16_t build_entry_to_send(char* const ptr_out, uint8_t * const data_in, uint16_t len)
 {
 	int offset = 0;
-	uint16_t max_len = len<<2;
+	uint16_t max_len = len/3;
 	char hex1,hex2;
 	uint8_t val;
 	uint16_t cnt = 0;
-
+	char* ptr_data = ptr_out;
+	uint8_t * data = data_in;
+	
 	while(len > 0)
 	{
 		len-=2;
@@ -514,7 +515,7 @@ static uint16_t build_entry_to_send(char* ptr_data, uint8_t *data, uint16_t len)
 		hex2 = *data++;
 		val = hex2byte(hex1,hex2);
 
-		offset = SNPRINTF(ptr_data, max_len,"%d,", val);
+		offset = SNPRINTF(ptr_data, max_len,"%u,", val);
 		if(offset < 0 || offset >= max_len)
 		{
 			return 0;
@@ -562,10 +563,12 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 {
 	uint16_t entry_size;
 	LOG_FILETYPE fp;
-	LOG_FILEPOS  pos;
+	uint32_t  pos;
 	struct tm ts;	
 	clock_t  time_init;	
 	uint8_t  send_ok = 0;
+	time_t unix_time;
+	uint32_t idx = 0;
 
 	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
 
@@ -586,7 +589,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 		ts.tm_sec = h.h2.sec;
 		ts.tm_isdst = -1;
 
-		time_t unix_time = mktime(&ts);
+		unix_time = mktime(&ts);
 
 		if(unix_time > 0)
 		{
@@ -597,7 +600,9 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 		/* le a proxima entrada */
 		if(monitor_openread(filename,&fp))
 		{
-			pos = LOG_HEADER_LEN + (uint32_t)((h.last_idx)*entry_size);
+			idx = h.last_idx*entry_size;
+			
+			pos = (uint32_t)((uint32_t)LOG_HEADER_LEN + idx);
 
 			if(monitor_seek(&fp,&pos))
 			{
@@ -618,7 +623,8 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 
 			   if(mon_verbosity > 4 && is_terminal_idle())  
 			   { 
-				   PRINTF_P(PSTR("\r\nThread R %u, read file ok, will send now: \r\n"), monitor_num);
+				   PRINTF_P(PSTR("\r\nThread R %u, read file pos %lu, "), monitor_num, pos);
+				   PRINTF_P(PSTR("entry index %u, size: %u, will send now: \r\n"), h.last_idx, entry_size);
 				   PRINTF("%s\r\n", (char*)entry->values);
 			   }
 			   
@@ -640,7 +646,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 				  
 				   if (mon_verbosity > 2 && is_terminal_idle())
 				   {
-					   PRINTF_P(PSTR("Mon %d, entry: %d of %d, delay: %d - avg: %d"),
+					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, delay: %u - avg: %u"),
 							   monitor_num,
 							   h.last_idx, h.count,
 							   monitor_state[monitor_num].time_to_send,
