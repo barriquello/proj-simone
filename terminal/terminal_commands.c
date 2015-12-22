@@ -1159,8 +1159,6 @@ time_t str2time(const char *s)
 
 }
 
-time_t time_for_sinc = 0;
-
 void term_cmd_monitor(char *param)
 {
     uint8_t mon = 0;
@@ -1217,27 +1215,20 @@ void term_cmd_monitor(char *param)
 				}
 			}
 			break;
-		case 't':	
-		    if(sscanf(&param[2], "%s", (char*)timestamp) == 1)
-			{
-				time_now = str2time(timestamp);
-				time_for_sinc = time_now;
-				
-			}else
-			{
-				time_now = simon_clock_get();
-			}
+		case 't':
+			time_now = simon_clock_get();			
 			ts_now = *((struct tm *)localtime(&(time_t){time_now}));	
 			PRINTS_P(PSTR("\r\nTime now: "));					
 			strftime(timestamp,24,"%Y:%m:%d:%H:%M:%S\r\n",&ts_now);
 			PRINTF(timestamp);
 			break;
 		case 'k':
-			if(time_for_sinc > 0)
-			{
-				simon_clock_set(time_for_sinc);
-			}			
-			break;
+			 if(sscanf(&param[2], "%s", (char*)timestamp) == 1)
+			 {
+				 time_now = str2time(timestamp);
+				 simon_clock_set(time_now);
+			 }	
+			 break;
 		case 'l':
 			for (mon=0; mon < MAX_NUM_OF_MONITORES; mon++)
 			{

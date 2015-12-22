@@ -619,6 +619,9 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   {
 				   monitor_state[monitor_num].time_to_send = 0;
 				   monitor_state[monitor_num].avg_time_to_send = 0;
+				   monitor_state[monitor_num].written_entries= 0;
+				   monitor_state[monitor_num].read_entries = 0;
+				   monitor_state[monitor_num].sent_entries= 0;
 			   }
 			   
 			   monitor_state[monitor_num].read_entries++;
