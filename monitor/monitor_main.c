@@ -266,6 +266,7 @@ volatile uint8_t monitor_running = 1;
 volatile uint8_t monitor_uploading = 1;
 volatile uint8_t monitor_is_connected = 1;
 volatile uint8_t monitor_is_idle = 0;
+volatile uint8_t monitor_modem_null = 0;
 
 CONST char config_inifile[] = "config.ini";
 
@@ -588,11 +589,17 @@ void main_monitor(void)
 #endif	
 	
 	extern const modem_driver_t modem_driver;
+	extern const modem_driver_t null_modem_driver;
 		
-	while(simon_init(&(modem_driver)) != MODEM_OK)
+	modem_driver_t *_modem = &modem_driver;
+	while(simon_init(_modem) != MODEM_OK)
 	{			
 		PRINTS_ERRO_P(PSTR("\r\nSimon init error\r\n"));
 		DelayTask(MS2TICKS(10000));
+		if(monitor_modem_null == 1)
+		{
+			_modem = &null_modem_driver;			
+		}
 	}
 
 	PRINTS_ERRO_P(PSTR("\r\nSimon init OK\r\n"));	

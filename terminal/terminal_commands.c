@@ -1081,9 +1081,10 @@ CONST command_t modbus_cmd = {
 #define cmd_monitor_help_def      \
 	"\r\n usage:\r\n"           \
 	"s - status \r\n"           \
-	"r - reset \r\n"            \
-	"c - clear \r\n"            \
+	"r - reset monitor\r\n"     \
+	"c - clear logs\r\n"        \
 	"l - list \r\n"             \
+	"n - null modem \r\n"       \
 	"t - time \r\n"             \
 	"k - sinch \r\n"            \
 	"v - verbose \r\n"          \
@@ -1174,6 +1175,7 @@ void term_cmd_monitor(char *param)
 
     extern monitor_state_t monitor_state[];
     extern uint8_t mon_verbosity;
+	extern uint8_t monitor_modem_null;
 
 	terminal_newline();
 	switch (param[0])
@@ -1255,7 +1257,11 @@ void term_cmd_monitor(char *param)
 					}
 				}
 			}
-			break;			
+			break;
+		case 'n':								
+			monitor_modem_null = 1;
+			PRINTS_P(PSTR("Null modem set \r\n"));
+			break;
 		case 'v':
 			if(sscanf(&param[2], "%d", &input) == 1)
 			{
@@ -1276,3 +1282,4 @@ CONST command_t monitor_cmd =
 {
 	"mon", term_cmd_monitor, monitor_HelpText
 };
+

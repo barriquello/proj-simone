@@ -561,7 +561,7 @@ static int monitor_entry_send(uint8_t mon_id, monitor_entry_t* entry, uint16_t l
 
 uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_entry_t* entry)
 {
-	uint16_t entry_size;
+	uint32_t entry_size;
 	LOG_FILETYPE fp;
 	uint32_t  pos;
 	struct tm ts;	
@@ -600,9 +600,11 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 		/* le a proxima entrada */
 		if(monitor_openread(filename,&fp))
 		{
-			idx = h.last_idx*entry_size;
+			idx = ((uint32_t)(h.last_idx));
+			idx = idx*entry_size;
+			idx += LOG_HEADER_LEN;
 			
-			pos = (uint32_t)((uint32_t)LOG_HEADER_LEN + idx);
+			pos = (uint32_t)idx;
 
 			if(monitor_seek(&fp,&pos))
 			{
