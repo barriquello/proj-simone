@@ -649,7 +649,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
 				   monitor_state[monitor_num].last_timestamp = unix_time;
 				  
-				   if (mon_verbosity > 2 && is_terminal_idle())
+				   if (mon_verbosity > 1 && is_terminal_idle())
 				   {
 					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, delay: %u - avg: %u"),
 							   monitor_num,
@@ -874,7 +874,7 @@ void monitor_writer(uint8_t monitor_num)
 		return;
 	}
 	
-	if(is_terminal_idle() && mon_verbosity > 2)
+	if(is_terminal_idle() && mon_verbosity > 3)
 	{
 		PRINTF_PP(monitor_error_msg[2], monitor_num);
 		PRINTF_P(PSTR(" read slave %d ok\r\n"), monitor_state[monitor_num].slave_addr);

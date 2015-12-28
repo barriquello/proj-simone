@@ -255,7 +255,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 
 	*(dados+tam-1) = '\0'; // null terminate
 
-	if(mon_verbosity > 2) PRINTS_P(PSTR("Modem Send: \r\n"));
+	if(mon_verbosity > 4) PRINTS_P(PSTR("Modem Send: \r\n"));
 
 	/* Flush queue first */
 	OSCleanQueue(MODEM_QUEUE);
@@ -273,7 +273,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 	/* check modem init */
 	if(modem_state == INIT)
 	{
-		if(is_modem_ok_retry(5, 10) == FALSE)
+		if(is_modem_ok_retry(MAX_RETRIES, 10) == FALSE)
 		{
 			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS is busy \r\n"));
 			goto exit; /* retry later */
@@ -290,7 +290,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 
     SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT#SKTD=0,80,%s,0,0\r\n"), hostname);
 
-    if(mon_verbosity > 2) PRINT(modem_BufferTxRx);
+    if(mon_verbosity > 3) PRINT(modem_BufferTxRx);
 
     modem_printR(modem_BufferTxRx);
 
@@ -303,6 +303,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 
     	if(strstr((char *)modem_BufferTxRx,"CONNECT"))
     	{
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS connection OK \r\n"));
     		goto send;
     	}
     	if(strstr((char *)modem_BufferTxRx,"NO CARRIER"))
@@ -342,11 +343,11 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 
 		if(send_ok == 1)
 		{
-			if(mon_verbosity > 2) PRINTS_P(PSTR("\r\nsend ok\r\n"));
+			if(mon_verbosity > 0) PRINTS_P(PSTR("\r\nsend ok\r\n"));
 			return MODEM_OK;
 		}else
 		{
-			if(mon_verbosity > 2) PRINTS_P(PSTR("\r\nsend fail\r\n"));
+			if(mon_verbosity > 0) PRINTS_P(PSTR("\r\nsend fail\r\n"));
 		}
 
 	exit:
