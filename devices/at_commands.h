@@ -48,7 +48,8 @@ typedef enum
 	CLOSE0,
 	CLOSE1,
 	CGDCONT,
-	XGAUTH
+	XGAUTH,
+	SKTRST
 }at_enum_cmd;
 
 #define MODEM_APN		 "tim.br"
@@ -67,6 +68,7 @@ typedef enum
 #define	CLOSE1_def  "AT+TCPCLOSE=1\r\n"
 #define	CGDCONT_def  ("AT+CGDCONT=1,\"IP\",\"" MODEM_APN "\"\r\n")
 #define	XGAUTH_def	 ("AT+XGAUTH=1,1,\"" MODEM_PWD "\",\"" MODEM_PWD "\"\r\n")
+#define SKTRST_def	"AT#SKTRST\r\n"
 
 extern const char * const modem_init_cmd[];
 

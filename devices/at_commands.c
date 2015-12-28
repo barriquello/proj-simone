@@ -48,6 +48,7 @@ CONST char CLOSE0_str[] PROGMEM = CLOSE0_def;
 CONST char CLOSE1_str[] PROGMEM = CLOSE1_def;
 CONST char CGDCONT_str[] PROGMEM = CGDCONT_def;
 CONST char XGAUTH_str[] PROGMEM = XGAUTH_def;
+CONST char SKTRST_str[] PROGMEM = SKTRST_def;
 
 CONST char * const modem_init_cmd[] PROGMEM =
 {
@@ -63,7 +64,8 @@ CONST char * const modem_init_cmd[] PROGMEM =
 	CLOSE0_str,
 	CLOSE1_str,
 	CGDCONT_str,
-	XGAUTH_str
+	XGAUTH_str,
+	SKTRST_str
 };
 #elif COLDUINO
 #define PROGMEM
@@ -81,7 +83,8 @@ CONST char * const modem_init_cmd[] =
 	CLOSE0_def,
 	CLOSE1_def,
 	CGDCONT_def,
-	XGAUTH_def
+	XGAUTH_def,
+	SKTRST_def
 };
 
 #endif	

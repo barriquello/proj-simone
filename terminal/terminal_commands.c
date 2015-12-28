@@ -638,7 +638,7 @@ void term_cmd_echo(char *param)
 #endif
 	
 	printSer(term_stdout, (CHAR8*)param);
-	printSer(term_stdout, "\r");
+	printSer(term_stdout, "\r\n");
 		
 	if(stdin_q != NULL)
 	{
@@ -670,8 +670,10 @@ CONST command_t echo_cmd = {
 // Print a string in the terminal
 void term_cmd_echo_out(char *param)
 {	
-	INT8U std_output;
+	INT8U std_output;	
 	terminal_newline();
+	printf_terminal_P(PSTR("STDOUT = "));
+	
 	if(param != NULL)
 	{		
 		std_output = (INT8U)(param[0]-'0');
@@ -685,15 +687,15 @@ void term_cmd_echo_out(char *param)
 			if (term_stdout == USE_UART2)
 			{
 				stdin_q = Serial2;
-			}
-			printf_terminal_P(PSTR("STDOUT = "));
+			}			
 			putchar_terminal( (CHAR8)param[0]);
 			terminal_newline();
 			return;
 		}
+	}else
+	{
+		putchar_terminal(term_stdout + '0');
 	}
-
-	printf_terminal_P(PSTR("INVALID STDOUT"));
 	terminal_newline();
 }
 

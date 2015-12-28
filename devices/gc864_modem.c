@@ -53,7 +53,9 @@ static char *hostname = NULL;
 static char modem_BufferTxRx[64];
 
 extern uint8_t mon_verbosity;
+uint16_t modem_watchdog = 0;
 
+#define MAX_MODEM_ERRORS 20
 #define DEBUG_PRINT 1
 
 #if DEBUG_PRINT
@@ -351,6 +353,13 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 		}
 
 	exit:
+	if(++modem_watchdog > MAX_MODEM_ERRORS)
+	{
+		modem_watchdog = 0;
+		modem_state = INIT;
+		modem_printP(modem_init_cmd[SKTRST]);
+		MODEM_GET_REPLY_PRINT(modem_BufferTxRx);		
+	}
 	return MODEM_ERR;
 
 
