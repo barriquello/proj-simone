@@ -38,6 +38,7 @@
 CONST char AT_str[]    PROGMEM = AT_def;
 CONST char CREG_str[]  PROGMEM = CREG_def;
 CONST char XISP_str[]  PROGMEM = XISP_def;
+CONST char GPRS0_str[]	PROGMEM = GPRS0_def;
 CONST char GPRS1_str[]	PROGMEM = GPRS1_def;
 CONST char GPRS_str[]	PROGMEM = GPRS_def;
 CONST char XIIC1_str[]	PROGMEM = XIIC1_def;
@@ -57,6 +58,7 @@ CONST char * const modem_init_cmd[] PROGMEM =
 	AT_str,
 	CREG_str,
 	XISP_str,
+	GPRS0_str,
 	GPRS1_str,
 	GPRS_str,
 	XIIC1_str,
@@ -77,6 +79,7 @@ CONST char * const modem_init_cmd[] =
 	AT_def,
 	CREG_def,
 	XISP_def,
+	GPRS0_def,
 	GPRS1_def,
 	GPRS_def,
 	XIIC1_def,

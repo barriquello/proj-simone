@@ -907,6 +907,7 @@ CONST command_t null_modem_cmd = {
 	"e - server \r\n"           \
 	"d - dns \r\n"              \
 	"t - time \r\n"             \
+	"v - version \r\n"          \
 
 	
 char host[32];
@@ -939,6 +940,15 @@ void term_cmd_modem(char *param)
 			at_modem_open(1,(char*)host);
 			at_modem_send(entradas);
 			break;
+		case 'v': 
+		    if(gc864_modem_check_connection() == MODEM_OK)
+			{
+				PRINTS_P(PSTR("Modem is idle\r\n"));
+			}else
+			{
+				PRINTS_P(PSTR("Modem is busy\r\n"));
+			}
+			break;			
 		default:
 		PRINTS_P(PSTR(cmd_modem_help_def));
 		terminal_newline();

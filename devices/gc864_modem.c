@@ -55,7 +55,7 @@ static char modem_BufferTxRx[64];
 extern uint8_t mon_verbosity;
 uint16_t modem_watchdog = 0;
 
-#define MAX_MODEM_ERRORS 20
+#define MAX_MODEM_ERRORS 10
 #define DEBUG_PRINT 1
 
 #if DEBUG_PRINT
@@ -196,7 +196,7 @@ uint8_t gc864_modem_init(void)
 	
     /* setup */
 	
-	modem_printP(modem_init_cmd[ATZ]);
+	modem_printP(modem_init_cmd[GPRS0]);
 	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
 	
 	modem_printP(modem_init_cmd[CREG]);
@@ -360,7 +360,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 	if(++modem_watchdog > MAX_MODEM_ERRORS)
 	{
 		modem_watchdog = 0;
-		mcu_reset();	
+		gc864_modem_close();	
 	}
 	return MODEM_ERR;
 
@@ -511,6 +511,19 @@ modem_ret_t at_modem_receive(char* buff, uint16_t len)
 	return MODEM_OK;
 	
 }
+
+uint8_t gc864_modem_close(void)
+{
+	modem_acquire();
+
+	modem_printP(modem_init_cmd[GPRS0]);
+	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
+	
+	modem_release();
+	
+	return TRUE;
+	
+}
 modem_ret_t at_modem_close(void)
 {
 	PRINT("Close \r\n");
@@ -519,6 +532,8 @@ modem_ret_t at_modem_close(void)
 	{
 		modem_state = CLOSE;
 	}
+	
+	gc864_modem_close();
 	
 	return MODEM_OK;
 	

@@ -39,6 +39,7 @@ typedef enum
 	AT = 0,
 	CREG,
 	XISP,
+	GPRS0,
 	GPRS1,
 	GPRS,
 	XIIC1,
@@ -59,6 +60,7 @@ typedef enum
 #define AT_def		"AT\r\n"
 #define	CREG_def	"AT+CREG?\r\n"
 #define XISP_def	"AT+XISP=0\r\n"
+#define GPRS0_def	"AT#GPRS=0\r\n"
 #define GPRS1_def	"AT#GPRS=1\r\n"
 #define GPRS_def	"AT#GPRS?\r\n"
 #define XIIC1_def	"AT+XIIC=1\r\n"
