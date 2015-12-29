@@ -195,6 +195,10 @@ uint8_t gc864_modem_init(void)
 	modem_acquire();
 	
     /* setup */
+	
+	modem_printP(modem_init_cmd[ATZ]);
+	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
+	
 	modem_printP(modem_init_cmd[CREG]);
 	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
 	
@@ -356,9 +360,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 	if(++modem_watchdog > MAX_MODEM_ERRORS)
 	{
 		modem_watchdog = 0;
-		modem_state = INIT;
-		modem_printP(modem_init_cmd[SKTRST]);
-		MODEM_GET_REPLY_PRINT(modem_BufferTxRx);		
+		mcu_reset();	
 	}
 	return MODEM_ERR;
 

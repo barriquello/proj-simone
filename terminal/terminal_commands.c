@@ -1119,8 +1119,6 @@ void monitor_stop(void)
 	}	
 }
 
-void mcu_reset(void);
-
 void mcu_reset(void)
 {
 	OS_SR_SAVE_VAR;	

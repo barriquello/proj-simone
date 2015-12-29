@@ -134,4 +134,6 @@ extern CONST command_t modbus_cmd;
 void term_cmd_monitor(char *param);
 extern CONST command_t monitor_cmd;
 
+void mcu_reset(void);
+
 #endif /* _TERMINAL_COMMANDS_H_ */
