@@ -66,7 +66,9 @@ static output out_modem = NULL;
 char simon_hostname[MAX_HOSTNAME_LEN];
 char simon_hostip[MAX_HOSTIP_LEN];
 char simon_apikey[MAX_APIKEY_LEN];
-
+char simon_gprs_server[MAX_GPRS_LEN];
+char simon_gprs_user[MAX_GPRS_LEN];
+char simon_gprs_password[MAX_GPRS_LEN];
 static char server_reply[512];
 
 static char* hostname = simon_hostname;
@@ -301,6 +303,29 @@ void simon_set_hostip(const char* ip)
 	if(ip != NULL)
 	{
 		strncpy(simon_hostip,ip,MAX_HOSTIP_LEN-1);
+	}
+}
+
+void simon_set_gprs_config(const char* gprs_cfg)
+{
+	char gprs_str[4*MAX_GPRS_LEN];	
+	char *token;
+	if(gprs_cfg != NULL)
+	{
+		strncpy(gprs_str,gprs_cfg,sizeof(gprs_str)-1);	
+			
+		token = strtok(gprs_str,",");	
+		strncpy(simon_gprs_server,token,MAX_GPRS_LEN-1);
+		PRINTF( " %s\r\n", token );
+		
+		token = strtok(NULL, ",");
+		strncpy(simon_gprs_user,token,MAX_GPRS_LEN-1);
+		PRINTF( " %s\r\n", token );
+		
+		token = strtok(NULL, ",");
+		strncpy(simon_gprs_password,token,MAX_GPRS_LEN-1);
+		PRINTF( " %s\r\n", token );
+		
 	}
 }
 

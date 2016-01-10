@@ -433,7 +433,7 @@ static int callback_inifile(const char *section, const char *key, const char *va
 		}
 		if(strcmp_P(key,PSTR("gprs_apn")) == 0)
 		{
-			//simon_set_apikey(value);
+			simon_set_gprs_config(value);
 			config_check.bit.gprs_apn_ok = 1;
 		}
     }
@@ -545,15 +545,15 @@ void main_monitor(void)
 	
 	#define TESTES 0
 	#if TESTES
-	#include "time_lib.h"
-	#include "simon-api.h"
-	struct tm ts;
-	static struct tm timestamp;
-	time_t time_now;
-	char server_reply_test[]="Date: Wed, 02 Sep 2015 19:01:30 GMT";
-	get_server_time(server_reply_test, &ts);
-	time_now = mktime(&ts);
-	timestamp = *((struct tm *)localtime(&(time_t){time_now}));
+		#include "time_lib.h"
+		#include "simon-api.h"
+		struct tm ts;
+		static struct tm timestamp;
+		time_t time_now;
+		char server_reply_test[]="Date: Wed, 02 Sep 2015 19:01:30 GMT";
+		get_server_time(server_reply_test, &ts);
+		time_now = mktime(&ts);
+		timestamp = *((struct tm *)localtime(&(time_t){time_now}));
 	#endif
 	
 #ifdef _WIN32
@@ -578,8 +578,18 @@ void main_monitor(void)
 	} while (status != SD_OK);
 	#endif
 	
-	/* modem gprs driver */
+	/* Read config.ini file and check configuration */
+	config_check.byte = 0;
+	ini_browse(callback_inifile, NULL, config_inifile);
+	config_check_erro();
+
+	DPRINTS_P(PSTR("Config OK\r\n"));
+
+	terminal_acquire();
+	PRINTS_P(PSTR("Config OK\r\n"));
+	terminal_release();
 	
+	/* modem gprs driver */	
 #if _WIN32
 #define modem_driver	win_http
 #elif MODEM_PRESENTE
@@ -615,17 +625,6 @@ void main_monitor(void)
 	fflush(stdout);
 #endif
 		
-	/* Read config.ini file and check configuration */
-	config_check.byte = 0;
-	ini_browse(callback_inifile, NULL, config_inifile);
-	config_check_erro();
-
-	DPRINTS_P(PSTR("Config OK\r\n"));
-
-	terminal_acquire();	
-		PRINTS_P(PSTR("Config OK\r\n"));
-	terminal_release();	
-	
 #if COLDUINO || ARDUINO
 	DelayTask(MS2TICKS(1000));	
 #endif

@@ -60,6 +60,7 @@
 #define MAX_HOSTNAME_LEN	 (32+1)
 #define MAX_HOSTIP_LEN	 	 (15+1)
 #define MAX_APIKEY_LEN	 	 (32+1)
+#define MAX_GPRS_LEN		 (15+1)
 
 typedef uint8_t (*initialize)(void);
 typedef uint8_t (*input)(char *, uint16_t*);
