@@ -130,7 +130,7 @@
 #define LOG_FILENAME_START   "99123123.txt"
 #define LOG_METAFILE   		 "metafile.txt"
 #define MAX_NUM_OF_ENTRIES   (56400) // equivalente a 20 dias, max. 16 bits
-#define MAX_NUM_OF_MONITORES 3
+#define MAX_NUM_OF_MONITORES 4
 #define NUM_OF_FIELDS        5
 
 /* type verification code */

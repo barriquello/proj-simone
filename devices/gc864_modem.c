@@ -205,6 +205,8 @@ uint8_t gc864_modem_init(void)
 	//modem_printP(modem_init_cmd[CGDCONT]);
 	extern char simon_gprs_server[];
 	SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT+CGDCONT=1,\"IP\",\"%s\"\r\n"), simon_gprs_server);
+	PRINTF(modem_BufferTxRx);
+	
 	modem_printR(modem_BufferTxRx);
 	
 	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);

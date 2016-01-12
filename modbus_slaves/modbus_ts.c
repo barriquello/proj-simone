@@ -100,9 +100,9 @@ CONST uint16_t Modo_RF1  		= 44;
 CONST uint16_t Modo_RF2  		= 45;
 
 /* Input registers */
-CONST uint16_t Temperatura_oleo 		 		= 1001;
+CONST uint16_t Temperatura_oleo 		 	= 1001;
 CONST uint16_t Temperatura_enrolamento 		= 1002;
-CONST uint16_t Temperatura_RTD2 		 		= 1003;
+CONST uint16_t Temperatura_RTD2 		 	= 1003;
 CONST uint16_t Temperatura_RTD3	 	 		= 1004;
 CONST uint16_t Temperatura_maxima_oleo 		= 1005;
 CONST uint16_t Temperatura_maxima_enrolamento = 1006;
@@ -154,7 +154,7 @@ CONST uint16_t SIZEOF_TS_ID_STRING = sizeof(TS_ID_string);
 static modbus_ts_input_register_list  	  TS_IRList;
 //static modbus_ts_holding_register_list    TS_HRList;
 
-#define MODBUS_SLAVE_TS_SIMULATION 	1
+#define MODBUS_SLAVE_TS_SIMULATION 	0
 #if MODBUS_SLAVE_TS_SIMULATION
 #include "random_lib.h"
 #endif
@@ -164,7 +164,14 @@ uint8_t ts_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 uint8_t ts_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 {
 	
-		uint8_t nregs = 0;	
+		uint8_t nregs = 0;
+		uint8_t retries = TS_REG_INPUT_NREGS*2;	
+		
+		/* limit number of registers to the max. available */
+		if(max_len > SIZEARRAY(TS_IRList.Regs16))
+		{
+			max_len = SIZEARRAY(TS_IRList.Regs16);
+		}
 		
 #if !MODBUS_SLAVE_TS_SIMULATION			
 		uint16_t start_addr = TS_REG_INPUT_START;
@@ -172,32 +179,39 @@ uint8_t ts_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 		
 		memset(TS_IRList.Regs16,0x00,SIZEARRAY(TS_IRList.Regs16));
 
-		for(nregs = 0; nregs < TS_REG_INPUT_NREGS;nregs++)
+		for(nregs = 0; nregs < TS_REG_INPUT_NREGS;)
 		{
 			
 	#if MODBUS_SLAVE_TS_SIMULATION			
 			/* return random data */
 			TS_IRList.Regs16[nregs + TS_REG_OFFSET] = random_get();
+			nregs++;
 			DelayTask(7000/1920); /* delay of communication @19200 = 7Bx1000/1920 B*/
 	#else				
 			
-			Modbus_GetData(slave_addr, FC_READ_INPUT_REGISTERS, (uint8_t*)&TS_IRList.Regs16[nregs + TS_REG_OFFSET],
-					start_addr++, 1);
+			if(Modbus_GetData(slave_addr, FC_READ_INPUT_REGISTERS, (uint8_t*)&TS_IRList.Regs16[nregs + TS_REG_OFFSET],
+			start_addr++, 1) == MODBUS_OK)
+			{
+				nregs++;
+			}
+			else
+			{
+				
+				if(--retries == 0)
+				{
+					/* zera tudo e desiste */
+					memset(TS_IRList.Regs16,0x00,SIZEARRAY(TS_IRList.Regs16));
+					break;
+				}
+			}
+					
+			
 	#endif					
 		}
-
-
-		SetModbusHeader(slave_addr, TS_IRList.Regs8);
 		
-		if(sizeof(TS_IRList.Regs8) < max_len)
-		{
-			memcpy(buf,TS_IRList.Regs8,sizeof(TS_IRList.Regs8));
-			return (sizeof(TS_IRList.Regs8));
-		}
-		else
-		{
-			return 0;
-		}
+		SetModbusHeader(slave_addr, TS_IRList.Regs8);
+		memcpy(buf,TS_IRList.Regs8,max_len);
+		return (max_len);
 			
 }
 

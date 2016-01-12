@@ -165,6 +165,7 @@ void sleep_forever(void)
 {
 
 	PRINTS_ERRO_P(PSTR("Sleeping forever ..."));
+	PRINTS_P(PSTR("Sleeping forever ..."));
 	while(1)
 	{
 		#if COLDUINO || ARDUINO

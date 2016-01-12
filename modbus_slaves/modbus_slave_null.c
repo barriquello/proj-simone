@@ -84,11 +84,7 @@ uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 			}
 		
 #if MODBUS_NULL_SLAVE_SIMULATION == 0				
-			/* Detecta equipamentos de medição e faz a leitura dos dados */
-#if COLDUINO				
-			NULL_IRList.Reg.Core_Temp = AD_get_core_temp();
-#endif
-			
+			/* Detecta equipamentos de medição e faz a leitura dos dados */			
 			NULL_IRList.Reg.Pressure_Valve_H = PRESSURE_VALVE_INPUT_H;
 			NULL_IRList.Reg.Pressure_Valve_L = PRESSURE_VALVE_INPUT_L;
 			NULL_IRList.Reg.Oil_Level_H = SENSOR_LEVEL_INPUT_H;
@@ -119,10 +115,6 @@ CONST modbus_slave_t slave_NULL =
 
 void Modus_slave_null_init(void)
 {
-	
-	#if COLDUINO
-		ADSetup(NormalPower, HighSpeed, ShortSampleTime, 20, 12);
-	#endif
 	
 #if 0	
 	SENSOR_LEVEL_INPUT_H_DIR = 1;

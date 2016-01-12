@@ -164,9 +164,9 @@ typedef union
 		uint16_t Opcionais;						/* bitmap */
 		uint16_t Reles;							/* bitmap */
 	}Reg;	
-	uint8_t Regs8[32+8];
-	uint16_t Regs16[16+4];
-	uint32_t Regs32[8+2];
+	uint8_t Regs8[TS_REG_INPUT_NREGS*2+TS_REG_OFFSET*2];
+	uint16_t Regs16[TS_REG_INPUT_NREGS+TS_REG_OFFSET];
+	uint32_t Regs32[TS_REG_INPUT_NREGS/2+TS_REG_OFFSET/2];
 }modbus_ts_input_register_list;
 
 
@@ -221,9 +221,9 @@ typedef union
 		uint8_t Modo_RF1;
 		uint8_t Modo_RF2;
 	}Reg;
-	uint8_t Regs8[46];
-	uint16_t Regs16[46/2];
-	uint32_t Regs32[46/4];
+	uint8_t Regs8[TS_REG_HOLDING_NREGS];
+	uint16_t Regs16[TS_REG_HOLDING_NREGS/2];
+	uint32_t Regs32[TS_REG_HOLDING_NREGS/4];
 }modbus_ts_holding_register_list;
 
 

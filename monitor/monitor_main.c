@@ -412,6 +412,8 @@ static int callback_inifile(const char *section, const char *key, const char *va
 			}else
 			{
 				config_check.bit.num_mon_ok=1;
+				PRINTS_P(PSTR("num_monitores: "));
+				PRINTF(value);
 			}
 		}
 
@@ -419,23 +421,32 @@ static int callback_inifile(const char *section, const char *key, const char *va
 		{
 			simon_set_hostname(value);
 			config_check.bit.server_ok = 1;
+			PRINTS_P(PSTR("simon_server: "));
+			PRINTF(value);
 		}
 
 		if(strcmp_P(key,PSTR("simon_ip")) == 0)
 		{
 			simon_set_hostip(value);
 			config_check.bit.ip_ok = 1;
+			PRINTS_P(PSTR("simon_ip: "));
+			PRINTF(value);
 		}
 		if(strcmp_P(key,PSTR("api_key")) == 0)
 		{
 			simon_set_apikey(value);
 			config_check.bit.key_ok = 1;
+			PRINTS_P(PSTR("api_key: "));
+			PRINTF(value);
 		}
 		if(strcmp_P(key,PSTR("gprs_apn")) == 0)
 		{
 			simon_set_gprs_config(value);
 			config_check.bit.gprs_apn_ok = 1;
+			PRINTS_P(PSTR("gprs_apn: "));
+			PRINTF(value);
 		}
+		PRINTS_P(PSTR("\r\n"));
     }
 
   	if(strcmp_P(section,PSTR("Monitor")) == 0)
@@ -516,7 +527,8 @@ static void config_check_erro(void)
 	if(config_check.bit.gprs_apn_ok == 0)
 	{
 		PRINTS_ERRO_PP(monitor_error_msg[0]);
-		PRINTS_ERRO_P(PSTR("gprs server\n\r."));			
+		PRINTS_ERRO_P(PSTR("gprs server\n\r."));
+		erro++;			
 	}
 	if (erro)
 	{

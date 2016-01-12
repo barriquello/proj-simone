@@ -84,9 +84,7 @@ uint8_t simon_init(const modem_driver_t* _modem)
 	modem = (modem_driver_t*)_modem;	
 	in_modem = modem->receive;
 	out_modem = modem->send;
-	simon_set_apikey(API_KEY);		/* set a default key */
-	simon_set_hostname(SERVER_NAME); /* set a default server */
-	modem->sethost(hostname);
+	modem->sethost(hostname); /* set simon server */
 	modem->setip(simon_hostip); /* set a default ip */ //"54.173.137.93"
 	
 #if 1	
@@ -278,10 +276,9 @@ char* simon_get_apikey(void)
 
 void simon_set_apikey(const char* apikey)
 {
-	if(apikey != NULL)
-	{
-		strncpy(simon_apikey,apikey,MAX_APIKEY_LEN-1);
-	}
+	if(apikey == NULL) return;
+	strncpy(simon_apikey,apikey,MAX_APIKEY_LEN-1);
+
 }
 
 char* simon_get_hostname(void)
@@ -292,41 +289,39 @@ char* simon_get_hostname(void)
 
 void simon_set_hostname(const char* hostname)
 {
-	if(hostname != NULL)
-	{
-		strncpy(simon_hostname,hostname,MAX_HOSTNAME_LEN-1);
-	}
+	if(hostname == NULL) return;
+	strncpy(simon_hostname,hostname,MAX_HOSTNAME_LEN-1);
+
 }
 
 void simon_set_hostip(const char* ip)
 {
-	if(ip != NULL)
-	{
-		strncpy(simon_hostip,ip,MAX_HOSTIP_LEN-1);
-	}
+	if(ip == NULL) return;
+	strncpy(simon_hostip,ip,MAX_HOSTIP_LEN-1);
+
 }
 
 void simon_set_gprs_config(const char* gprs_cfg)
 {
 	char gprs_str[4*MAX_GPRS_LEN];	
 	char *token;
-	if(gprs_cfg != NULL)
-	{
-		strncpy(gprs_str,gprs_cfg,sizeof(gprs_str)-1);	
+	if(gprs_cfg == NULL) return;
+
+	strncpy(gprs_str,gprs_cfg,sizeof(gprs_str)-1);	
 			
-		token = strtok(gprs_str,",");	
-		strncpy(simon_gprs_server,token,MAX_GPRS_LEN-1);
-		PRINTF( " %s\r\n", token );
+	token = strtok(gprs_str,",");	
+	strncpy(simon_gprs_server,token,MAX_GPRS_LEN-1);
+	//PRINTF( " %s\r\n", token );
 		
-		token = strtok(NULL, ",");
-		strncpy(simon_gprs_user,token,MAX_GPRS_LEN-1);
-		PRINTF( " %s\r\n", token );
+	token = strtok(NULL, ",");
+	strncpy(simon_gprs_user,token,MAX_GPRS_LEN-1);
+	//PRINTF( " %s\r\n", token );
 		
-		token = strtok(NULL, ",");
-		strncpy(simon_gprs_password,token,MAX_GPRS_LEN-1);
-		PRINTF( " %s\r\n", token );
+	token = strtok(NULL, ",");
+	strncpy(simon_gprs_password,token,MAX_GPRS_LEN-1);
+	//PRINTF( " %s\r\n", token );
 		
-	}
+
 }
 
 static time_t simon_clock = 0;
