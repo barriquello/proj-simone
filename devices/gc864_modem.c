@@ -444,7 +444,7 @@ uint8_t Check_Connect_PPP(uint8_t retries)
 		/* check GPRS connection */
 		modem_printP(modem_init_cmd[GPRS]);
 		wait_modem_get_reply(100); // wait 100ms;
-		if(mon_verbosity > 0) PRINT_BUF(modem_BufferTxRx);
+		if(mon_verbosity > 2) PRINT_BUF(modem_BufferTxRx);
 
 		if(strstr((char *)modem_BufferTxRx,"#GPRS: 1") != NULL)
 		{

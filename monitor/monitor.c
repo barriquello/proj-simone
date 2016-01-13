@@ -447,7 +447,10 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 {
 
 	LOG_FILETYPE fp;
-	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};	
+	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
+	time_t time_now = 0;
+	struct tm ts;
+	char new_filename[8+5]={"00000000.txt"};	
 	
 	try_write_again:
 	if(monitor_getheader(filename, &h))
@@ -459,9 +462,58 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 		   (void)monitor_close(&fp);
 
 		   h.count++; // incrementa contador de entradas 
-		   monitor_setheader(filename, &h);
-		   
+		   monitor_setheader(filename, &h);		   
 		   monitor_state[monitor_num].total_written_entries++;
+		   
+		   /* max. file size reached ? */
+		   if(h.count == (MAX_NUM_OF_ENTRIES-1))
+		   {
+			   monitor_state[monitor_num].total_written_entries = 0;
+			   monitor_state[monitor_num].written_entries = 0;
+			   
+			   /* switch to new file */			   
+			   PRINTF_P(PSTR("Mon %d will switch to new file\r\n"),monitor_num);
+			   		   
+			   time_now = simon_clock_get(); 
+			   ts = *((struct tm *)localtime(&(time_t){time_now}));
+			     
+			   strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);	
+			   strcpy(monitor_state[monitor_num].monitor_name_writing,new_filename);
+			   
+			   /* create new file */
+			   if(monitor_openwrite(monitor_state[monitor_num].monitor_name_writing,&fp))
+			   {
+				   if(monitor_newheader(monitor_state[monitor_num].monitor_name_writing,
+				   monitor_state[monitor_num].config_h.mon_id,
+				   monitor_state[monitor_num].config_h.time_interv,
+				   monitor_state[monitor_num].config_h.entry_size) == TRUE)
+				   {
+					    /* set new header */
+					   	if(monitor_getheader(monitor_state[monitor_num].monitor_name_writing, &h))						   
+						{
+							/* set h.h2 */
+							h.h2.year = (uint16_t)(ts.tm_year + 1900);
+							h.h2.mon = (uint8_t)(ts.tm_mon + 1);
+							h.h2.mday = (uint8_t)ts.tm_mday;
+							h.h2.hour = (uint8_t)ts.tm_hour;
+							h.h2.min = (uint8_t)ts.tm_min;
+							h.h2.sec = (uint8_t)ts.tm_sec;
+							h.h2.synched = 1;
+							monitor_setheader(monitor_state[monitor_num].monitor_name_writing, &h);	
+							return (MAX_NUM_OF_ENTRIES-1);							
+						}else
+						{
+							PRINTS_ERRO_P(PSTR("Erro: setting timestamp header of new file \r\n"));
+						}
+				   }else
+				   {
+					    PRINTS_ERRO_P(PSTR("Erro: setting header of new file \r\n"));
+				   }
+			   }else
+			   {
+				   PRINTS_ERRO_P(PSTR("Erro: creating new file for writing \r\n"));				   
+			   }			   
+		   }
 		   
 		}else
 		{
@@ -619,8 +671,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   if(h.last_idx == 0)
 			   {
 				   monitor_state[monitor_num].time_to_send = 0;
-				   monitor_state[monitor_num].avg_time_to_send = 0;
-				   monitor_state[monitor_num].written_entries= 0;
+				   monitor_state[monitor_num].avg_time_to_send = 0;				   
 				   monitor_state[monitor_num].read_entries = 0;
 				   monitor_state[monitor_num].sent_entries= 0;
 			   }
@@ -688,7 +739,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   if(monitor_write(monitor_state[monitor_num].monitor_name_reading,&fp)){;}
 			   (void)monitor_close(&fp);
 			}
-		}
+		}		
 	}
 	return (MAX_NUM_OF_ENTRIES);
 }
@@ -906,7 +957,7 @@ void monitor_writer(uint8_t monitor_num)
 	{
 		monitor_state[monitor_num].written_entries++;
 		
-		if(is_terminal_idle() && mon_verbosity > 2)
+		if(is_terminal_idle() && mon_verbosity > 1)
 		{
 			PRINTF_P(PSTR("\r\nM %d, Size: %u, Entry %u: "), monitor_num, strlen(monitor_char_buffer), cnt);
 			PRINTF(monitor_char_buffer);

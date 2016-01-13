@@ -88,6 +88,7 @@ void simon_set_apikey(const char*);
 void simon_set_hostname(const char*);
 void simon_set_hostip(const char*);
 uint8_t simon_check_connection(void);
+void simon_set_gprs_config(const char* gprs_cfg);
 
 
 void simon_clock_update(void);
