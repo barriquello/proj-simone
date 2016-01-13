@@ -458,10 +458,11 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 		   (void)monitor_write(entry,&fp);
 		   (void)monitor_close(&fp);
 
-		   h.count++; // incrementa contador de entradas
+		   h.count++; // incrementa contador de entradas 
 		   monitor_setheader(filename, &h);
-
-		   monitor_state[monitor_num].written_entries++;
+		   
+		   monitor_state[monitor_num].total_written_entries++;
+		   
 		}else
 		{
 			PRINT_ERRO_P(PSTR("Erro: open file %s\r\n"), filename);
@@ -625,6 +626,8 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   }
 			   
 			   monitor_state[monitor_num].read_entries++;
+			   
+			   monitor_state[monitor_num].sending = 1;
 
 			   if(mon_verbosity > 4 && is_terminal_idle())  
 			   { 
@@ -647,11 +650,12 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   {
 				   monitor_state[monitor_num].sent_entries++;
 				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
-				   monitor_state[monitor_num].last_timestamp = unix_time;
-				  
+				   monitor_state[monitor_num].last_timestamp = unix_time;				  
+				   monitor_state[monitor_num].sending = 0;
+				   
 				   if (mon_verbosity > 1 && is_terminal_idle())
 				   {
-					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, delay: %u - avg: %u"),
+					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, delay: %lu - avg: %lu"),
 							   monitor_num,
 							   h.last_idx, h.count,
 							   monitor_state[monitor_num].time_to_send,
@@ -900,6 +904,8 @@ void monitor_writer(uint8_t monitor_num)
 		PRINT_ERRO_P(PSTR("\r\nMissed entries %d\r\n"), missing_entries);
 	}else
 	{
+		monitor_state[monitor_num].written_entries++;
+		
 		if(is_terminal_idle() && mon_verbosity > 2)
 		{
 			PRINTF_P(PSTR("\r\nM %d, Size: %u, Entry %u: "), monitor_num, strlen(monitor_char_buffer), cnt);

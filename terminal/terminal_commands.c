@@ -1117,13 +1117,15 @@ void monitor_stop(void)
 		if(monitor_is_idle == 1)
 		{
 			monitor_running = 0;
-			monitor_uploading = 0;
+			monitor_uploading = 0;			
 			OSExitCritical();
+			PRINTS_P(PSTR("Monitor stopped\r\n"));
 			return;
 		}
 		else
-		{
+		{			
 			OSExitCritical();
+			PRINTS_P(PSTR("Stopping monitors ...\r\n"));
 			DelayTask(50);
 		}
 	}	
@@ -1136,6 +1138,7 @@ void mcu_reset(void)
 	while(1)	
 	{		
 		// wait watchdog reset
+		PRINTS_P(PSTR("Resetting ...\r\n"));
 	}
 }
 
@@ -1182,6 +1185,7 @@ void term_cmd_monitor(char *param)
 	LOG_DIRINFO  dir;
 
     extern monitor_state_t monitor_state[];
+	extern monitors_state_t monitors_state;
     extern uint8_t mon_verbosity;
 	extern uint8_t monitor_modem_null;
 
@@ -1189,6 +1193,10 @@ void term_cmd_monitor(char *param)
 	switch (param[0])
 	{
 		case 's':
+			time_now = (time_t) (clock_time()/1000);
+			PRINTS_P(PSTR("----------------------------------------------\r\n"));
+			PRINTF_P(PSTR("Time started: %lu, Time now: %lu, Elapsed: %lu s\r\n"), monitors_state.time_started, time_now, time_now - monitors_state.time_started);
+			PRINTS_P(PSTR("----------------------------------------------\r\n"));
 			for (mon= 0; mon < MAX_NUM_OF_MONITORES; mon++)
 			{
 				if(monitor_state[mon].state == IN_USE)
@@ -1204,6 +1212,7 @@ void term_cmd_monitor(char *param)
 												monitor_state[mon].config_h.entry_size);
 					PRINTF_P(PSTR("Avg time to send: %u\r\n"), monitor_state[mon].avg_time_to_send);
 					PRINTF_P(PSTR("Total written: %lu\r\n"), monitor_state[mon].written_entries);
+					PRINTF_P(PSTR("Total entries: %lu\r\n"), monitor_state[mon].total_written_entries);					
 					PRINTF_P(PSTR("Total read: %lu\r\n"), monitor_state[mon].read_entries);
 					PRINTF_P(PSTR("Total sent: %lu\r\n"), monitor_state[mon].sent_entries);
 					PRINTF_P(PSTR("Sinc at: %lu\r\n"), monitor_state[mon].sinc_time);
@@ -1246,6 +1255,8 @@ void term_cmd_monitor(char *param)
 				{
 					 if (monitor_opendir(monitor_state[mon].monitor_dir_name, d))
 					 {
+						 PRINTS_P(PSTR("\r\n---------------\r\n"));
+						 PRINTF_P(PSTR("\r\nMonitor %u: \r\n"), mon);
 						 while (monitor_readdir(dir,d))
 						 {
 							 #if _WIN32

@@ -223,15 +223,27 @@ typedef struct
 	uint8_t slave_addr;
 	uint8_t codigo;
 	uint8_t sinc;
+	uint8_t sending;
 	data_reader read_data;
 	uint32_t time_to_send;
 	uint32_t avg_time_to_send;
 	uint32_t written_entries;
+	uint32_t total_written_entries;
 	uint32_t read_entries;
 	uint32_t sent_entries;
 	time_t last_timestamp;
 	time_t sinc_time;
 }monitor_state_t;
+
+typedef struct
+{
+	time_t time_started;
+	uint8_t monitores_em_uso;
+	uint8_t is_idle;
+	uint8_t uploading;
+	uint8_t running;	
+	uint8_t is_connected;
+}monitors_state_t;
 
 typedef union
 {

@@ -55,7 +55,7 @@ static char modem_BufferTxRx[64];
 extern uint8_t mon_verbosity;
 uint16_t modem_watchdog = 0;
 
-#define MAX_MODEM_ERRORS 10
+#define MAX_MODEM_ERRORS 0
 #define DEBUG_PRINT 1
 
 #if DEBUG_PRINT
@@ -279,6 +279,9 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 		{
 			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem Init fail \r\n"));
 			goto exit;
+		}else
+		{
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem Init OK \r\n"));
 		}
 	}
 
@@ -289,12 +292,18 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 		{
 			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS is busy \r\n"));
 			goto exit; /* retry later */
+		}else
+		{
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS is ready \r\n"));
 		}
 
 		if(Check_Connect_PPP(MAX_RETRIES) == FALSE)
 		{
 			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS connection fail \r\n"));
 			goto exit;
+		}else
+		{
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS is connected \r\n"));
 		}
 	}
 

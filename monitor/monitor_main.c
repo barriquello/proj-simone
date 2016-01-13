@@ -268,6 +268,8 @@ volatile uint8_t monitor_is_connected = 1;
 volatile uint8_t monitor_is_idle = 0;
 volatile uint8_t monitor_modem_null = 0;
 
+monitors_state_t  monitors_state = {0};
+
 CONST char config_inifile[] = "config.ini";
 
 /*---------------------------------------------------------------------------*/
@@ -330,7 +332,8 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 		time_before = clock_time();
 		if(mon_verbosity > 6 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread W %u, time now: %lu \r\n"), _monitor, time_before);
 		
-		monitor_writer(_monitor);		
+		monitor_writer(_monitor);	
+			
 		time_now = clock_time();		
 		time_elapsed = (uint16_t)(time_now-time_before);
 		
@@ -366,6 +369,7 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 		time_before = clock_time();		
 		
 		if(mon_verbosity > 6 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread R %u, time now: %lu \r\n"), _monitor, time_before);
+		
 		if(monitor_reader(_monitor) < MAX_NUM_OF_ENTRIES)
 		{			
 			time_now = clock_time();			
@@ -676,8 +680,10 @@ void main_monitor(void)
 		monitor_state[monitor_num].avg_time_to_send = 0;
 		monitor_state[monitor_num].sinc = 0;
 		monitor_state[monitor_num].written_entries = 0;
+		monitor_state[monitor_num].total_written_entries = 0;		
 		monitor_state[monitor_num].sent_entries = 0;
 		monitor_state[monitor_num].read_entries = 0;
+		monitor_state[monitor_num].sending = 0;
 	}
 	
 #ifdef _WIN32	
@@ -688,28 +694,51 @@ void main_monitor(void)
 
 	if(mon_verbosity > 3)  PRINTF_P(PSTR("\r\nMonitor threads running with %u monitors... \r\n"), monitores_em_uso);	
 	
+	monitors_state.time_started = (time_t)(clock_time()/1000);
+	
+	int8_t sending_mon = 0;
+	
 	/* run forever */
 	while(1)
 	{
+				
 		monitor_is_idle = 0;
+		
 		for (monitor_num = 0; monitor_num < monitores_em_uso; monitor_num++)
 		{
 			monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
-			monitor_read_thread(&monitor_state[monitor_num].read_pt, monitor_num);
 		}
 		
-		monitor_is_idle = 1;
-		#ifndef _WIN32
-			DelayTask(MS2TICKS(1000)); // executa a cada 1000ms
-		#endif
+		/* read next to send */		
+		monitor_read_thread(&monitor_state[sending_mon].read_pt, sending_mon);
 		
-		monitor_is_idle = 0;
-		for (monitor_num = (monitores_em_uso-1); monitor_num >= 0; monitor_num--)
+		if(monitor_state[sending_mon].sending == 0)
 		{
-			monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
-			monitor_read_thread(&monitor_state[monitor_num].read_pt, monitor_num);
-		}
+			if(++sending_mon == monitores_em_uso)
+			{
+				sending_mon = 0;
+				
+				#ifndef _WIN32
+				DelayTask(MS2TICKS(1000)); // executa a cada 1000ms
+				#endif
+			}
+		}		
 		monitor_is_idle = 1;
+				
+		#if 0
+			#ifndef _WIN32
+				DelayTask(MS2TICKS(1000)); // executa a cada 1000ms
+			#endif
+		
+		
+			monitor_is_idle = 0;
+			for (monitor_num = (monitores_em_uso-1); monitor_num >= 0; monitor_num--)
+			{
+				monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
+				monitor_read_thread(&monitor_state[monitor_num].read_pt, monitor_num);
+			}
+			monitor_is_idle = 1;
+		#endif			
 		
 #ifdef _WIN32			
 		monitor_set_input(&monitor_input_pt);
@@ -741,10 +770,11 @@ void main_monitor(void)
 				break;
 		}
 #endif		
-		
+
 		#ifndef _WIN32
 			DelayTask(MS2TICKS(1000)); // executa a cada 1000ms			
 		#endif
+
 		
 	}
 
