@@ -46,7 +46,7 @@ static modbus_null_input_register_list NULL_IRList;
 
 uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 
-#define MODBUS_NULL_SLAVE_SIMULATION	1
+#define MODBUS_NULL_SLAVE_SIMULATION	0
 #if MODBUS_NULL_SLAVE_SIMULATION	
 #include "random_lib.h"
 #endif
@@ -69,6 +69,11 @@ uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 #define INPUT_PORT_DATA		PTCD
 
 #elif ARDUINO
+
+#define SENSOR_LEVEL_INPUT_H 		(PORTF & 0x04)
+#define SENSOR_LEVEL_INPUT_L 		(PORTF & 0x02)
+#define PRESSURE_VALVE_INPUT_H 		(PORTF & 0x01)
+#define PRESSURE_VALVE_INPUT_L 		(PORTF & 0x08)
 
 #define INPUT_PORT_DIR		DDRF	/* atmega2560 analog input */
 #define INPUT_PORT_DATA		PORTF	/* atmega2560 analog input */
