@@ -157,6 +157,7 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t length, uint8_t mon_id, time_t ti
 {
 
 	uint8_t ret = MODEM_ERR;
+	uint8_t retries = 0;
 	
 	if(length > SIZEARRAY(server_reply))      return MODEM_ERR;
 	if(out_modem == NULL || in_modem == NULL) return MODEM_ERR;
@@ -174,9 +175,14 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t length, uint8_t mon_id, time_t ti
 	return MODEM_OK;
 #endif
 
-	if(out_modem(server_reply, (uint16_t)strlen(server_reply)) != MODEM_OK)
+	#define MAX_RETRIES  0
+	retries = 0;
+    while(out_modem(server_reply, (uint16_t)strlen(server_reply)) != MODEM_OK)
 	{
-		return MODEM_ERR;
+		if(++retries > MAX_RETRIES)
+		{
+			return MODEM_ERR;
+		}		
 	}
 
 	do
@@ -188,12 +194,18 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t length, uint8_t mon_id, time_t ti
 		}
 		server_reply[recv_size-1] = '\0';	
 	
+		if(mon_verbosity > 4 && is_terminal_idle()) PRINTF(server_reply);
+		
 		if(ret == MODEM_ERR)
 		{
 			ret = get_server_confirmation(server_reply);
 		}
 	}while(recv_size);
 	
+	if(ret == MODEM_ERR)
+	{
+		PRINTS_P("Server confirmation not received\r\n");
+	}
 	return ret;
 }
 

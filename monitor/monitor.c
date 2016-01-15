@@ -461,7 +461,7 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 		   (void)monitor_write(entry,&fp);
 		   (void)monitor_close(&fp);
 
-		   h.count++; // incrementa contador de entradas 
+		   h.count++;  /* incrementa contador de entradas */
 		   monitor_setheader(filename, &h);		   
 		   monitor_state[monitor_num].total_written_entries++;
 		   
@@ -665,7 +665,13 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   (void)monitor_close(&fp);
 
 			   /* try to send */
-			   time_init = clock_time();			   
+			   time_init = clock_time();
+			   
+			   if(monitor_state[monitor_num].sending == 0)
+			   {
+				   monitor_state[monitor_num].tx_start = (time_init/1000);	
+			   }
+			   		   
 			   send_ok = 0;
 			   
 			   if(h.last_idx == 0)
@@ -678,7 +684,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   
 			   monitor_state[monitor_num].read_entries++;
 			   
-			   monitor_state[monitor_num].sending = 1;
+			   monitor_state[monitor_num].sending = 1; 
 
 			   if(mon_verbosity > 4 && is_terminal_idle())  
 			   { 
@@ -690,7 +696,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   if(monitor_entry_send(monitor_num,entry,entry_size-2) == TRUE) // ignore \r\n
 			   {
 				   /* if ok */
-				   h.last_idx++; // incrementa indice da última entrada lida
+				   h.last_idx++; /* incrementa indice da última entrada lida */
 				   monitor_setheader(filename, &h);	
 				   send_ok = 1;
 			   }
@@ -703,14 +709,21 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
 				   monitor_state[monitor_num].last_timestamp = unix_time;				  
 				   monitor_state[monitor_num].sending = 0;
+				   monitor_state[monitor_num].tx_time = (clock_time()/1000) - monitor_state[monitor_num].tx_start;
+				   
+				   monitor_state[monitor_num].tx_time_avg = ((monitor_state[monitor_num].tx_time_avg*31) + monitor_state[monitor_num].tx_time)/32;
 				   
 				   if (mon_verbosity > 1 && is_terminal_idle())
 				   {
-					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, delay: %lu - avg: %lu"),
+					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, delay: %lu - avg: %lu,"),
 							   monitor_num,
 							   h.last_idx, h.count,
 							   monitor_state[monitor_num].time_to_send,
 							   monitor_state[monitor_num].avg_time_to_send);
+							   
+						PRINTF_P(PSTR(" total: %lu s - avg: %lu s"),							   
+							   monitor_state[monitor_num].tx_time,
+							   monitor_state[monitor_num].tx_time_avg);
 
 						char timestamp[32];
 						ts = *localtime(&(time_t){unix_time});
@@ -719,6 +732,15 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 				   }
 				   
 				   monitor_state[monitor_num].time_to_send = 0;
+			   }else
+			   {
+				   if (mon_verbosity > 1 && is_terminal_idle())
+				   {
+					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, failed to send, delay: %lu\r\n"),
+					   monitor_num,
+					   h.last_idx, h.count,
+					   monitor_state[monitor_num].time_to_send);
+				   }
 			   }			   
 
 			   return h.last_idx;

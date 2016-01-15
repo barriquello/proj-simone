@@ -106,11 +106,18 @@ static INT8U modem_get_reply(char *buf, uint16_t max_len)
 {
 	uint8_t c;
 	uint8_t len = 0;
-	memset(buf,0x00,max_len); // clear buffer
+	
+	if(buf!= NULL)
+	{
+		memset(buf,0x00,max_len); // clear buffer
+	}
 	while((c=modem_getchar()) != (uint8_t)-1)
 	{
-		*buf = c;
-		buf++;
+		if(buf!= NULL)
+		{
+			*buf = c;
+			buf++;
+		}
 		len++;
 		if(--max_len <= 1)
 		{
@@ -141,7 +148,7 @@ INT8U is_modem_ok(void)
 	modem_acquire();	
 		if(mon_verbosity > 4 && is_terminal_idle()) PRINTS_PP(modem_init_cmd[AT]);	
 		modem_printP(modem_init_cmd[AT]);
-		DelayTask(10);
+		DelayTask(20);
 		MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
 		if(modem_BufferTxRx[0] != 0)
 		{
@@ -150,7 +157,7 @@ INT8U is_modem_ok(void)
 				ok = TRUE;
 			}else
 			{
-				DelayTask(200);
+				DelayTask(10);
 				OSCleanQueue(MODEM_QUEUE);
 			}
 		}
@@ -196,6 +203,12 @@ uint8_t gc864_modem_init(void)
 	
     /* setup */
 	
+	modem_printR("AT&K=0\r\n"); /* disable flow control */
+	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
+	
+	modem_printR("ATS12=2\r\n"); /* prompt time = 2 x 20ms */
+	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
+	
 	modem_printP(modem_init_cmd[GPRS0]);
 	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
 	
@@ -213,6 +226,10 @@ uint8_t gc864_modem_init(void)
 
 	modem_printP(modem_init_cmd[GPRS]);
 	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
+	
+	modem_printR("AT#SCFG=1,1,300,90,600,50\r\n");
+	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
+		
 
 	modem_release();
 
@@ -256,6 +273,7 @@ uint8_t gc864_modem_set_ip(char* _ip)
 	return MODEM_OK;
 }
 
+#if 0
 uint8_t gc864_modem_send(char * dados, uint16_t tam)
 {
 	uint16_t timeout = 0;
@@ -288,7 +306,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 	/* check modem init */
 	if(modem_state == INIT)
 	{
-		if(is_modem_ok_retry(MAX_RETRIES, 10) == FALSE)
+		if(is_modem_ok_retry(10, 200) == FALSE)
 		{
 			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS is busy \r\n"));
 			goto exit; /* retry later */
@@ -296,7 +314,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 		{
 			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS is ready \r\n"));
 		}
-
+				
 		if(Check_Connect_PPP(MAX_RETRIES) == FALSE)
 		{
 			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS connection fail \r\n"));
@@ -307,28 +325,36 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 		}
 	}
 
+    if(modem_state == OPEN) 
+	{		
+		goto send;
+	}
+	
+	
 	try_again:
 
+    /* open TCP connection */
     SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT#SKTD=0,80,%s,0,0\r\n"), hostname);
-
     if(mon_verbosity > 3) PRINT(modem_BufferTxRx);
-
     modem_printR(modem_BufferTxRx);
 
     timeout = 0;
     retries = 0;
 
     do{
-    	wait_modem_get_reply(100); // wait 100ms;
+    	wait_modem_get_reply(500); // wait 100ms;
     	if(mon_verbosity > 2) PRINT_BUF(modem_BufferTxRx);
 
     	if(strstr((char *)modem_BufferTxRx,"CONNECT"))
     	{
+			modem_state = OPEN;
 			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS connection OK \r\n"));
     		goto send;
     	}
     	if(strstr((char *)modem_BufferTxRx,"NO CARRIER"))
 		{
+			modem_state = INIT;
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS connection error \r\n"));
     		if(++retries < MAX_RETRIES)
     		{
     			goto try_again;
@@ -337,14 +363,13 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 		}
     }while(++timeout < 20);
 
-    if(mon_verbosity > 2) PRINTS_P(PSTR("\r\nConnect fail\r\n"));
-
+    if(mon_verbosity > 2) PRINTS_P(PSTR("\r\nConnection failed \r\n"));
     goto exit;
 
+    /* connection is open, send data */
     send:
 
 		if(mon_verbosity > 1) PRINT(dados);
-
 		modem_printR(dados);
 
 		timeout = 0;
@@ -360,15 +385,17 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 				OSCleanQueue(MODEM_QUEUE);
 				break;
 			}
-		}while(++timeout < 200); /* espera ate 2 segundo */
+		}while(++timeout < 200); /* espera ate 2 segundos */
 
 		if(send_ok == 1)
 		{
 			if(mon_verbosity > 0) PRINTS_P(PSTR("\r\nsend ok\r\n"));
+			modem_watchdog = 0;
 			return MODEM_OK;
 		}else
 		{
 			if(mon_verbosity > 0) PRINTS_P(PSTR("\r\nsend fail\r\n"));
+			modem_state = INIT;
 		}
 
 	exit:
@@ -378,9 +405,190 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 		gc864_modem_close();	
 	}
 	return MODEM_ERR;
-
-
 }
+#else
+
+uint8_t Check_Connection(uint8_t retries)
+{
+	
+	OSCleanQueue(MODEM_QUEUE);
+
+	do
+	{
+		/* check GPRS connection */
+		modem_printR("AT#SGACT?\r\n");
+		wait_modem_get_reply(100); // wait 100ms;
+		if(mon_verbosity > 2) PRINT_BUF(modem_BufferTxRx);
+
+		if(strstr((char *)modem_BufferTxRx,"#SGACT: 1,1") != NULL)
+		{
+			/* connected */
+			return TRUE;
+		}
+		else if(strstr((char *)modem_BufferTxRx,"#SGACT: 1,0") != NULL)
+		{
+			/* not connected */
+			if(--retries == 0) return FALSE;
+
+			modem_printR("AT#SGACT=1,1\r\n");
+			wait_modem_get_reply(500); // wait 500ms;
+			if(mon_verbosity > 0)  PRINT_BUF(modem_BufferTxRx);
+		}else
+		{
+			/* no reply, buffer may be full */
+			if(--retries == 0) return FALSE;
+			OSCleanQueue(MODEM_QUEUE);
+		}
+	}while(TRUE);
+
+	return FALSE;
+	
+}
+
+
+uint8_t gc864_modem_send(char * dados, uint16_t tam)
+{
+	uint16_t timeout = 0;
+	uint8_t  retries = 0;
+	uint8_t  send_ok = 0;
+	
+	if(dados == NULL) goto exit;
+	if(hostname == NULL) goto exit;
+
+	*(dados+tam-1) = '\0'; // null terminate	
+	
+	/* check modem setup */
+	if(modem_state == SETUP)
+	{
+		if(gc864_modem_init() == MODEM_ERR)
+		{
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem Init fail \r\n"));
+			goto exit;
+		}else
+		{
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem Init OK \r\n"));
+		}
+	}
+
+	/* check modem init */
+	if(modem_state == INIT)
+	{
+		if(is_modem_ok_retry(MAX_RETRIES, 20) == FALSE)
+		{
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS is busy \r\n"));
+			goto exit; /* retry later */
+		}else
+		{
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS is ready \r\n"));
+		}		
+
+		if(Check_Connection(MAX_RETRIES) == FALSE)
+		{
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS connection fail \r\n"));
+			goto exit;
+		}else
+		{
+			if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS is connected \r\n"));
+		}
+	}
+	
+	try_again:
+	
+	/* open TCP connection */
+	SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT#SD=1,0,80,%s,0,0\r\n"), hostname);
+	if(mon_verbosity > 3) PRINT(modem_BufferTxRx);
+	modem_printR(modem_BufferTxRx);
+	
+	 timeout = 0;
+	 retries = 0;
+
+	 do{
+		 wait_modem_get_reply(100); // wait 100ms;
+		 if(mon_verbosity > 2) PRINT_BUF(modem_BufferTxRx);
+
+		 if(strstr((char *)modem_BufferTxRx,"CONNECT"))
+		 {
+			 //modem_state = OPEN;
+			 if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS connection OK \r\n"));
+			 goto send;
+		 }
+		 if(strstr((char *)modem_BufferTxRx,"NO CARRIER"))
+		 {
+			 modem_state = INIT;
+			 if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS connection error \r\n"));
+			 if(++retries < MAX_RETRIES)
+			 {
+				 goto try_again;
+			 }
+			 break;
+		 }
+	 }while(++timeout < 200);
+
+	 if(mon_verbosity > 2) PRINTS_P(PSTR("\r\nConnection failed \r\n"));
+	 goto exit;
+	 
+	 /* connection is open, send data */
+	 send:
+	 if(mon_verbosity > 1) PRINT(dados);
+	 modem_printR(dados);
+
+	 timeout = 0;
+	 send_ok = 0;
+	 
+	do
+	{
+		wait_modem_get_reply(10);
+		if(mon_verbosity > 2) PRINT_BUF(modem_BufferTxRx);
+		if(strstr((char *)modem_BufferTxRx,"OK"))
+		{
+			send_ok=1;
+			break;
+		}
+	}while(++timeout < 500); /* espera ate 5 segundos */		
+
+	if(send_ok == 1)	
+	{
+		#if 1
+		char buffer[64];
+		do
+		{
+			modem_get_reply(buffer,63);
+			if(mon_verbosity > 2) PRINT_BUF(buffer);
+			
+			if(strstr((char *)buffer,"</html>"))
+			{
+				break;
+			}
+			if(strstr((char *)buffer,"true"))
+			{
+				break;
+			}
+		}while(++timeout < 1000); /* espera ate 5 segundos */
+		#endif
+		
+		DelayTask(200);
+		modem_printR("+++");
+		DelayTask(200);
+		modem_get_reply(buffer,63);
+		if(mon_verbosity > 2) PRINT_BUF(buffer);
+		
+		modem_printR("AT#SH=1\r\n");
+		modem_get_reply(buffer,63);
+		if(mon_verbosity > 2) PRINT_BUF(buffer);
+			
+		if(mon_verbosity > 0) PRINTS_P(PSTR("\r\nsend ok\r\n"));
+		modem_watchdog = 0;
+		return MODEM_OK;
+	}else
+	{
+		if(mon_verbosity > 0) PRINTS_P(PSTR("\r\nsend fail\r\n"));
+		modem_state = INIT;
+	}
+		 	
+	exit:
+	return MODEM_ERR;
+}
+#endif
 
 
 uint8_t gc864_modem_receive(char* buff, uint16_t* len)
@@ -436,7 +644,7 @@ const modem_driver_t gc864_modem_driver  =
 uint8_t Check_Connect_PPP(uint8_t retries)
 {
 
-	DelayTask(100);
+	//DelayTask(100);
 	OSCleanQueue(MODEM_QUEUE);
 
 	do

@@ -233,6 +233,9 @@ typedef struct
 	uint32_t sent_entries;
 	time_t last_timestamp;
 	time_t sinc_time;
+	uint32_t tx_start;
+	uint32_t tx_time;
+	uint32_t tx_time_avg;
 }monitor_state_t;
 
 typedef struct
