@@ -85,6 +85,7 @@ void terminal_acquire(void);
 void terminal_release(void);
 void terminal_newline(void);
 int is_terminal_idle(void);
+void terminal_set_idle(char state);
 
 void printf_terminal_P(const char *s);
 

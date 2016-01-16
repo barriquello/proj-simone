@@ -231,11 +231,15 @@ typedef struct
 	uint32_t total_written_entries;
 	uint32_t read_entries;
 	uint32_t sent_entries;
+	uint32_t failed_tx;
 	time_t last_timestamp;
 	time_t sinc_time;
 	uint32_t tx_start;
 	uint32_t tx_time;
 	uint32_t tx_time_avg;
+	clock_t reader_upload_start_time;
+	uint32_t reader_upload_time;
+	uint32_t reader_upload_time_avg;
 }monitor_state_t;
 
 typedef struct
@@ -290,3 +294,4 @@ void monitor_writer(uint8_t monitor_num);
 clock_t clock_time(void);
 
 #endif /* LOGGER_H_ */
+

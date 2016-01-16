@@ -705,13 +705,13 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   
 			   if(send_ok == 1)
 			   {
+				   monitor_state[monitor_num].failed_tx = 0;
 				   monitor_state[monitor_num].sent_entries++;
 				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
 				   monitor_state[monitor_num].last_timestamp = unix_time;				  
 				   monitor_state[monitor_num].sending = 0;
-				   monitor_state[monitor_num].tx_time = (clock_time()/1000) - monitor_state[monitor_num].tx_start;
-				   
-				   monitor_state[monitor_num].tx_time_avg = ((monitor_state[monitor_num].tx_time_avg*31) + monitor_state[monitor_num].tx_time)/32;
+				   monitor_state[monitor_num].tx_time = (clock_time()/1000) - monitor_state[monitor_num].tx_start;				   
+				   monitor_state[monitor_num].tx_time_avg = ((monitor_state[monitor_num].tx_time_avg*7) + monitor_state[monitor_num].tx_time)/8;
 				   
 				   if (mon_verbosity > 1 && is_terminal_idle())
 				   {
@@ -729,16 +729,16 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 						ts = *localtime(&(time_t){unix_time});
 						strftime(timestamp,SIZEARRAY(timestamp)," @%Y|%m|%d %H:%M:%S\r\n",&ts);
 						PRINTF(timestamp);
-				   }
-				   
+				   }				   
 				   monitor_state[monitor_num].time_to_send = 0;
 			   }else
 			   {
+				   monitor_state[monitor_num].failed_tx++;				   
 				   if (mon_verbosity > 1 && is_terminal_idle())
 				   {
-					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, failed to send, delay: %lu\r\n"),
+					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, failed to send %lu, delay: %lu\r\n"),
 					   monitor_num,
-					   h.last_idx, h.count,
+					   (h.last_idx + 1), h.count, monitor_state[monitor_num].failed_tx,
 					   monitor_state[monitor_num].time_to_send);
 				   }
 			   }			   

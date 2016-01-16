@@ -367,6 +367,10 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));
 		
 		time_before = clock_time();		
+		if(monitor_state[_monitor].sending == 0)
+		{
+			monitor_state[_monitor].reader_upload_start_time = time_before;
+		}
 		
 		if(mon_verbosity > 6 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread R %u, time now: %lu \r\n"), _monitor, time_before);
 		
@@ -380,6 +384,13 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 				PRINTF_P(PSTR("M %u R start @%lu\r\n"), _monitor, (uint32_t)(time_before & MASK32));
 				PRINTF_P(PSTR("M %u R end @%lu, diff %lu\r\n"), _monitor, (uint32_t)(time_now & MASK32), time_elapsed);
 			}
+			
+			/* log stats */
+			time_before = monitor_state[_monitor].reader_upload_start_time;
+			time_elapsed = (uint32_t)(time_now-time_before);
+			monitor_state[_monitor].reader_upload_time = time_elapsed;
+			monitor_state[_monitor].reader_upload_time_avg = ((monitor_state[_monitor].reader_upload_time_avg*7) + time_elapsed)/8;
+			
 		}				
   }
   PT_END(pt);

@@ -89,12 +89,18 @@ static void (*putch)(char);
 void terminal_acquire(void)	
 {	
 	uart0_acquire();
-	terminal_idle = FALSE;
 }
 void terminal_release(void)
 {
-	terminal_idle = TRUE;
 	uart0_release();	
+}
+void terminal_set_idle(char state)
+{
+	if(state == TRUE || state == FALSE)
+	{
+		terminal_idle = state;	
+	}
+	
 }
 #elif COLDUINO
 void terminal_acquire(void)
@@ -447,18 +453,18 @@ void terminal_process(void)
   
 #if ARDUINO
   while(1)
-  {
-	  terminal_acquire();	  
-	  putchar_terminal('*');
+  {	  	
+	  terminal_acquire();  
+	  putchar_terminal('*');	  
 	  if(getchar_terminal(&c, 1000) == TRUE)
 	  {
 		  if(c=='\r' || c=='\n')
-		  {
+		  {			 
 			  putchar_terminal('>');
+			  terminal_set_idle(FALSE);
 			  break;
 		  }		  
-	  }
-	  
+	  }  
 	 terminal_release();
 	 DelayTask(3000);	  
   }
@@ -510,9 +516,10 @@ void terminal_process(void)
       term_cmd_line_ndx=0;
       term_print_prompt();      
       SetSilentMode((char)FALSE);
+	  terminal_set_idle(TRUE);
 	  #if ARDUINO
 	  	  terminal_release();
-	  #endif
+	  #endif	  
 	  return;
     }
     else

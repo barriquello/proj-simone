@@ -1217,6 +1217,8 @@ void term_cmd_monitor(char *param)
 					PRINTF_P(PSTR("Total sent: %lu\r\n"), monitor_state[mon].sent_entries);
 					PRINTF_P(PSTR("Sinc at: %lu\r\n"), monitor_state[mon].sinc_time);
 					PRINTF_P(PSTR("Last sent at: %lu\r\n"), monitor_state[mon].last_timestamp);
+					PRINTF_P(PSTR("Last upload time: %lu\r\n"), monitor_state[mon].reader_upload_time);
+					PRINTF_P(PSTR("Avg upload time: %lu\r\n"), monitor_state[mon].reader_upload_time_avg);
 				}
 			}
 			break;
