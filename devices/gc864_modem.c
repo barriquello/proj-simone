@@ -182,7 +182,7 @@ uint8_t is_modem_ok_retry(uint8_t retries, uint16_t timeout)
 uint8_t gc864_modem_init(void)
 {
 	
-	PRINTS_P(PSTR("Modem Init \r\n"));
+	PRINTS_P(PSTR("Modem init \r\n"));
 	
 	if(modem_state == SETUP)
 	{
@@ -451,18 +451,18 @@ uint8_t modem_close_tcp(void);
 
 uint8_t modem_close_tcp(void)
 {
-	char buffer[16];
+	char buffer[64];
 	uint8_t  retries = 0;
 	
 	while(retries < 3)
 	{
 		++retries;
-		DelayTask(50);
-		modem_printR("+++");
-		DelayTask(50);
-		
 		DelayTask(100);
-		modem_get_reply(buffer,16);
+		modem_printR("+++");
+		DelayTask(100);
+		
+		DelayTask(10);
+		modem_get_reply(buffer,64);
 		if(mon_verbosity > 2) PRINT_BUF(buffer);
 		if(strstr((char *)buffer,"OK"))		
 		{
@@ -480,8 +480,8 @@ uint8_t modem_close_tcp(void)
 	{
 		++retries;	
 		modem_printR("AT#SH=1\r\n");	
-		DelayTask(100);
-		modem_get_reply(buffer,16);
+		DelayTask(10);
+		modem_get_reply(buffer,64);
 		if(mon_verbosity > 2) PRINT_BUF(buffer);
 		if(strstr((char *)buffer,"OK"))
 		{
@@ -548,15 +548,16 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 		}
 	}
 	
+	retries = 0;
+	
 	try_again:
 	
 	/* open TCP connection */
-	SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT#SD=1,0,80,%s,0,0\r\n"), hostname);	
+	SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT#SD=1,0,80,%s,0,0,0\r\n"), hostname);	
 	modem_printR(modem_BufferTxRx);
 	if(mon_verbosity > 1) PRINT(modem_BufferTxRx);
 	
-	 timeout = 0;
-	 retries = 0;
+	 timeout = 0; 
 
 	 do{
 		 wait_modem_get_reply(100); // wait 100ms;
