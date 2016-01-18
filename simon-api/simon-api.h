@@ -68,6 +68,7 @@ typedef uint8_t (*output)(char *, uint16_t);
 typedef uint8_t (*set_host)(char *);
 typedef uint8_t (*set_ip)(char *);
 typedef uint8_t (*get_connect)(void);
+typedef uint8_t (*resolve_ip)(char * host, char *_ip);
 
 typedef struct
 {
@@ -77,6 +78,7 @@ typedef struct
 	set_host sethost;
 	set_ip   setip;
 	get_connect  is_connected;
+	resolve_ip  resolveip;
 }modem_driver_t;
 
 uint8_t simon_init(const modem_driver_t* modem);
@@ -84,6 +86,7 @@ uint8_t simon_get_time(struct tm * t);
 uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time);
 char* simon_get_apikey(void);
 char* simon_get_hostname(void);
+char* simon_get_hostip(void);
 void simon_set_apikey(const char*);
 void simon_set_hostname(const char*);
 void simon_set_hostip(const char*);

@@ -680,6 +680,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 				   monitor_state[monitor_num].avg_time_to_send = 0;				   
 				   monitor_state[monitor_num].read_entries = 0;
 				   monitor_state[monitor_num].sent_entries= 0;
+				   monitor_state[monitor_num].failed_tx = 0;
 			   }
 			   
 			   monitor_state[monitor_num].read_entries++;
@@ -705,7 +706,7 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   
 			   if(send_ok == 1)
 			   {
-				   monitor_state[monitor_num].failed_tx = 0;
+				   //monitor_state[monitor_num].failed_tx = 0;
 				   monitor_state[monitor_num].sent_entries++;
 				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
 				   monitor_state[monitor_num].last_timestamp = unix_time;				  

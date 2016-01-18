@@ -611,6 +611,7 @@ CONST command_t wt_cmd = {
 
 static INT8U term_stdout = USE_USB;
 BRTOS_Queue *stdin_q = NULL;
+uint16_t term_echo_timeout = 100;
 
 extern BRTOS_Queue *Serial1;
 extern BRTOS_Queue *Serial2;
@@ -642,7 +643,7 @@ void term_cmd_echo(char *param)
 		
 	if(stdin_q != NULL)
 	{
-		while(OSQueuePend(stdin_q, &caracter, 100) != TIMEOUT)
+		while(OSQueuePend(stdin_q, &caracter, term_echo_timeout) != TIMEOUT)
 		{
 			putchar_terminal( (CHAR8)caracter);
 		}	
@@ -670,28 +671,42 @@ CONST command_t echo_cmd = {
 // Print a string in the terminal
 void term_cmd_echo_out(char *param)
 {	
-	INT8U std_output;	
-	terminal_newline();
+	uint8_t std_output;	
+	uint32_t input;
+	terminal_newline();	
 	printf_terminal_P(PSTR("STDOUT = "));
 	
 	if(param != NULL)
 	{		
-		std_output = (INT8U)(param[0]-'0');
-		if(std_output >= 0 && std_output <= 9)
+		if (param[0] == 't')
 		{
-			term_stdout = std_output;
-			if (term_stdout == USE_UART1)
+			putchar_terminal(term_stdout + '0');
+			
+			if(sscanf(&param[2], "%d", &input) == 1)
 			{
-				stdin_q = Serial1;
+				term_echo_timeout = (uint16_t)input;
 			}
-			if (term_stdout == USE_UART2)
-			{
-				stdin_q = Serial2;
-			}			
-			putchar_terminal( (CHAR8)param[0]);
-			terminal_newline();
-			return;
+			PRINTF_P(PSTR(" timeout = %u\r\n"), term_echo_timeout);					
 		}
+		else
+		{
+			std_output = (INT8U)(param[0]-'0');
+			if(std_output >= 0 && std_output <= 9)
+			{
+				term_stdout = std_output;
+				if (term_stdout == USE_UART1)
+				{
+					stdin_q = Serial1;
+				}
+				if (term_stdout == USE_UART2)
+				{
+					stdin_q = Serial2;
+				}
+				putchar_terminal( (CHAR8)param[0]);
+				terminal_newline();
+				return;
+			}
+		}		
 	}else
 	{
 		putchar_terminal(term_stdout + '0');
@@ -1093,6 +1108,7 @@ CONST command_t modbus_cmd = {
 #define cmd_monitor_help_def      \
 	"\r\n usage:\r\n"           \
 	"s - status \r\n"           \
+	"z - stop monitor\r\n"      \
 	"r - reset monitor\r\n"     \
 	"c - clear logs\r\n"        \
 	"l - list \r\n"             \
@@ -1215,6 +1231,7 @@ void term_cmd_monitor(char *param)
 					PRINTF_P(PSTR("Total entries: %lu\r\n"), monitor_state[mon].total_written_entries);					
 					PRINTF_P(PSTR("Total read: %lu\r\n"), monitor_state[mon].read_entries);
 					PRINTF_P(PSTR("Total sent: %lu\r\n"), monitor_state[mon].sent_entries);
+					PRINTF_P(PSTR("Total tx retries: %lu\r\n"), monitor_state[mon].failed_tx);
 					PRINTF_P(PSTR("Sinc at: %lu\r\n"), monitor_state[mon].sinc_time);
 					PRINTF_P(PSTR("Last sent at: %lu\r\n"), monitor_state[mon].last_timestamp);
 					PRINTF_P(PSTR("Last upload time: %lu\r\n"), monitor_state[mon].reader_upload_time);
@@ -1222,10 +1239,19 @@ void term_cmd_monitor(char *param)
 				}
 			}
 			break;
+		case 'i':
+			PRINTS_P(PSTR("----------------------------------------------\r\n"));
+			PRINTF_P(PSTR("Server name: %s\r\n"),simon_get_hostname());
+			PRINTF_P(PSTR("Server IP: %s\r\n"), simon_get_hostip());
+			PRINTF_P(PSTR("API Key: %s\r\n"), simon_get_apikey());
+			PRINTS_P(PSTR("----------------------------------------------\r\n"));
+			break;
 		case 'r':	
-			monitor_stop();	
 			mcu_reset();		
 			break;
+		case 'z':
+			monitor_stop();
+			break;	
 		case 'c':  /* TODO */
 			monitor_stop();	
 			for (mon=0; mon < MAX_NUM_OF_MONITORES; mon++)

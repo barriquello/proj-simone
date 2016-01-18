@@ -182,7 +182,8 @@ const modem_driver_t null_modem_driver  =
 		null_modem_send,
 		null_modem_set_hostname,
 		null_modem_set_ip,
-		null_modem_check_connection
+		null_modem_check_connection,
+		NULL	
 };
 
 

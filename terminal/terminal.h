@@ -40,7 +40,7 @@ typedef void (cmd_func)(char *params);
  *****************************************************************************/
 #define MAX_CMDS			  20
 #define MAX_CMD_SIZE		  8
-#define CONSOLE_BUFFER_SIZE  (32)
+#define CONSOLE_BUFFER_SIZE  (64)
 
 #ifndef CONST
 #define CONST const

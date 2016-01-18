@@ -106,7 +106,7 @@ uint8_t gc864_modem_set_ip(char* _ip);
 char* gc864_modem_get_ip(void);
 uint8_t gc864_modem_set_hostname(char *host);
 char* gc864_modem_get_hostname(void);
-uint8_t gc864_modem_host_ip(void);
+uint8_t gc864_modem_resolve_ip(char * host, char *_ip);
 uint8_t gc864_modem_check_connection(void);
 
 

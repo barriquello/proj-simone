@@ -850,7 +850,8 @@ const modem_driver_t m590_driver  =
 		m590_send,
 		m590_set_hostname,
 		m590_set_ip,
-		m590_check_connection
+		m590_check_connection,
+		NULL
 };
 
 
