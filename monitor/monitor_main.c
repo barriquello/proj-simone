@@ -728,10 +728,6 @@ void main_monitor(void)
 			if(++sending_mon == monitores_em_uso)
 			{
 				sending_mon = 0;
-				
-				#ifndef _WIN32
-				DelayTask(MS2TICKS(1000)); // executa a cada 1000ms
-				#endif
 			}
 		}		
 		monitor_is_idle = 1;

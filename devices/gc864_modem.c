@@ -50,6 +50,7 @@
 
 static state_t modem_state = SETUP;
 static char ip[16];
+static char ip_resolved = 0;
 static char *hostname = NULL;
 static char modem_BufferTxRx[64];
 
@@ -233,10 +234,12 @@ uint8_t gc864_modem_init(void)
 	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
 	
 	//modem_printR("AT#SCFG=1,1,300,90,600,50\r\n");
-	modem_printR("AT#SCFG=1,1,600,20,10,50\r\n");
+	/* conn ID, PDP ctx, pkt size, max timeout (s), conn. timeout (x100ms), Tx timeout (x100ms) */
+	modem_printR("AT#SCFG=1,1,300,100,100,50\r\n");
 	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
 	
-	//AT#SCFGEXT2=1,0,1,0,0
+	modem_printR("AT#SCFGEXT2=1,0,1,0,0\r\n");
+	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
 	modem_release();
 
 	modem_state = INIT;
@@ -294,17 +297,24 @@ uint8_t gc864_modem_resolve_ip(char * host, char *buf_ip)
 			}
 			return MODEM_ERR;
 		}
-		if(strstr((char *)modem_BufferTxRx,"#QDNS") != NULL)
+		else if((_ip = strstr((char *)modem_BufferTxRx,host)) != NULL)
 		{
 			PRINTS_P(PSTR("Server IP: "));
-			_ip = strtok(modem_BufferTxRx,(const char*) ",");
-			//ip = strtok(NULL, ",");
+			_ip = strchr((char *)_ip,',');
+			_ip++; _ip++;
+			char* _ip_s = _ip;
+			while(*_ip_s != '"')
+			{
+				++_ip_s;
+			}
+			*_ip_s = '\0';
 			if(_ip != NULL)
 			{
-				strncpy(buf_ip,_ip, 15);
-				
+				strncpy(buf_ip,_ip, 16);				
 				gc864_modem_set_ip(buf_ip);
-				PRINT_BUF(buf_ip);				
+				PRINTF(buf_ip);	
+				PRINTS_P(PSTR("\r\n"));
+				ip_resolved = 1;			
 				return MODEM_OK;
 			}
 		}		
@@ -389,7 +399,15 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 	try_again:
 
     /* open TCP connection */
-    SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT#SKTD=0,80,%s,0,0\r\n"), hostname);
+	if(ip_resolved == 1)	
+	{
+		SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT#SKTD=0,80,%s,0,0\r\n"), (char*)ip);
+	}else
+	{
+		gc864_modem_resolve_ip();
+		SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT#SKTD=0,80,%s,0,0\r\n"), hostname);
+	}
+	
     if(mon_verbosity > 3) PRINT(modem_BufferTxRx);
     modem_printR(modem_BufferTxRx);
 
@@ -604,7 +622,14 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 	try_again:
 	
 	/* open TCP connection */
-	SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT#SD=1,0,80,%s,0,0,0\r\n"), hostname);	
+	if(ip_resolved == 1)
+	{
+		SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT#SD=1,0,80,%s,0,0,0\r\n"), (char*)ip);
+	}else
+	{
+		gc864_modem_resolve_ip(hostname,ip);
+		SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT#SD=1,0,80,%s,0,0,0\r\n"), hostname);
+	}		
 	modem_printR(modem_BufferTxRx);
 	if(mon_verbosity > 1) PRINT(modem_BufferTxRx);
 	

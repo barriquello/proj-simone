@@ -355,10 +355,10 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 		time_elapsed_s = (uint32_t)((h.h1.time_interv)*(h.count));
 		
 		
-		PRINTF_P(PSTR("\r\n Mon %d will be synched \r\n"), monitor_num );
+		PRINTF_P(PSTR("\r\nMon %d will be synched \r\n"), monitor_num );
 		if( monitor_gettimestamp(&ts, time_elapsed_s) == MODEM_ERR)
 		{
-			PRINTS_P(PSTR("\r\n Synch failed, will try again later \r\n"));
+			PRINTS_P(PSTR("\r\nSynch failed, will try again later \r\n"));
 			return;
 		}		
 
@@ -389,14 +389,14 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 
 			monitor_setheader((const char*)filename, &h);
 			
-			PRINTF_P(PSTR("\r\n Mon %d is synched \r\n"), monitor_num );
+			PRINTF_P(PSTR("\r\nMon %d is synched \r\n"), monitor_num );
 
 			/* rename file */
 			strftime(new_filename,sizeof(new_filename),"%y%m%d%H.txt",&ts);	
 
 			if(is_terminal_idle() && mon_verbosity > 3)
 			{
-				PRINTF_P(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
+				PRINTF_P(PSTR("\r\n%s will be renamed to %s \r\n"), filename,new_filename);
 			}
 			
 			ret = monitor_rename((char*)filename, (const char*)new_filename);
@@ -404,7 +404,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 			/* if rename failed, try other name */
 			while(!ret)
 			{
-				PRINTS_ERRO_P(PSTR("\r\n rename failed \r\n"));
+				PRINTS_ERRO_P(PSTR("\r\nRename failed, trying new name... \r\n"));
 				time_t time_now = mktime(&ts);
 				time_now +=3600;
 				ts = *localtime(&(time_t){time_now});
@@ -414,8 +414,8 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 
 				if(is_terminal_idle() && mon_verbosity > 3)
 				{
-					PRINTS_P(PSTR("\r\n rename failed \r\n"));
-					PRINTF_P(PSTR("\r\n %s will be renamed to %s \r\n"), filename,new_filename);
+					PRINTS_P(PSTR("\r\nRename failed, trying new name... \r\n"));
+					PRINTF_P(PSTR("\r\n%s will be renamed to %s \r\n"), filename,new_filename);
 				}
 				
 				ret = monitor_rename((char*)filename, (const char*)new_filename);
@@ -427,7 +427,7 @@ void monitor_settimestamp(uint8_t monitor_num, const char* filename)
 			{
 				if(is_terminal_idle() && mon_verbosity > 3)
 				{
-					PRINTS_P(PSTR("\r\n reading the same file that we renamed! \r\n"));
+					PRINTS_P(PSTR("\r\nReading the same file that we renamed! \r\n"));
 				}				
 
 				strcpy(monitor_state[monitor_num].monitor_name_reading,new_filename);
