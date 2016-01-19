@@ -151,7 +151,7 @@ CONST uint16_t SIZEOF_TS_ID_STRING = sizeof(TS_ID_string);
 #endif
 		
 /* static IR and HR list for TS device */
-static modbus_ts_input_register_list  	  TS_IRList;
+modbus_ts_input_register_list  	  TS_IRList;
 //static modbus_ts_holding_register_list    TS_HRList;
 
 #define MODBUS_SLAVE_TS_SIMULATION 	0
@@ -207,10 +207,9 @@ uint8_t ts_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 					
 			
 	#endif					
-		}
-		
+		}		
 		SetModbusHeader(slave_addr, TS_IRList.Regs8);
-		memcpy(buf,TS_IRList.Regs8,max_len);
+		memcpy(buf,TS_IRList.Regs8,max_len);		
 		return (max_len);
 			
 }

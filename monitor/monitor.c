@@ -912,6 +912,9 @@ char* monitor_getfilename_to_read(uint8_t monitor_num)
 
 void monitor_writer(uint8_t monitor_num)
 {	
+	uint32_t time_elapsed;
+	clock_t time_now,time_before;
+	
 	uint16_t cnt = 0;
 	extern const char* monitor_error_msg[];
 	
@@ -943,6 +946,8 @@ void monitor_writer(uint8_t monitor_num)
 #if 0
 		PRINTF_P(PSTR("Slave %d reading\r\n"), monitor_state[monitor_num].slave_addr);
 #endif
+	
+	time_before = clock_time();
 		
 	/* read data */
 	if(monitor_state[monitor_num].read_data(monitor_state[monitor_num].slave_addr,(uint8_t*)monitor_data_buffer,(uint8_t)monitor_state[monitor_num].config_h.entry_size) == 0)
@@ -955,7 +960,10 @@ void monitor_writer(uint8_t monitor_num)
 	if(is_terminal_idle() && mon_verbosity > 3)
 	{
 		PRINTF_PP(monitor_error_msg[2], monitor_num);
-		PRINTF_P(PSTR(" read slave %d ok\r\n"), monitor_state[monitor_num].slave_addr);
+		PRINTF_P(PSTR(" read slave %d ok\r\n"), monitor_state[monitor_num].slave_addr);		
+		time_now = clock_time();
+		time_elapsed = (uint32_t)(time_now-time_before);
+		PRINTF_P(PSTR("Time to read slave: %lu ms\r\n"), time_elapsed);
 	}
 
 	
@@ -966,6 +974,8 @@ void monitor_writer(uint8_t monitor_num)
 
 	/* change to log dir */
 	monitor_chdir(monitor_state[monitor_num].monitor_dir_name);
+	
+	time_before = clock_time();
 	
 	/* write data (hex char) to file  */
 	cnt = monitor_writeentry(monitor_getfilename_to_write(monitor_num),monitor_char_buffer, monitor_num);
@@ -982,9 +992,12 @@ void monitor_writer(uint8_t monitor_num)
 		
 		if(is_terminal_idle() && mon_verbosity > 1)
 		{
+			time_now = clock_time();
+			time_elapsed = (uint32_t)(time_now-time_before);
+				
 			PRINTF_P(PSTR("\r\nM %d, Size: %u, Entry %u: "), monitor_num, strlen(monitor_char_buffer), cnt);
 			PRINTF(monitor_char_buffer);
-			PRINTS_P(PSTR("\r\n"));		
+			PRINTF_P(PSTR("Time to write: %lu ms\r\n"), time_elapsed);
 		}
 	}
 

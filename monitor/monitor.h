@@ -224,6 +224,7 @@ typedef struct
 	uint8_t codigo;
 	uint8_t sinc;
 	uint8_t sending;
+	uint8_t uploading;
 	data_reader read_data;
 	uint32_t time_to_send;
 	uint32_t avg_time_to_send;

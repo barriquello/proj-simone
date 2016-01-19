@@ -51,6 +51,7 @@
 #define MODEM_MUTEX_PRIO		UART1_MUTEX_PRIO
 extern BRTOS_Queue 				*Serial1;
 #define MODEM_QUEUE				Serial1
+#define modem_printPP(x)		printSer_P(USE_UART_MODEM,(PGM_P)(x));
 #define modem_printP(x)			printSer_P(USE_UART_MODEM,(PGM_P)pgm_read_word(&(x)));
 #define modem_printR(x)			printSer(USE_UART_MODEM,(x));
 #elif COLDUINO

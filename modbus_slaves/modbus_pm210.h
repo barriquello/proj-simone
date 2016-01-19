@@ -35,7 +35,7 @@
 #define PM210_REGLIST2_INPUT_START  4105
 #define PM210_REGLIST_HOLDING_START  7000
 
-#define PM210_REGLIST1_INPUT_NREGS  36
+#define PM210_REGLIST1_INPUT_NREGS  (36+2)
 #define PM210_REGLIST2_INPUT_NREGS  13
 #define PM210_REGLIST_HOLDING_NREGS  7
 
@@ -86,7 +86,7 @@ typedef union
 		uint16_t Current_Max_Demand_Phase_C; /* Amp, scale = reg 4105 */
 		uint16_t Voltage_Phase_A_B; /* Volt, scale = reg 4106 */
 		uint16_t Voltage_Phase_B_C; /* Volt, scale = reg 4106 */
-		uint16_t Voltage_Phase_A_C; /* Volt, scale = reg 4106 */
+		uint16_t Voltage_Phase_C_A; /* Volt, scale = reg 4106 */
 		uint16_t Voltage_Phase_A_N; /* Volt, scale = reg 4106 */
 		uint16_t Voltage_Phase_B_N; /* Volt, scale = reg 4106 */
 		uint16_t Voltage_Phase_C_N; /* Volt, scale = reg 4106 */
@@ -94,6 +94,8 @@ typedef union
 		uint16_t Scale_Factor_V;  /* –4 = 0.0001, –3 = 0.001, –2 = 0.01, –1 = 0.1, 0 = 1.0, 1 = 10.0, 2 = 100.0, 3 = 1000.0, 4 = 10000.0 */
 		uint16_t Scale_Factor_W;  /* –4 = 0.0001, –3 = 0.001, –2 = 0.01, –1 = 0.1, 0 = 1.0, 1 = 10.0, 2 = 100.0, 3 = 1000.0, 4 = 10000.0 */
 		uint16_t Scale_Factor_E;  /* –4 = 0.0001, –3 = 0.001, –2 = 0.01, –1 = 0.1, 0 = 1.0, 1 = 10.0, 2 = 100.0, 3 = 1000.0, 4 = 10000.0 */
+		uint16_t Temperatura_oleo;    /* Oil temp */
+		uint16_t Temperatura_enrolamento;  /* Enrol temp */
 	} Reg;
 	
 	uint8_t  Regs8[PM210_REGLIST1_INPUT_NREGS*2+PM210_REG_OFFSET*2];

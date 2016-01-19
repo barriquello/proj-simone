@@ -364,7 +364,7 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 	  	timer_set(timer, TIMER_READER_MS);
 		
 		if(mon_verbosity > 6 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread R %u \r\n"), _monitor);
-		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));
+		PT_WAIT_UNTIL(pt, monitor_uploading && monitor_state[_monitor].uploading && timer_expired(timer));
 		
 		time_before = clock_time();		
 		if(monitor_state[_monitor].sending == 0)
@@ -499,7 +499,8 @@ static int callback_inifile(const char *section, const char *key, const char *va
 		{
 			monitor_state[mon_cnt].config_h.entry_size = (uint16_t)StringToInteger((char*)value);
 			++field_cnt;
-		}
+		}		
+
 		if(field_cnt == NUM_OF_FIELDS)
 		{
 			field_cnt = 0;
@@ -672,7 +673,8 @@ void main_monitor(void)
 		{
 			if(modbus_slaves_all[monitor_state[monitor_num].codigo] == NULL) goto modbus_slave_erro;
 			if(modbus_slaves_all[monitor_state[monitor_num].codigo]->slave_reader == NULL) goto modbus_slave_erro;			
-			monitor_state[monitor_num].read_data = modbus_slaves_all[monitor_state[monitor_num].codigo]->slave_reader;			
+			monitor_state[monitor_num].read_data = modbus_slaves_all[monitor_state[monitor_num].codigo]->slave_reader;	
+					
 		}else
 		{
 			modbus_slave_erro:			
@@ -695,6 +697,13 @@ void main_monitor(void)
 		monitor_state[monitor_num].sent_entries = 0;
 		monitor_state[monitor_num].read_entries = 0;
 		monitor_state[monitor_num].sending = 0;
+		monitor_state[monitor_num].uploading = 1; /* enable data uploading */
+		
+		/* hack to disable slave TS uploading */
+		if(monitor_state[monitor_num].codigo == MODBUS_TS)
+		{
+			monitor_state[monitor_num].uploading = 0;
+		}
 	}
 	
 #ifdef _WIN32	
@@ -731,21 +740,7 @@ void main_monitor(void)
 			}
 		}		
 		monitor_is_idle = 1;
-				
-		#if 0
-			#ifndef _WIN32
-				DelayTask(MS2TICKS(1000)); // executa a cada 1000ms
-			#endif
 		
-		
-			monitor_is_idle = 0;
-			for (monitor_num = (monitores_em_uso-1); monitor_num >= 0; monitor_num--)
-			{
-				monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
-				monitor_read_thread(&monitor_state[monitor_num].read_pt, monitor_num);
-			}
-			monitor_is_idle = 1;
-		#endif			
 		
 #ifdef _WIN32			
 		monitor_set_input(&monitor_input_pt);

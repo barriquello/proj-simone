@@ -534,11 +534,12 @@ uint8_t modem_close_tcp(void)
 		
 		DelayTask(10);
 		modem_get_reply(buffer,64);
-		if(mon_verbosity > 0) PRINT_BUF(buffer);
+		if(mon_verbosity > 3) PRINT_BUF(buffer);
 		if(strstr((char *)buffer,"OK"))		
 		{
-			if(mon_verbosity > 0) PRINTS_P(PSTR("\r\nTCP connection paused\r\n"));
+			if(mon_verbosity > 3) PRINTS_P(PSTR("\r\nTCP connection paused\r\n"));
 			goto close_tcp;
+			//return FALSE;
 		}
 	}
 	
@@ -553,10 +554,10 @@ uint8_t modem_close_tcp(void)
 		modem_printR("AT#SH=1\r\n");	
 		DelayTask(10);
 		modem_get_reply(buffer,64);
-		if(mon_verbosity > 0) PRINT_BUF(buffer);
+		if(mon_verbosity > 3) PRINT_BUF(buffer);
 		if(strstr((char *)buffer,"OK"))
 		{
-			if(mon_verbosity > 0) PRINTS_P(PSTR("\r\nTCP closed\r\n"));
+			if(mon_verbosity > 3) PRINTS_P(PSTR("\r\nTCP closed\r\n"));
 			return TRUE;
 		}
 	}
@@ -621,6 +622,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 	
 	try_again:
 	
+	
 	/* open TCP connection */
 	if(ip_resolved == 1)
 	{
@@ -629,9 +631,9 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 	{
 		gc864_modem_resolve_ip(hostname,ip);
 		SNPRINTF_P(modem_BufferTxRx,sizeof(modem_BufferTxRx)-1,PSTR("AT#SD=1,0,80,%s,0,0,0\r\n"), hostname);
-	}		
+	}
 	modem_printR(modem_BufferTxRx);
-	if(mon_verbosity > 1) PRINT(modem_BufferTxRx);
+	if(mon_verbosity > 2) PRINT(modem_BufferTxRx);
 	
 	 timeout = 0; 
 
@@ -641,7 +643,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 
 		 if(strstr((char *)modem_BufferTxRx,"CONNECT"))
 		 {
-			 //modem_state = OPEN;
+			 // modem_state = OPEN;
 			 if(mon_verbosity > 2) PRINTS_P(PSTR("Modem GPRS connection OK \r\n"));
 			 if(mon_verbosity > 3) PRINTF_P(PSTR("@time = %lu\r\n"), (uint32_t)clock_time());
 			 goto send;
@@ -670,6 +672,8 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 		 }
 	 }while(++timeout < 200); /* wait up to 20s */
 
+	 //modem_state = INIT;
+	 
 	 if(mon_verbosity > 2) PRINTS_P(PSTR("\r\nConnection failed \r\n"));
 	 if(mon_verbosity > 3) PRINTF_P(PSTR("@time = %lu\r\n"), (uint32_t)clock_time());
 	 
@@ -678,7 +682,7 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 	 /* connection is open, send data */
 	 send:
 	 modem_printR(dados);
-	 if(mon_verbosity > 1) PRINT(dados);
+	 if(mon_verbosity > 2) PRINT(dados);
 
 	 timeout = 0;
 	 send_ok = 0;
@@ -687,13 +691,13 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 	{
 		wait_modem_get_reply(10);
 		if(mon_verbosity > 2) PRINT_BUF(modem_BufferTxRx);
-		if(strstr((char *)modem_BufferTxRx,"HTTP/1.1"))
+		if(strstr((char *)modem_BufferTxRx,"HTTP/1.1 200 OK"))
 		{
-			if(mon_verbosity > 3) PRINTF_P(PSTR("OK@time = %lu\r\n"), (uint32_t)clock_time());
+			if(mon_verbosity > 3) PRINTF_P(PSTR("OK @time = %lu\r\n"), (uint32_t)clock_time());
 			send_ok=1;
 			break;
 		}
-	}while(++timeout < 1000); /* wait up to 10s */	
+	}while(++timeout < 2000); /* wait up to 20s */	
 
 	if(send_ok == 1)	
 	{
@@ -715,18 +719,18 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 					if(mon_verbosity > 3) PRINTF_P(PSTR("@time = %lu\r\n"), (uint32_t)clock_time());
 					break;
 				}
-			}while(++timeout < 1000); /* espera ate 10 segundos */
+			}while(++timeout < 500); /* espera ate 5 segundos */
 		#endif
 		
 	    modem_close_tcp();
 			
-		if(mon_verbosity > 0) PRINTS_P(PSTR("\r\nsend ok\r\n"));
+		if(mon_verbosity > 1) PRINTS_P(PSTR("\r\nsend ok\r\n"));
 		if(mon_verbosity > 3) PRINTF_P(PSTR("@time = %lu\r\n"), (uint32_t)clock_time());
 		modem_watchdog = 0;
 		return MODEM_OK;
 	}else
 	{
-		if(mon_verbosity > 0) PRINTS_P(PSTR("\r\nsend fail\r\n"));
+		if(mon_verbosity > 1) PRINTS_P(PSTR("\r\nsend fail\r\n"));
 		if(mon_verbosity > 3) PRINTF_P(PSTR("@time = %lu\r\n"), (uint32_t)clock_time());
 				
 		#if 1
