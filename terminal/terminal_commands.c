@@ -672,7 +672,7 @@ CONST command_t echo_cmd = {
 void term_cmd_echo_out(char *param)
 {	
 	uint8_t std_output;	
-	uint32_t input;
+	int input;
 	terminal_newline();	
 	printf_terminal_P(PSTR("STDOUT = "));
 	
@@ -1225,8 +1225,7 @@ void term_cmd_monitor(char *param)
 					PRINTF_P(PSTR("Config: id = %u, period = %u, entry size = %u \r\n"),
 												monitor_state[mon].config_h.mon_id,
 												monitor_state[mon].config_h.time_interv,
-												monitor_state[mon].config_h.entry_size);
-					PRINTF_P(PSTR("Avg time to send: %u\r\n"), monitor_state[mon].avg_time_to_send);
+												monitor_state[mon].config_h.entry_size);					
 					PRINTF_P(PSTR("Total written: %lu\r\n"), monitor_state[mon].written_entries);
 					PRINTF_P(PSTR("Total entries: %lu\r\n"), monitor_state[mon].total_written_entries);					
 					PRINTF_P(PSTR("Total read: %lu\r\n"), monitor_state[mon].read_entries);
@@ -1243,8 +1242,9 @@ void term_cmd_monitor(char *param)
 			PRINTS_P(PSTR("----------------------------------------------\r\n"));
 			PRINTF_P(PSTR("Server name: %s\r\n"),simon_get_hostname());
 			PRINTF_P(PSTR("Server IP: %s\r\n"), simon_get_hostip());
-			PRINTF_P(PSTR("API Key: %s\r\n"), simon_get_apikey());
-			PRINTS_P(PSTR("----------------------------------------------\r\n"));
+			PRINTS_P(PSTR("API Key: "));
+			PRINTF(simon_get_apikey());
+			PRINTS_P(PSTR("\r\n----------------------------------------------\r\n"));
 			break;
 		case 'r':	
 			mcu_reset();		

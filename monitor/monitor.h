@@ -226,8 +226,6 @@ typedef struct
 	uint8_t sending;
 	uint8_t uploading;
 	data_reader read_data;
-	uint32_t time_to_send;
-	uint32_t avg_time_to_send;
 	uint32_t written_entries;
 	uint32_t total_written_entries;
 	uint32_t read_entries;
@@ -280,7 +278,7 @@ uint8_t monitor_validateheader(const char* filename, uint8_t monitor_id, uint16_
 
 void monitor_createentry(char* string, uint16_t *dados, uint8_t len);
 uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_num);
-uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_entry_t* entry);
+uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_entry_t* entry, uint8_t enable_send, uint8_t send_ok);
 
 uint8_t monitor_gettimestamp(struct tm * ts, uint32_t time_elapsed_s);
 void monitor_settimestamp(uint8_t monitor_num, const char* filename);
@@ -291,6 +289,7 @@ char* monitor_getfilename_to_read(uint8_t monitor_num);
 void main_monitor(void);
 uint16_t monitor_reader(uint8_t monitor_num);
 void monitor_writer(uint8_t monitor_num);
+uint16_t monitor_reader_multiple(uint8_t monitor_num);
 
 clock_t clock_time(void);
 

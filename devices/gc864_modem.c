@@ -210,10 +210,10 @@ uint8_t gc864_modem_init(void)
 	
     /* setup */
 	
-	modem_printR("AT&K=0\r\n"); /* disable flow control */
+	modem_printPP(PSTR("AT&K=0\r\n")); /* disable flow control */
 	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
 	
-	modem_printR("ATS12=2\r\n"); /* prompt time = 2 x 20ms */
+	modem_printPP(PSTR("ATS12=2\r\n")); /* prompt time = 2 x 20ms */
 	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
 	
 	modem_printP(modem_init_cmd[GPRS0]);
@@ -235,10 +235,10 @@ uint8_t gc864_modem_init(void)
 	
 	//modem_printR("AT#SCFG=1,1,300,90,600,50\r\n");
 	/* conn ID, PDP ctx, pkt size, max timeout (s), conn. timeout (x100ms), Tx timeout (x100ms) */
-	modem_printR("AT#SCFG=1,1,300,100,100,50\r\n");
+	modem_printPP(PSTR("AT#SCFG=1,1,300,100,100,50\r\n"));
 	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
 	
-	modem_printR("AT#SCFGEXT2=1,0,1,0,0\r\n");
+	modem_printPP(PSTR("AT#SCFGEXT2=1,0,1,0,0\r\n"));
 	MODEM_GET_REPLY_PRINT(modem_BufferTxRx);
 	modem_release();
 
@@ -484,8 +484,6 @@ uint8_t gc864_modem_send(char * dados, uint16_t tam)
 uint8_t Check_Connection(uint8_t retries)
 {
 	
-	// OSCleanQueue(MODEM_QUEUE);
-
 	do
 	{
 		/* check GPRS connection */
@@ -510,7 +508,6 @@ uint8_t Check_Connection(uint8_t retries)
 		{
 			/* no reply, buffer may be full */
 			if(--retries == 0) return FALSE;
-			//OSCleanQueue(MODEM_QUEUE);
 		}
 	}while(TRUE);
 
@@ -529,7 +526,7 @@ uint8_t modem_close_tcp(void)
 	{
 		++retries;
 		DelayTask(100);
-		modem_printR("+++");
+		modem_printPP(PSTR("+++"));
 		DelayTask(100);
 		
 		DelayTask(10);
@@ -551,7 +548,7 @@ uint8_t modem_close_tcp(void)
 	while(retries < 3)
 	{
 		++retries;	
-		modem_printR("AT#SH=1\r\n");	
+		modem_printPP(PSTR("AT#SH=1\r\n"));	
 		DelayTask(10);
 		modem_get_reply(buffer,64);
 		if(mon_verbosity > 3) PRINT_BUF(buffer);
@@ -808,9 +805,6 @@ const modem_driver_t gc864_modem_driver  =
 uint8_t Check_Connect_PPP(uint8_t retries)
 {
 
-	//DelayTask(100);
-	OSCleanQueue(MODEM_QUEUE);
-
 	do
 	{
 		/* check GPRS connection */
@@ -835,7 +829,6 @@ uint8_t Check_Connect_PPP(uint8_t retries)
 		{
 			/* no reply, buffer may be full */
 			if(--retries == 0) return FALSE;
-			OSCleanQueue(MODEM_QUEUE);
 		}
 	}while(TRUE);
 
@@ -859,7 +852,7 @@ modem_ret_t at_modem_open(INT8U host, char* dados)
 		res = gc864_modem_set_hostname(dados);
 		if(mon_verbosity > 2)
 		{
-			PRINT("Host: ");
+			PRINTS_P(PSTR("Host: "));
 			PRINT(dados);
 		}
 
@@ -868,7 +861,7 @@ modem_ret_t at_modem_open(INT8U host, char* dados)
 		res = gc864_modem_set_ip((char*)dados);
 		if(mon_verbosity > 2)
 		{
-			PRINT("IP: ");
+			PRINTS_P(PSTR("IP: "));
 			PRINT(dados);
 		}
 	}
@@ -893,7 +886,7 @@ modem_ret_t at_modem_receive(char* buff, uint16_t len)
 		PRINT_BUF(buff);
 	}
 	
-	PRINT("\r\n");	
+	PRINTS_P(PSTR("\r\n"));	
 	
 	return MODEM_OK;
 	

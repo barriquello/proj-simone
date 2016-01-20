@@ -84,6 +84,7 @@ typedef struct
 uint8_t simon_init(const modem_driver_t* modem);
 uint8_t simon_get_time(struct tm * t);
 uint8_t simon_send_data(uint8_t *buf, uint16_t len, uint8_t mon_id, time_t time);
+uint8_t simon_send_multiple_data(uint8_t *buf, uint16_t length, time_t time);
 char* simon_get_apikey(void);
 char* simon_get_hostname(void);
 char* simon_get_hostip(void);

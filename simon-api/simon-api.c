@@ -69,7 +69,7 @@ char simon_apikey[MAX_APIKEY_LEN];
 char simon_gprs_server[MAX_GPRS_LEN];
 char simon_gprs_user[MAX_GPRS_LEN];
 char simon_gprs_password[MAX_GPRS_LEN];
-static char server_reply[512];
+static char server_reply[512 + 128 + 64];
 
 static char* hostname = simon_hostname;
 uint16_t recv_size;
@@ -119,7 +119,7 @@ uint8_t simon_get_time(struct tm * t)
 	uint8_t ret = MODEM_ERR;
 	
 	SNPRINTF_P(server_reply, SIZEARRAY(server_reply),
-		     PSTR("GET /time/local&apikey=%s HTTP/1.1\r\nHost: %s\r\n\r\n\r\n"), (char*)simon_apikey, hostname);
+		     PSTR("GET /time/local.json&apikey=%s HTTP/1.1\r\nHost: %s\r\n\r\n\r\n"), (char*)simon_apikey, hostname);
 	
 	server_reply[SIZEARRAY(server_reply)-1] = '\0';
 	
@@ -215,6 +215,62 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t length, uint8_t mon_id, time_t ti
 	return ret;
 }
 
+uint8_t simon_send_multiple_data(uint8_t *buf, uint16_t length, time_t time)
+{
+
+	uint8_t ret = MODEM_ERR;
+	uint8_t retries = 0;
+	
+	if(length > SIZEARRAY(server_reply))      return MODEM_ERR;
+	if(out_modem == NULL || in_modem == NULL) return MODEM_ERR;
+	
+	/// Form request
+	SNPRINTF_P(server_reply, SIZEARRAY(server_reply)-1,
+	PSTR("GET /monitor/multiple.json?time=%lu&data=[%s]&apikey=%s HTTP/1.1\r\nHost: %s\r\n\r\n\r\n"),
+	time, buf, (char*)simon_apikey, (char*)hostname);
+	
+	server_reply[SIZEARRAY(server_reply)-1] = '\0';
+	if(mon_verbosity > 2 && is_terminal_idle()) PRINTF(server_reply);
+
+	#define SIMON_SKIP_SEND 0
+	#if SIMON_SKIP_SEND
+	return MODEM_OK;
+	#endif
+
+	#define MAX_RETRIES  0
+	retries = 0;
+	while(out_modem(server_reply, (uint16_t)strlen(server_reply)) != MODEM_OK)
+	{
+		if(++retries > MAX_RETRIES)
+		{
+			return MODEM_ERR;
+		}
+	}
+
+	do
+	{
+		recv_size = SIZEARRAY(server_reply);
+		if(in_modem(server_reply, (uint16_t*) &recv_size) != MODEM_OK)
+		{
+			break;
+		}
+		server_reply[recv_size-1] = '\0';
+		
+		if(mon_verbosity > 4 && is_terminal_idle()) PRINTF(server_reply);
+		
+		if(ret == MODEM_ERR)
+		{
+			ret = get_server_confirmation(server_reply);
+		}
+	}while(recv_size);
+	
+	if(ret == MODEM_ERR)
+	{
+		PRINTS_P("Server confirmation not received\r\n");
+	}
+	return ret;
+}
+
 uint8_t get_server_confirmation(char* _server_reply)
 {
 	/* search server confirmation: HTTP 200 OK */
@@ -288,27 +344,23 @@ uint8_t get_server_time(char* _server_reply, struct tm *ts)
 
 char* simon_get_apikey(void)
 {
-	simon_apikey[MAX_APIKEY_LEN-1] = '\0';
-	return (char*)&simon_apikey;
+	return (char*)simon_apikey;
 }
 
 void simon_set_apikey(const char* apikey)
 {
 	if(apikey == NULL) return;
 	strncpy(simon_apikey,apikey,MAX_APIKEY_LEN-1);
-
 }
 
 char* simon_get_hostname(void)
 {
-	simon_hostname[MAX_HOSTNAME_LEN-1] = '\0';
-	return (char*)&simon_hostname;
+	return (char*)simon_hostname;
 }
 
 char* simon_get_hostip(void)
 {
-	simon_hostip[MAX_HOSTNAME_LEN-1] = '\0';
-	return (char*)&simon_hostip;
+	return (char*)simon_hostip;
 }
 
 void simon_set_hostname(const char* hostname)

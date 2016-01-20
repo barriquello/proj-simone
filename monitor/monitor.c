@@ -46,7 +46,7 @@
 
 #if DEBUG_MONITOR
 #define PRINTS_ENABLED  1
-char BufferText[32];
+//char BufferText[32];
 #else
 #define PRINTS_ENABLED  0
 #endif
@@ -60,10 +60,12 @@ extern uint8_t mon_verbosity;
 extern volatile uint8_t monitor_is_connected;
 
 #define LOG_MAX_DATA_BUF_SIZE  (LOG_MAX_ENTRY_SIZE/2)
+#define LOG_MAX_DATA_BUFSEND   (LOG_MAX_DATA_BUF_SIZE*4)
+
 uint16_t monitor_data_buffer[LOG_MAX_DATA_BUF_SIZE];
 char monitor_char_buffer[LOG_MAX_ENTRY_SIZE + 1];
 
-char data_vector[LOG_MAX_ENTRY_SIZE*3];
+char data_vector[LOG_MAX_DATA_BUFSEND];
 char monitor_header[LOG_HEADER_LEN+2];
 
 #define CONST const
@@ -612,14 +614,13 @@ static int monitor_entry_send(uint8_t mon_id, monitor_entry_t* entry, uint16_t l
 	return FALSE;
 }
 
-uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_entry_t* entry)
+uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_entry_t* entry, uint8_t enable_send, uint8_t send_ok)
 {
 	uint32_t entry_size;
 	LOG_FILETYPE fp;
 	uint32_t  pos;
 	struct tm ts;	
 	clock_t  time_init;	
-	uint8_t  send_ok = 0;
 	time_t unix_time;
 	uint32_t idx = 0;
 
@@ -664,63 +665,67 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 			   (void)monitor_read((char*)entry->values,entry_size,&fp);
 			   (void)monitor_close(&fp);
 
-			   /* try to send */
-			   time_init = clock_time();
-			   
-			   if(monitor_state[monitor_num].sending == 0)
-			   {
-				   monitor_state[monitor_num].tx_start = (time_init/1000);	
-			   }
-			   		   
-			   send_ok = 0;
+			   entry->size = entry_size;
 			   
 			   if(h.last_idx == 0)
-			   {
-				   monitor_state[monitor_num].time_to_send = 0;
-				   monitor_state[monitor_num].avg_time_to_send = 0;				   
+			   {			   
 				   monitor_state[monitor_num].read_entries = 0;
 				   monitor_state[monitor_num].sent_entries= 0;
 				   monitor_state[monitor_num].failed_tx = 0;
 			   }
 			   
-			   monitor_state[monitor_num].read_entries++;
+			   monitor_state[monitor_num].read_entries++;	
+			   			  
+			   time_init = clock_time();
 			   
-			   monitor_state[monitor_num].sending = 1; 
-
+			   if(monitor_state[monitor_num].sending == 0)
+			   {
+				   monitor_state[monitor_num].tx_start = (time_init/1000);
+			   }			   	
+			   
+			   monitor_state[monitor_num].sending = 1;
+			   
 			   if(mon_verbosity > 4 && is_terminal_idle())  
 			   { 
-				   PRINTF_P(PSTR("\r\nThread R %u, read file pos %lu, "), monitor_num, pos);
+				   PRINTF_P(PSTR("\r\n M R %u, read file pos %lu, "), monitor_num, pos);
 				   PRINTF_P(PSTR("entry index %u, size: %u, will send now: \r\n"), h.last_idx, entry_size);
 				   PRINTF("%s\r\n", (char*)entry->values);
 			   }
 			   
-			   if(monitor_entry_send(monitor_num,entry,entry_size-2) == TRUE) // ignore \r\n
+			   if(enable_send == TRUE)
 			   {
-				   /* if ok */
-				   h.last_idx++; /* incrementa indice da última entrada lida */
-				   monitor_setheader(filename, &h);	
-				   send_ok = 1;
-			   }
-			   
-			   monitor_state[monitor_num].time_to_send += (uint32_t)(clock_time()-time_init);
-			   
-			   if(send_ok == 1)
+				  /* try to send */
+				  send_ok = FALSE;
+				  if(monitor_entry_send(monitor_num,entry,entry_size-2) == TRUE) // ignore \r\n
+				  {
+					  /* if ok */
+					  h.last_idx++; /* incrementa indice da última entrada lida */
+					  monitor_setheader(filename, &h);
+					  send_ok = TRUE;
+				  } 
+			   }else
+			   {
+				   h.last_idx++;   /* incrementa indice da última entrada lida */
+				   if (send_ok == TRUE)
+				   {
+					  monitor_setheader(filename, &h);
+				   }
+			   }			   
+			   		   
+			   if(send_ok == TRUE)
 			   {
 				   //monitor_state[monitor_num].failed_tx = 0;
-				   monitor_state[monitor_num].sent_entries++;
-				   monitor_state[monitor_num].avg_time_to_send = ((monitor_state[monitor_num].avg_time_to_send*7) + monitor_state[monitor_num].time_to_send)/8;
+				   monitor_state[monitor_num].sent_entries++;				   
 				   monitor_state[monitor_num].last_timestamp = unix_time;				  
 				   monitor_state[monitor_num].sending = 0;
-				   monitor_state[monitor_num].tx_time = (clock_time()/1000) - monitor_state[monitor_num].tx_start;				   
+				   monitor_state[monitor_num].tx_time = (clock_time()/1000) - monitor_state[monitor_num].tx_start;
 				   monitor_state[monitor_num].tx_time_avg = ((monitor_state[monitor_num].tx_time_avg*7) + monitor_state[monitor_num].tx_time)/8;
 				   
 				   if (mon_verbosity > 1 && is_terminal_idle())
 				   {
-					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, delay: %lu - avg: %lu,"),
+					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, "),
 							   monitor_num,
-							   h.last_idx, h.count,
-							   monitor_state[monitor_num].time_to_send,
-							   monitor_state[monitor_num].avg_time_to_send);
+							   h.last_idx, h.count);
 							   
 						PRINTF_P(PSTR(" total: %lu s - avg: %lu s"),							   
 							   monitor_state[monitor_num].tx_time,
@@ -731,16 +736,14 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 						strftime(timestamp,SIZEARRAY(timestamp)," @%Y|%m|%d %H:%M:%S\r\n",&ts);
 						PRINTF(timestamp);
 				   }				   
-				   monitor_state[monitor_num].time_to_send = 0;
 			   }else
 			   {
 				   monitor_state[monitor_num].failed_tx++;				   
 				   if (mon_verbosity > 1 && is_terminal_idle())
 				   {
-					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, failed to send %lu, delay: %lu\r\n"),
+					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, failed to send %lu\r\n"),
 					   monitor_num,
-					   (h.last_idx + 1), h.count, monitor_state[monitor_num].failed_tx,
-					   monitor_state[monitor_num].time_to_send);
+					   (h.last_idx + 1), h.count, monitor_state[monitor_num].failed_tx);
 				   }
 			   }			   
 
@@ -919,16 +922,6 @@ void monitor_writer(uint8_t monitor_num)
 	extern const char* monitor_error_msg[];
 	
 	static uint32_t missing_entries = 0;
-
-#if 0  /* check modem connection */
-	if(simon_check_connection() == MODEM_OK)
-	{
-		monitor_is_connected = 1;
-	}else
-	{
-		monitor_is_connected = 0;
-	}
-#endif
 	
 #if MONITOR_TESTS
 	uint16_t vetor_dados[3]={0x1111,0x2222,0x3333};	
@@ -1023,7 +1016,7 @@ uint16_t monitor_reader(uint8_t monitor_num)
 
 	if(mon_verbosity > 4 && is_terminal_idle())  PRINTF_P(PSTR("\r\nThread R %u, read file: %s \r\n"), monitor_num, (char*)fname);
 	
-	if((nread = monitor_readentry(monitor_num, fname, &entry)) != 0)
+	if((nread = monitor_readentry(monitor_num, fname, &entry, TRUE, FALSE)) != 0)
 	{
 #if 0		
 		char buffer[sizeof(long)*8+1];
@@ -1041,6 +1034,108 @@ uint16_t monitor_reader(uint8_t monitor_num)
 	return nread;
 
 }
+
+char monitor_data_vector[LOG_MAX_DATA_BUFSEND];
+volatile uint8_t monitor_sending = FALSE;
+volatile uint8_t send_OK = FALSE;
+time_t time_start = 0;
+
+uint16_t monitor_reader_multiple(uint8_t num_monitores_em_uso)
+{
+	monitor_entry_t entry;
+	uint16_t nread = 0;
+    int16_t time_offset = 0;	
+	uint8_t monitor_num = 0;		
+	char buffer[8];	
+		
+	if (monitor_sending == FALSE)
+	{								
+		data_vector[0]='\0';
+		time_start = 0;
+		
+		for (monitor_num = 0; monitor_num < num_monitores_em_uso; monitor_num++)
+		{
+			
+			char* fname = (char *)monitor_getfilename_to_read(monitor_num);
+			
+			if(*fname == '\0') continue;
+			
+			memset(monitor_char_buffer,0x00,sizeof(monitor_char_buffer));
+			entry.values = (uint8_t*)monitor_char_buffer;
+
+			/* change to log dir */
+			monitor_chdir(monitor_state[monitor_num].monitor_dir_name);
+
+			if(mon_verbosity > 4 && is_terminal_idle())  PRINTF_P(PSTR("\r\nThread R %u, read file: %s \r\n"), monitor_num, (char*)fname);
+			
+			nread = monitor_readentry(monitor_num, fname, &entry, FALSE, send_OK);
+			
+			if(nread > 0 && nread < MAX_NUM_OF_ENTRIES)
+			{
+								
+				/* next field is monitor data */
+				if(build_entry_to_send(monitor_data_vector,entry.values,entry.size-2) > 0)
+				{
+					if(time_start == 0)
+					{
+						time_start = entry.ts;
+					}else
+					{
+						strcat(data_vector,",");
+					}
+					
+					/* first field is time offset, second field is monitor id */
+					time_offset = (int16_t)(entry.ts - time_start);
+					
+					SNPRINTF_P(buffer, SIZEARRAY(buffer)-1, PSTR("[%d,%u,"), time_offset, monitor_num);
+					strcat(data_vector,buffer);
+					strcat(data_vector,monitor_data_vector);
+					strcat(data_vector,"]");
+					
+					if(mon_verbosity > 3 && is_terminal_idle())
+					{
+						PRINTS_P(PSTR("Data vector: \r\n"));
+						PRINTF(monitor_data_vector);
+						PRINTF_P(PSTR("\r\nData:"));
+						PRINTF((char*)entry.values);
+						PRINTF_P(PSTR("\r\nSize: %u"), entry.size-2);
+						PRINTS_P(PSTR("\r\n Time:"));
+						PRINTF(ltoa((long)entry.ts,buffer,10));
+						PRINTF_P(PSTR("\r\n"));
+					}								   
+					monitor_sending = TRUE;
+				}
+				
+			}
+
+			/* change to parent dir */
+			monitor_chdir("..");
+			
+		}
+	}	
+	
+	
+	if(monitor_sending == TRUE)
+	{
+			if(mon_verbosity > 4 && is_terminal_idle())
+			{
+				PRINTF_P(PSTR("Monitors data vector: \r\n"));
+				PRINTF(data_vector);
+				PRINTF_P(PSTR("\r\n"));
+			}
+			
+			if(simon_send_multiple_data((uint8_t*)data_vector,LOG_MAX_DATA_BUFSEND,time_start) == MODEM_OK)
+			{
+				monitor_sending = FALSE;
+				send_OK = TRUE;
+				return TRUE;
+			}				
+	}			
+
+	return FALSE;
+
+}
+
 
 
 

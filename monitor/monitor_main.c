@@ -143,7 +143,7 @@ uint8_t mon_verbosity = VERBOSE_INIT_VALUE;
 
 #if DEBUG_MONITOR
 #define PRINTS_ENABLED  1
-char BufferText[32];
+//char BufferText[32];
 #else
 #define PRINTS_ENABLED  0
 #endif
@@ -159,7 +159,7 @@ char BufferText[32];
 #define monitor_error_msg2_def		"\r\nMon %d"
 
 #if ARDUINO
-char BufferText[32];
+//char BufferText[32];
 const char monitor_error_msg0[] PROGMEM = monitor_error_msg0_def;
 const char monitor_error_msg1[] PROGMEM = monitor_error_msg1_def;
 const char monitor_error_msg2[] PROGMEM = monitor_error_msg2_def;
@@ -347,7 +347,6 @@ PT_THREAD(monitor_write_thread(struct pt *pt, uint8_t _monitor))
 }
 
 /* Monitor reader thread */
-static
 PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 {
 
@@ -364,7 +363,7 @@ PT_THREAD(monitor_read_thread(struct pt *pt, uint8_t _monitor))
 	  	timer_set(timer, TIMER_READER_MS);
 		
 		if(mon_verbosity > 6 && is_terminal_idle()) PRINTF_P(PSTR("\r\nThread R %u \r\n"), _monitor);
-		PT_WAIT_UNTIL(pt, monitor_uploading && monitor_state[_monitor].uploading && timer_expired(timer));
+		PT_WAIT_UNTIL(pt, monitor_uploading && timer_expired(timer));
 		
 		time_before = clock_time();		
 		if(monitor_state[_monitor].sending == 0)
@@ -452,7 +451,8 @@ static int callback_inifile(const char *section, const char *key, const char *va
 			simon_set_apikey(value);
 			config_check.bit.key_ok = 1;
 			PRINTS_P(PSTR("api_key: "));
-			PRINTF(value);
+			PRINTF(simon_get_apikey());
+			
 		}
 		if(strcmp_P(key,PSTR("gprs_apn")) == 0)
 		{
@@ -500,7 +500,7 @@ static int callback_inifile(const char *section, const char *key, const char *va
 			monitor_state[mon_cnt].config_h.entry_size = (uint16_t)StringToInteger((char*)value);
 			++field_cnt;
 		}		
-
+		
 		if(field_cnt == NUM_OF_FIELDS)
 		{
 			field_cnt = 0;
@@ -689,21 +689,13 @@ void main_monitor(void)
 		PT_INIT(&monitor_state[monitor_num].read_pt);
 		PT_INIT(&monitor_state[monitor_num].write_pt);
 				
-		monitor_state[monitor_num].time_to_send = 0;
-		monitor_state[monitor_num].avg_time_to_send = 0;
 		monitor_state[monitor_num].sinc = 0;
 		monitor_state[monitor_num].written_entries = 0;
 		monitor_state[monitor_num].total_written_entries = 0;		
 		monitor_state[monitor_num].sent_entries = 0;
 		monitor_state[monitor_num].read_entries = 0;
-		monitor_state[monitor_num].sending = 0;
-		monitor_state[monitor_num].uploading = 1; /* enable data uploading */
-		
-		/* hack to disable slave TS uploading */
-		if(monitor_state[monitor_num].codigo == MODBUS_TS)
-		{
-			monitor_state[monitor_num].uploading = 0;
-		}
+		monitor_state[monitor_num].sending = 0;			
+
 	}
 	
 #ifdef _WIN32	
@@ -716,7 +708,9 @@ void main_monitor(void)
 	
 	monitors_state.time_started = (time_t)(clock_time()/1000);
 	
-	int8_t sending_mon = 0;
+	#if DISABLED
+		int8_t sending_mon = 0;
+	#endif
 	
 	/* run forever */
 	while(1)
@@ -729,16 +723,25 @@ void main_monitor(void)
 			monitor_write_thread(&monitor_state[monitor_num].write_pt, monitor_num);
 		}
 		
-		/* read next to send */		
-		monitor_read_thread(&monitor_state[sending_mon].read_pt, sending_mon);
+		#if DISABLED
+			/* read next to send */		
+			monitor_read_thread(&monitor_state[sending_mon].read_pt, sending_mon);
 		
-		if(monitor_state[sending_mon].sending == 0)
-		{
-			if(++sending_mon == monitores_em_uso)
+			if(monitor_state[sending_mon].sending == 0)
 			{
-				sending_mon = 0;
+				if(++sending_mon == monitores_em_uso)
+				{
+					sending_mon = 0;
+				}
 			}
+		#endif
+		
+		/* upload data to server */			
+		if(monitor_uploading)
+		{
+			monitor_reader_multiple(monitores_em_uso);
 		}		
+
 		monitor_is_idle = 1;
 		
 		
