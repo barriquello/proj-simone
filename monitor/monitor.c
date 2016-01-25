@@ -546,6 +546,7 @@ uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_n
 		 }
 		 
 		 PRINT_ERRO_P(PSTR("Erro: new header"), monitor_num);
+		 PRINT_ERRO("@%d", simon_clock_get());
 		
 	}
 
@@ -979,6 +980,7 @@ void monitor_writer(uint8_t monitor_num)
 		PRINT_ERRO_PP(monitor_error_msg[1], (uint8_t) monitor_num);		
 		PRINTS_ERRO_P(PSTR("write failed\r\n"));
 		PRINT_ERRO_P(PSTR("\r\nMissed entries %d\r\n"), missing_entries);
+		PRINT_ERRO("@%d", simon_clock_get());
 	}else
 	{
 		monitor_state[monitor_num].written_entries++;
@@ -1046,7 +1048,7 @@ uint16_t monitor_reader_multiple(uint8_t num_monitores_em_uso)
 	uint16_t nread = 0;
     int16_t time_offset = 0;	
 	uint8_t monitor_num = 0;		
-	char buffer[8];	
+	char buffer[16];	
 		
 	if (monitor_sending == FALSE)
 	{								
@@ -1099,7 +1101,7 @@ uint16_t monitor_reader_multiple(uint8_t num_monitores_em_uso)
 						PRINTF_P(PSTR("\r\nData:"));
 						PRINTF((char*)entry.values);
 						PRINTF_P(PSTR("\r\nSize: %u"), entry.size-2);
-						PRINTS_P(PSTR("\r\n Time:"));
+						PRINTS_P(PSTR("\r\nTime:"));
 						PRINTF(ltoa((long)entry.ts,buffer,10));
 						PRINTF_P(PSTR("\r\n"));
 					}								   
