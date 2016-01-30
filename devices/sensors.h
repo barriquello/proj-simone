@@ -33,8 +33,14 @@
 
 #include "stdint.h"
 
+typedef enum
+{
+	PRESSURE_VALVE = 0,
+	SENSOR_LEVEL = 1
+}sensor_id_t;
 
 void sensors_init(void);
-uint8_t sensors_read(uint8_t);
+uint8_t sensors_status(void);
+uint8_t sensors_read(sensor_id_t);
 
 #endif /* SENSORS_H_ */

@@ -327,7 +327,7 @@ void ListFiles(CHAR8 *ptr)
 			if (f_getfree(ptr, (DWORD*)&p1, &fs) == FR_OK)
 			{				
 				PRINTA(", %l", (uint32_t)(p1 * fs->csize * 512));
-				PRINTA_P(PSTR("bytes free \n\r"));
+				PRINTA_P(PSTR(" bytes free \n\r"));
 			}     
 	}
 	else

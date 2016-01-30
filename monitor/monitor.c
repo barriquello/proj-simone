@@ -615,6 +615,20 @@ static int monitor_entry_send(uint8_t mon_id, monitor_entry_t* entry, uint16_t l
 	return FALSE;
 }
 
+uint32_t monitor_confirm_entry_sent(uint8_t monitor_num, const char* filename)
+{
+	monitor_header_t h = {{0,0,0,0},{0,0,0,0,0,0,0},0,0};
+	if(!monitor_getheader(filename, &h)) return (MAX_NUM_OF_ENTRIES); /* header format error */
+	h.last_idx++;
+	monitor_setheader(filename, &h);
+	return h.last_idx;	
+}
+
+void monitor_log_stats(uint8_t send_ok)
+{
+	
+}
+
 uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_entry_t* entry, uint8_t enable_send, uint8_t send_ok)
 {
 	uint32_t entry_size;
@@ -646,11 +660,12 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 
 		unix_time = mktime(&ts);
 
-		if(unix_time > 0)
-		{
-			unix_time += (h.last_idx)*(h.h1.time_interv);
-			entry->ts = unix_time;
-		}
+		/* compiler has a bug, it requires uint32_t variables to do correct multiplications! */
+		idx = ((uint32_t)(h.last_idx));
+		entry_size = ((uint32_t)(h.h1.time_interv));
+		idx = idx*entry_size;
+		unix_time = unix_time + idx;
+		entry->ts = unix_time;
 
 		/* le a proxima entrada */
 		if(monitor_openread(filename,&fp))
@@ -675,7 +690,8 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 				   monitor_state[monitor_num].failed_tx = 0;
 			   }
 			   
-			   monitor_state[monitor_num].read_entries++;	
+			   monitor_state[monitor_num].read_entries++;
+			   monitor_state[monitor_num].last_timestamp = unix_time;	
 			   			  
 			   time_init = clock_time();
 			   
@@ -709,28 +725,28 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 				   h.last_idx++;   /* incrementa indice da última entrada lida */
 				   if (send_ok == TRUE)
 				   {
-					  monitor_setheader(filename, &h);
+					  //monitor_setheader(filename, &h);
 				   }
 			   }			   
 			   		   
 			   if(send_ok == TRUE)
 			   {
-				   //monitor_state[monitor_num].failed_tx = 0;
-				   monitor_state[monitor_num].sent_entries++;				   
-				   monitor_state[monitor_num].last_timestamp = unix_time;				  
-				   monitor_state[monitor_num].sending = 0;
-				   monitor_state[monitor_num].tx_time = (clock_time()/1000) - monitor_state[monitor_num].tx_start;
-				   monitor_state[monitor_num].tx_time_avg = ((monitor_state[monitor_num].tx_time_avg*7) + monitor_state[monitor_num].tx_time)/8;
-				   
+				   monitor_state[monitor_num].sent_entries++;				   				   				  
+				   monitor_state[monitor_num].sending = 0;				   
 				   if (mon_verbosity > 1 && is_terminal_idle())
 				   {
-					   PRINTF_P(PSTR("Mon %u, entry: %u of %u, "),
+					   PRINTF_P(PSTR("Mon %u, entry: %u of %u"),
 							   monitor_num,
 							   h.last_idx, h.count);
-							   
-						PRINTF_P(PSTR(" total: %lu s - avg: %lu s"),							   
-							   monitor_state[monitor_num].tx_time,
-							   monitor_state[monitor_num].tx_time_avg);
+						if(enable_send == TRUE)
+						{
+							monitor_state[monitor_num].tx_time = (clock_time()/1000) - monitor_state[monitor_num].tx_start;
+							monitor_state[monitor_num].tx_time_avg = ((monitor_state[monitor_num].tx_time_avg*7) + monitor_state[monitor_num].tx_time)/8;
+
+							PRINTF_P(PSTR(", total: %lu s - avg: %lu s"),
+							monitor_state[monitor_num].tx_time,
+							monitor_state[monitor_num].tx_time_avg);
+						}   						
 
 						char timestamp[32];
 						ts = *localtime(&(time_t){unix_time});
@@ -758,7 +774,12 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 		/* monitor is not writing in the same reading file ? */
 		if(strcmp(monitor_state[monitor_num].monitor_name_reading, monitor_state[monitor_num].monitor_name_writing) != 0)
 		{
+			DPRINTS_P(PSTR("\r\nSwitching file reading.\r\n"));
+			DPRINTS_P(PSTR("\r\nPrevious file reading: ")); DPRINTS_R(monitor_state[monitor_num].monitor_name_reading);
+					
 			strcpy(monitor_state[monitor_num].monitor_name_reading,monitor_state[monitor_num].monitor_name_writing);
+			
+			DPRINTS_P(PSTR("\r\nCurrent file reading: ")); DPRINTS_R(monitor_state[monitor_num].monitor_name_reading);
 			
 			/* update meta file */
 			if(monitor_openwrite(LOG_METAFILE,&fp))
@@ -1070,7 +1091,7 @@ uint16_t monitor_reader_multiple(uint8_t num_monitores_em_uso)
 
 			if(mon_verbosity > 4 && is_terminal_idle())  PRINTF_P(PSTR("\r\nThread R %u, read file: %s \r\n"), monitor_num, (char*)fname);
 			
-			nread = monitor_readentry(monitor_num, fname, &entry, FALSE, send_OK);
+			nread = monitor_readentry(monitor_num, fname, &entry, FALSE, TRUE);
 			
 			if(nread > 0 && nread < MAX_NUM_OF_ENTRIES)
 			{
@@ -1104,7 +1125,9 @@ uint16_t monitor_reader_multiple(uint8_t num_monitores_em_uso)
 						PRINTS_P(PSTR("\r\nTime:"));
 						PRINTF(ltoa((long)entry.ts,buffer,10));
 						PRINTF_P(PSTR("\r\n"));
-					}								   
+					}
+					monitor_state[monitor_num].sending = 1;	
+					monitor_state[monitor_num].reader_upload_start_time = clock_time();
 					monitor_sending = TRUE;
 				}
 				
@@ -1130,6 +1153,33 @@ uint16_t monitor_reader_multiple(uint8_t num_monitores_em_uso)
 			{
 				monitor_sending = FALSE;
 				send_OK = TRUE;
+				for (monitor_num = 0; monitor_num < num_monitores_em_uso; monitor_num++)
+				{
+									
+					if(monitor_state[monitor_num].sending == 1)
+					{
+						char* fname = (char *)monitor_getfilename_to_read(monitor_num);						
+						if(*fname == '\0') continue;
+						
+						
+						monitor_chdir(monitor_state[monitor_num].monitor_dir_name);	 /* change to log dir */	  				
+						monitor_confirm_entry_sent(monitor_num, fname);						
+						monitor_chdir(".."); /* change to parent dir */
+										
+						/* log stats */
+						uint32_t time_before = monitor_state[monitor_num].reader_upload_start_time;
+						uint32_t time_elapsed = (uint32_t)(clock_time()-time_before);
+						monitor_state[monitor_num].reader_upload_time = time_elapsed;
+						monitor_state[monitor_num].reader_upload_time_avg = ((monitor_state[monitor_num].reader_upload_time_avg*7) + time_elapsed)/8;																	
+						monitor_state[monitor_num].sending = 0;
+					}
+				}
+				
+				DPRINTS_P(PSTR("\r\n"));
+				DPRINTS_R(ltoa((long)time_start,buffer,10));
+				DPRINTS_P(PSTR("-"));
+				DPRINTS_R(data_vector);
+				
 				return TRUE;
 			}				
 	}			

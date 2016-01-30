@@ -80,6 +80,10 @@ uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 
 #endif
 
+#include "sensors.h"
+#include "simon-api.h"
+#include "ff.h"
+
 uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 {
 			/* limit number of registers to the max. available */
@@ -90,10 +94,15 @@ uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 		
 #if MODBUS_NULL_SLAVE_SIMULATION == 0				
 			/* Detecta equipamentos de medição e faz a leitura dos dados */			
-			NULL_IRList.Reg.Pressure_Valve_H = PRESSURE_VALVE_INPUT_H;
-			NULL_IRList.Reg.Pressure_Valve_L = PRESSURE_VALVE_INPUT_L;
-			NULL_IRList.Reg.Oil_Level_H = SENSOR_LEVEL_INPUT_H;
-			NULL_IRList.Reg.Oil_Level_L = SENSOR_LEVEL_INPUT_L;
+			NULL_IRList.Reg.Pressure_Valve = sensors_read(PRESSURE_VALVE);
+			NULL_IRList.Reg.Oil_Level =  sensors_read(SENSOR_LEVEL);
+			FATFS   *fs;	 /* Pointer to file system object */
+			uint32_t p1;
+			if (f_getfree(".", (DWORD*)&p1, &fs) == FR_OK)
+			{
+				NULL_IRList.Reg.SD_bytes_available = (uint32_t)(p1 * fs->csize * 512);
+			}			
+			NULL_IRList.Reg.Local_time = (uint32_t)simon_clock_get();
 #else	
 			uint8_t nregs = 0;
 			/* return random data */	
@@ -120,7 +129,7 @@ CONST modbus_slave_t slave_NULL =
 
 void Modus_slave_null_init(void)
 {
-	
+	sensors_init();
 #if 0	
 	SENSOR_LEVEL_INPUT_H_DIR = 1;
 	SENSOR_LEVEL_INPUT_L_DIR = 1;
@@ -129,6 +138,7 @@ void Modus_slave_null_init(void)
 #else
 	INPUT_PORT_DIR = 0; // input
 #endif
+	
 }
 
 #ifndef _WIN32

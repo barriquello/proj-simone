@@ -1104,26 +1104,31 @@ CONST command_t modbus_cmd = {
 /* monitor status */
 #include "monitor.h"
 #include "simon-api.h"
+#include "sensors.h"
 
 #define cmd_monitor_help_def      \
 	"\r\n usage:\r\n"           \
+	"i - info \r\n"             \
 	"s - status \r\n"           \
+	"y - restart monitor\r\n"   \
 	"z - stop monitor\r\n"      \
 	"r - reset monitor\r\n"     \
 	"c - clear logs\r\n"        \
+	"d - read input sensors \r\n" \
 	"l - list \r\n"             \
 	"n - null modem \r\n"       \
 	"t - time \r\n"             \
 	"k - sinch \r\n"            \
 	"v - verbose \r\n"          \
 
+extern volatile uint8_t monitor_running;
+extern volatile uint8_t monitor_uploading;
+extern volatile uint8_t monitor_is_idle;
+	
 void monitor_stop(void);
 
 void monitor_stop(void)
 {
-	extern volatile uint8_t monitor_running;
-	extern volatile uint8_t monitor_uploading;
-	extern volatile uint8_t monitor_is_idle;
 	
 	OS_SR_SAVE_VAR;
 	
@@ -1145,6 +1150,26 @@ void monitor_stop(void)
 			DelayTask(50);
 		}
 	}	
+}
+
+void monitor_start(void);
+
+void monitor_start(void)
+{
+	
+	OS_SR_SAVE_VAR;
+	
+	OSEnterCritical();
+
+	if(monitor_is_idle == 1)
+	{
+		monitor_running = 1;
+		monitor_uploading = 1;
+	}
+	
+	PRINTS_P(PSTR("Starting monitors ...\r\n"));	
+	OSExitCritical();
+	
 }
 
 void mcu_reset(void)
@@ -1235,6 +1260,8 @@ void term_cmd_monitor(char *param)
 					PRINTF_P(PSTR("Last sent at: %lu\r\n"), monitor_state[mon].last_timestamp);
 					PRINTF_P(PSTR("Last upload time: %lu\r\n"), monitor_state[mon].reader_upload_time);
 					PRINTF_P(PSTR("Avg upload time: %lu\r\n"), monitor_state[mon].reader_upload_time_avg);
+					PRINTF_P(PSTR("Reading: %s\r\n"), monitor_state[mon].monitor_name_reading);
+					PRINTF_P(PSTR("Writing: %s\r\n"), monitor_state[mon].monitor_name_writing);
 				}
 			}
 			break;
@@ -1249,6 +1276,9 @@ void term_cmd_monitor(char *param)
 		case 'r':	
 			mcu_reset();		
 			break;
+		case 'y':
+			monitor_start();
+		break;			
 		case 'z':
 			monitor_stop();
 			break;	
@@ -1301,6 +1331,18 @@ void term_cmd_monitor(char *param)
 		case 'n':								
 			monitor_modem_null = 1;
 			PRINTS_P(PSTR("Null modem set \r\n"));
+			break;
+		case 'd':
+			if(sensors_status() == FALSE)
+			{
+				sensors_init();
+			}
+			if(sensors_status() == TRUE)
+			{
+				 PRINTF_P(PSTR("\r\nInput port: %u"), PINF);
+				 PRINTF_P(PSTR("\r\nSensor - pressure valve: %u"), sensors_read(PRESSURE_VALVE));
+				 PRINTF_P(PSTR("\r\nSensor - oil level: %u\r\n"), sensors_read(SENSOR_LEVEL));
+			}
 			break;
 		case 'v':
 			if(sscanf(&param[2], "%d", &input) == 1)

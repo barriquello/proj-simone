@@ -30,52 +30,48 @@
 
 #include "drivers.h"
 #include "sensors.h"
+#include "AppConfig.h"
 
 #if COLDUINO
 /* port of input pins */
-#define SENSOR_LEVEL_INPUT_H 		PTCD_PTCD2
-#define SENSOR_LEVEL_INPUT_H_DIR 	PTCDD_PTCDD2
+#define SENSOR_LEVEL_INPUT_A 		PTCD_PTCD2
+#define SENSOR_LEVEL_INPUT_B 		PTCD_PTCD1
+#define SENSOR_LEVEL_INPUT_C 		PTCD_PTCD0
 
-#define SENSOR_LEVEL_INPUT_L 		PTCD_PTCD1
-#define SENSOR_LEVEL_INPUT_L_DIR 	PTCDD_PTCDD1
-
-#define PRESSURE_VALVE_INPUT_H 		PTCD_PTCD0
-#define PRESSURE_VALVE_INPUT_H_DIR 	PTCDD_PTCDD0
-
-#define PRESSURE_VALVE_INPUT_L 		PTCD_PTCD3
-#define PRESSURE_VALVE_INPUT_L_DIR 	PTCDD_PTCDD3
+#define PRESSURE_VALVE_INPUT_A 		PTCD_PTCD3
 
 #define INPUT_PORT_DIR		PTCDD
 #define INPUT_PORT_DATA		PTCD
 
 #elif ARDUINO
 
-#define SENSOR_LEVEL_INPUT_H 		(PORTF & 0x04)
-#define SENSOR_LEVEL_INPUT_L 		(PORTF & 0x02)
-#define PRESSURE_VALVE_INPUT_H 		(PORTF & 0x01)
-#define PRESSURE_VALVE_INPUT_L 		(PORTF & 0x08)
+#define INPUT(PIN,x)		(((PIN) & (1<<(x))) == 1<<(x))	
+#define SENSOR_LEVEL_INPUT_A 		INPUT(PINF,3)
+#define SENSOR_LEVEL_INPUT_B 		INPUT(PINF,4)
+#define SENSOR_LEVEL_INPUT_C 		INPUT(PINF,5)
+#define SENSOR_LEVEL_INPUT_D 		
+#define PRESSURE_VALVE_INPUT_A 		INPUT(PINF,2)
 
-#define INPUT_PORT_DIR		DDRF	/* atmega2560 analog input */
-#define INPUT_PORT_DATA		PORTF	/* atmega2560 analog input */
+
+#define INPUT_PORT_DIR		DDRF	/* atmega2560 input dir */
+#define INPUT_PORT_PUP		PORTF	/* atmega2560 input pull-up */
+#define INPUT_PORT_DATA		PINF	/* atmega2560 input data */
 
 #endif
 
-typedef enum
-{
-	PRESSURE_VALVE = 0,
-	SENSOR_LEVEL = 1
-}sensor_id_t;
+static uint8_t sensors_init_status = FALSE;
 
-uint8_t sensors_read(uint8_t sensor_id)
+/* TODO: sensor debug */
+uint8_t sensors_read(sensor_id_t sensor_id)
 {
 		uint8_t val = 0;
 		switch(sensor_id)
-		{
+		{			
 			case PRESSURE_VALVE:
-				val = PRESSURE_VALVE_INPUT_H + PRESSURE_VALVE_INPUT_L;
+				val = (uint8_t)(PRESSURE_VALVE_INPUT_A);
 			break;
 			case SENSOR_LEVEL:
-				val = SENSOR_LEVEL_INPUT_H;
+				val = (uint8_t)(SENSOR_LEVEL_INPUT_A + SENSOR_LEVEL_INPUT_B + SENSOR_LEVEL_INPUT_C);
 			break;
 			default:
 			break;
@@ -85,6 +81,13 @@ uint8_t sensors_read(uint8_t sensor_id)
 
 void sensors_init(void)
 {	
+	sensors_init_status = TRUE;
 	INPUT_PORT_DIR = 0; // input
+	INPUT_PORT_PUP = 0; // input
+}
+
+uint8_t sensors_status(void)
+{
+	return sensors_init_status;
 }
 

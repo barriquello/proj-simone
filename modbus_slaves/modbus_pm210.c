@@ -271,12 +271,6 @@ uint8_t pm210_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 #endif
 	}
 	
-	/* hack to include some TS slave regs */
-	#include "modbus_ts.h"
-	extern modbus_ts_input_register_list  	  TS_IRList;	
-	PM210_IRList1.Reg.Temperatura_oleo = TS_IRList.Reg.Temperatura_oleo;
-	PM210_IRList1.Reg.Temperatura_enrolamento = TS_IRList.Reg.Temperatura_enrolamento;	
-	
 	SetModbusHeader(slave_addr, PM210_IRList1.Regs8);
 	memcpy(buf,PM210_IRList1.Regs8,max_len);
 	return (max_len);		

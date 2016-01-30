@@ -34,7 +34,7 @@
 #include "stdint.h"
 
 #define NULL_REGLIST_OFFSET_NREGS 4
-#define NULL_REGLIST_INPUT_NREGS  2
+#define NULL_REGLIST_INPUT_NREGS  5
 #define NULL_REGLIST_INPUT_START  0
 #define NULL_SLAVE_ADDRESS  	  (0x00)
 
@@ -49,11 +49,11 @@ typedef union
 		uint8_t Dia;			/* timestamp */
 		uint8_t Hora;			/* timestamp */
 		uint8_t Minuto;			/* timestamp */
-		uint8_t Segundo;		/* timestamp */	
-		uint8_t Pressure_Valve_H;
-		uint8_t Pressure_Valve_L;
-		uint8_t Oil_Level_H;
-		uint8_t Oil_Level_L;
+		uint8_t Segundo;		/* timestamp */
+		uint32_t SD_bytes_available;
+		uint32_t Local_time;
+		uint8_t Pressure_Valve;
+		uint8_t Oil_Level;
 	}Reg;		
 	uint8_t  Regs8[NULL_REGLIST_INPUT_NREGS*2+NULL_REGLIST_OFFSET_NREGS*2];
 	uint16_t Regs16[NULL_REGLIST_INPUT_NREGS+NULL_REGLIST_OFFSET_NREGS];

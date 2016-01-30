@@ -279,6 +279,7 @@ uint8_t monitor_validateheader(const char* filename, uint8_t monitor_id, uint16_
 void monitor_createentry(char* string, uint16_t *dados, uint8_t len);
 uint16_t monitor_writeentry(const char* filename, char* entry, uint8_t monitor_num);
 uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_entry_t* entry, uint8_t enable_send, uint8_t send_ok);
+uint32_t monitor_confirm_entry_sent(uint8_t monitor_num, const char* filename);
 
 uint8_t monitor_gettimestamp(struct tm * ts, uint32_t time_elapsed_s);
 void monitor_settimestamp(uint8_t monitor_num, const char* filename);

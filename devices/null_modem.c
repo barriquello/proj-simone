@@ -47,8 +47,7 @@
 static state_t null_modem_state = SETUP;
 static char ip[16];
 static char *hostname = NULL;
-static INT8U null_modem_RxBuffer[32];
-static INT8U null_modem_TxBuffer[32];
+static char null_modem_Buffer[32];
 
 #define DEBUG_PRINT 0
 
@@ -130,7 +129,8 @@ uint8_t null_modem_send(char * dados, uint16_t tam)
 
 	PRINT_P(PSTR("Modem Send: \r\n"));
 	PRINT(dados);
-	memcpy(null_modem_TxBuffer,dados,SIZEARRAY(null_modem_TxBuffer));				
+	memcpy(null_modem_Buffer,dados,SIZEARRAY(null_modem_Buffer)-1);
+	DelayTask(10000); /* simulate modem delay */				
 	if(null_modem_state == INIT)
 	{				
 		return MODEM_OK;		
@@ -146,24 +146,22 @@ uint8_t null_modem_receive(char* buff, uint16_t* len)
 {
 
 	uint8_t ret = MODEM_ERR;
-	uint16_t size =(uint16_t) MIN(*len,SIZEARRAY(null_modem_RxBuffer));
+	uint16_t size =(uint16_t) MIN(*len,SIZEARRAY(null_modem_Buffer));
 	
 	*len = 0;
 
 	if(size)
-	{				
-		    if(null_modem_RxBuffer[0] !='\0')
-		    {		
-		    	ret = MODEM_OK;
-				memcpy(buff,null_modem_RxBuffer,size);
-				if(size < SIZEARRAY(null_modem_RxBuffer))
-				{
-					memcpy(null_modem_RxBuffer,&null_modem_RxBuffer[size],SIZEARRAY(null_modem_RxBuffer)-size);				
-				}
-			
-				* len = size;
-		    }	    
-			
+	{		
+			if(null_modem_Buffer[0] != '\0')
+			{
+				strcpy_P(null_modem_Buffer, PSTR("HTTP/1.1 200 OK\r\n"));
+				ret = MODEM_OK;
+				memcpy(buff,null_modem_Buffer,size);
+				null_modem_Buffer[0] = '\0';
+			}
+
+		    * len = size;	
+					
 	}
 	
 	return (uint8_t)ret;

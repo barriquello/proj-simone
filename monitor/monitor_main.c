@@ -102,9 +102,9 @@ T20150101073300S ->
 02 -> 3400
 
 
-7) Caso o contador de entradas seja igual a FFFF (65535). Fecha-se o arquivo e inicia-se um arquivo novo.
-8) Caso o indice da última linha enviada seja igual a FFFE (65534), o arquivo deverá ser renomeado com alteração da extensão (.txt -> .txd).
-9) OS arquivos de log de cada monitor são guardados em diretórios separados nomeados com a ID do monitor.
+7) Caso o contador de entradas seja igual a MAX_NUM_OF_ENTRIES, fecha-se o arquivo e inicia-se um arquivo novo.
+8) Caso o indice da última linha enviada seja igual a MAX_NUM_OF_ENTRIES-1, o arquivo deverá ser renomeado com alteração da extensão (.txt -> .txd).
+9) Os arquivos de log de cada monitor são guardados em diretórios separados nomeados com a ID do monitor.
 
  */
 
