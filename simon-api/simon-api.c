@@ -91,20 +91,20 @@ uint8_t simon_init(const modem_driver_t* _modem)
 	
 		if(modem->resolveip != NULL && modem->resolveip(hostname, simon_hostip) == MODEM_OK)
 		{
-			PRINTS_P(PSTR("Hostname resolved to IP: "));			
+			if(is_terminal_idle()) PRINTS_P(PSTR("Hostname resolved to IP: "));			
 		}else
 		{
-			PRINTS_P(PSTR("Hostname IP not resolved, using default IP: "));
+			if(is_terminal_idle()) PRINTS_P(PSTR("Hostname IP not resolved, using default IP: "));
 		}
 		
-		PRINTF((char*)simon_hostip);
+		if(is_terminal_idle()) PRINTF((char*)simon_hostip);
 		modem->setip(simon_hostip); /* set a default ip */ //"54.173.137.93"
 		
-		PRINTS_P(PSTR("\r\n"));				
+		if(is_terminal_idle()) PRINTS_P(PSTR("\r\n"));				
 		return MODEM_OK;
 	}	
 	
-	PRINTS_P(PSTR("modem not ok"));	
+	if(is_terminal_idle()) PRINTS_P(PSTR("modem not ok"));	
 	return MODEM_ERR;
 	
 }

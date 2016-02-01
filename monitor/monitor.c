@@ -46,7 +46,6 @@
 
 #if DEBUG_MONITOR
 #define PRINTS_ENABLED  1
-//char BufferText[32];
 #else
 #define PRINTS_ENABLED  0
 #endif
@@ -661,9 +660,9 @@ uint32_t monitor_readentry(uint8_t monitor_num, const char* filename, monitor_en
 		unix_time = mktime(&ts);
 
 		/* compiler has a bug, it requires uint32_t variables to do correct multiplications! */
+		uint32_t aux1 = ((uint32_t)(h.h1.time_interv));
 		idx = ((uint32_t)(h.last_idx));
-		entry_size = ((uint32_t)(h.h1.time_interv));
-		idx = idx*entry_size;
+		idx = idx*aux1;
 		unix_time = unix_time + idx;
 		entry->ts = unix_time;
 
@@ -1179,6 +1178,7 @@ uint16_t monitor_reader_multiple(uint8_t num_monitores_em_uso)
 				DPRINTS_R(ltoa((long)time_start,buffer,10));
 				DPRINTS_P(PSTR("-"));
 				DPRINTS_R(data_vector);
+				PRINTF_R(data_vector);
 				
 				return TRUE;
 			}				

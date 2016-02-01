@@ -11,6 +11,7 @@ extern uint8_t mon_verbosity;
 
 #if ARDUINO
 #define PRINTF(...)			printf_lib(__VA_ARGS__);
+#define PRINTF_R(s)			prints_R(NULL, s);
 #define PRINTF_P(...)		print_P(NULL, __VA_ARGS__);
 #define PRINTF_PP(s,...)	print_P(NULL,(PGM_P)pgm_read_word(&(s)), __VA_ARGS__);
 #define PRINTS_P(s)			do{printf_terminal_P(s); }while(0);
