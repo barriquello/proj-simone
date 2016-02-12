@@ -51,35 +51,6 @@ uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len);
 #include "random_lib.h"
 #endif
 
-#if COLDUINO
-/* port of input pins */
-#define SENSOR_LEVEL_INPUT_H 		PTCD_PTCD2
-#define SENSOR_LEVEL_INPUT_H_DIR 	PTCDD_PTCDD2
-
-#define SENSOR_LEVEL_INPUT_L 		PTCD_PTCD1
-#define SENSOR_LEVEL_INPUT_L_DIR 	PTCDD_PTCDD1
-
-#define PRESSURE_VALVE_INPUT_H 		PTCD_PTCD0
-#define PRESSURE_VALVE_INPUT_H_DIR 	PTCDD_PTCDD0
-
-#define PRESSURE_VALVE_INPUT_L 		PTCD_PTCD3
-#define PRESSURE_VALVE_INPUT_L_DIR 	PTCDD_PTCDD3
-
-#define INPUT_PORT_DIR		PTCDD
-#define INPUT_PORT_DATA		PTCD
-
-#elif ARDUINO
-
-#define SENSOR_LEVEL_INPUT_H 		(PORTF & 0x04)
-#define SENSOR_LEVEL_INPUT_L 		(PORTF & 0x02)
-#define PRESSURE_VALVE_INPUT_H 		(PORTF & 0x01)
-#define PRESSURE_VALVE_INPUT_L 		(PORTF & 0x08)
-
-#define INPUT_PORT_DIR		DDRF	/* atmega2560 analog input */
-#define INPUT_PORT_DATA		PORTF	/* atmega2560 analog input */
-
-#endif
-
 #include "sensors.h"
 #include "simon-api.h"
 #include "ff.h"
@@ -111,7 +82,6 @@ uint8_t slave_null_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 				NULL_IRList.Regs16[nregs] = random_get();
 			}
 #endif
-
 		
 			/* get and set timestamp of reading and device id */
 			SetModbusHeader(slave_addr, NULL_IRList.Regs8);	
@@ -130,15 +100,6 @@ CONST modbus_slave_t slave_NULL =
 void Modus_slave_null_init(void)
 {
 	sensors_init();
-#if 0	
-	SENSOR_LEVEL_INPUT_H_DIR = 1;
-	SENSOR_LEVEL_INPUT_L_DIR = 1;
-	PRESSURE_VALVE_INPUT_H_DIR = 1;
-	PRESSURE_VALVE_INPUT_L_DIR = 1;	
-#else
-	INPUT_PORT_DIR = 0; // input
-#endif
-	
 }
 
 #ifndef _WIN32
@@ -163,7 +124,7 @@ uint8_t SetModbusHeader (uint8_t device_id, uint8_t *data_ptr)
 	GetDateTime(&timestamp);
 	
 	data_ptr[0] = device_id;
-	data_ptr[1] = INPUT_PORT_DATA;
+	data_ptr[1] = sensors_read_all();
 	data_ptr[2] = (uint8_t)(timestamp.date.RTC_Year);
 	data_ptr[3] = timestamp.date.RTC_Month;
 	data_ptr[4] = timestamp.date.RTC_Day;

@@ -45,17 +45,17 @@
 
 #elif ARDUINO
 
-#define INPUT(PIN,x)		(((PIN) & (1<<(x))) == 1<<(x))	
-#define SENSOR_LEVEL_INPUT_A 		INPUT(PINF,3)
-#define SENSOR_LEVEL_INPUT_B 		INPUT(PINF,4)
-#define SENSOR_LEVEL_INPUT_C 		INPUT(PINF,5)
-#define SENSOR_LEVEL_INPUT_D 		
-#define PRESSURE_VALVE_INPUT_A 		INPUT(PINF,2)
-
-
 #define INPUT_PORT_DIR		DDRF	/* atmega2560 input dir */
 #define INPUT_PORT_PUP		PORTF	/* atmega2560 input pull-up */
 #define INPUT_PORT_DATA		PINF	/* atmega2560 input data */
+
+#define INPUT(PIN,x)		(((PIN) & (1<<(x))) == 1<<(x))	
+#define SENSOR_LEVEL_INPUT_MIN_NA 		INPUT(INPUT_PORT_DATA,3)
+#define SENSOR_LEVEL_INPUT_MAX_NA 		INPUT(INPUT_PORT_DATA,4)
+#define SENSOR_LEVEL_INPUT_MIN_NF 		
+#define SENSOR_LEVEL_INPUT_MAX_NF		
+#define PRESSURE_VALVE_INPUT_NF 		INPUT(INPUT_PORT_DATA,2)
+#define PRESSURE_VALVE_INPUT_NA 		INPUT(INPUT_PORT_DATA,5)
 
 #endif
 
@@ -68,10 +68,23 @@ uint8_t sensors_read(sensor_id_t sensor_id)
 		switch(sensor_id)
 		{			
 			case PRESSURE_VALVE:
-				val = (uint8_t)(PRESSURE_VALVE_INPUT_A);
+				val = (uint8_t)(PRESSURE_VALVE_INPUT_NA);
 			break;
 			case SENSOR_LEVEL:
-				val = (uint8_t)(SENSOR_LEVEL_INPUT_A + SENSOR_LEVEL_INPUT_B + SENSOR_LEVEL_INPUT_C);
+				if(SENSOR_LEVEL_INPUT_MIN_NA == 1) 
+				{
+					val = (uint8_t)(LEVEL_MIN);
+				}
+				else
+				{
+					if(SENSOR_LEVEL_INPUT_MAX_NA == 1)
+					{
+						 val = (uint8_t)(LEVEL_MAX);
+					}else
+					{
+						val = (uint8_t)(LEVEL_MED);
+					}
+				}
 			break;
 			default:
 			break;
@@ -89,5 +102,10 @@ void sensors_init(void)
 uint8_t sensors_status(void)
 {
 	return sensors_init_status;
+}
+
+uint8_t sensors_read_all(void)
+{
+	return (uint8_t)INPUT_PORT_DATA;
 }
 

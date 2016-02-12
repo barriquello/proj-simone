@@ -252,6 +252,14 @@
       <SubType>compile</SubType>
       <Link>devices\SD.h</Link>
     </Compile>
+    <Compile Include="..\..\devices\sensors.c">
+      <SubType>compile</SubType>
+      <Link>devices\sensors.c</Link>
+    </Compile>
+    <Compile Include="..\..\devices\sensors.h">
+      <SubType>compile</SubType>
+      <Link>devices\sensors.h</Link>
+    </Compile>
     <Compile Include="..\..\devices\terminal_io.c">
       <SubType>compile</SubType>
       <Link>devices\terminal_io.c</Link>

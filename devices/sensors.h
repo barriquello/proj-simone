@@ -39,8 +39,13 @@ typedef enum
 	SENSOR_LEVEL = 1
 }sensor_id_t;
 
+#define LEVEL_MIN (0)
+#define LEVEL_MED (1)
+#define LEVEL_MAX (2)
+
 void sensors_init(void);
 uint8_t sensors_status(void);
 uint8_t sensors_read(sensor_id_t);
+uint8_t sensors_read_all(void);
 
 #endif /* SENSORS_H_ */
