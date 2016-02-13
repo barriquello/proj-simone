@@ -32,6 +32,7 @@
 #include "sensors.h"
 #include "AppConfig.h"
 
+
 #if COLDUINO
 /* port of input pins */
 #define SENSOR_LEVEL_INPUT_A 		PTCD_PTCD2
@@ -68,16 +69,16 @@ uint8_t sensors_read(sensor_id_t sensor_id)
 		switch(sensor_id)
 		{			
 			case PRESSURE_VALVE:
-				val = (uint8_t)(PRESSURE_VALVE_INPUT_NA);
+				val = (uint8_t)(! PRESSURE_VALVE_INPUT_NA);
 			break;
 			case SENSOR_LEVEL:
-				if(SENSOR_LEVEL_INPUT_MIN_NA == 1) 
+				if(SENSOR_LEVEL_INPUT_MIN_NA == 0)
 				{
 					val = (uint8_t)(LEVEL_MIN);
 				}
 				else
 				{
-					if(SENSOR_LEVEL_INPUT_MAX_NA == 1)
+					if(SENSOR_LEVEL_INPUT_MAX_NA == 0)
 					{
 						 val = (uint8_t)(LEVEL_MAX);
 					}else
