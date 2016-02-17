@@ -1,1 +1,6 @@
-/Debug
+*.d
+*.o
+*.srec
+*.elf
+*.eep
+*.map
