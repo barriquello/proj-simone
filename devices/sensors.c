@@ -51,12 +51,12 @@
 #define INPUT_PORT_DATA		PINF	/* atmega2560 input data */
 
 #define INPUT(PIN,x)		(((PIN) & (1<<(x))) == 1<<(x))	
-#define SENSOR_LEVEL_INPUT_MIN_NA 		INPUT(INPUT_PORT_DATA,3)
-#define SENSOR_LEVEL_INPUT_MAX_NA 		INPUT(INPUT_PORT_DATA,4)
-#define SENSOR_LEVEL_INPUT_MIN_NF 		
-#define SENSOR_LEVEL_INPUT_MAX_NF		
-#define PRESSURE_VALVE_INPUT_NF 		INPUT(INPUT_PORT_DATA,2)
-#define PRESSURE_VALVE_INPUT_NA 		INPUT(INPUT_PORT_DATA,5)
+#define SENSOR_LEVEL_INPUT_MIN_NF 		INPUT(INPUT_PORT_DATA,5)
+#define SENSOR_LEVEL_INPUT_MIN_NA 		INPUT(INPUT_PORT_DATA,4)
+#define SENSOR_LEVEL_INPUT_MAX_NF		INPUT(INPUT_PORT_DATA,3)
+#define SENSOR_LEVEL_INPUT_MAX_NA 		INPUT(INPUT_PORT_DATA,2)
+#define PRESSURE_VALVE_INPUT_NF 		INPUT(INPUT_PORT_DATA,1)
+#define PRESSURE_VALVE_INPUT_NA 		INPUT(INPUT_PORT_DATA,0)
 
 #endif
 
@@ -94,10 +94,22 @@ uint8_t sensors_read(sensor_id_t sensor_id)
 }
 
 void sensors_init(void)
-{	
-	sensors_init_status = TRUE;
+{
 	INPUT_PORT_DIR = 0; // input
-	INPUT_PORT_PUP = 0; // input
+	INPUT_PORT_PUP = 0; // no internal pull-up
+    
+    // Test sensors connection
+    if ((!SENSOR_LEVEL_INPUT_MIN_NF || !SENSOR_LEVEL_INPUT_MIN_NA)
+        && (!SENSOR_LEVEL_INPUT_MAX_NF || !SENSOR_LEVEL_INPUT_MAX_NA)
+        && (!PRESSURE_VALVE_INPUT_NF || !PRESSURE_VALVE_INPUT_NA))
+    {
+        sensors_init_status = TRUE;
+    }
+    else
+    {
+        sensors_init_status = FALSE;
+    }
+    
 }
 
 uint8_t sensors_status(void)
