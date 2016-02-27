@@ -34,9 +34,8 @@
 
 #if ARDUINO
 #define LED_PORT		1
-#define LED_PORT_DIR	DDRB	
-#define LED_PORT_DATA	PORTB
-#define LED_PIN			7
+#define LED_PORT_DIR	DDRH	
+#define LED_PORT_DATA	PORTH
 #else
 #define LED_PORT		0
 #define LED_PORT_DIR    
@@ -47,37 +46,37 @@
 void led_onboard_init(void)
 {
 #if LED_PORT
-	BITCLEAR(LED_PORT_DATA,LED_PIN);
-	BITSET(LED_PORT_DIR,LED_PIN);
+	BITSETMASK(LED_PORT_DIR, (0b111 << 4)); // output
+	BITCLEARMASK(LED_PORT_DATA, (0b111 << 4)); // turn on all the LEDs
 #endif
 }
 
-int led_onboard_state(void)
+int led_onboard_state(led_color_t led_color)
 {
 #if LED_PORT
-	return (BITTEST(LED_PORT_DATA,LED_PIN) ? LED_ON : LED_OFF);
+	return (BITTEST(LED_PORT_DATA, led_color) ? LED_OFF : LED_ON);
 #else
 	return 0;
 #endif
 
 }
-void led_onboard_on(void)
+void led_onboard_on(led_color_t led_color)
 {
 #if LED_PORT
-	BITCLEAR(LED_PORT_DATA,LED_PIN);
+	BITCLEAR(LED_PORT_DATA, led_color);
 #endif
+}
+void led_onboard_off(led_color_t led_color)
+{
+#if LED_PORT
+	BITSET(LED_PORT_DATA, led_color);
+#endif
+}
+void led_onboard_toggle(led_color_t led_color)
+{
+#if LED_PORT
+	BITTOGGLE(LED_PORT_DATA, led_color);
+#endif
+}
 
-}
-void led_onboard_off(void)
-{
-#if LED_PORT
-	BITSET(LED_PORT_DATA,LED_PIN);
-#endif
-}
-void led_onboard_toggle(void)
-{
-#if LED_PORT
-	BITTOGGLE(LED_PORT_DATA,LED_PIN);
-#endif
-}
 

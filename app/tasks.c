@@ -61,7 +61,7 @@ void System_Time(void)
 	OSResetTime();
 
 	/* LED onboard ON */
-	led_onboard_on();
+	//led_onboard_on(RED_LED);
 	
 	#if RTC_PRESENTE
 		while(Init_Calendar() == FALSE)
@@ -74,7 +74,7 @@ void System_Time(void)
 	#endif	
 	
 	/* LED onboard OFF */
-	led_onboard_off();
+	//led_onboard_off(RED_LED);
 
 	/* task main loop */
 	for (;;)
@@ -97,7 +97,7 @@ void System_Time(void)
 			/* update simon main clock - unix time */
 			simon_clock_update();
 			
-			led_onboard_toggle();
+			//led_onboard_toggle(YELLOW_LED);
 			
 			segundos++;
 			if (segundos == 3600)

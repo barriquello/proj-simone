@@ -170,9 +170,9 @@ void sleep_forever(void)
 	{
 		#if COLDUINO || ARDUINO
 			/* sleep forever */
-			led_onboard_on();
+			led_onboard_on(RED_LED);
 			DelayTask(200); 
-			led_onboard_off();
+			led_onboard_off(RED_LED);
 			DelayTask(200);
 		#endif
 	}
