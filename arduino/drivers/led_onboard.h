@@ -31,12 +31,17 @@
 #ifndef LED_ONBOARD_H_
 #define LED_ONBOARD_H_
 
+typedef enum{
+	RED_LED=0,
+	YELLOW_LED=1,
+	GREEN_LED=2	
+} led_color_t;
 
 void led_onboard_init(void);
-int  led_onboard_state(void);
-void led_onboard_on(void);
-void led_onboard_off(void);
-void led_onboard_toggle(void);
+int  led_onboard_state(led_color_t led_color);
+void led_onboard_on(led_color_t led_color);
+void led_onboard_off(led_color_t led_color);
+void led_onboard_toggle(led_color_t led_color);
 
 #define LED_ON  1
 #define LED_OFF 0
