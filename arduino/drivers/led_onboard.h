@@ -32,9 +32,9 @@
 #define LED_ONBOARD_H_
 
 typedef enum{
-	RED_LED=0,
-	YELLOW_LED=1,
-	GREEN_LED=2	
+	RED_LED=4,
+	YELLOW_LED=5,
+	GREEN_LED=6	
 } led_color_t;
 
 void led_onboard_init(void);

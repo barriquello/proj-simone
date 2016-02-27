@@ -36,9 +36,6 @@
 #define LED_PORT		1
 #define LED_PORT_DIR	DDRH	
 #define LED_PORT_DATA	PORTH
-#define RED_LED_PIN			4
-#define YELLOW_LED_PIN		5
-#define GREEN_LED_PIN		6
 #else
 #define LED_PORT		0
 #define LED_PORT_DIR    
@@ -57,21 +54,7 @@ void led_onboard_init(void)
 int led_onboard_state(led_color_t led_color)
 {
 #if LED_PORT
-	int state;
-	switch(led_color){
-		case RED_LED:
-			state = (BITTEST(LED_PORT_DATA, RED_LED_PIN) ? LED_ON : LED_OFF);
-			break;
-		case YELLOW_LED:
-			state = (BITTEST(LED_PORT_DATA, YELLOW_LED_PIN) ? LED_ON : LED_OFF);
-			break;
-		case GREEN_LED:
-			state = (BITTEST(LED_PORT_DATA, GREEN_LED_PIN) ? LED_ON : LED_OFF);
-			break;
-		default:
-			break;
-	}
-	return state;
+	return (BITTEST(LED_PORT_DATA, led_color) ? LED_OFF : LED_ON);
 #else
 	return 0;
 #endif
@@ -80,55 +63,19 @@ int led_onboard_state(led_color_t led_color)
 void led_onboard_on(led_color_t led_color)
 {
 #if LED_PORT
-	switch(led_color){
-		case RED_LED:
-			BITCLEAR(LED_PORT_DATA,RED_LED_PIN);
-			break;
-		case YELLOW_LED:
-			BITCLEAR(LED_PORT_DATA,YELLOW_LED_PIN);
-			break;
-		case GREEN_LED:
-			BITCLEAR(LED_PORT_DATA,GREEN_LED_PIN);
-			break;
-		default:
-			break;		
-	}
+	BITCLEAR(LED_PORT_DATA, led_color);
 #endif
 }
 void led_onboard_off(led_color_t led_color)
 {
 #if LED_PORT
-	switch(led_color){
-		case RED_LED:
-			BITSET(LED_PORT_DATA,RED_LED_PIN);
-			break;
-		case YELLOW_LED:
-			BITSET(LED_PORT_DATA,YELLOW_LED_PIN);
-			break;
-		case GREEN_LED:
-			BITSET(LED_PORT_DATA,GREEN_LED_PIN);
-			break;
-		default:
-			break;
-	}
+	BITSET(LED_PORT_DATA, led_color);
 #endif
 }
 void led_onboard_toggle(led_color_t led_color)
 {
 #if LED_PORT
-	switch(led_color){
-		case RED_LED:
-			BITTOGGLE(LED_PORT_DATA,RED_LED_PIN);
-			break;
-		case YELLOW_LED:
-			BITTOGGLE(LED_PORT_DATA,YELLOW_LED_PIN);
-			break;
-		case GREEN_LED:
-			BITTOGGLE(LED_PORT_DATA,GREEN_LED_PIN);
-			break;
-		default:
-			break;
-	}
+	BITTOGGLE(LED_PORT_DATA, led_color);
 #endif
 }
 
