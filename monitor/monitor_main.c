@@ -125,6 +125,7 @@ T20150101073300S ->
 #include "assert.h"
 #include "monitor.h"
 #include "simon-api.h"
+#include "led_onboard.h"
 
 static int8_t 	num_monitores;
 static uint8_t 	monitores_em_uso = 0;
@@ -591,6 +592,8 @@ void main_monitor(void)
 	uint8_t status = 0;
 #endif	  
 
+	led_onboard_on(YELLOW_LED);
+	
 	DelayTask(MS2TICKS(1000));
 	
 	#if (COLDUINO || ARDUINO) && !SIMULATION
@@ -605,6 +608,8 @@ void main_monitor(void)
 		DelayTask(MS2TICKS(1000));
 	} while (status != SD_OK);
 	#endif
+	
+	led_onboard_off(YELLOW_LED);
 	
 	/* Read config.ini file and check configuration */
 	config_check.byte = 0;
@@ -626,6 +631,8 @@ void main_monitor(void)
 #define modem_driver	null_modem_driver
 #endif	
 	
+	led_onboard_on(GREEN_LED);
+	
 	extern const modem_driver_t modem_driver;
 	extern const modem_driver_t null_modem_driver;
 		
@@ -641,6 +648,8 @@ void main_monitor(void)
 	}
 
 	PRINTS_ERRO_P(PSTR("\r\nSimon init OK\r\n"));	
+	
+	led_onboard_off(GREEN_LED);
 		
 #if _WIN32	
 	PT_INIT(&monitor_input_pt);
@@ -652,6 +661,8 @@ void main_monitor(void)
 	printf ("Current local time and date: %s", asctime(&t));
 	fflush(stdout);
 #endif
+		
+	led_onboard_on(RED_LED);
 		
 #if COLDUINO || ARDUINO
 	DelayTask(MS2TICKS(1000));	
@@ -704,6 +715,8 @@ void main_monitor(void)
 	DelayTask(MS2TICKS(1000));
 #endif	
 
+	led_onboard_off(RED_LED);
+	
 	if(mon_verbosity > 3)  PRINTF_P(PSTR("\r\nMonitor threads running with %u monitors... \r\n"), monitores_em_uso);	
 	
 	monitors_state.time_started = (time_t)(clock_time()/1000);

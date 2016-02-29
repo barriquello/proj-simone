@@ -33,6 +33,7 @@
 #include "assert.h"
 #include "simon-api.h"
 #include "printf_lib.h"
+#include "led_onboard.h"
 
 #ifdef _WIN32
 #include "stdio.h"
@@ -962,12 +963,14 @@ void monitor_writer(uint8_t monitor_num)
 #endif
 	
 	time_before = clock_time();
+	
+	led_onboard_on(RED_LED);
 		
 	/* read data */
 	if(monitor_state[monitor_num].read_data(monitor_state[monitor_num].slave_addr,(uint8_t*)monitor_data_buffer,(uint8_t)monitor_state[monitor_num].config_h.entry_size) == 0)
 	{
 		PRINT_ERRO_PP(monitor_error_msg[1], monitor_num);
-		PRINT_ERRO_P(PSTR("read slave %d failed\r\n"), monitor_state[monitor_num].slave_addr);
+		PRINT_ERRO_P(PSTR("read slave %d failed\r\n"), monitor_state[monitor_num].slave_addr);						
 		return;
 	}
 	
@@ -979,12 +982,16 @@ void monitor_writer(uint8_t monitor_num)
 		time_elapsed = (uint32_t)(time_now-time_before);
 		PRINTF_P(PSTR("Time to read slave: %lu ms\r\n"), time_elapsed);
 	}
+	
+	led_onboard_off(RED_LED);
 
 	
 	/* convert data to hex char */
 	monitor_createentry(monitor_char_buffer,(uint16_t*)monitor_data_buffer,(uint8_t)(monitor_state[monitor_num].config_h.entry_size/2));
 
 #endif		
+
+	led_onboard_on(YELLOW_LED);
 
 	/* change to log dir */
 	monitor_chdir(monitor_state[monitor_num].monitor_dir_name);
@@ -1014,6 +1021,8 @@ void monitor_writer(uint8_t monitor_num)
 			PRINTF(monitor_char_buffer);
 			PRINTF_P(PSTR("Time to write: %lu ms\r\n"), time_elapsed);
 		}
+		led_onboard_off(YELLOW_LED);
+		
 	}
 
 	/* change to parent dir */
@@ -1141,6 +1150,8 @@ uint16_t monitor_reader_multiple(uint8_t num_monitores_em_uso)
 	
 	if(monitor_sending == TRUE)
 	{
+			led_onboard_on(GREEN_LED);
+		
 			if(mon_verbosity > 4 && is_terminal_idle())
 			{
 				PRINTF_P(PSTR("Monitors data vector: \r\n"));
@@ -1174,11 +1185,16 @@ uint16_t monitor_reader_multiple(uint8_t num_monitores_em_uso)
 					}
 				}
 				
-				DPRINTS_P(PSTR("\r\n"));
-				DPRINTS_R(ltoa((long)time_start,buffer,10));
-				DPRINTS_P(PSTR("-"));
-				DPRINTS_R(data_vector);
+				#if DEBUG
+					DPRINTS_P(PSTR("\r\n"));
+					DPRINTS_R(ltoa((long)time_start,buffer,10));
+					DPRINTS_P(PSTR("-"));
+					DPRINTS_R(data_vector);
+				#endif
+				
 				PRINTF_R(data_vector);
+				
+				led_onboard_off(GREEN_LED);
 				
 				return TRUE;
 			}				
