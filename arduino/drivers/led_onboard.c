@@ -31,6 +31,7 @@
 #include "hardware.h"
 #include "led_onboard.h"
 #include "utils.h"
+#include "AppConfig.h"
 
 #if ARDUINO
 #define LED_PORT		1
