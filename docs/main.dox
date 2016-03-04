@@ -1,0 +1,41 @@
+/* The License
+ * 
+ * Copyright (c) 2015 Universidade Federal de Santa Maria
+ * 
+ * Permission is hereby granted, free of charge, to any person obtaining a copy
+ * of this software and associated documentation files (the "Software"), to deal
+ * in the Software without restriction, including without limitation the rights
+ * to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+ * copies of the Software, and to permit persons to whom the Software is
+ * furnished to do so, subject to the following conditions:
+ * 
+ * The above copyright notice and this permission notice shall be included in
+ * all copies or substantial portions of the Software.
+ * 
+ * THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+ * IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+ * FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+ * AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+ * LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+ * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+ * THE SOFTWARE.
+
+*/
+/*! \mainpage Sistema de Monitoramento Embarcado (SIMONE)
+
+\section intro Introdução
+
+O software embarcado (firmware) foi projetado seguindo modelo de camadas convencional, totalizando 4 camadas:
+
+1.	Camada HAL drivers - camada de abstração de hardware (HAL) que contém drivers para acesso aos periféricos do controlador. Os seguintes periféricos são utilizados.
+a.	GPIO – entradas e saídas digitais de propósito geral. Utilizado para acionamento de LEDs e leitura de sensores.
+b.	SPI – comunicação serial síncrona para periféricos, como cartão SD.
+c.	UART - comunicação serial assíncrona para comunicação com periféricos RS485 e modem.
+d.	USB – comunicação serial universal para comunicação com computador por porta USB.
+e.	A/D – entradas analógicas com conversão para valores digitais.
+f.	Timer – contador de tempo para funções de temporização, como relógio do sistema, alarmes e atrasos.
+2.	Camada de dispositivos (devices) – contém as implementações para acesso através de drivers aos dispositivos periféricos externos, como cartão SD, RS485, modem, LEDs, terminal de comandos e sensores.
+3.	Camada de sistema – contém as implementações relativas ao sistema operacional de tempo real (RTOS) e bibliotecas de middleware para sistemas de arquivos (FAT), protocolo Modbus RTU e protocolo HTTP para comunicação com sistema de monitoramento (SIMON)
+4.	Camada de tarefas/aplicações – contém as implementações da lógica do sistema de monitoramento, incluindo configuração, terminal de comandos, sincronização, relógio, leitura dos equipamentos e sensores, processamento, armazenamento e transmissão de dados.
+
+
