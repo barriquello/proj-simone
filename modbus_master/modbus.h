@@ -70,7 +70,7 @@ typedef struct // 4-byte aligned
 } __MB_QUERY;
 
 
-/** MODBUS uses a ‘big-Endian’  
+/** MODBUS uses a big-Endian
  * Ex.: 16-bits 0x1234 the first byte sent is 0x12 then 0x34*/
 
 
