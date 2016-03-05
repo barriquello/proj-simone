@@ -27,15 +27,30 @@
 
 O software embarcado (firmware) foi projetado seguindo modelo de camadas convencional, totalizando 4 camadas:
 
-1.	Camada HAL drivers - camada de abstração de hardware (HAL) que contém drivers para acesso aos periféricos do controlador. Os seguintes periféricos são utilizados.
-a.	GPIO – entradas e saídas digitais de propósito geral. Utilizado para acionamento de LEDs e leitura de sensores.
-b.	SPI – comunicação serial síncrona para periféricos, como cartão SD.
-c.	UART - comunicação serial assíncrona para comunicação com periféricos RS485 e modem.
-d.	USB – comunicação serial universal para comunicação com computador por porta USB.
-e.	A/D – entradas analógicas com conversão para valores digitais.
-f.	Timer – contador de tempo para funções de temporização, como relógio do sistema, alarmes e atrasos.
-2.	Camada de dispositivos (devices) – contém as implementações para acesso através de drivers aos dispositivos periféricos externos, como cartão SD, RS485, modem, LEDs, terminal de comandos e sensores.
-3.	Camada de sistema – contém as implementações relativas ao sistema operacional de tempo real (RTOS) e bibliotecas de middleware para sistemas de arquivos (FAT), protocolo Modbus RTU e protocolo HTTP para comunicação com sistema de monitoramento (SIMON)
-4.	Camada de tarefas/aplicações – contém as implementações da lógica do sistema de monitoramento, incluindo configuração, terminal de comandos, sincronização, relógio, leitura dos equipamentos e sensores, processamento, armazenamento e transmissão de dados.
+- 1. Camada HAL drivers - camada de abstração de hardware (HAL) que contém drivers para acesso aos periféricos do controlador. Os seguintes periféricos são utilizados.
+	- a.	GPIO – entradas e saídas digitais de propósito geral. Utilizado para acionamento de LEDs e leitura de sensores.
+	- b.	SPI – comunicação serial síncrona para periféricos, como cartão SD.
+	- c.	UART - comunicação serial assíncrona para comunicação com periféricos RS485 e modem.
+	- d.	USB – comunicação serial universal para comunicação com computador por porta USB.
+	- e.	A/D – entradas analógicas com conversão para valores digitais.
+	- f.	Timer – contador de tempo para funções de temporização, como relógio do sistema, alarmes e atrasos.
+- 2. Camada de dispositivos (devices) – contém as implementações para acesso através de drivers aos dispositivos periféricos externos, como:
+	- cartão SD
+	- RS485
+	- modem/comandos AT
+	- LEDs
+	- sensores.
+- 3. Camada de sistema – contém as implementações relativas ao sistema operacional de tempo real (RTOS) e bibliotecas de middleware para:
+ - sistemas de arquivos (FAT)
+ - protocolo Modbus RTU 
+ - protocolo HTTP para comunicação com sistema de monitoramento (SIMON)
+- 4. Camada de tarefas/aplicações – contém as implementações da lógica do sistema de monitoramento, incluindo:
+ - configuração
+ - terminal de comandos
+ - sincronização
+ - relógio
+ - leitura dos equipamentos e sensores, processamento, armazenamento e transmissão de dados.
+
+*/
 
 

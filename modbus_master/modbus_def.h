@@ -1,3 +1,11 @@
+ /** \addtogroup Sistema
+ *  @{
+ */
+
+/** \addtogroup modbus
+ *  @{
+ */
+
 /******************************************************************************/
 /* modbus_def.c                                                               */
 /*                                                                            */
@@ -6,7 +14,7 @@
 /*                                                                            */
 /* Modifed for embedded system 02.2011 Sergei Maslyakov <rusoil.9@gmail.com>  */
 /******************************************************************************/
-
+ 
 #ifndef __MODBUS_DEF_H
 #define __MODBUS_DEF_H
 
@@ -77,3 +85,5 @@
 
 
 #endif
+/** @} */
+/** @} */

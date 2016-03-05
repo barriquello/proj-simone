@@ -33,6 +33,11 @@
  * $Id: pt.h,v 1.7 2006/10/02 07:52:56 adam Exp $
  */
 
+  /** \addtogroup Sistema
+ *  @{
+ */
+ 
+ 
 /**
  * \addtogroup pt
  * @{
@@ -320,4 +325,5 @@ struct pt {
 
 #endif /* __PT_H__ */
 
+/** @} */
 /** @} */

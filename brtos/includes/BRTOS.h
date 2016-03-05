@@ -1,4 +1,10 @@
+ /** \addtogroup Sistema
+ *  @{
+ */
 
+/** \addtogroup brtos
+ *  @{
+ */
 /**
 * \file BRTOS.h
 * \brief BRTOS kernel main defines, functions prototypes and structs declaration.
@@ -32,7 +38,7 @@
 *   Date:     24/08/2012	  ,	  Date:     11/10/2012	,	  Date:     06/03/2014
 *
 *********************************************************************************************************/
-
+ 
 #ifndef OS_BRTOS_H
 #define OS_BRTOS_H
 
@@ -1326,3 +1332,6 @@ extern const CHAR8 *version;
 
 
 #endif
+
+/** @} */
+/** @} */

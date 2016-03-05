@@ -28,6 +28,15 @@
  *      Author: Carlos
  */
 
+ /** \addtogroup drivers  Drivers
+ *  @{
+ */
+ 
+ /*! \defgroup led LEDs
+ * @{
+ */
+ 
+ 
 #ifndef LED_ONBOARD_H_
 #define LED_ONBOARD_H_
 
@@ -47,3 +56,6 @@ void led_onboard_toggle(led_color_t led_color);
 #define LED_OFF 0
 
 #endif /* LED_ONBOARD_H_ */
+
+/** @} */
+/** @} */

@@ -1,3 +1,10 @@
+ /** \addtogroup Sistema
+ *  @{
+ */
+ 
+/** \addtogroup brtos
+ *  @{
+ */
 /**
 * \file timers.h
 * \brief OS Soft Timers service functions
@@ -107,3 +114,6 @@ INT8U OSTimerStop (BRTOS_TIMER p, INT8U del);
 /*****************************************************************/
 
 #endif
+
+/** @} */
+/** @} */

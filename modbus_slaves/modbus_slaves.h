@@ -27,6 +27,14 @@
  *  Created on: Aug 14, 2015
  *      Author: UFSM
  */
+ 
+ /** \addtogroup modbus
+ *  @{
+ */
+ 
+ /** \defgroup slave Slaves
+ *  @{
+ */
 
 #ifndef MODBUS_SLAVES_H_
 #define MODBUS_SLAVES_H_
@@ -66,3 +74,5 @@ uint8_t SetModbusHeader (uint8_t device_id, uint8_t *data_ptr);
 uint8_t SetTimeStamp (uint8_t device_id, uint8_t *data_ptr, OSTime *timestamp);
 
 #endif /* MODBUS_SLAVES_H_ */
+/** @} */
+/** @} */

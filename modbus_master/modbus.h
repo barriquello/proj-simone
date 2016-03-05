@@ -1,3 +1,11 @@
+ /** \addtogroup Sistema
+ *  @{
+ */
+
+/** \addtogroup modbus
+ *  @{
+ */
+
 /******************************************************************************/
 /* modbus.h                                                                   */
 /*                                                                            */
@@ -7,6 +15,9 @@
 /* Modifed for embedded system 02.2011 Sergei Maslyakov <rusoil.9@gmail.com>  */
 /******************************************************************************/
 
+ /** \defgroup master Master
+ *  @{
+ */
 
 #ifndef __MODBUS_H
 #define __MODBUS_H
@@ -106,3 +117,6 @@ void set_bits_from_bytes(uint8_t *dest, int address, int nb_bits,
 uint8_t get_byte_from_bits(const uint8_t *src, int address, int nb_bits);
 
 #endif
+/** @} */
+/** @} */
+/** @} */

@@ -9,6 +9,14 @@
  *  its own terms.)
  */
 
+ /** \addtogroup Sistema
+ *  @{
+ */
+ 
+ /** \addtogroup minINI
+ *  @{
+ */
+ 
 #if (MINGLUE == MINGLUE_FATFS)
 #define INI_BUFFERSIZE  256       /* maximum line length, maximum path length */
 
@@ -46,4 +54,6 @@ static int ini_rename(TCHAR *source, const TCHAR *dest)
 }
 #endif
 #endif
+/** @} */
+/** @} */
 

@@ -1,3 +1,11 @@
+ /** \addtogroup Sistema
+ *  @{
+ */
+ 
+/** \addtogroup FatFS
+ *  @{
+ */
+
 /* The License
  * 
  * Copyright (c) 2015 Universidade Federal de Santa Maria
@@ -145,3 +153,7 @@ enum
 };
 
 #endif
+
+/** @} */
+/** @} */
+

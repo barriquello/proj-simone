@@ -27,6 +27,13 @@
  *  Created on: Sep 15, 2015
  *      Author: Universidade Federal
  */
+ /** \addtogroup modbus
+ *  @{
+ */
+ 
+ /** \defgroup t500 Slave T500
+ *  @{
+ */
 
 #ifndef MODBUS_T500_H_
 #define MODBUS_T500_H_
@@ -71,3 +78,5 @@ typedef union
 
 
 #endif /* MODBUS_T500_H_ */
+/** @} */
+/** @} */

@@ -1,3 +1,11 @@
+/** \addtogroup drivers  Drivers
+ *  @{
+ */
+ 
+ /*! \defgroup UART
+ * @{
+ */
+
 /*! \file UART.h
  \brief Rotinas para transferir e receber dados via UART.
  */
@@ -152,3 +160,5 @@ void uart2_TxDisableISR(void);
 
 #endif
 
+/** @} */
+/** @} */

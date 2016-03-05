@@ -1,3 +1,11 @@
+/** \addtogroup drivers  Drivers
+ *  @{
+ */
+ 
+ /*! \defgroup SPI
+ * @{
+ */
+
 /**
 * \file SPI.h
 * \brief Serial peripheral interface driver function prototypes.
@@ -21,4 +29,7 @@ extern unsigned char SPI1_GetChar(void);
 extern void SPI2_SendChar(unsigned char data);
 extern unsigned char SPI2_GetChar(void);
 #endif
+
+/** @} */
+/** @} */
 

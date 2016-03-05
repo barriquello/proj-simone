@@ -27,6 +27,14 @@
  *  Created on: Jul 22, 2015
  *      Author: Universidade Federal
  */
+ 
+ /** \addtogroup Sistema
+ *  @{
+ */
+ 
+ /** \addtogroup simon  Simon API
+ *  @{
+ */
 
 #ifndef SIMON_API_H_
 #define SIMON_API_H_
@@ -102,3 +110,5 @@ uint8_t is_simon_clock_synched(void);
 uint8_t get_server_time(char* server_reply, struct tm *ts);
 
 #endif /* SIMON_API_H_ */
+/** @} */
+/** @} */

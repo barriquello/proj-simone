@@ -27,6 +27,14 @@
  *  Created on: Aug 14, 2015
  *      Author: UFSM
  */
+ 
+ /** \addtogroup modbus
+ *  @{
+ */
+ 
+ /** \defgroup slave_null Slave NULL
+ *  @{
+ */
 
 #ifndef MODBUS_SLAVE_NULL_H_
 #define MODBUS_SLAVE_NULL_H_
@@ -64,3 +72,5 @@ typedef union
 void Modus_slave_null_init(void);
 
 #endif /* MODBUS_SLAVE_NULL_H_ */
+/** @} */
+/** @} */

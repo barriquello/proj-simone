@@ -21,14 +21,20 @@
  * THE SOFTWARE.
 
 */
+
+
+/** \addtogroup devices
+ *  @{
+ */
+ 
+ /*! \defgroup rs485 RS485
+ * @{
+ */
+ 
+ 
+ 
 /*! \file RS485.h
  \brief Rotinas para transferir e receber dados via RS485/UART.
- */
-
- /*! \defgroup Devices RS485 */
-
-/** \addtogroup Devices
- *  @{
  */
  
 #include "BRTOS.h"
@@ -69,6 +75,7 @@ void rs485_rx_flush(void);
 void rs485_enable_rx(void);
 void rs485_enable_tx(void);
 
+ /** @}*/
  /** @}*/
 
 

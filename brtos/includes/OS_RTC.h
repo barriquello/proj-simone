@@ -1,3 +1,11 @@
+ /** \addtogroup Sistema
+ *  @{
+ */
+
+/** \addtogroup brtos
+ *  @{
+ */
+
 /**
 * \file OS_RTC.h
 * \brief System Time managment struct declarations and functions prototypes.
@@ -38,10 +46,6 @@
 /////    OS Time Structure                             /////
 ////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////
-
-/** \addtogroup timersGroup
- *  @{
- */
 
 /**
 * \struct OSTime
@@ -200,4 +204,5 @@ INT8S CompareDateTime(OS_RTC const *rtc1, OS_RTC const *rtc2);
 
 #endif
 
+/** @} */
 /** @} */

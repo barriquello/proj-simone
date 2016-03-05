@@ -21,6 +21,10 @@
  * THE SOFTWARE.
 
 */
+/** \addtogroup terminal  Terminal
+ *  @{
+ */
+  
 /****************************************************************************
  * *  Created on: 12/05/2011
  *      Author: gustavo
@@ -104,3 +108,5 @@ void printf_terminal_P(const char *s);
 #endif
 
 /****************************** END OF FILE **********************************/
+
+/** @} */

@@ -27,7 +27,15 @@
  *  Created on: 12/05/2011
  *      Author: gustavo
  */
-
+ 
+ /** \addtogroup app
+ *  @{
+ */
+ 
+ /** \addtogroup app_terminal
+ *  @{
+ */
+ 
 #ifndef _TERMINAL_COMMANDS_H_
 #define _TERMINAL_COMMANDS_H_
 
@@ -137,3 +145,5 @@ extern CONST command_t monitor_cmd;
 void mcu_reset(void);
 
 #endif /* _TERMINAL_COMMANDS_H_ */
+/** @} */
+/** @} */

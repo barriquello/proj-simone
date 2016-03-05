@@ -21,6 +21,13 @@
  * THE SOFTWARE.
 
 */
+
+/** \addtogroup modbus
+ *  @{
+ */
+
+ 
+ 
 #ifndef _WIN32
 #include "BRTOS.h"
 #include "drivers.h"
@@ -256,4 +263,7 @@ sint32_t Modbus_GetData(INT8U slave, INT8U func, INT8U *data_ptr, INT16U start_a
 				
 	return err;
 }
+
+/** @} */
+
 

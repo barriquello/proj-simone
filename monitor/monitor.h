@@ -28,6 +28,14 @@
  *      Author: UFSM
  */
 
+  /** \addtogroup app
+ *  @{
+ */
+ 
+/** \defgroup app_monitor	Monitor
+ *  @{
+ */
+
 #ifndef LOGGER_H_
 #define LOGGER_H_
 
@@ -295,4 +303,6 @@ uint16_t monitor_reader_multiple(uint8_t monitor_num);
 clock_t clock_time(void);
 
 #endif /* LOGGER_H_ */
+/** @} */
+/** @} */
 

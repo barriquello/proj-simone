@@ -28,6 +28,15 @@
  *      Author: UFSM
  */
 
+/** \addtogroup devices
+ *  @{
+ */
+ 
+ /*! \defgroup at Comandos AT
+ * @{
+ */
+ 
+ 
  /*! \file at_commands.h
  \brief Implementação de comandos AT para modems.
  
@@ -35,13 +44,6 @@
  */
 
 
-/*! \defgroup Devices Comandos AT */
-
-/** \addtogroup Devices
- *  @{
- */
- 
- 
 #ifndef AT_COMMANDS_H_
 #define AT_COMMANDS_H_
 
@@ -91,4 +93,5 @@ typedef enum
 extern const char * const modem_init_cmd[];
 
 #endif /* AT_COMMANDS_H_ */
+/** @}*/
 /** @}*/

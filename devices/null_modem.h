@@ -28,19 +28,23 @@
  *      Author: UFSM
  */
  
+/** \addtogroup devices
+ *  @{
+ */
+ 
+ /** \addtogroup modems
+ *  @{
+ */
+ 
+ /*! \defgroup modem Modem Null
+ */
+ 
+ 
  /*! \file null_modem_at.h
  \brief Interface para ler/escrever dados em um modem nulo.
  
  Funcoes de leitura e escrita sao feitas vazias.
  */
-
-
-/*! \defgroup Devices Modem Null */
-
-/** \addtogroup Devices
- *  @{
- */
- 
 
 #ifndef NULL_MODEM_H_
 #define NULL_MODEM_H_
@@ -88,4 +92,6 @@ uint8_t null_modem_check_connection(void);
 
 
 #endif /* NULL_MODEM_AT_H_ */
+/** @} */
+/** @}*/
 /** @}*/

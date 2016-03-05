@@ -22,17 +22,23 @@
 
 */
 
+
+/** \addtogroup devices
+ *  @{
+ */
+ 
+ 
+/** \addtogroup modems
+ *  @{
+ */
+ 
+ /*! \defgroup modem Modem
+ * @{
+ */
  
 /*! \file modem.h
  \brief Definicoes de interface para modems.
  
- */
-
-
-/*! \defgroup Devices Modem */
-
-/** \addtogroup Devices
- *  @{
  */
  
 #ifndef MODEM_H
@@ -55,4 +61,6 @@ typedef enum
 }modem_ret_t;
 
 #endif
+/** @}*/
+/** @}*/
 /** @}*/

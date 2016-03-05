@@ -21,18 +21,23 @@
  * THE SOFTWARE.
 
 */
+
+
+/** \addtogroup devices
+ *  @{
+ */
+ 
+ /*! \defgroup timer RTC DS1307
+ * @{
+ */
+ 
+ 
 /*! \file Timer_RTC_DS1307.h
  \brief Interface para ler/escrever data no DS1307.
  
  Funcoes de leitura e escrita sao feitas por IIC.
  */
 
-
-/*! \defgroup Devices Timers*/
-
-/** \addtogroup Devices
- *  @{
- */
 
 #ifndef TIMER_RTC_DS1307_H_
 #define TIMER_RTC_DS1307_H_
@@ -207,4 +212,5 @@ void Set_AM_PM_Mode(void);
 //INT8U Div10(INT8U n);
 #endif 
 
+/** @}*/
 /** @}*/

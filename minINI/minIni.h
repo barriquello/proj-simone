@@ -16,6 +16,17 @@
  *
  *  Version: $Id: minIni.h 44 2012-01-04 15:52:56Z thiadmer.riemersma@gmail.com $
  */
+ 
+
+  /** \addtogroup Sistema
+ *  @{
+ */
+ 
+ /** \defgroup minINI  minINI
+ *  @{
+ */
+ 
+ 
 #ifndef MININI_H
 #define MININI_H
 
@@ -150,3 +161,6 @@ int  ini_browse(INI_CALLBACK Callback, const void *UserData, const mTCHAR *Filen
 #endif /* __cplusplus */
 
 #endif /* MININI_H */
+
+/** @} */
+ /** @} */

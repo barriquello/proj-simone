@@ -28,6 +28,15 @@
  *      Author: Gisele
  */
 
+ /** \addtogroup modbus
+ *  @{
+ */
+ 
+ /** \defgroup ts Slave TS
+ *  @{
+ */
+ 
+ 
 #ifndef MODBUS_TS_H_
 #define MODBUS_TS_H_
 
@@ -228,3 +237,5 @@ typedef union
 
 
 #endif /* MODBUS_TS_H_ */
+/** @} */
+/** @} */

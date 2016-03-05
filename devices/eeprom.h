@@ -21,16 +21,22 @@
  * THE SOFTWARE.
 
 */
+
+/** \addtogroup devices
+ *  @{
+ */
+ 
+ /*! \defgroup eeprom Memória EEPROM
+ * @{
+ */
+ 
+ 
 /*! \file eeprom.h
  \brief Interface para ler/escrever na memoria eeprom.
  
  Funcoes de leitura e escrita sao feitas por IIC.
  */
 
-
-/** \addtogroup iccGroup
- *  @{
- */
 
 # ifndef _EEPROM_H
 # define _EEPROM_H
@@ -76,4 +82,5 @@ void EEPROM_Init(void);
 
 #endif
 
+/** @}*/
 /** @}*/

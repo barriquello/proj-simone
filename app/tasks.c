@@ -22,6 +22,11 @@
 
 */
 
+/** \addtogroup app
+ *  @{
+ */
+
+
 #include "AppConfig.h"
 #include "BRTOS.h"
 #include "drivers.h"
@@ -39,6 +44,13 @@
 #include "led_onboard.h"
 #include "simon-api.h"
 
+
+/** \defgroup app_system_time	Relógio do sistema
+ *  @{
+ */
+
+ 
+ 
 #if ARDUINO
 #define __RESET_WATCHDOG()	wdt_reset()
 #define __ENABLE_WATCHDOG()	wdt_enable(WDTO_250MS)
@@ -116,6 +128,8 @@ void System_Time(void)
 	}
 
 }
+/** @} */
+
 
 #if COLDUINO
 #include "user_config.h"
@@ -134,6 +148,12 @@ void Mass_Storage_Device_Task(void)
 #endif
 #endif
 
+
+/** \defgroup app_terminal	Terminal de Comandos
+ *  @{
+ */
+ 
+ 
 /* Config terminal task */
 #if ARDUINO
 #define TERM_UART			0
@@ -221,6 +241,11 @@ void Terminal_Task(void)
 		#endif		
 	}
 }
+/** @} */
+
+
+/** @} */
+
 
 
 

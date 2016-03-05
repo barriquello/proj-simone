@@ -21,6 +21,12 @@
  * THE SOFTWARE.
 
 */
+
+/** \addtogroup app
+ *  @{
+ */
+ 
+ 
 #include "AppConfig.h"
 #include "BRTOS.h"
 #include "drivers.h"
@@ -207,6 +213,8 @@ char ReadUARTN(void)
 	return c;
 }
 #endif
+
+/** @} */
 
 
 

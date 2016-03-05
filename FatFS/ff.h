@@ -1,3 +1,11 @@
+ /** \addtogroup Sistema
+ *  @{
+ */
+
+/** \defgroup FatFS
+ *  @{
+ */
+
 /*---------------------------------------------------------------------------/
 /  FatFs - FAT file system module include file  R0.10c    (C)ChaN, 2014
 /----------------------------------------------------------------------------/
@@ -339,3 +347,5 @@ int ff_del_syncobj (_SYNC_t sobj);				/* Delete a sync object */
 #endif
 
 #endif /* _FATFS */
+/** @} */
+/** @} */

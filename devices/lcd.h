@@ -21,19 +21,22 @@
  * THE SOFTWARE.
 
 */
-
+/** \addtogroup devices
+ *  @{
+ */
+ 
+ /*! \defgroup lcd LCD 
+ * @{
+ */
+ 
+ 
+ 
 /**
 * \file lcd.h
 * \brief Alphanumeric LCD function prototypes.
 *
 *
 **/
-
-/*! \defgroup Devices LCD */
-
-/** \addtogroup Devices
- *  @{
- */
 
 #ifndef _LCD_H_
 #define _LCD_H_
@@ -115,4 +118,5 @@ void Delay_ms(unsigned int DelayTime);
 
 #endif
 
+ /** @}*/
  /** @}*/

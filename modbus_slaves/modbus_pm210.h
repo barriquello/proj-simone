@@ -27,6 +27,14 @@
  *  Created on: Jan 30, 2015
  *      Author: Carlos
  */
+ 
+ /** \addtogroup modbus
+ *  @{
+ */
+ 
+ /** \defgroup pm210 Slave PM210
+ *  @{
+ */
 
 #ifndef MODBUS_PM210_H_
 #define MODBUS_PM210_H_
@@ -158,3 +166,5 @@ typedef union
 
 
 #endif /* MPDBUS_PM210_H_ */
+/** @} */
+/** @} */
