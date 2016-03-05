@@ -28,9 +28,9 @@
  */
 
 
-/*! \defgroup timersGroup Timers*/
+/*! \defgroup Devices Timers*/
 
-/** \addtogroup timersGroup
+/** \addtogroup Devices
  *  @{
  */
 

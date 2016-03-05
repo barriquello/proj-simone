@@ -27,7 +27,20 @@
  *  Created on: Aug 7, 2015
  *      Author: UFSM
  */
+ 
+ /*! \file gc864_modem.h
+ \brief Interface para ler/escrever dados no modem GC864.
+ 
+ Funcoes de leitura e escrita sao feitas por UART.
+ */
+ 
 
+/*! \defgroup Devices Modem GC864*/
+
+/** \addtogroup Devices
+ *  @{
+ */
+ 
 #ifndef GC864_MODEM_H_
 #define GC864_MODEM_H_
 
@@ -112,3 +125,5 @@ uint8_t gc864_modem_check_connection(void);
 
 
 #endif /* GC864_MODEM_H_ */
+
+/** @}*/

@@ -27,6 +27,19 @@
  *  Created on: Aug 7, 2015
  *      Author: UFSM
  */
+ 
+ /*! \file m590_at.h
+ \brief Interface para ler/escrever dados no modem M590.
+ 
+ Funcoes de leitura e escrita sao feitas por UART.
+ */
+
+
+/*! \defgroup Devices Modem M590 */
+
+/** \addtogroup Devices
+ *  @{
+ */
 
 #ifndef M590_AT_H_
 #define M590_AT_H_
@@ -176,3 +189,5 @@ uint8_t m590_check_connection(void);
 
 
 #endif /* M590_AT_H_ */
+
+/** @}*/

@@ -27,6 +27,20 @@
  *  Created on: Mar 17, 2015
  *      Author: Carlos H. Barriquello
  */
+ 
+ 
+/*! \file esp8266_at.h
+ \brief Interface para ler/escrever dados no modem ESP8266.
+ 
+ Funcoes de leitura e escrita sao feitas por UART.
+ */
+
+
+/*! \defgroup Devices Modem ESP8266 */
+
+/** \addtogroup Devices
+ *  @{
+ */
 
 #ifndef ESP8266_AT_H_
 #define ESP8266_AT_H_
@@ -150,3 +164,4 @@ INT8U esp_set_ip(CHAR8 * _ip);
 
 
 #endif /* ESP8266_AT_H_ */
+/** @}*/

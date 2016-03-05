@@ -25,6 +25,12 @@
  \brief Rotinas para transferir e receber dados via RS485/UART.
  */
 
+ /*! \defgroup Devices RS485 */
+
+/** \addtogroup Devices
+ *  @{
+ */
+ 
 #include "BRTOS.h"
 #include "uart.h"
 #include "AppConfig.h"
@@ -48,7 +54,7 @@
  \brief função para recepcao de dados 
  
  */
-
+ 
 void rs485_init(void);
 
 // RS485/UART functions
@@ -62,5 +68,7 @@ void rs485_rx_flush(void);
 
 void rs485_enable_rx(void);
 void rs485_enable_tx(void);
+
+ /** @}*/
 
 

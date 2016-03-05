@@ -22,9 +22,23 @@
 
 */
 
+/*! \file SD.h
+ \brief Interface para ler/escrever dados no SD.
+ 
+ Funcoes de leitura e escrita sao feitas por SPI.
+ */
 
+
+/*! \defgroup Devices SD*/
+
+/** \addtogroup Devices
+ *  @{
+ */
+ 
+ 
 #ifndef __SD__
 #define __SD__
+
 
 /* Includes */
 #include "AppConfig.h"
@@ -248,3 +262,4 @@ void SD_Card_Info(uint_32_ptr max_blocks_ptr, uint_32_ptr block_size_ptr);
 #endif
 
 #endif /* __SD__ */
+/** @}*/

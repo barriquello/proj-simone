@@ -21,12 +21,22 @@
  * THE SOFTWARE.
 
 */
+
 /**
 * \file lcd.h
 * \brief Alphanumeric LCD function prototypes.
 *
 *
 **/
+
+/*! \defgroup Devices LCD */
+
+/** \addtogroup Devices
+ *  @{
+ */
+
+#ifndef _LCD_H_
+#define _LCD_H_
 
 // Número de bits de dados do barramento do LCD
 #define LCD_DATA_BUS              4
@@ -102,3 +112,7 @@ void release_lcd(void);
 void xy_position_lcd(unsigned char linha, unsigned char coluna);
 void clear_lcd(void);
 void Delay_ms(unsigned int DelayTime);
+
+#endif
+
+ /** @}*/

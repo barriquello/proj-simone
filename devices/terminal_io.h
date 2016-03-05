@@ -27,7 +27,23 @@
  *  Created on: Jul 22, 2015
  *      Author: UFSM
  */
+ 
+ 
+/*! \file terminal_io.h
+ \brief Interface para ler/escrever dados no terminal.
+ 
+ Funcoes de leitura e escrita sao feitas por UART ou USB.
+ */
 
+
+/*! \defgroup Devices Terminal I/O */
+
+/** \addtogroup Devices
+ *  @{
+ */
+ 
+ 
+ 
 #ifndef TERMINAL_IO_H_
 #define TERMINAL_IO_H_
 
@@ -56,3 +72,4 @@ void putcharSer_P(INT8U SerialPort, CHAR8 caracter);
 #endif
 
 #endif /* TERMINAL_IO_H_ */
+/** @}*/

@@ -28,6 +28,21 @@
  *      Author: UFSM
  */
 
+ /*! \file sensors.h
+ \brief Interface para ler dados de sensores.
+ 
+ Funcoes de leitura e escrita sao feitas por GPIO ou ADC.
+ */
+
+
+/*! \defgroup Devices Sensors */
+
+/** \addtogroup Devices
+ *  @{
+ */
+ 
+ 
+ 
 #ifndef SENSORS_H_
 #define SENSORS_H_
 
@@ -49,3 +64,4 @@ uint8_t sensors_read(sensor_id_t);
 uint8_t sensors_read_all(void);
 
 #endif /* SENSORS_H_ */
+/** @}*/

@@ -22,12 +22,26 @@
 
 */
 /*
- * gc864_modem.h
+ * at_commands.h
  *
  *  Created on: Aug 7, 2015
  *      Author: UFSM
  */
 
+ /*! \file at_commands.h
+ \brief Implementação de comandos AT para modems.
+ 
+ Funcoes de leitura e escrita sao feitas por UART.
+ */
+
+
+/*! \defgroup Devices Comandos AT */
+
+/** \addtogroup Devices
+ *  @{
+ */
+ 
+ 
 #ifndef AT_COMMANDS_H_
 #define AT_COMMANDS_H_
 
@@ -77,3 +91,4 @@ typedef enum
 extern const char * const modem_init_cmd[];
 
 #endif /* AT_COMMANDS_H_ */
+/** @}*/
