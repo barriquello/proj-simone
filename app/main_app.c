@@ -21,11 +21,6 @@
  * THE SOFTWARE.
 
 */
-
-/** \addtogroup app
- *  @{
- */
- 
  
 #include "AppConfig.h"
 #include "BRTOS.h"
@@ -214,7 +209,6 @@ char ReadUARTN(void)
 }
 #endif
 
-/** @} */
 
 
 
