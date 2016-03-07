@@ -47,6 +47,7 @@
 
 /** \defgroup app_system_time	Relógio do sistema
  *  @{
+ * Tarefa para manutenção e atualização do relógio/calendário do sistema e do cão-de-guarda (watchdog).
  */
 
  
@@ -151,6 +152,7 @@ void Mass_Storage_Device_Task(void)
 
 /** \defgroup app_terminal	Terminal de Comandos
  *  @{
+ * Tarefa para processamento de comandos recebidos por terminal.
  */
  
  

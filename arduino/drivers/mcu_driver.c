@@ -1,14 +1,14 @@
 #include "mcu_driver.h"
 
 
-/*****************************************************************************
- * @name     MCU_Init
+/*!****************************************************************************
+ * \name     MCU_Init
  *
- * @brief:   Initialization of the MCU.
+ * \brief:   Initialization of the MCU.
  *
- * @param  : None
+ * \param  : None
  *
- * @return : None
+ * \return : None
  *****************************************************************************
  * It will configure the MCU to disable STOP and COP Modules.
  * It also set the MCG configuration and bus clock frequency.
@@ -26,14 +26,14 @@ void Mcu_Init()
   wdt_disable();  
 }
 
-/*****************************************************************************
- * @name     MCG_Init
+/*!****************************************************************************
+ * \name     MCG_Init
  *
- * @brief:   Initialization of the Multiple Clock Generator.
+ * \brief:   Initialization of the Multiple Clock Generator.
  *
- * @param  : None
+ * \param  : None
  *
- * @return : None
+ * \return : None
  *****************************************************************************
  * Provides clocking options for the device, including a phase-locked
  * loop(PLL) and frequency-locked loop (FLL) for multiplying slower reference
@@ -45,15 +45,15 @@ void MCG_Init()
 }
 
 
-/*****************************************************************************
+/*!****************************************************************************
  *
- *    @name     System_Init
+ *    \name     System_Init
  *
- *    @brief    This function Initializes the system
+ *    \brief    This function Initializes the system
  *
- *    @param    None
+ *    \param    None
  *
- *    @return   None
+ *    \return   None
  *
  ****************************************************************************
  * Intializes the MCU, MCG, KBI, RTC modules

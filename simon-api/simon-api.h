@@ -34,6 +34,7 @@
  
  /** \addtogroup simon  Simon API
  *  @{
+ * Biblioteca para envio e recepção de dados para o sistema de monitoramento online (SIMON) via HTTP.
  */
 
 #ifndef SIMON_API_H_

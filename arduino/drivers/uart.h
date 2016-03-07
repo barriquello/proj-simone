@@ -4,6 +4,7 @@
  
  /*! \defgroup UART
  * @{
+ * Driver da Transmissão/Recepção Universal Assícrona (UART) para envio e recepção de dados
  */
 
 /*! \file UART.h

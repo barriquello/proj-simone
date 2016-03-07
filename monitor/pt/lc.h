@@ -34,7 +34,7 @@
  */
 
 /**
- * \addtogroup pt
+ * \addtogroup Protothreads
  * @{
  */
 

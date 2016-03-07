@@ -39,7 +39,7 @@
  
  
 /**
- * \addtogroup pt
+ * \addtogroup Protothreads
  * @{
  */
 

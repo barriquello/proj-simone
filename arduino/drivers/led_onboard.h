@@ -34,6 +34,7 @@
  
  /*! \defgroup led LEDs
  * @{
+ * Driver para acionamento de LEDs de indicação. 
  */
  
  

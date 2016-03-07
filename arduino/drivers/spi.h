@@ -4,6 +4,7 @@
  
  /*! \defgroup SPI
  * @{
+ * Driver da Interface Serial de Periféricos (SPI) para envio e recepção de dados
  */
 
 /**

@@ -6,6 +6,7 @@
  
  /*! \defgroup MCU
  * @{
+ * Driver para configuração do microcontrolador
  */
  
  
