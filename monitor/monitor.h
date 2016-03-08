@@ -30,10 +30,6 @@
 
   /** \addtogroup app
  *  @{
- */
- 
-/** \defgroup app_monitor	Monitor
- *  @{
  
  O monitor é dividido em duas subtarefas (o escrutor e o leitor). O escritor é responsável
  por adquirir e armazenar dados em arquivos estruturados. O leitor é responsável pela leitura 
@@ -113,10 +109,13 @@ T20150101073300S ->
 01 -> 3330
 02 -> 3400
 
-
 7) Caso o contador de entradas seja igual a MAX_NUM_OF_ENTRIES, fecha-se o arquivo e inicia-se um arquivo novo.
 8) Caso o indice da última linha enviada seja igual a MAX_NUM_OF_ENTRIES-1, o arquivo deverá ser renomeado com alteração da extensão (.txt -> .txd).
 9) Os arquivos de cada monitor são guardados em diretórios separados nomeados com a ID do monitor.
+ */
+ 
+/** \defgroup app_monitor	Monitor
+ *  @{
  */
 
 #ifndef LOGGER_H_
