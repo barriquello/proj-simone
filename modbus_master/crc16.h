@@ -8,6 +8,8 @@
  
   /** \defgroup crc16 CRC16
  *  @{
+	Verificação de redundância cíclica com polinômio x^16+x^15+x^2+1
+	\see http://modbus.org/docs/Modbus_over_serial_line_V1_02.pdf
  */
  
 /******************************************************************************/

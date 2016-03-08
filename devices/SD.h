@@ -29,11 +29,12 @@
  
  /*! \defgroup sd Cartão SD
  * @{
+ Comandos para ler/escrever dados no cartão SD.
  */
  
  
 /*! \file SD.h
- \brief Interface para ler/escrever dados no SD.
+ \brief Interface para ler/escrever dados no cartão SD.
  
  Funcoes de leitura e escrita sao feitas por SPI.
  */

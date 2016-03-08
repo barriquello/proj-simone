@@ -30,6 +30,7 @@
  
 /** \addtogroup modems
  *  @{
+ Bibliotecas para acesso a diversos modelos de modems.
  */
  
  /*! \defgroup modem Modem

@@ -30,10 +30,12 @@
 
 /** \addtogroup devices
  *  @{
+ Camada de dispositivos (devices) – contém as implementações para acesso através de drivers aos dispositivos periféricos externos
  */
  
  /*! \defgroup at Comandos AT
  * @{
+ 	Implementação de comandos AT para modems. 
  */
  
  

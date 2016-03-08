@@ -24,6 +24,7 @@
 
 /** \addtogroup app
  *  @{
+ Camada de tarefas/aplicações – contém as implementações da lógica do sistema de monitoramento
  */
 
 

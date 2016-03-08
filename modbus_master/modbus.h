@@ -4,6 +4,7 @@
 
 /** \addtogroup modbus
  *  @{
+ * Modbus Master RTU for serial lines.
  */
 
 /******************************************************************************/
@@ -17,6 +18,24 @@
 
  /** \defgroup master Master
  *  @{
+	Modbus-master for emdedded applications
+	
+	Based on "libmodbus-2.0.3" (http://libmodbus.org/) Stéphane Raimbault <stephane.raimbault@gmail.com>
+
+	Modbus Master RTU for serial lines. Optimized for use with the RTOS. 
+
+	Implemented Modbus func:
+
+	0x01 - Read Coils
+	0x02 - Read Discrete Inputs
+	0x03 - Read Holding Registers
+	0x04 - Read Input Registers
+	0x05 - Write Single Coil
+	0x06 - Write Single Register
+	0x0F - Write Multiple Coils
+	0x10 - Write Multiple Registers
+	interface for user-def func
+	\see http://modbus.org/docs/Modbus_over_serial_line_V1_02.pdf
  */
 
 #ifndef __MODBUS_H
@@ -70,8 +89,8 @@ typedef struct // 4-byte aligned
 } __MB_QUERY;
 
 
-/** MODBUS uses a big-Endian
- * Ex.: 16-bits 0x1234 the first byte sent is 0x12 then 0x34*/
+/* MODBUS uses a big-Endian
+ * Ex.: 16-bits 0x1234 the first byte sent is 0x12 then 0x34 */
 
 
 /**************************** Func declarations *******************************/
@@ -99,9 +118,7 @@ uint8_t Modbus_init(void);
 #endif
 
 
-/** 
- * UTILS FUNCTIONS
- **/
+/* UTILS FUNCTIONS */
 
 /* Sets many input/coil status from a single byte value (all 8 bits of
    the byte value are setted) */

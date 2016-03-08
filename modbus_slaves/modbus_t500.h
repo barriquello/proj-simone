@@ -33,6 +33,7 @@
  
  /** \defgroup t500 Slave T500
  *  @{
+ Tabela de registradores Modbus para medidor IMS T500
  */
 
 #ifndef MODBUS_T500_H_

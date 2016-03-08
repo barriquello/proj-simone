@@ -35,6 +35,7 @@
  
  /*! \defgroup sensors Sensors
  * @{
+ Interface para ler dados de sensores.
  */
  
  

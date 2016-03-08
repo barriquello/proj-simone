@@ -1,9 +1,12 @@
  /** \addtogroup Sistema
  *  @{
+ Camada de sistema – contém as implementações relativas ao sistema operacional de tempo real (RTOS) e bibliotecas de middleware.
  */
 
 /** \addtogroup brtos
  *  @{
+ Sistema operacional de tempo real (RTOS)
+ \see github.com/brtos
  */
 /**
 * \file BRTOS.h

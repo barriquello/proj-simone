@@ -36,7 +36,8 @@
  *  @{
  */
  
- /*! \defgroup modem Modem Null
+ /*! \defgroup modemnull Modem Null
+ Funções para modem nulo (usado para testes)
  */
  
  

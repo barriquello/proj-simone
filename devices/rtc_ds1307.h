@@ -29,6 +29,7 @@
  
  /*! \defgroup timer RTC DS1307
  * @{
+ Interface para o RTC (real time clock) DS1307.
  */
  
  
@@ -174,6 +175,9 @@ typedef struct
  
  \fn void void Start_RTC_DS1307_OSC(void)
  \brief Habilita oscilador do DS1307
+ 
+ \fn INT8U Get_Hour_Format(void)
+ \brief Retorna formatação da hora do DS1307
 
  \fn void Set_24h_Format(void)
  \brief Habilita formato 24h no DS1307

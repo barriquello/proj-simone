@@ -41,6 +41,7 @@
  
  /*! \defgroup esp8266 Modem ESP8266 
  * @{
+ Funções para modem ESP8266 
  */
  
  /*! \file esp8266_at.h

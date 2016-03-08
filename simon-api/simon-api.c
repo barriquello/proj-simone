@@ -168,7 +168,6 @@ uint8_t simon_send_data(uint8_t *buf, uint16_t length, uint8_t mon_id, time_t ti
 	if(length > SIZEARRAY(server_reply))      return MODEM_ERR;
 	if(out_modem == NULL || in_modem == NULL) return MODEM_ERR;
 	
-	/// Form request
 	SNPRINTF_P(server_reply, SIZEARRAY(server_reply)-1,
 			 PSTR("GET /monitor/set.json?monitorid=%u&time=%lu&data=%s&apikey=%s HTTP/1.1\r\nHost: %s\r\n\r\n\r\n"), 
 			 mon_id, time, buf, (char*)simon_apikey, (char*)hostname);
@@ -224,7 +223,6 @@ uint8_t simon_send_multiple_data(uint8_t *buf, uint16_t length, time_t time)
 	if(length > SIZEARRAY(server_reply))      return MODEM_ERR;
 	if(out_modem == NULL || in_modem == NULL) return MODEM_ERR;
 	
-	/// Form request
 	SNPRINTF_P(server_reply, SIZEARRAY(server_reply)-1,
 	PSTR("GET /monitor/multiple.json?time=%lu&data=[%s]&apikey=%s HTTP/1.1\r\nHost: %s\r\n\r\n\r\n"),
 	time, buf, (char*)simon_apikey, (char*)hostname);

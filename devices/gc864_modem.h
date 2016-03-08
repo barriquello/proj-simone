@@ -39,6 +39,7 @@
  
  /*! \defgroup gc864 Modem GC864
  * @{
+  Funções para modem Telit GC864
  */
  
  

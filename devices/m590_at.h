@@ -40,6 +40,7 @@
  
  /*! \defgroup m590 Modem M590 
  * @{
+ Funções para modem M590
  */
  
  /*! \file m590_at.h

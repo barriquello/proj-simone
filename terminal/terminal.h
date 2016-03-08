@@ -21,8 +21,12 @@
  * THE SOFTWARE.
 
 */
-/** \addtogroup terminal  Terminal
+/** \addtogroup app_terminal
  *  @{
+  Para cada comando recebido pela entrada do terminal,
+  busca o comando na tabela de comandos e, caso o encontre, executa o comando.
+  Caso contrário, informa que o comando não é suportado. Para receber uma lista 
+  de comandos suportados utiliza-se o comando "help"
  */
   
 /****************************************************************************

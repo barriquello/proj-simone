@@ -34,6 +34,7 @@
  
  /** \defgroup slave_null Slave NULL
  *  @{
+ Tabela de registradores Modbus para sensores locais
  */
 
 #ifndef MODBUS_SLAVE_NULL_H_

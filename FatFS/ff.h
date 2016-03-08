@@ -4,6 +4,9 @@
 
 /** \defgroup FatFS
  *  @{
+ FatFs é uma bilbioteca para implementação de um sistema de arquivos FAT
+ para sistemas embarcados.
+ \see http://elm-chan.org/fsw/ff/00index_e.html
  */
 
 /*---------------------------------------------------------------------------/

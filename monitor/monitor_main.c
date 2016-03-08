@@ -22,20 +22,23 @@
 
 */
  
-/*
+/*!
  ============================================================================
  \file   monitor_main.c
  \author Carlos H. Barriquello
  \brief  Datalogger monitor
  ============================================================================
 
- - Arquivo de log local
-
-1) um arquivo para cada monitor. Monitor é entendido como um conjunto de dados estruturados,
-geralmente, associado a um único equipamento. Ex.: medidas elétricas associdas ao um
+ O monitor é dividido em duas subtarefas (o escrutor e o leitor). O escritor é responsável
+ por adquirir e armazenar dados em arquivos estruturados. O leitor é responsável pela leitura 
+ dos dados dos arquivos e subsequente envio destes dados. Para cada equipamento a ser monitorado
+ tem-se um monitor.
+ 
+1) Cada monitor guarda os arquivos em um diretório próprio. Monitor é entendido como um conjunto de 
+dados estruturados, geralmente, associado a um único equipamento. Ex.: medidas elétricas associdas ao um
 medidor de grandezas elétricas.
 
-2) Dados devem guardados na forma de séries temporais ordenadas.
+2) Dados devem ser guardados na forma de séries temporais ordenadas.
 Uma série temporal é um conjunto de dados associados a uma estampa de tempo.
 
 3) As séries são armazenadas no formato ASCII hexadecimal como um conjunto de bytes finalizados
@@ -44,8 +47,8 @@ estampa de tempo.
 
 4) As estampas de tempo podem estar nas entradas de dados, ou serem calculados a partir de uma
 estampa inicial (ex. data e hora da criação do arquivo), quando estiverem separadas por um
-intervalo constante. O formato da estampa é determinada pela versão do log. V00 - com estampas calculadas a partir da estampa inicial. As configurações são
-guardadas no cabeçalho, V01 - com estampas incluídas
+intervalo constante. O formato da estampa é determinada pela versão do log. V00 - com estampas calculadas 
+a partir da estampa inicial. As configurações são guardadas no cabeçalho, V01 - com estampas incluídas
 
 5) Cada arquivo inicia com um cabeçalho contendo (3 linhas com até 16 caracteres cada):
 L1: Versao e Monitor ID, Bytes por linha e intervalo entre medições.
@@ -65,8 +68,10 @@ C0000\r\n
 04
 
 
-6) Os arquivos do logger são nomeados com a data/hora de sua criação no formato "AAMMDDHH.txt". Ao iniciar o logger, ele ordena os arquivos por data e tenta abrir o último arquivo salvo.
-Caso ele não esteja sincronizado, os dados são armazenados no arquivo "99123123.txt". Este arquivo deverá ser renomeado com a data/hora de sua criação, quando houver a sincronização do relógio do logger.
+6) Os arquivos do monitor são nomeados com a data/hora de sua criação no formato "AAMMDDHH.txt". Ao iniciar o monitor, 
+ele busca no arquivo "metafile.txt" o nome do arquivo sendo lido e tenta abri-lo.
+Caso ele não esteja sincronizado, os dados são armazenados no arquivo "99123123.txt". Este arquivo deverá ser renomeado 
+com a data/hora de sua criação, quando houver a sincronização do relógio do monitor.
 A data/hora de criação será obtida a partir da data atual retrocedida de acordo com a quantidade de entradas de dados no arquivo.
 Caso já haja um arquivo com o mesmo nome, o mesmo deverá ser renomeado para a data/ hora logo posterior.
 
@@ -105,8 +110,7 @@ T20150101073300S ->
 
 7) Caso o contador de entradas seja igual a MAX_NUM_OF_ENTRIES, fecha-se o arquivo e inicia-se um arquivo novo.
 8) Caso o indice da última linha enviada seja igual a MAX_NUM_OF_ENTRIES-1, o arquivo deverá ser renomeado com alteração da extensão (.txt -> .txd).
-9) Os arquivos de log de cada monitor são guardados em diretórios separados nomeados com a ID do monitor.
-
+9) Os arquivos de cada monitor são guardados em diretórios separados nomeados com a ID do monitor.
  */
 
 #include "AppConfig.h"

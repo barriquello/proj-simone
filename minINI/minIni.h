@@ -24,6 +24,9 @@
  
  /** \defgroup minINI  minINI
  *  @{
+ minIni é uma bilbioteca para ler e escrever arquivos “ini” em sistemas embarcados.
+ Ver documentação em /miniINI/minINi.pdf
+ \see /miniINI/minINi.pdf
  */
  
  

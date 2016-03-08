@@ -782,8 +782,6 @@ sint32_t Modbus_process_answ(uint8_t *ptr_data, uint16_t num_regs) {
 //==============================================================================
 //==============================================================================
 
-/** Utils **/
-
 /* Sets many input/coil status from a single byte value (all 8 bits of
    the byte value are setted) */
 void set_bits_from_byte(uint8_t *dest, int address, const uint8_t value)

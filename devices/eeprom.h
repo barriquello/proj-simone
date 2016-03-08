@@ -24,10 +24,12 @@
 
 /** \addtogroup devices
  *  @{
+ Camada de dispositivos (devices) – contém as implementações para acesso através de drivers aos dispositivos periféricos externos
  */
  
  /*! \defgroup eeprom Memória EEPROM
  * @{
+ Funções para ler/escrever na memoria eeprom por IIC.
  */
  
  

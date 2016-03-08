@@ -34,6 +34,7 @@
  
  /** \defgroup ts Slave TS
  *  @{
+  Tabela de registradores Modbus para supervisor de temperatura Treetech TS
  */
  
  

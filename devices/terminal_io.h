@@ -35,6 +35,7 @@
  
  /*! \defgroup terminal Terminal I/O
  * @{
+ Interface para ler/escrever dados no terminal selecionável para UART ou USB.
  */
  
  

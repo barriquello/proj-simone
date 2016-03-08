@@ -27,6 +27,7 @@
  
  /*! \defgroup lcd LCD 
  * @{
+ Interface para escrita no display de cristal liquido (LCD)
  */
  
  

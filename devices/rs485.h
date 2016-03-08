@@ -29,6 +29,7 @@
  
  /*! \defgroup rs485 RS485
  * @{
+ Funções para transferir e receber dados via RS485/UART.
  */
  
  
@@ -56,8 +57,12 @@
  \brief  Armazena o caracter a ser transmitido no registrador de transmissao
  \param caracter Caractere a ser transmitido
  
- \fn void rx_rs485(void)
- \brief fun��o para recepcao de dados 
+ \fn INT8U rs485_rx(CHAR8* caracter, INT16U timeout);
+ \brief função para recepção de dados 
+ \param caracter Ponteiro do buffer de caracteres a receber
+ \param timoeut Tempo máximo de espera para recepção
+ \return TRUE para recepção com sucesso
+ \return FALSE para falha de recepção por tempo máximo excedido
  
  */
  
@@ -77,5 +82,3 @@ void rs485_enable_tx(void);
 
  /** @}*/
  /** @}*/
-
-

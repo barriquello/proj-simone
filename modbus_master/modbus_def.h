@@ -4,6 +4,7 @@
 
 /** \addtogroup modbus
  *  @{
+	Modbus Master RTU for serial lines.
  */
 
 /******************************************************************************/

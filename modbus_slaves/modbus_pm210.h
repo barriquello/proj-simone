@@ -34,6 +34,7 @@
  
  /** \defgroup pm210 Slave PM210
  *  @{
+ Tabela de registradores Modbus para multimedidor PowerLogic PM210
  */
 
 #ifndef MODBUS_PM210_H_
