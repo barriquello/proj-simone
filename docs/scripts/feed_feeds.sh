@@ -2,10 +2,10 @@
 ## create feeds
 
 #SERVER=http://emon-gpsnetcms.rhcloud.com
-#SERVER=http://simon-gpsnetcms.rhcloud.com
-SERVER=http://localhost
-#APIKEY=a4b245ca16c183c2ad2286efb342d09a
-APIKEY=b52faf2939e7957e722fb38a13dd74e3
+SERVER=http://simon-gpsnetcms.rhcloud.com
+#SERVER=http://localhost
+APIKEY=a4b245ca16c183c2ad2286efb342d09a
+#APIKEY=b52faf2939e7957e722fb38a13dd74e3
 REQUEST=$SERVER/feed/list.json\&apikey=$APIKEY
 #echo $REQUEST
 #curl $REQUEST
@@ -18,7 +18,7 @@ REQUEST=$SERVER/feed/list.json\&apikey=$APIKEY
 vartime=1456600001
 
 v=0
-while [ $v -lt 100 ]
+while [ $v -lt 10 ]
 do
 let v=v+1 
 m=0

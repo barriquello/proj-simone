@@ -14,11 +14,11 @@ declare -a feednames=("fTE" "fTO" "fVcn" "fVbn" "fVan" "fVca" "fVbc" "fVab" "fIP
 for f in "${feednames[@]}"
 do
    echo "$f"
-   REQUEST=$SERVER/feed/create.json?name=$f\&datatype=1\&engine=5\&options={"interval":30}\&apikey=$APIKEY
+   REQUEST=\"$SERVER/feed/create.json?name=$f\&datatype=1\&engine=5\&options=\\{\\\"interval\\\":30\\}\&apikey=$APIKEY\"
    echo $REQUEST
-   curl $REQUEST
+   curlCmd="curl $REQUEST"
+   eval $curlCmd
 done
-
 REQUEST=$SERVER/feed/list.json\&apikey=$APIKEY
 echo $REQUEST
 curl $REQUEST
