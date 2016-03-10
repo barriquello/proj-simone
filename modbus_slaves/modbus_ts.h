@@ -53,20 +53,6 @@
 
 #define TS_SLAVE_ADDRESS	(0x01)   // END – Endereço do TS na comunicação serial, faixa de ajuste: 1 a 31 
 
-typedef union {
-  uint8_t Byte;
-  struct {
-	uint8_t b0      :1;
-	uint8_t b1      :1;
-	uint8_t b2      :1;
-	uint8_t b3      :1;
-	uint8_t b4      :1;
-	uint8_t b5      :1;
-	uint8_t b6      :1;
-    uint8_t b7      :1;
-  } Bits;  
-} U8;
-
 /*
 Estado_Rele_RF1
 Estado_Rele_RF2

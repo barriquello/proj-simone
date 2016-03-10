@@ -29,14 +29,15 @@
  */
  
 /** \addtogroup devices
- *  @{
+ * @{
  */
  
  /** \addtogroup modems
- *  @{
+ * @{
  */
  
  /*! \defgroup modemnull Modem Null
+ * @{
  Funções para modem nulo (usado para testes)
  */
  
@@ -65,7 +66,7 @@
 #define null_modem_release()
 		
 #include "modem.h"
-
+		
 modem_ret_t at_null_modem_init(void);
 modem_ret_t at_null_modem_open(void);
 modem_ret_t at_null_modem_send(char* dados);
@@ -93,6 +94,6 @@ uint8_t null_modem_check_connection(void);
 
 
 #endif /* NULL_MODEM_AT_H_ */
-/** @} */
+/** @}*/
 /** @}*/
 /** @}*/

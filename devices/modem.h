@@ -33,10 +33,7 @@
  Bibliotecas para acesso a diversos modelos de modems.
  */
  
- /*! \defgroup modem Modem
- * @{
- */
- 
+
 /*! \file modem.h
  \brief Definicoes de interface para modems.
  
@@ -62,6 +59,6 @@ typedef enum
 }modem_ret_t;
 
 #endif
-/** @}*/
+
 /** @}*/
 /** @}*/
