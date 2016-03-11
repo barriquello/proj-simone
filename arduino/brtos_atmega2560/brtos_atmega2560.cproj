@@ -556,10 +556,6 @@
       <SubType>compile</SubType>
       <Link>includes\tasks.h</Link>
     </Compile>
-    <Compile Include="..\main_demo.c">
-      <SubType>compile</SubType>
-      <Link>main_demo.c</Link>
-    </Compile>
     <Compile Include="brtos_atmega2560.c">
       <SubType>compile</SubType>
     </Compile>

@@ -103,7 +103,6 @@ C_SRCS +=  \
 ../../drivers/mcu_driver.c \
 ../../drivers/spi.c \
 ../../drivers/uart.c \
-../../main_demo.c \
 ../brtos_atmega2560.c
 
 
@@ -163,7 +162,6 @@ drivers/led_onboard.o \
 drivers/mcu_driver.o \
 drivers/spi.o \
 drivers/uart.o \
-main_demo.o \
 brtos_atmega2560.o
 
 OBJS_AS_ARGS +=  \
@@ -216,7 +214,6 @@ drivers/led_onboard.o \
 drivers/mcu_driver.o \
 drivers/spi.o \
 drivers/uart.o \
-main_demo.o \
 brtos_atmega2560.o
 
 C_DEPS +=  \
@@ -269,7 +266,6 @@ drivers/led_onboard.d \
 drivers/mcu_driver.d \
 drivers/spi.d \
 drivers/uart.d \
-main_demo.d \
 brtos_atmega2560.d
 
 C_DEPS_AS_ARGS +=  \
@@ -322,7 +318,6 @@ drivers/led_onboard.d \
 drivers/mcu_driver.d \
 drivers/spi.d \
 drivers/uart.d \
-main_demo.d \
 brtos_atmega2560.d
 
 OUTPUT_FILE_PATH +=brtos_atmega2560.elf
@@ -339,8 +334,6 @@ LINKER_SCRIPT_DEP+=
 
 
 # AVR32/GNU C Compiler
-
-
 
 
 
@@ -534,13 +527,6 @@ terminal/%.o: ../../../terminal/%.c
 	
 
 drivers/%.o: ../../drivers/%.c
-	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
-	@echo Finished building: $<
-	
-
-./%.o: ../../%.c
 	@echo Building file: $<
 	@echo Invoking: AVR/GNU C Compiler : 4.9.2
 	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 

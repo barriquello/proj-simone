@@ -13,7 +13,6 @@
 #include "uart.h"
 #include "utils.h"
 #include "terminal_io.h"
-#include "mbport.h"
 
 #if (ENABLE_UART0 == TRUE)
 INT8U receive_byte0;
