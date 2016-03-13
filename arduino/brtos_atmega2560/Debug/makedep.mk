@@ -100,7 +100,5 @@
 
 ..\drivers\uart.c
 
-..\main_demo.c
-
-brtos_atmega2560.c
+brtos_atmega2560_6_2.c
 

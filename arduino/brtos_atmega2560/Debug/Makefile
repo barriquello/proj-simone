@@ -103,8 +103,7 @@ C_SRCS +=  \
 ../../drivers/mcu_driver.c \
 ../../drivers/spi.c \
 ../../drivers/uart.c \
-../../main_demo.c \
-../brtos_atmega2560.c
+../brtos_atmega2560_6_2.c
 
 
 PREPROCESSING_SRCS += 
@@ -163,8 +162,7 @@ drivers/led_onboard.o \
 drivers/mcu_driver.o \
 drivers/spi.o \
 drivers/uart.o \
-main_demo.o \
-brtos_atmega2560.o
+brtos_atmega2560_6_2.o
 
 OBJS_AS_ARGS +=  \
 app/main_app.o \
@@ -216,8 +214,7 @@ drivers/led_onboard.o \
 drivers/mcu_driver.o \
 drivers/spi.o \
 drivers/uart.o \
-main_demo.o \
-brtos_atmega2560.o
+brtos_atmega2560_6_2.o
 
 C_DEPS +=  \
 app/main_app.d \
@@ -269,8 +266,7 @@ drivers/led_onboard.d \
 drivers/mcu_driver.d \
 drivers/spi.d \
 drivers/uart.d \
-main_demo.d \
-brtos_atmega2560.d
+brtos_atmega2560_6_2.d
 
 C_DEPS_AS_ARGS +=  \
 app/main_app.d \
@@ -322,12 +318,11 @@ drivers/led_onboard.d \
 drivers/mcu_driver.d \
 drivers/spi.d \
 drivers/uart.d \
-main_demo.d \
-brtos_atmega2560.d
+brtos_atmega2560_6_2.d
 
-OUTPUT_FILE_PATH +=brtos_atmega2560.elf
+OUTPUT_FILE_PATH +=brtos_atmega2560_6_2.elf
 
-OUTPUT_FILE_PATH_AS_ARGS +=brtos_atmega2560.elf
+OUTPUT_FILE_PATH_AS_ARGS +=brtos_atmega2560_6_2.elf
 
 ADDITIONAL_DEPENDENCIES:=
 
@@ -440,117 +435,108 @@ LINKER_SCRIPT_DEP+=
 
 
 
-
-
 app/%.o: ../../../app/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 brtos/%.o: ../../../brtos/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 devices/%.o: ../../../devices/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 FatFs/%.o: ../../../FatFS/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 FatFs/option/%.o: ../../../FatFS/option/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 brtos/hal/%.o: ../../../hal/Atmel_Studio_6_ATMEGA/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 libs/%.o: ../../../libs/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 minINI/%.o: ../../../minINI/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 modbus_master/%.o: ../../../modbus_master/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 modbus_slaves/%.o: ../../../modbus_slaves/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 monitor/%.o: ../../../monitor/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 simon-api/%.o: ../../../simon-api/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 terminal/%.o: ../../../terminal/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 drivers/%.o: ../../drivers/%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
-	@echo Finished building: $<
-	
-
-./%.o: ../../%.c
-	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
 ./%.o: .././%.c
 	@echo Building file: $<
-	@echo Invoking: AVR/GNU C Compiler : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu" -I"C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\include"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560" -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
+	@echo Invoking: AVR/GNU C Compiler : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE)  -x c -funsigned-char -funsigned-bitfields -DDEBUG  -I"../../../brtos/includes" -I"../../../hal/Atmel_Studio_6_ATMEGA" -I"../../../libs" -I"../../../FatFS" -I"../../drivers" -I"../../includes" -I"../includes" -I"../../../devices" -I"../../../terminal" -I"../../../minINI" -I"../../../modbus_master" -I"../../../modbus_slaves" -I"../../../monitor" -I"../../../monitor/pt" -I"../../../simon-api" -I"../../../freemodbus/modbus/include" -I"../../../freemodbus/port" -I"../../../freemodbus/modbus/rtu"  -Os -ffunction-sections -fdata-sections -fpack-struct -fshort-enums -mrelax -g3 -Wall -mmcu=atmega2560 -c -std=gnu99 -MD -MP -MF "$(@:%.o=%.d)" -MT"$(@:%.o=%.d)" -MT"$(@:%.o=%.o)"   -o "$@" "$<" 
 	@echo Finished building: $<
 	
 
@@ -578,14 +564,14 @@ all: $(OUTPUT_FILE_PATH) $(ADDITIONAL_DEPENDENCIES)
 
 $(OUTPUT_FILE_PATH): $(OBJS) $(USER_OBJS) $(OUTPUT_FILE_DEP) $(LIB_DEP) $(LINKER_SCRIPT_DEP)
 	@echo Building target: $@
-	@echo Invoking: AVR/GNU Linker : 4.9.2
-	$(QUOTE)C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJS_AS_ARGS) $(USER_OBJS) $(LIBS) -Wl,-Map="brtos_atmega2560.map" -Wl,--start-group -Wl,-lm  -Wl,--end-group -Wl,--gc-sections -mrelax -mmcu=atmega2560 -B "C:\Program Files\Atmel\Studio\7.0\Packs\atmel\ATmega_DFP\1.0.90\gcc\dev\atmega2560"  
+	@echo Invoking: AVR/GNU Linker : 4.8.1
+	$(QUOTE)C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-gcc.exe$(QUOTE) -o$(OUTPUT_FILE_PATH_AS_ARGS) $(OBJS_AS_ARGS) $(USER_OBJS) $(LIBS) -Wl,-Map="brtos_atmega2560_6_2.map" -Wl,--start-group -Wl,-lm  -Wl,--end-group -Wl,--gc-sections -mrelax -mmcu=atmega2560  
 	@echo Finished building target: $@
-	"C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures  "brtos_atmega2560.elf" "brtos_atmega2560.hex"
-	"C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-objcopy.exe" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "brtos_atmega2560.elf" "brtos_atmega2560.eep" || exit 0
-	"C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-objdump.exe" -h -S "brtos_atmega2560.elf" > "brtos_atmega2560.lss"
-	"C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O srec -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures "brtos_atmega2560.elf" "brtos_atmega2560.srec"
-	"C:\Program Files\Atmel\Studio\7.0\toolchain\avr8\avr8-gnu-toolchain\bin\avr-size.exe" "brtos_atmega2560.elf"
+	"C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O ihex -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures  "brtos_atmega2560_6_2.elf" "brtos_atmega2560_6_2.hex"
+	"C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -j .eeprom  --set-section-flags=.eeprom=alloc,load --change-section-lma .eeprom=0  --no-change-warnings -O ihex "brtos_atmega2560_6_2.elf" "brtos_atmega2560_6_2.eep" || exit 0
+	"C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objdump.exe" -h -S "brtos_atmega2560_6_2.elf" > "brtos_atmega2560_6_2.lss"
+	"C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-objcopy.exe" -O srec -R .eeprom -R .fuse -R .lock -R .signature -R .user_signatures "brtos_atmega2560_6_2.elf" "brtos_atmega2560_6_2.srec"
+	"C:\Program Files\Atmel\Atmel Toolchain\AVR8 GCC\Native\3.4.1061\avr8-gnu-toolchain\bin\avr-size.exe" "brtos_atmega2560_6_2.elf"
 	
 	
 
@@ -597,5 +583,5 @@ $(OUTPUT_FILE_PATH): $(OBJS) $(USER_OBJS) $(OUTPUT_FILE_DEP) $(LIB_DEP) $(LINKER
 clean:
 	-$(RM) $(OBJS_AS_ARGS) $(EXECUTABLES)  
 	-$(RM) $(C_DEPS_AS_ARGS)   
-	rm -rf "brtos_atmega2560.elf" "brtos_atmega2560.a" "brtos_atmega2560.hex" "brtos_atmega2560.lss" "brtos_atmega2560.eep" "brtos_atmega2560.map" "brtos_atmega2560.srec" "brtos_atmega2560.usersignatures"
+	rm -rf "brtos_atmega2560_6_2.elf" "brtos_atmega2560_6_2.a" "brtos_atmega2560_6_2.hex" "brtos_atmega2560_6_2.lss" "brtos_atmega2560_6_2.eep" "brtos_atmega2560_6_2.map" "brtos_atmega2560_6_2.srec" "brtos_atmega2560_6_2.usersignatures"
 	
