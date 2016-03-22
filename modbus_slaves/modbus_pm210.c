@@ -237,14 +237,14 @@ uint8_t pm210_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 		uint8_t retries = PM210_REGLIST1_INPUT_NREGS*2;
 		  			
 		/* limit number of registers to the max. available */
-		if(max_len > SIZEARRAY(PM210_IRList1.Regs16))
+		if(max_len > sizeof(modbus_pm210_input_register_list1))
 		{
-			max_len = SIZEARRAY(PM210_IRList1.Regs16);
+			max_len = sizeof(modbus_pm210_input_register_list1);
 		}
 		  			
 		/* Detecta equipamentos de medição e faz a leitura dos dados */
 		/* PM210 input registers */
-		memset(PM210_IRList1.Regs16,0x00,SIZEARRAY(PM210_IRList1.Regs16));
+		memset(PM210_IRList1.Regs8,0x00,sizeof(PM210_IRList1.Regs8));
 		
 	for(nregs = 0; nregs < PM210_REGLIST1_INPUT_NREGS;)
 	{
@@ -263,8 +263,6 @@ uint8_t pm210_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 		{
 			if(--retries == 0)
 			{
-				/* zera tudo e desiste */
-				memset(PM210_IRList1.Regs16,0x00,SIZEARRAY(PM210_IRList1.Regs16));
 				break;
 			}			
 		}

@@ -1001,14 +1001,14 @@ static uint8_t device = 0;
 #include "stdio.h"
 
 extern CONST modbus_slave_t * modbus_slaves_all[];
+uint16_t modbus_buf[64];
 
 void term_cmd_modbus(char *param)
 {	
 
 	int input;
 	uint8_t k = 0;
-	uint8_t cnt = 0;
-	uint16_t modbus_buf[16];
+	uint8_t cnt = 0;	
 	
 	terminal_newline();
 	switch (param[0])

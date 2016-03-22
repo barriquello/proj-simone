@@ -43,7 +43,7 @@
 
 #include "stdint.h"
 
-#define TS_REG_INPUT_START  1001
+#define TS_REG_INPUT_START  1000
 #define TS_REG_INPUT_NREGS  16
 
 #define TS_REG_HOLDING_START  0000

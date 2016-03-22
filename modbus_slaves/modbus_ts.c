@@ -168,16 +168,16 @@ uint8_t ts_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 		uint8_t retries = TS_REG_INPUT_NREGS*2;	
 		
 		/* limit number of registers to the max. available */
-		if(max_len > SIZEARRAY(TS_IRList.Regs16))
+		if(max_len > sizeof(modbus_ts_input_register_list))
 		{
-			max_len = SIZEARRAY(TS_IRList.Regs16);
+			max_len = sizeof(modbus_ts_input_register_list);
 		}
 		
 #if !MODBUS_SLAVE_TS_SIMULATION			
 		uint16_t start_addr = TS_REG_INPUT_START;
 #endif			
 		
-		memset(TS_IRList.Regs16,0x00,SIZEARRAY(TS_IRList.Regs16));
+		memset(TS_IRList.Regs8,0x00,sizeof(TS_IRList.Regs8));
 
 		for(nregs = 0; nregs < TS_REG_INPUT_NREGS;)
 		{
@@ -190,8 +190,9 @@ uint8_t ts_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 	#else				
 			
 			if(Modbus_GetData(slave_addr, FC_READ_INPUT_REGISTERS, (uint8_t*)&TS_IRList.Regs16[nregs + TS_REG_OFFSET],
-			start_addr++, 1) == MODBUS_OK)
+			start_addr, 1) == MODBUS_OK)
 			{
+				start_addr++;
 				nregs++;
 			}
 			else
@@ -199,8 +200,6 @@ uint8_t ts_read_data(uint8_t slave_addr, uint8_t* buf, uint8_t max_len)
 				
 				if(--retries == 0)
 				{
-					/* zera tudo e desiste */
-					memset(TS_IRList.Regs16,0x00,SIZEARRAY(TS_IRList.Regs16));
 					break;
 				}
 			}
